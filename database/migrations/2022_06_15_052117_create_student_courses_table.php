@@ -18,10 +18,12 @@ class CreateStudentCoursesTable extends Migration
             $table->unsignedBigInteger('student_id');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
-            $table->text("executiveNote")->nullable();
-            $table->integer("status")->default(1)->comment('0 => inactive, 1 => active, 2 => waiting, 3=> Knocking, 4=> Enroll');
-			$table->integer("acc_approve")->default(0)->comment('0 => inactive, 1 => active');
+            $table->integer("status")->comment('0 => Close, 1 => Running, 2=> Knocking, 3=> Enroll 4=> Registered 5=> Evoulation');
+            $table->timestamps();
+			/*$table->integer("acc_approve")->default(0)->comment('0 => inactive, 1 => active');
 			$table->integer("om_approve")->default(0)->comment('0 => inactive, 1 => active');
+            $table->text("operationNote")->nullable();
+            $table->text("accountNote")->nullable();*/
         });
     }
 

@@ -25,7 +25,6 @@ class newUserRequest extends FormRequest
     {
         return [
             'role' => 'required|integer',
-            'timezone' => 'required|string',
             'fullName' => 'required|string',
             'username' => 'required|string|unique:users',
             'mobileNumber' => 'required|numeric|unique:users',

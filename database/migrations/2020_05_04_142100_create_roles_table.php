@@ -77,6 +77,11 @@ class CreateRolesTable extends Migration
                 'identity' => 'trainer',
                 'created_at' => Carbon::now()
             ],
+            [
+                'type' => 'Account Executive',
+                'identity' => 'accountexecutive',
+                'created_at' => Carbon::now()
+            ],
         ]);
     }
 

@@ -67,12 +67,14 @@ class Kernel extends HttpKernel
         'unknownUser' => \App\Http\Middleware\unknownUser::class,
         'isSuperAdmin' => \App\Http\Middleware\isSuperAdmin::class,
         'isAdmin' => \App\Http\Middleware\isAdmin::class,
-        'isDataentry' => \App\Http\Middleware\isDataentry::class,
+        'isFrontdesk' => \App\Http\Middleware\isFrontdesk::class,
         'isExecutive' => \App\Http\Middleware\isExecutive::class,
         'isAccountmanager' => \App\Http\Middleware\isAccountmanager::class,
-        'isMarketingmanager' => \App\Http\Middleware\isMarketingmanager::class,
+        'isOperationmanager' => \App\Http\Middleware\isOperationmanager::class,
         'isOwner' => \App\Http\Middleware\isOwner::class,
         'isSalesManager' => \App\Http\Middleware\isSalesManager::class,
-        'isSalesMan' => \App\Http\Middleware\isSalesMan::class,
+        'isSalesExecutive' => \App\Http\Middleware\isSalesExecutive::class,
+        'isTrainingmanager' => \App\Http\Middleware\isTrainingmanager::class,
+        'isTrainer' => \App\Http\Middleware\isTrainer::class,
     ];
 }

@@ -22,8 +22,8 @@ class DashboardController extends BaseController
 		return view('dashboard.admin_dashboard');
     }
 	
-    public function dataentry(){
-		return view('dashboard.dataentry_dashboard');
+    public function frontdesk(){
+		return view('dashboard.frontdesk_dashboard');
     }
 	
     public function executive(){
@@ -33,9 +33,17 @@ class DashboardController extends BaseController
     public function accountmanager(){
 		return view('dashboard.accountmanager_dashboard');
     }
+
+    public function trainingmanager(){
+      return view('dashboard.trainingmanager_dashboard');
+    }
+
+    public function trainer(){
+      return view('dashboard.trainer_dashboard');
+    }
 	
-    public function marketingmanager(){
-		return view('dashboard.marketingmanager_dashboard');
+    public function operationmanager(){
+		return view('dashboard.operation_dashboard');
     }
 
     public function owner(){
@@ -62,9 +70,7 @@ class DashboardController extends BaseController
     }
 
     public function salesManager(){
-		$company_id=company()['companyId'];
-		$company = Company::where(company())->orderBy('id', 'DESC')->first();
-		$customer=DB::select(DB::raw("SELECT count(id) as ccount,month(`created_at`) as cmonth FROM `customers` where companyId=$company_id group by month(`created_at`) ")); 
+		/*$customer=DB::select(DB::raw("SELECT count(id) as ccount,month(`created_at`) as cmonth FROM `customers` where companyId=$company_id group by month(`created_at`) ")); 
 		$suppliers=DB::select(DB::raw("SELECT count(id) as ccount,month(`created_at`) as cmonth FROM `suppliers` where companyId=$company_id group by month(`created_at`) ")); 
 		$rev_date=DB::select(DB::raw("SELECT sum(total_dis) as dis, sum(`total_tax`) as tax,sum(`total_amount`) as tm,month(`bill_date`) as bd FROM `bills` where companyId=$company_id group by month(`bill_date`) ")); 
     $profit=DB::select(DB::raw("SELECT (sum(`amount`) - ((sum(`qty`)+sum(IFNULL(free,0))) * (select (sum(purchase_items.amount) / sum((IFNULL(purchase_items.qty,0)+IFNULL(purchase_items.free,0)))) from purchase_items where bill_items.batchId= purchase_items.batchId and bill_items.item_id=purchase_items.item_id))) as profit FROM `bill_items` where bill_items.companyId=$company_id GROUP BY bill_items.batchId,bill_items.item_id")); 
@@ -80,13 +86,12 @@ class DashboardController extends BaseController
         $billWeek=DB::select(DB::raw("SELECT sum(total_amount) as am, count(id) as cid FROM bills WHERE companyId=$company_id and bill_date between '$start_date' and '$end_date' "));
         $billToday=DB::select(DB::raw("SELECT sum(total_amount) as am, count(id) as cid FROM bills WHERE companyId=$company_id and bill_date = date(now()) "));
         
-		return view('dashboard.salesmanager_dashboard',compact('todaySellSummary','profit','rev_date','company','customer','suppliers','billToday','billWeek','billMonth'));
+		return view('dashboard.salesmanager_dashboard',compact('todaySellSummary','profit','rev_date','company','customer','suppliers','billToday','billWeek','billMonth'));*/
+    return view('dashboard.salesmanager_dashboard');
     }
 
-    public function salesMan(){
-		$company_id=company()['companyId'];
-		$company = Company::where(company())->orderBy('id', 'DESC')->first();
-		$customer=DB::select(DB::raw("SELECT count(id) as ccount,month(`created_at`) as cmonth FROM `customers` where companyId=$company_id group by month(`created_at`) ")); 
+    public function salesExecutive(){
+		/*$student=DB::select(DB::raw("SELECT count(id) as ccount,month(`created_at`) as cmonth FROM `customers` where companyId=$company_id group by month(`created_at`) ")); 
 		$suppliers=DB::select(DB::raw("SELECT count(id) as ccount,month(`created_at`) as cmonth FROM `suppliers` where companyId=$company_id group by month(`created_at`) ")); 
     $rev_date=DB::select(DB::raw("SELECT sum(total_dis) as dis, sum(`total_tax`) as tax,sum(`total_amount`) as tm,month(`bill_date`) as bd FROM `bills` where companyId=$company_id group by month(`bill_date`) ")); 
     $profit=DB::select(DB::raw("SELECT (sum(`amount`) - ((sum(`qty`)+sum(IFNULL(free,0))) * (select (sum(purchase_items.amount) / sum((IFNULL(purchase_items.qty,0)+IFNULL(purchase_items.free,0)))) from purchase_items where bill_items.batchId= purchase_items.batchId and bill_items.item_id=purchase_items.item_id))) as profit FROM `bill_items` where bill_items.companyId=$company_id GROUP BY bill_items.batchId,bill_items.item_id")); 
@@ -103,6 +108,7 @@ class DashboardController extends BaseController
         $billWeek=DB::select(DB::raw("SELECT sum(total_amount) as am, count(id) as cid FROM bills WHERE companyId=$company_id and bill_date between '$start_date' and '$end_date' "));
         $billToday=DB::select(DB::raw("SELECT sum(total_amount) as am, count(id) as cid FROM bills WHERE companyId=$company_id and bill_date = date(now()) "));
         
-		return view('dashboard.salesman_dashboard',compact('todaySellSummary','profit','rev_date','company','customer','suppliers','billToday','billWeek','billMonth'));
+		return view('dashboard.salesman_dashboard',compact('todaySellSummary','profit','rev_date','company','customer','suppliers','billToday','billWeek','billMonth'));*/
+    return view('dashboard.salesexecutive_dashboard');
     }
 }
