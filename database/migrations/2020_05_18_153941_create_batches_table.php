@@ -17,6 +17,7 @@ class CreateBatchesTable extends Migration
             $table->bigIncrements('id');
             $table->string('batchId', 255);
             $table->unsignedBigInteger('courseId')->nullable();
+            $table->unsignedBigInteger('pacakageId')->nullable();
 			$table->date('startDate')->nullable();
 			$table->date('endDate')->nullable();
             $table->string('bslot', 255)->nullable();
@@ -25,9 +26,10 @@ class CreateBatchesTable extends Migration
 			$table->date('examDate')->nullable();
 			$table->time('examTime')->nullable();
 			$table->unsignedBigInteger('examRoom')->nullable();
-			$table->unsignedFloat('price', 10, 2)->default(0);
-			$table->unsignedFloat('discount', 10, 2)->default(0);
-            $table->boolean('status')->default(0);
+			/*$table->unsignedFloat('price', 10, 2)->default(0);
+			$table->unsignedFloat('discount', 10, 2)->default(0);*/
+            $table->integer('seat')->comment('Total Available Seat');
+            $table->boolean('status')->default(1)->comment('1 => Running, 0=> Closing');
             $table->unsignedBigInteger('userId');
             $table->timestamps();
         });

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\District;
+use App\Models\Reference;
 use Illuminate\Http\Request;
 
-class DistrictController extends Controller
+class ReferenceController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,8 @@ class DistrictController extends Controller
      */
     public function index()
     {
-        $allDistrict = District::paginate();
-        return view('district.index',compact('allDistrict'));
+        $allReference = Reference::orderBy('id', 'DESC')->paginate(25);
+        return view('reference.index', compact('allReference'));
     }
 
     /**

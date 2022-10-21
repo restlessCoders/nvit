@@ -4,10 +4,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BatchController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ClassroomController;
-
+use App\Http\Controllers\BatchtimeController;
+use App\Http\Controllers\BatchslotController;
+use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\UpazilaController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,9 +91,17 @@ Route::group(['middleware' => 'isSuperAdmin'], function(){
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('superadmin.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('superadmin.addstudentCourseAssign');
         });
+        Route::resource('/batch',BatchController::class,["as" => "superadmin"]);
+        Route::resource('/reference',ReferenceController::class,["as" => "superadmin"]);
 
         Route::resource('/course',CourseController::class,["as" => "superadmin"]);
         Route::resource('/classroom',ClassRoomController::class,["as" => "superadmin"]);
+        Route::resource('/batchtime',BatchtimeController::class,["as" => "superadmin"]);
+        Route::resource('/batchslot',BatchslotController::class,["as" => "superadmin"]);
+        Route::resource('/division',DivisionController::class,["as" => "superadmin"]);
+        Route::resource('/district',DistrictController::class,["as" => "superadmin"]);
+        Route::resource('/upazila',UpazilaController::class,["as" => "superadmin"]);
+        Route::resource('/payment',PaymentController::class,["as" => "superadmin"]);
 	});
 });
 
@@ -107,7 +123,7 @@ Route::group(['middleware' => 'isFrontdesk'], function(){
             Route::post('/add', [StudentController::class,'store'])->name('frontdesk.addNewStudent');
             Route::get('/all',  [StudentController::class,'index'])->name('frontdesk.allStudent');
         });
-      
+        Route::resource('/batch',BatchController::class,["as" => "frontdesk"])->only(['index']);
     });
 });
 
@@ -142,6 +158,18 @@ Route::group(['middleware' => 'isSalesManager'], function(){
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('salesmanager.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesmanager.addstudentCourseAssign');
         });
+
+        Route::resource('/batch',BatchController::class,["as" => "salesmanager"]);
+        Route::resource('/reference',ReferenceController::class,["as" => "salesmanager"]);
+
+        Route::resource('/course',CourseController::class,["as" => "salesmanager"]);
+        Route::resource('/classroom',ClassRoomController::class,["as" => "salesmanager"]);
+        Route::resource('/batchtime',BatchtimeController::class,["as" => "salesmanager"]);
+        Route::resource('/batchslot',BatchslotController::class,["as" => "salesmanager"]);
+        Route::resource('/division',DivisionController::class,["as" => "salesmanager"]);
+        Route::resource('/district',DistrictController::class,["as" => "salesmanager"]);
+        Route::resource('/upazila',UpazilaController::class,["as" => "salesmanager"]);
+
       
     });
 });
@@ -168,6 +196,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('salesexecutive.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesexecutive.addstudentCourseAssign');
         });
+  
+        Route::resource('/batch',BatchController::class,["as" => "salesexecutive"])->only(['index']);
     });
 });
 
@@ -195,8 +225,17 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('operationmanager.addstudentCourseAssign');
         });
 
+        Route::resource('/batch',BatchController::class,["as" => "operationmanager"]);
+        Route::resource('/package',PackageController::class,["as" => "operationmanager"]);
+        Route::resource('/reference',ReferenceController::class,["as" => "operationmanager"]);
+
         Route::resource('/course',CourseController::class,["as" => "operationmanager"]);
         Route::resource('/classroom',ClassRoomController::class,["as" => "operationmanager"]);
+        Route::resource('/batchtime',BatchtimeController::class,["as" => "operationmanager"]);
+        Route::resource('/batchslot',BatchslotController::class,["as" => "operationmanager"]);
+        Route::resource('/division',DivisionController::class,["as" => "operationmanager"]);
+        Route::resource('/district',DistrictController::class,["as" => "operationmanager"]);
+        Route::resource('/upazila',UpazilaController::class,["as" => "operationmanager"]);
       
     });
 });
@@ -216,8 +255,10 @@ Route::group(['middleware' => 'isAccountmanager'], function(){
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class,'confirmStudents'])->name('accountmanager.allStudent');
+            Route::get('/payment/{id}',  [StudentController::class,'paymentStudent'])->name('accountmanager.paymentStudent');
         });
-      
+        Route::resource('/batch',BatchController::class,["as" => "accountmanager"])->only(['index']);
+        Route::resource('/payment',PaymentController::class,["as" => "accountmanager"]);
     });
 });
 

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\District;
+use App\Models\Batchtime;
 use Illuminate\Http\Request;
 
-class DistrictController extends Controller
+
+class BatchtimeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +15,8 @@ class DistrictController extends Controller
      */
     public function index()
     {
-        $allDistrict = District::paginate();
-        return view('district.index',compact('allDistrict'));
+        $allBatchtimes = Batchtime::orderBy('id', 'DESC')->paginate(25);
+        return view('batchtime.index', compact('allBatchtimes'));
     }
 
     /**
@@ -25,7 +26,6 @@ class DistrictController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -36,16 +36,16 @@ class DistrictController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\District  $district
+     * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function show(District $district)
+    public function show(Wallet $wallet)
     {
         //
     }
@@ -53,34 +53,34 @@ class DistrictController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\District  $district
+     * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function edit(District $district)
+    public function edit($id)
     {
-        //
+        
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\District  $district
+     * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, District $district)
+    public function update(Request $request, $id)
     {
-        //
+       
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\District  $district
+     * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function destroy(District $district)
+    public function destroy($id)
     {
-        //
+        
     }
 }

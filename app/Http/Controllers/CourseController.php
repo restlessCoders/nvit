@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\Course\NewCourseRequest;
+use App\Http\Requests\Course\UpdateCourseRequest;
+use App\Http\Traits\ResponseTrait;
+use Exception;
 
 class CourseController extends Controller
 {
+    use ResponseTrait;
     /**
      * Display a listing of the resource.
      *
@@ -26,6 +30,7 @@ class CourseController extends Controller
      */
     public function create()
     {
+        return view('course.add_new');
     }
 
     /**
@@ -34,9 +39,21 @@ class CourseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(NewCourseRequest $request )
     {
-        
+        try {
+        $course                     = new Course;
+        $course->courseName         = $request->courseName;
+        $course->courseDescription  = $request->courseDescription;
+        $course->rPrice             = $request->rPrice;
+        $course->mPrice             = $request->mPrice;
+        $course->save();
+        if(!!$course->save()) return redirect(route(currentUser().'.course.index'))->with($this->responseMessage(true, null, 'Course created'));
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }
     }
 
     /**
@@ -58,7 +75,8 @@ class CourseController extends Controller
      */
     public function edit($id)
     {
-        
+        $cdata = course::find(encryptor('decrypt', $id));
+        return view('course.edit', compact('cdata'));
     }
 
     /**
@@ -68,9 +86,21 @@ class CourseController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCourseRequest $request, $id)
     {
-       
+        try {
+            $course = Course::find(encryptor('decrypt', $id));
+            $course->courseName         = $request->courseName;
+            $course->courseDescription  = $request->courseDescription;
+            $course->rPrice             = $request->rPrice;
+            $course->mPrice             = $request->mPrice;
+            $course->save();
+        if(!!$course->save()) return redirect(route(currentUser().'.course.index'))->with($this->responseMessage(true, null, 'Course created'));
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }
     }
 
     /**

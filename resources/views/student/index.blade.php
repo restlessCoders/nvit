@@ -37,6 +37,7 @@
 								<th>Name</th>
 								<th>Contact</th>
 								<th>Address</th>
+								<th>Executive</th>
 								<th>FDO Note</th>
 								<th>Reference</th>
 								<th>Status</th>
@@ -64,6 +65,9 @@
 									<p class="my-0"><strong class="mr-1">Division:</strong>{{optional($student->division)->name}}</p>
 									<p class="my-0"><strong class="mr-1">District:</strong>{{optional($student->district)->name}}</p>
 									<p class="my-0"><strong class="mr-1">Upazila:</strong>{{optional($student->upazila)->name}}</p>
+								</td>
+								<td>
+									{{optional($student->executive)->name}}
 								</td>
 								<td>{{$student->otherInfo}}</td>
 								<td>{{$student->reference->refName}}</td>
@@ -149,9 +153,12 @@
 								</td>
 								<td>
 									@if($student->course_id)
-										<ul style="font-size:13px;">
-										@foreach(explode(",",$student->course_id) as $c)
-											<li>{{$c}}</li>
+										<ul style="margin:0;padding:0;list-style:none;">
+										@php 
+										$courses = \DB::table('courses')->whereIn('id',explode(",",$student->course_id))->get();
+										@endphp
+										@foreach($courses as $c)
+											<li>{{$c->courseName}}</li>
 										@endforeach
 										</ul>
 									@endif

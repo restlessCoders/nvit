@@ -48,10 +48,14 @@ class StudentController extends Controller
         return view('student.index', compact(['allwaitingStudent','allactiveStudent','alldumpStudent']));
     }
     public function confirmStudents(){
-        $enrollStudents = Student::with('courses')->whereHas('courses', function ($query){
-            $query->where('student_courses.status',3);
-        })->get();
+        $enrollStudents = Student::whereHas('enroll_data')->get();
+        /*echo '<pre>';
+        print_r($enrollStudents->toArray());die;*/
         return view('student.confirmStudent', compact(['enrollStudents']));
+    }
+    public function paymentStudent($id){
+        $sdata = Student::find(encryptor('decrypt', $id));
+        return view('payment.student',compact('sdata'));
     }
     public function addForm(){
         $allDivision    = Division::orderBy('name', 'ASC')->get();
@@ -151,7 +155,7 @@ class StudentController extends Controller
                     $request->course_id => ['status' => $request->status],
                 ];
                 //print_r($data);die;
-                $student->courses()->sync($data);
+                $student->courses()->attach($data);
                 return redirect(route(currentUser().'.allStudent'))->with($this->responseMessage(true, null, 'Course Assigned Sussessful'));
             }
             

@@ -14,8 +14,8 @@ class DivisionController extends Controller
      */
     public function index()
     {
-        $divisions = Division::paginate();
-        return view('divisions.index',['divisions' => $divisions]);
+        $allDivisions = Division::paginate();
+        return view('division.index',compact('allDivisions'));
     }
 
     /**

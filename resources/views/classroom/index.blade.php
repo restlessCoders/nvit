@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Courses List')
+@section('title', 'Classroom List')
 @section('content')
 <div class="row">
 	<div class="col-12">
@@ -11,7 +11,7 @@
 					<li class="breadcrumb-item active">List</li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Courses</h4>
+			<h4 class="page-title">All Classrooms</h4>
 		</div>
 	</div>
 	<div class="col-12">

@@ -25,6 +25,12 @@ class Student extends Model
         return $this->belongsTo(Reference::class,'refId','id');
     }
     public function courses(){
-        return $this->belongsToMany(Course::class,'student_courses','student_id','course_id')->withPivot('status')->withTimestamps();;
+        return $this->belongsToMany(Course::class,'student_courses','student_id','course_id')->withPivot('status')->withTimestamps();
+    }
+    public function enroll_data(){
+        return $this->belongsToMany(Course::class,'student_courses','student_id','course_id')->wherePivot('status', 3);
+    }
+    public function executive(){
+        return $this->belongsTo(User::class,'executiveId','id');
     }
 }

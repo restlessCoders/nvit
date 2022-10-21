@@ -16,7 +16,9 @@ class CreateCoursesTable extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('courseName', 255)->nullable();
-            $table->text('courseDescription')->nullable();;
+            $table->text('courseDescription')->nullable();
+            $table->unsignedFloat('rPrice', 10, 2)->comment('regular Course Price')->default(0);
+            $table->unsignedFloat('mPrice', 10, 2)->comment('Course Material Price')->default(0);
             $table->boolean('status')->default(0)->comment('0 => inactive, 1 => active');
             $table->unsignedBigInteger('userId')->default(1);
             $table->timestamps();

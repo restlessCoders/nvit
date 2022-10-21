@@ -24,10 +24,12 @@
 								<th>SL.</th>
 								<th>Student ID</th>
 								<th>Name</th>
-								<th>Contact</th>
+								<!-- <th>Contact</th>
 								<th>Address</th>
 								<th>FDO Note</th>
-								<th>Reference</th>
+								<th>Reference</th> -->
+								<th>Enroll Course</th>
+								<th>Executive</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
@@ -40,6 +42,11 @@
 								<td>{{$student->id}}</td>
 								<td>{{$student->name}}</td>
 								<td>
+								@foreach($student->enroll_data as $s)
+								<p>{{$s->courseName}}</p>
+								@endforeach
+								<td>{{$student->executive->name}}</td>
+								<!-- <td>
 									{{$student->contact}}
 									@if($student->altContact)
 									<p>Alt:{{$student->altContact}}</p>
@@ -49,13 +56,13 @@
 									@endif
 								</td>
 								<td>
-									<!-- <p class="my-0">{{$student->address}}</p> -->
+									<p class="my-0">{{$student->address}}</p>
 									<p class="my-0"><strong class="mr-1">Division:</strong>{{optional($student->division)->name}}</p>
 									<p class="my-0"><strong class="mr-1">District:</strong>{{optional($student->district)->name}}</p>
 									<p class="my-0"><strong class="mr-1">Upazila:</strong>{{optional($student->upazila)->name}}</p>
 								</td>
 								<td>{{$student->otherInfo}}</td>
-								<td>{{$student->reference->refName}}</td>
+								<td>{{$student->reference->refName}}</td> -->
 								<td>
 									@if($student->status == 1)
 									<span>Active</span>
@@ -68,7 +75,8 @@
 									@endif
 								</td>
 								<td>
-								<a href="" class="text-success"><i class="fas fa-eye mr-2"></i>Invoice Student</a><br/>
+									<a href="" class="text-danger"><i class="fas fa-check-circle mr-2"></i>Confirm</a><br/>
+									<a href="{{route(currentUser().'.paymentStudent',[encryptor('encrypt', $student->id)])}}" class="text-primary"><i class="fas fa-cart-plus mr-2"></i>Payment</a><br/>
 								</td>
 							</tr>
 							@endforeach

@@ -14,7 +14,8 @@ class UpazilaController extends Controller
      */
     public function index()
     {
-        //
+        $allUpazila = Upazila::paginate();
+        return view('upazila.index',compact('allUpazila'));
     }
 
     /**

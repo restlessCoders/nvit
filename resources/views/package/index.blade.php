@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Courses List')
+@section('title', 'Package List')
 @section('content')
 <div class="row">
 	<div class="col-12">
@@ -7,11 +7,11 @@
 			<div class="page-title-right">
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
-					<li class="breadcrumb-item"><a href="javascript: void(0);">Courses</a></li>
+					<li class="breadcrumb-item"><a href="javascript: void(0);">Packages</a></li>
 					<li class="breadcrumb-item active">List</li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Courses</h4>
+			<h4 class="page-title">All Package</h4>
 		</div>
 	</div>
 	<div class="col-12">
@@ -22,33 +22,41 @@
 						<thead>
 							<tr>
 								<th>SL.</th>
-								<th>Course Name</th>
-								<th>Course Description</th>
-								<th>Regular Price</th>
-								<th>Material Price</th>
+								<th>Package Name</th>
+								<th>Note</th>
+								<th>Promotion Price</th>
+								<th>Start Date</th>
+								<th>End Date</th>
+								<th>Time</th>
+								<th>Created By</th>
+								<th>Updated By</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
-							@if(count($allCourses))
-							@foreach($allCourses as $course)
+							@if(count($allPackage))
+							@foreach($allPackage as $package)
 							<tr>
 								<td>{{ $loop->iteration }}</td>
-								<td>{{$course->courseName}}</td>
-								<td>{{$course->courseDescription}}</td>
-								<td>{{$course->rPrice}}</td>
-								<td>{{$course->mPrice}}</td>
+								<td>{{$package->pName}}</td>
+								<td>{{$package->note}}</td>
+								<td>{{$package->price}}</td>
+								<td>{{$package->startDate}}</td>
+								<td>{{$package->endDate}}</td>
+								<td>{{$package->endTime}}</td>
+								<td>{{$package->createdBy}}</td>
+								<td>{{$package->updateBy}}</td>
 								<td>
-									@if($course->status == 1)
+									@if($package->status == 1)
 									<span>Active</span>
 									@else
 									<span>Inactive</span>
 									@endif
 								</td>
 								<td>
-									<a href="{{route(currentUser().'.course.edit',[encryptor('encrypt', $course->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
-									<a href="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" class="text-danger"><i class="fas fa-trash-alt"></i></a>
+									<a href="{{route(currentUser().'.package.edit',[encryptor('encrypt', $package->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
+									<a href="{{route(currentUser().'.package.destroy',[encryptor('encrypt', $package->id)])}}" class="text-danger"><i class="fas fa-trash-alt"></i></a>
 								</td>
 							</tr>
 							@endforeach

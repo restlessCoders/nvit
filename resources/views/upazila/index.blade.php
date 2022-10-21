@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Courses List')
+@section('title', 'Upazila List')
 @section('content')
 <div class="row">
 	<div class="col-12">
@@ -7,11 +7,11 @@
 			<div class="page-title-right">
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
-					<li class="breadcrumb-item"><a href="javascript: void(0);">Courses</a></li>
+					<li class="breadcrumb-item"><a href="javascript: void(0);">Upazila</a></li>
 					<li class="breadcrumb-item active">List</li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Courses</h4>
+			<h4 class="page-title">All Upazila</h4>
 		</div>
 	</div>
 	<div class="col-12">
@@ -22,33 +22,26 @@
 						<thead>
 							<tr>
 								<th>SL.</th>
-								<th>Course Name</th>
-								<th>Course Description</th>
-								<th>Regular Price</th>
-								<th>Material Price</th>
+								<th>Name</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
-							@if(count($allCourses))
-							@foreach($allCourses as $course)
+							@if(count($allUpazila))
+							@foreach($allUpazila as $u)
 							<tr>
 								<td>{{ $loop->iteration }}</td>
-								<td>{{$course->courseName}}</td>
-								<td>{{$course->courseDescription}}</td>
-								<td>{{$course->rPrice}}</td>
-								<td>{{$course->mPrice}}</td>
+								<td>{{$u->name}}</td>
 								<td>
-									@if($course->status == 1)
+									@if($u->status == 1)
 									<span>Active</span>
 									@else
 									<span>Inactive</span>
 									@endif
 								</td>
 								<td>
-									<a href="{{route(currentUser().'.course.edit',[encryptor('encrypt', $course->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
-									<a href="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" class="text-danger"><i class="fas fa-trash-alt"></i></a>
+
 								</td>
 							</tr>
 							@endforeach
