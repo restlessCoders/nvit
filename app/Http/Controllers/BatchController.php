@@ -24,12 +24,65 @@ class BatchController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    /*public function batch_display_data(Request $request){
+        $batch = Batch::find($request->batchId);
+        
+    }*/
+    public function batchById(Request $request){
+        $data_exists = DB::select("SELECT * FROM `student_batches` WHERE `batch_id`=$request->batchId and student_id=$request->student_id");
+        //check student id with batch id exists in batch table
+        if(!$data_exists){
+        $batch = Batch::find($request->batchId);
+        $data='<tr class="productlist" id="row_'.$request->rowcount.'" data-item-id="'.$batch->id.'">';
+        $data.='<td>'.$batch->batchId.'<input name="batch_id[]" type="hidden" value="'.$batch->id.'"></td>';
+        $data.='							
+        <td>
+            <select class="js-example-basic-single form-control" id="status" name="status" required>
+                <option value="">Select</option>
+                <option value="2">Enroll</option>
+                <option value="3">Knocking</option>
+                <option value="4">Evloulation</option>
+            </select>
+        </td>';
+        $data .='<td id="td_'.$request->rowcount.'" style="text-align: center;">
+                <a class=" fa fa-fw fa-minus-square text-red" style="cursor: pointer;font-size: 34px;" onclick="removerow('.$request->rowcount.')" title="Delete ?" id="td_data_'.$request->rowcount.'"></a>
+            </td>';
+        $data.='</tr>';
+        }else{
+            $data['error'] = "Already Exisits";
+        }
+
+        return response()->json(array('data' =>$data));
+    }
+    public function index(Request $request)
     {
-        $allBatch = Batch::paginate();
+        //$allBatch = Batch::paginate();
+        $allBatch = DB::table('batches')
+        ->join('student_batches','batches.id','=','student_batches.batch_id','left')
+        ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.userId,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
+        ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.userId','batches.created_at','batches.updated_at'])
+        ->paginate();
         return view('batch.index',compact('allBatch'));
     }
+    public function all(Request $request)
+    {
+        //$allBatch = Batch::paginate();
+        $allBatch = DB::table('batches')
+        ->join('student_batches','batches.id','=','student_batches.batch_id','left')
+        ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.userId,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
+        ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.userId','batches.created_at','batches.updated_at'])
+        ->where('batches.batchId', 'like', '%'.$request->name.'%')
+        ->get();
+        return response()->json($allBatch);
+        //->paginate();
 
+        
+        //echo '<pre>';
+        //print_r($allBatch);
+        //die;
+        //return view('batch.index',compact('allBatch'));
+    }
+   
     /**
      * Show the form for creating a new resource.
      *
@@ -75,8 +128,9 @@ class BatchController extends Controller
             $batch->examDate = date('Y-m-d',strtotime($request->examDate));
             $batch->examTime = date('H:i:s',strtotime($request->examTime));
             $batch->examRoom = $request->examRoom;
-            $batch->price = $request->price;
-            $batch->discount = $request->discount;
+            $batch->seat = $request->seat;
+            /*$batch->price = $request->price;
+            $batch->discount = $request->discount;*/
             $batch->status =1;
             $batch->userId = encryptor('decrypt', $request->userId);
             if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch created'));
@@ -138,6 +192,7 @@ class BatchController extends Controller
             $batch->discount = $request->discount;
             $batch->status =$request->discount;
             $batch->userId = encryptor('decrypt', $request->userId);
+            $batch->seat = $request->seat;//Before update total number of enroll student
         $batch->save();
         if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch updated'));
         } catch (Exception $e) {

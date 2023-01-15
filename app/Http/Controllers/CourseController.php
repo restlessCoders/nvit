@@ -17,6 +17,17 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    Public function courseSearch(Request $request){
+        $search = $request->get('search');
+        if($search != ''){
+            $allCourses = Course::where('courseName','like', '%' .$search. '%')->paginate(25);
+            $allCourses->appends(array('search'=> $search,));
+            if(count($allCourses )>0){
+            return view('course.index',['allCourses'=>$allCourses]);
+            }
+            return back()->with('error','No results Found');
+        }   
+    }
     public function index()
     {
         $allCourses = Course::orderBy('id', 'DESC')->paginate(25);
@@ -62,7 +73,7 @@ class CourseController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function show(Wallet $wallet)
+    public function show()
     {
         //
     }

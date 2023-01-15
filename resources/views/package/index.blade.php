@@ -23,6 +23,7 @@
 							<tr>
 								<th>SL.</th>
 								<th>Package Name</th>
+								<th>Course Name</th>
 								<th>Note</th>
 								<th>Promotion Price</th>
 								<th>Start Date</th>
@@ -40,6 +41,7 @@
 							<tr>
 								<td>{{ $loop->iteration }}</td>
 								<td>{{$package->pName}}</td>
+								<td>{{$package->course->courseName}}</td>
 								<td>{{$package->note}}</td>
 								<td>{{$package->price}}</td>
 								<td>{{$package->startDate}}</td>

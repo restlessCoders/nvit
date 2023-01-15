@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('courseId')->nullable();
+            $table->unsignedBigInteger('batchId')->nullable();
             $table->string('pName', 255);
             $table->unsignedFloat('price', 10, 2)->comment('Price')->default(0);
             $table->date('startDate');

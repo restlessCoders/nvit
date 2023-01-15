@@ -50,6 +50,7 @@ class PaymentController extends Controller
         DB::beginTransaction();
 
         try {
+
             $paymentId = DB::table('payments')->insert(
                 [
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
@@ -59,29 +60,42 @@ class PaymentController extends Controller
                     'invoiceId'         =>  $request->invoiceId?$request->invoiceId:null,
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
+                    'discount'          =>  $request->discount,
                     'couponId'          =>  $request->couponId?$request->couponId:null,
                     'accountNote'       =>  $request->accountNote,
+                    'status'            =>  ($request->tPayable == ($request->paidAmount+$request->disocunt))?0:1,
                     'created_at'        => date("Y-m-d h:i:s"),
-                    'updated_at'        => date("Y-m-d h:i:s"),
+                    // 'updated_at'        => date("Y-m-d h:i:s"),
                 ]
             );
  
 
             // Payment Detail
-            $courseId       = $request->post('courseId');
+            $batch_id       = $request->post('batch_id');
             $dueDate        = $request->post('dueDate');
-            foreach($request->courseId as $key => $cdata){
+            $cPayable       = $request->post('cPayable');
+            $cpaidAmount	= $request->post('cpaidAmount');
+            $m_price	    = $request->post('m_price');
+            foreach($request->batch_id as $key => $cdata){
+                /*if($cPayable[$key] == $cpaidAmount[$key]){
+                    $payment_detail['type']             = 0;
+                }*/
                 $payment_detail['paymentId']        = $paymentId;
                 $payment_detail['mrNo']             = $request->mrNo;
                 $payment_detail['studentId']        = encryptor('decrypt', $request->studentId);
-                $payment_detail['courseId']         = $courseId[$key];
-                $payment_detail['type']             = 1;
+                $payment_detail['batchId']          = $batch_id[$key];
+                $payment_detail['cPayable']         = $cPayable[$key];
+                $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
+                $payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
+                $payment_detail['type']             = ($cPayable[$key] == $cpaidAmount[$key])?0:1;
                 $payment_detail['dueDate']          = date('Y-m-d',strtotime($dueDate[$key]));
                 $payment_detail['created_at']       = date("Y-m-d h:i:s");
-                $payment_detail['updated_at']       = date("Y-m-d h:i:s");
+                /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
+
+                DB::table('paymentdetails')->insert($payment_detail);
+                DB::commit();
             }
-            DB::table('paymentdetails')->insert($payment_detail);
-            DB::commit();
+            
             return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));
         
         } catch (\Exception $e) {

@@ -9,15 +9,19 @@ use App\Models\District;
 use App\Models\Upazila;
 use App\Models\Reference;
 use App\Models\Course;
+use App\Models\Batch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\Student\NewStudentRequest;
 use App\Http\Requests\Student\UpdateStudentRequest;
+use App\Http\Requests\Student\StudentCourseRequest;
 use App\Http\Traits\ResponseTrait;
 use App\Models\Batchslot;
 use App\Models\Batchtime;
 use Image;
 use Exception;
+use DB;
+use Illuminate\Support\Carbon;
 class StudentController extends Controller
 {
     use ResponseTrait;
@@ -48,14 +52,34 @@ class StudentController extends Controller
         return view('student.index', compact(['allwaitingStudent','allactiveStudent','alldumpStudent']));
     }
     public function confirmStudents(){
-        $enrollStudents = Student::whereHas('enroll_data')->get();
+        $enrollStudents = DB::table('student_batches')
+        ->selectRaw("students.id,students.name,students.executiveId,student_batches.entryDate")
+        ->join('students','student_batches.student_id','=','students.id')
+        ->where('student_batches.status',2)
+        ->groupBy('students.id','students.name','students.executiveId','student_batches.entryDate')
+        ->orderBy('student_batches.id')
+        ->paginate();
         /*echo '<pre>';
         print_r($enrollStudents->toArray());die;*/
         return view('student.confirmStudent', compact(['enrollStudents']));
     }
-    public function paymentStudent($id){
-        $sdata = Student::find(encryptor('decrypt', $id));
-        return view('payment.student',compact('sdata'));
+    public function studentenrollById($id){
+        $sedata = DB::table('student_batches')
+        ->selectRaw("student_batches.id,student_batches.batch_id,student_batches.accountsNote,student_batches.acc_approve")
+        ->where('student_id',encryptor('decrypt', $id))
+        ->groupBy('student_batches.id','student_batches.batch_id','student_batches.accountsNote','student_batches.acc_approve')
+        ->get();
+        return view('student.enroll_data_by_student', compact(['sedata']));
+    }
+    public function paymentStudent($id,$entryDate){
+        $stdetl = Student::find(encryptor('decrypt', $id))->first();
+        $sdata = DB::table('student_batches')
+        ->select('batch_id','entryDate')
+        ->where(['student_id'=>encryptor('decrypt', $id),'entryDate' => $entryDate])
+        ->get();
+       /* echo '<pre>';
+        print_r($sdata);die;*/
+        return view('payment.student',compact('sdata','stdetl'));
     }
     public function addForm(){
         $allDivision    = Division::orderBy('name', 'ASC')->get();
@@ -102,7 +126,7 @@ class StudentController extends Controller
                 //$student->operationNote    = $request->operationNote;
                 $student->executiveNote    = $request->executiveNote;
                 $student->executiveReminder= date('Y-m-d',strtotime($request->executiveReminder));
-                $student->executiveId      = $request->executiveId;
+                $student->executiveId      = $request->executiveId?$request->executiveId:currentUserId();
                 $student->refId            = $request->refId;
                 $student->status           = 2;
             }else{
@@ -119,7 +143,7 @@ class StudentController extends Controller
                 //$student->operationNote    = $request->operationNote;
                 $student->executiveNote    = $request->executiveNote;
                 $student->executiveReminder= date('Y-m-d',strtotime($request->executiveReminder));
-                $student->executiveId      = $request->executiveId;
+                $student->executiveId      = $request->executiveId?$request->executiveId:currentUserId();
                 $student->refId            = $request->refId;
                 $student->status           = 2;
             }
@@ -134,34 +158,48 @@ class StudentController extends Controller
     public function studentCourseAssign($id)
     {
         $sdata = Student::find(encryptor('decrypt', $id));
-        $allCourse    = Course::where('status',1)->orderBy('courseName', 'ASC')->get();
-        $allBatchTime    = Batchtime::where('status',1)->orderBy('id', 'ASC')->get();
-        $allBatchSlot    = Batchslot::where('status',1)->orderBy('id', 'ASC')->get();
-        return view('student.courseAssign', compact(['allCourse','sdata','allBatchTime','allBatchSlot']));
+        $allCourse      = Course::where('status',1)->orderBy('courseName', 'ASC')->get();
+        $allBatch       = Batch::where('status',1)->orderBy('id', 'DESC')->get();
+        $allBatchTime   = Batchtime::where('status',1)->orderBy('id', 'ASC')->get();
+        $allBatchSlot   = Batchslot::where('status',1)->orderBy('id', 'ASC')->get();
+        return view('student.courseAssign', compact(['allCourse','sdata','allBatchTime','allBatchSlot','allBatch']));
     }
-    public function addstudentCourseAssign(Request $request, $id){
-        $student = Student::find(encryptor('decrypt', $id));
-        if (!empty($student)) {
-            $hascourseExists = $student->courses()
-                ->wherePivot('status', $request->status)
-                ->where(['student_id'=> $student->id,'course_id' => $request->course_id])
-                ->exists();
-            //print_r($hascourseExists);die;
-            if($hascourseExists){
-                return redirect(route(currentUser().'.allStudent'))->with($this->responseMessage(true, 'error', 'Course Already In List!!'));
+    public function addstudentCourseAssign(StudentCourseRequest $request, $id){
+        $s_id =  encryptor('decrypt', $id);
+        $batch_id = $request->post('batch_id');
+        foreach($request->batch_id as $key => $cdata){
+            $s_batch_data = DB::table('student_batches')->where(['student_id'=>$s_id,'batch_id'=>$batch_id[$key]])->first();
+           
+            if(!empty($s_batch_data)){
+                /*If Student Course Active By Account Change Denied */
+                if($s_batch_data->acc_approve){
+                    return redirect()->back()->with($this->responseMessage(false, null, 'Status Can not be Changed!!'));
+                }
+                /*If Same Course and Status Data Found*/
+                else if($s_batch_data->status == $request->status){
+                    return redirect()->back()->with($this->responseMessage(false, null, 'Same Status can not be edited!!'));
+                }else{
+                    /*No Match Proceed To Update */
+                    //echo 'proceed to update';
+                    $data = array(
+                        'status' => $request->status,
+                        'entryDate'=> date('Y-m-d'),
+                        'updated_at' => Carbon::now()
+                    );
+                    DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                    return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));;
+                }
+            }else{
+                $data = array(
+                    'batch_id' => $batch_id[$key],
+                    'student_id' =>  $s_id,
+                    'entryDate'=> date('Y-m-d'),
+                    'status' => $request->status,
+                    'created_at' => Carbon::now()
+                );
+                DB::table('student_batches')->insert($data);
+                return redirect()->back();
             }
-            else {
-                $data = [
-                    $request->course_id => ['status' => $request->status],
-                ];
-                //print_r($data);die;
-                $student->courses()->attach($data);
-                return redirect(route(currentUser().'.allStudent'))->with($this->responseMessage(true, null, 'Course Assigned Sussessful'));
-            }
-            
-        }   
-        else {
-           echo 'ok';
         }
     }
     public function editForm($id)
@@ -174,12 +212,13 @@ class StudentController extends Controller
         $allExecutive   = User::whereIn('roleId',['5','9'])->orderBy('name', 'ASC')->get();
 
         $allCourse    = Course::where('status',1)->orderBy('courseName', 'ASC')->get();
+        $allBatch       = Batch::where('status',1)->orderBy('id', 'DESC')->get();
         $allBatchTime    = Batchtime::where('status',1)->orderBy('id', 'ASC')->get();
         $allBatchSlot    = Batchslot::where('status',1)->orderBy('id', 'ASC')->get();
 
-        $courses = Student::find($sdata->id)->courses()->orderBy('courseName')->get();
+        $allassignBatches = DB::table('student_batches')->where('student_id',$sdata->id)->orderBy('batch_id')->get();
 
-        return view('student.edit', compact(['sdata','courses','allDivision','allDistrict','allUpazila','allReference','allExecutive','allCourse','sdata','allBatchTime','allBatchSlot']));
+        return view('student.edit', compact(['sdata','allassignBatches','allDivision','allDistrict','allUpazila','allReference','allExecutive','allCourse','sdata','allBatchTime','allBatchSlot','allBatch']));
     }
 
     /**
@@ -218,13 +257,13 @@ class StudentController extends Controller
             $student->otherInfo        = $request->otherInfo;
             $student->executiveNote    = $request->executiveNote;
             $student->executiveReminder= date('Y-m-d',strtotime($request->executiveReminder));
-            $student->executiveId      = $request->executiveId;
+            $student->executiveId      = $request->executiveId?$request->executiveId:currentUserId();
             $student->refId            = $request->refId;
         }else{
             $student->name             = $request->name;
             if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' ||  strtolower(currentUser()) === 'operationmanager') {
             $student->contact          = $request->contact;
-            $student->executiveId      = $request->executiveId;
+            $student->executiveId      = $request->executiveId?$request->executiveId:currentUserId();
             $student->refId            = $request->refId;
             }
             $student->course_id        = (!empty($request->course_id))?implode(",",$request->course_id):null;

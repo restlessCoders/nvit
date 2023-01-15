@@ -174,6 +174,7 @@
                         </div>
                     </div>
                     @endif
+                    @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'frontdesk')
                     <div class="col-lg-4 row mt-3">
                         <label for="executiveId" class="col-sm-3 col-form-label">Select Executive</label>
                         <div class="col-sm-9">
@@ -192,6 +193,7 @@
                             @endif
                         </div>
                     </div>
+                    @endif
                     <!-- <div class="col-lg-4 row mt-3">
                         <label for="status" class="col-sm-3 col-form-label">Status</label>
                         <div class="col-sm-9">

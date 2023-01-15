@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('studentId');
             $table->unsignedBigInteger('executiveId');
             $table->unsignedBigInteger('invoiceId')->nullable();
-            $table->date('payemntDate');
+            $table->date('paymentDate');
             $table->unsignedFloat('tPayable', 10, 2)->default(0);
             $table->unsignedFloat('paidAmount', 10, 2)->default(0);
             $table->unsignedBigInteger('couponId')->nullable();;
@@ -29,6 +29,7 @@ return new class extends Migration
             $table->unsignedBigInteger('updatedBy')->nullable();
             $table->text("accountNote")->nullable();
             $table->boolean('type')->default(1)->comment('1 => due, 0=> complete');
+            //ki droner fee ei tah ei column a raka jabe naki inno new column kora hobe mane hocce kon doroner registraton fee naki onno kichu
             $table->timestamps();
         });
     }

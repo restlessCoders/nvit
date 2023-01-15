@@ -25,8 +25,8 @@ class NewBatchRequest extends FormRequest
     {
         return [
             'courseId' 		    => 'required',
-            'price'             => 'required',
-            'discount'          => 'required',
+            /*'price'             => 'required',
+            'discount'          => 'required',*/
             'status' 	        => 'required',
         ];
     }

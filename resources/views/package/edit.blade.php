@@ -145,7 +145,7 @@
 			}*/
 		});
 		$("#timepicker").timepicker({
-			defaultTIme: !1,
+			showMeridian: !1,
 			icons: {
 				up: "mdi mdi-chevron-up",
 				down: "mdi mdi-chevron-down"

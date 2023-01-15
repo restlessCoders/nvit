@@ -23,4 +23,10 @@ class Batch extends Model
     public function createdby(){
         return $this->belongsTo(User::class,'userId','id');
     }
+    public function students(){
+        //return $this->belongsToMany(Batch::class, 'student_batches', 'batch_id');
+        return $this->belongsToMany('student_batches', 'batch_id', 'id')
+        ->selectRaw('sum(student_batches.student_id) as tst')
+        ->groupBy('student_batches.batch_id');
+    }
 }

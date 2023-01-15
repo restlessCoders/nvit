@@ -87,7 +87,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Course Package <div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.package.create')}} @endif">Add New</a></li>
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.package.create')}} @endif">Add New</a></li>
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.package.index')}} @endif">All Package</a></li>
                                         </ul>
                                     </li>
@@ -151,7 +151,7 @@
                                 <a href="#">
                                     <i class="fas fa-users"></i>Students <div class="arrow-down"></div></a>
                                 <ul class="submenu">
-                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk') {{route(currentUser().'.addNewStudentForm')}} @endif">Add New</a></li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.addNewStudentForm')}} @endif">Add New</a></li>
                                     <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesexecutive' || currentUser() == 'salesmanager' ||currentUser() == 'frontdesk' ||currentUser() == 'operationmanager' || currentUser() == 'accountmanager') {{route(currentUser().'.allStudent')}} @endif">All Students</a></li>
                                 </ul>
                             </li>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Package;
 use App\Models\Course;
+use App\Models\Batch;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\Package\NewPackageRequest;
@@ -33,7 +34,8 @@ class PackageController extends Controller
     public function create()
     {
         $allCourses = Course::all();
-        return view('package.add_new',compact('allCourses'));
+        $allBatch = Batch::all();
+        return view('package.add_new',compact(['allCourses','allBatch']));
     }
 
     /**
@@ -51,8 +53,9 @@ class PackageController extends Controller
             $package->price = $request->price;
             $package->startDate = date('Y-m-d',strtotime($request->startDate));
             $package->endDate = date('Y-m-d',strtotime($request->endDate));
-            $package->endTime = date('H:i:s',strtotime($request->endTime));
+            $package->endTime = date('H:i',strtotime($request->endTime));
             $package->status =0;
+            $package->note =$request->note;
             $package->userId = encryptor('decrypt', $request->userId);
             if(!!$package->save()) return redirect(route(currentUser().'.package.index'))->with($this->responseMessage(true, null, 'Package created'));
         } catch (Exception $e) {
@@ -102,9 +105,10 @@ class PackageController extends Controller
             $package->price = $request->price;
             $package->startDate = date('Y-m-d',strtotime($request->startDate));
             $package->endDate = date('Y-m-d',strtotime($request->endDate));
-            $package->endTime = date('H:i:s',strtotime($request->endTime));
+            $package->endTime = date('H:i',strtotime($request->endTime));
             $package->updateBy = encryptor('decrypt', $request->userId);
             $package->status =$request->status;
+            $package->note =$request->note;
             $package->save();
         if(!!$package->save()) return redirect(route(currentUser().'.package.index'))->with($this->responseMessage(true, null, 'Package updated'));
         } catch (Exception $e) {

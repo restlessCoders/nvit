@@ -9,7 +9,7 @@ trait ResponseTrait{
                 'status' => $status,
                 'errors' =>$error,
                 'message' => $message,
-                'class' => $status ? 'success' : 'danger'
+                'class' => $status ? 'success' : 'error'
            ]
         ];
     }

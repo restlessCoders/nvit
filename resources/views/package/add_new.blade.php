@@ -33,6 +33,17 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
+					<label>Select Batch: <span class="text-danger sup">*</span></label>
+						<select name="batchId" class="js-example-basic-single form-control select2 @if($errors->has('batchId')) {{ 'is-invalid' }} @endif">
+							<option></option>
+							@if(count($allBatch) > 0)
+							@foreach($allBatch as $batch)
+							<option value="{{ $batch->id }}" {{ old('batchId') == $batch->id ? "selected" : "" }}>{{ $batch->batchId }}</option>
+							@endforeach
+							@endif
+						</select>
+					</div>
+					<div class="col-lg-4">
 						<label>Package Price: <span class="text-danger sup">*</span></label>
 						<input type="text" name="price" value="{{ old('price') }}" class="form-control @if($errors->has('price')) {{ 'is-invalid' }} @endif" placeholder="Price" />
 						@if($errors->has('price'))
@@ -144,7 +155,7 @@
 			}*/
 		});
 		$("#timepicker").timepicker({
-			defaultTIme: !1,
+			showMeridian: !1,
 			icons: {
 				up: "mdi mdi-chevron-up",
 				down: "mdi mdi-chevron-down"

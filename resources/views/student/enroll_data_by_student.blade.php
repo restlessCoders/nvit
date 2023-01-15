@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Enroll | Registered Student List')
+@section('title', 'Enroll | Student Wise Enroll Data')
 @section('content')
 <div class="row">
 	<div class="col-12">
@@ -7,11 +7,11 @@
 			<div class="page-title-right">
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
-					<li class="breadcrumb-item"><a href="javascript: void(0);">Student</a></li>
-					<li class="breadcrumb-item active">Enroll | Registered List</li>
+					<li class="breadcrumb-item"><a href="javascript: void(0);">Student Wise</a></li>
+					<li class="breadcrumb-item active">Enroll | List</li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Enroll | Registered Students</h4>
+			<h4 class="page-title">Student Wise Enroll List</h4>
 		</div>
 	</div>
 	<div class="col-12">
@@ -22,22 +22,21 @@
 						<thead>
 							<tr>
 								<th>SL.</th>
-								<th>Student ID</th>
-								<th>Name</th>
-								<th>Executive</th>
+								<th>Batch</th>
+								<th>Accounts Note</th>
+								<th>Status</th>
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
-							@if(count($enrollStudents))
-							@foreach($enrollStudents as $student)
+							@if(count($sedata))
+							@foreach($sedata as $student)
 							<tr>
 								<td>{{ $loop->iteration }}</td>
-								<td>{{$student->id}}</td>
-								<td>{{$student->name}}</td>
-								<td>{{$student->executiveId}}</td>
+								<td>{{$student->batch_id}}</td>
+								<td>{{$student->accountsNote}}</td>
+								<td>{{$student->acc_approve}}</td>
 								<td>
-								<a href="{{route(currentUser().'.paymentStudent',[encryptor('encrypt', $student->id),$student->entryDate])}}" class="text-primary"><i class="fas fa-cart-plus mr-2"></i>Payment</a>
 									<a href="{{route(currentUser().'.studentenrollById',[encryptor('encrypt', $student->id)])}}" class="text-primary"><i class="fas fa-cart-plus mr-2"></i>Student Enroll Data</a>
 								</td>
 							</tr>

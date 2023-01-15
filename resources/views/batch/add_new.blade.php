@@ -135,6 +135,15 @@
 						</div><!-- input-group -->
 					</div>
 					<div class="col-lg-4">
+						<label>Seat Capacity<span class="text-danger sup">*</span></label>
+						<div class="input-group">
+							<input id="seat" type="text" class="form-control" name="seat" value="{{ old('seat') }}">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="mdi mdi-clock-outline"></i></span>
+							</div>
+						</div><!-- input-group -->
+					</div>
+					<!-- <div class="col-lg-4">
 						<label>Price: <span class="text-danger sup">*</span></label>
 						<input type="text" name="price" value="{{ old('price') }}" class="form-control @if($errors->has('price')) {{ 'is-invalid' }} @endif" placeholder="Full Name" />
 						@if($errors->has('price'))
@@ -158,7 +167,7 @@
 							{{ $errors->first('discount') }}
 						</small>
 						@endif
-					</div>
+					</div> -->
 					<div class="col-lg-4">
 						<label class="control-label">Status: </label>
 						<select name="status" class="form-control @if($errors->has('status')) {{ 'is-invalid' }} @endif">

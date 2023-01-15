@@ -18,9 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('paymentId');
             $table->integer('mrNo');
             $table->unsignedBigInteger('studentId');
-            $table->unsignedBigInteger('courseId');
+            $table->unsignedBigInteger('batchId');
             $table->unsignedFloat('cPayable', 10, 2)->default(0);
             $table->unsignedFloat('cpaidAmount', 10, 2)->default(0);
+            $table->unsignedFloat('m_price', 10, 2)->default(0);
             $table->boolean('type')->default(1)->comment('1 => partial, 0=> full');
             $table->date('dueDate')->nullable();
             $table->timestamps();

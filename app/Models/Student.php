@@ -24,11 +24,8 @@ class Student extends Model
     {
         return $this->belongsTo(Reference::class,'refId','id');
     }
-    public function courses(){
-        return $this->belongsToMany(Course::class,'student_courses','student_id','course_id')->withPivot('status')->withTimestamps();
-    }
-    public function enroll_data(){
-        return $this->belongsToMany(Course::class,'student_courses','student_id','course_id')->wherePivot('status', 3);
+    public function batches(){
+        return $this->belongsToMany(Student::class,'student_batches','student_id','batch_id')->withPivot(['accountsNote','acc_approve','status']);;
     }
     public function executive(){
         return $this->belongsTo(User::class,'executiveId','id');

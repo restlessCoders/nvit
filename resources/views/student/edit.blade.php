@@ -3,6 +3,7 @@
 @push('styles')
 <link href="{{asset('backend/libs/multiselect/multi-select.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{ asset('backend/css/jquery-ui.css') }}">
 <style>
 	.select2-container {
 		width: 100% !important;
@@ -290,38 +291,77 @@
 							<div class="col-lg-6 row">
 								<label for="name" class="col-sm-2 col-form-label">Student Id</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" value="{{ $sdata->id }}" readonly>
+									<input type="text" class="form-control" value="{{ $sdata->id }}" readonly id="student_id">
+									<!-- <input type="text" class="form-control" name="bid" id="bid"> -->
 								</div>
 							</div>
 						</div>
 						<div class="form-group row">
-							<div class="col-lg-6 row">
+							<div class="col-lg-12 row">
 								<label for="name" class="col-sm-2 col-form-label">Select Course</label>
 								<div class="col-sm-10">
+								
+                                        <input type="text" name="" id="item_search" class="form-control  ui-autocomplete-input" placeholder="Search Batch">
+                                   
+								
 									<!-- <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose Course..."> -->
-									<select id="course_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Course..." name="course_id">
-											@if(count($allCourse))
+									<!-- <select id="batch_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch..." name="batch_id"> -->
+										{{--@if(count($allBatch))
 											<option value=""></option>
-											@foreach($allCourse as $course)
-											<option value="{{ $course->id}}">{{$course->courseName}}</option>
+											@foreach($allBatch as $batch)
+											<option value="{{ $batch->id}}">{{$batch->batchId}}</option>
 											@endforeach
-											@endif
+										@endif
 									</select>
+									@if($errors->has('batch_id'))
+										<small class="d-block text-danger mb-3">
+											{{ $errors->first('batch_id') }}
+										</small>
+									@endif--}}
 								</div>
 							</div>
+							<!-- <div class="col-lg-4 row">
+								<label for="entryDate" class="col-sm-2 col-form-label">Entry Date</label>
+								<div class="col-sm-10">
+									<input type="date" class="form-control" name="entryDate">
+									@if($errors->has('entryDate'))
+									<small class="d-block text-danger mb-3">
+										{{ $errors->first('entryDate') }}
+									</small>
+									@endif
+								</div>
+							</div> 
 							<div class="col-lg-6 row">
 								<label for="status" class="col-sm-2 col-form-label">Select Status</label>
 								<div class="col-sm-10">
 									<select class="js-example-basic-single form-control" id="status" name="status">
 										<option value="">Select</option>
-										<option value="2" @if($sdata->status == 2) selected @endif>Knocking</option>
-										<option value="3" @if($sdata->status == 3) selected @endif>Enroll</option>
-										<option value="4" @if($sdata->status == 4) selected @endif>Registered</option>
-										<option value="5" @if($sdata->status == 5) selected @endif>Evloulation</option>
+										<option value="2" @if($sdata->status == 2) selected @endif>Enroll</option>
+										<option value="3" @if($sdata->status == 3) selected @endif>Knocking</option>
+										<option value="4" @if($sdata->status == 4) selected @endif>Evloulation</option>
 									</select>
+									@if($errors->has('status'))
+										<small class="d-block text-danger mb-3">
+											{{ $errors->first('status') }}
+										</small>
+									@endif
 								</div>
-							</div>
+							</div>-->
 						</div>
+
+							<input type="hidden" value='1' id="hidden_rowcount" name="hidden_rowcount">
+							<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" id="course_table">
+								<thead>
+									<tr>
+										<th>Batch</th>
+										<th>Status</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody id="details_data">
+								</tbody>
+							</table>
+					
 						<div class="form-group text-right mb-0">
 							<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
 								Submit
@@ -336,30 +376,52 @@
 						<thead>
 							<tr>
 								<th>SL.</th>
-								<th>Course Name</th>
-								<th>Description</th>
+								<th>Batch Name</th>
+								<th>Accounts Note</th>
+								<th>Approved</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
-							
-							@foreach($courses as $course)
+							@if(count($allassignBatches))
+							@foreach($allassignBatches as $allassignBatch)
 							<tr>
+								<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$allassignBatch->student_id)) }}" method="POST" enctype="multipart/form-data">
+								@csrf
 								<td>{{ $loop->iteration }}</td>
-								<td>{{$course->courseName}}</td>
-								<td>{{$course->courseDescription}}</td>
 								<td>
-									@if($course->pivot->status == 2)  Knocking @endif
-									@if($course->pivot->status == 3)  Enroll @endif
-									@if($course->pivot->status == 4)  Registered @endif
-									@if($course->pivot->status == 5)  Evloulation @endif
+									<select class="form-control" name="batch_id[]">
+									@forelse($allBatch as $batch)
+										<option value="{{$batch->id}}" @if($allassignBatch->batch_id == $batch->id) selected @endif>{{$batch->batchId}}</option>
+										@empty
+									@endforelse
+									</select>
+								</td>
+								<td>{{$allassignBatch->accountsNote}}</td>
+								<td>@if($allassignBatch->acc_approve) Yes @else No @endif</td>
+								<td>
+									<select class="js-example-basic-single form-control" id="status" name="status">
+										<option value="">Select</option>
+										<option value="2" @if($allassignBatch->status == 2) selected @endif>Enroll</option>
+										<option value="3" @if($allassignBatch->status == 3) selected @endif>Knocking</option>
+										<option value="4" @if($allassignBatch->status == 4) selected @endif>Evloulation</option>
+									</select>
+									@if($errors->has('status'))
+										<small class="d-block text-danger mb-3">
+											{{ $errors->first('status') }}
+										</small>
+									@endif
 								</td>
 								<td>
-									<button class="text-danger" style="padding:0;outline:none;background:none;border:none" onclick='change("{{$course->pivot->course_id}}","{{$course->pivot->status}}")'><i class="fas fa-lock mr-2"></i>Edit</button>
+									@if(!$allassignBatch->acc_approve)
+										<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
+									@endif
 								</td>
+								</form>
 							</tr>
 							@endforeach
+							@endif
 						</tbody>
 					</table>
 				</div>
@@ -374,16 +436,146 @@
 @push('scripts')
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
+<script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
 <script>
-		function change(course_id,status){
-
-
-$('#course_id').val(course_id); // Change the value or make some change to the internal state
-$('#course_id').trigger('change.select2'); // Notify only Select2 of changes
-$("#status").val(status).change();
+	function change(batch_id,status,bid){
+		$('#batch_id').val(batch_id); // Change the value or make some change to the internal state
+		$('#batch_id').trigger('change.select2'); // Notify only Select2 of changes
+		$("#status").val(status).change();
+		$("#bid").val(bid);
 	}
 	$('.select2-multiple').select2();
 	$('.js-example-basic-single').select2();
 
+
+	$("#item_search").bind("paste", function(e){
+            $("#item_search").autocomplete('search');
+        } );
+        $("#item_search").autocomplete({
+            source: function(data, cb){
+				console.log(data);
+                $.ajax({
+                    autoFocus:true,
+                    url: "{{route(currentUser().'.allBatches')}}",
+                    method: 'GET',
+                    dataType: 'json',
+					data: {
+                        name: data.term
+                    },
+                    success: function(res){
+						console.log(res);
+                        var result;
+                        result = {label: 'No Records Found ',value: ''};
+                        if (res.length) {
+                            result = $.map(res, function(el){
+                                return {
+                                    label: 'Available Seat:-('+el.seat+') '+el.batchId,
+                                    value: '',
+                                    id: el.id,
+                                    batchId: el.batchId
+                                };
+                            });
+                        }
+                        cb(result);
+                    },error: function(e){
+                        console.log(e);
+                    }
+                });
+            },
+            response:function(e,ui){
+                if(ui.content.length==1){
+                    $(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
+                    $(this).autocomplete("close");
+                }
+                //console.log(ui.content[0].id);
+            },
+                //loader start
+            search: function (e, ui) {},
+            select: function (e, ui) { 
+                if(typeof ui.content!='undefined'){
+                    if(isNaN(ui.content[0].id)){
+                        return;
+                    }
+                    var batchId=ui.content[0].id;
+                }
+                else{
+                    var batchId=ui.item.id;
+                }
+                return_row_with_data(batchId);
+                $("#item_search").val('');
+            },   
+            //loader end
+        });
+
+
+		function return_row_with_data(batchId){
+        $("#item_search").addClass('ui-autocomplete-loader-center');
+		var student_id=$('#student_id').val();
+		var rowcount=$("#hidden_rowcount").val();
+        $.ajax({
+            autoFocus:true,
+            url: "{{route(currentUser().'.batchById')}}",
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                batchId:batchId,rowcount:rowcount,student_id:student_id
+            },
+            success: function(res){
+				console.log(res.data);
+				var item_check=check_same_item(batchId);
+        		if(!item_check){$("#item_search").removeClass('ui-autocomplete-loader-center');return false;}
+				if(res.data.error){toastr['error']("Batch In List!!");return false;}
+                $('#details_data').append(res.data);
+				$("#hidden_rowcount").val(parseFloat(rowcount)+1);
+                $("#item_search").val('');
+                $("#item_search").removeClass('ui-autocomplete-loader-center');
+            },error: function(e){
+                console.log(e);
+            }
+        });
+        
+    }
+
+function check_same_item(item_id){
+  if($("#course_table tr").length>1){
+    var rowcount=$("#hidden_rowcount").val();
+    for(i=0;i<=rowcount;i++){
+            if($("#row_"+i).attr('data-item-id')==item_id){
+              return false;
+            }
+      }//end for
+  }
+  return true;
+  }
+            
+function removerow(id){//id=Rowid  
+	$("#row_"+id).remove();
+}
+    
+
+
 </script>
+@if(Session::has('response'))
+@php print_r(Session::has('response')); @endphp
+<script>
+	Command: toastr["{{Session::get('response')['class']}}"]("{{Session::get('response')['message']}}")
+	toastr.options = {
+		"closeButton": false,
+		"debug": false,
+		"newestOnTop": false,
+		"progressBar": false,
+		"positionClass": "toast-top-right",
+		"preventDuplicates": false,
+		"onclick": null,
+		"showDuration": "300",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "1000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	}
+</script>
+@endif
 @endpush

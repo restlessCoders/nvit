@@ -91,6 +91,8 @@ Route::group(['middleware' => 'isSuperAdmin'], function(){
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('superadmin.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('superadmin.addstudentCourseAssign');
         });
+
+        Route::resource('/package',PackageController::class,["as" => "superadmin"]);
         Route::resource('/batch',BatchController::class,["as" => "superadmin"]);
         Route::resource('/reference',ReferenceController::class,["as" => "superadmin"]);
 
@@ -151,6 +153,8 @@ Route::group(['middleware' => 'isSalesManager'], function(){
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class,'index'])->name('salesmanager.allStudent');
+            Route::get('/add', [StudentController::class,'addForm'])->name('salesmanager.addNewStudentForm');
+            Route::post('/add', [StudentController::class,'store'])->name('salesmanager.addNewStudent');
             Route::get('/edit/{id}', [StudentController::class,'editForm'])->name('salesmanager.editStudent');
             Route::post('/update/{id}', [StudentController::class,'update'])->name('salesmanager.updateStudent');
             Route::put('/dump/{id}', [StudentController::class,'dump'])->name('salesmanager.dumpStudent');
@@ -159,6 +163,7 @@ Route::group(['middleware' => 'isSalesManager'], function(){
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesmanager.addstudentCourseAssign');
         });
 
+        Route::resource('/package',PackageController::class,["as" => "salesmanager"]);
         Route::resource('/batch',BatchController::class,["as" => "salesmanager"]);
         Route::resource('/reference',ReferenceController::class,["as" => "salesmanager"]);
 
@@ -189,6 +194,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class,'index'])->name('salesexecutive.allStudent');
+            Route::get('/add', [StudentController::class,'addForm'])->name('salesexecutive.addNewStudentForm');
+            Route::post('/add', [StudentController::class,'store'])->name('salesexecutive.addNewStudent');
             Route::get('/edit/{id}', [StudentController::class,'editForm'])->name('salesexecutive.editStudent');
             Route::post('/update/{id}', [StudentController::class,'update'])->name('salesexecutive.updateStudent');
             Route::put('/dump/{id}', [StudentController::class,'dump'])->name('salesexecutive.dumpStudent');
@@ -196,8 +203,10 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('salesexecutive.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesexecutive.addstudentCourseAssign');
         });
-  
+        
+        Route::get('/batch/all',[BatchController::class,'all'])->name('salesexecutive.allBatches');
         Route::resource('/batch',BatchController::class,["as" => "salesexecutive"])->only(['index']);
+        Route::get('/batchById',[BatchController::class,'batchById'])->name('salesexecutive.batchById');
     });
 });
 
@@ -217,6 +226,8 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class,'index'])->name('operationmanager.allStudent');
+            Route::get('/add', [StudentController::class,'addForm'])->name('operationmanager.addNewStudentForm');
+            Route::post('/add', [StudentController::class,'store'])->name('operationmanager.addNewStudent');
             Route::get('/edit/{id}', [StudentController::class,'editForm'])->name('operationmanager.editStudent');
             Route::post('/update/{id}', [StudentController::class,'update'])->name('operationmanager.updateStudent');
             Route::put('/dump/{id}', [StudentController::class,'dump'])->name('operationmanager.dumpStudent');
@@ -230,6 +241,9 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         Route::resource('/reference',ReferenceController::class,["as" => "operationmanager"]);
 
         Route::resource('/course',CourseController::class,["as" => "operationmanager"]);
+        /*==Course Search==*/
+        Route::post('/course/search',[CourseController::class,'courseSearch'])->name('operationmanager.courseSearch');
+
         Route::resource('/classroom',ClassRoomController::class,["as" => "operationmanager"]);
         Route::resource('/batchtime',BatchtimeController::class,["as" => "operationmanager"]);
         Route::resource('/batchslot',BatchslotController::class,["as" => "operationmanager"]);
@@ -255,7 +269,8 @@ Route::group(['middleware' => 'isAccountmanager'], function(){
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class,'confirmStudents'])->name('accountmanager.allStudent');
-            Route::get('/payment/{id}',  [StudentController::class,'paymentStudent'])->name('accountmanager.paymentStudent');
+            Route::get('/student/enroll/details/{id}',  [StudentController::class,'studentenrollById'])->name('accountmanager.studentenrollById');
+            Route::get('/payment/{id}/{entryDate}',  [StudentController::class,'paymentStudent'])->name('accountmanager.paymentStudent');
         });
         Route::resource('/batch',BatchController::class,["as" => "accountmanager"])->only(['index']);
         Route::resource('/payment',PaymentController::class,["as" => "accountmanager"]);

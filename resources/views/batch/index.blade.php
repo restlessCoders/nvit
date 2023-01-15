@@ -25,8 +25,6 @@
 								<th>Batch Id</th>
 								<th>Batch Details</th>
 								<th>Trainer</th>
-								<th>Price</th>
-								<th>Discount</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
@@ -38,13 +36,13 @@
 								<td>{{ $loop->iteration }}</td>
 								<td>
 									{{$batch->batchId}}<br>
-									By:-{{optional($batch->createdby)->name}}
+									By:-{{\DB::table('users')->select('name')->where('id',$batch->userId)->first()->name}}
 								</td>
 								<td>
 									<table class="table table-border table-striped">
 										<tr>
 											<td><strong>Course Name : </strong></td>
-											<td>{{$batch->course->courseName}}</td>
+											<td>{{\DB::table('courses')->select('courseName')->where('id',$batch->courseId)->first()->courseName}}</td>
 										</tr>
 										<tr>
 											<td><strong>Start Date :</strong></td>
@@ -56,11 +54,11 @@
 										</tr>
 										<tr>
 											<td><strong>Batch Slot :</strong></td>
-											<td>{{optional($batch->batchslot)->slotName}}</td>
+											<td>{{\DB::table('batchslots')->select('slotName')->where('id',$batch->bslot)->first()->slotName}}</td>
 										</tr>
 										<tr>
 											<td><strong>Batch Time :</strong></td>
-											<td>{{optional($batch->batchtime)->time}}</td>
+											<td>{{\DB::table('batchtimes')->select('time')->where('id',$batch->btime)->first()->time}}</td>
 										</tr>
 										<tr>
 											<td><strong>Exam Date :</strong></td>
@@ -74,11 +72,13 @@
 											<td><strong>Classroom : </strong></td>
 											<td>{{$batch->examRoom}}</td>
 										</tr>
+										<tr>
+											<td><strong>Seat Reamining : </strong></td>
+											<td>{{$batch->seat-$batch->tst}}</td>
+										</tr>
 									</table>
 								</td>
-								<td>{{optional($batch->trainer)->name}}</td>
-								<td>{{$batch->price}}</td>
-								<td>{{$batch->discount	}}</td>
+								<td>{{\DB::table('users')->select('name')->where('id',$batch->trainerId)->first()->name}}</td>
 								<td>
 									@if($batch->status == 1)
 									<span>Active</span>

@@ -17,7 +17,6 @@ class CreateBatchesTable extends Migration
             $table->bigIncrements('id');
             $table->string('batchId', 255);
             $table->unsignedBigInteger('courseId')->nullable();
-            $table->unsignedBigInteger('pacakageId')->nullable();
 			$table->date('startDate')->nullable();
 			$table->date('endDate')->nullable();
             $table->string('bslot', 255)->nullable();

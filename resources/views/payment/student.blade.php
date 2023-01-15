@@ -2,10 +2,24 @@
 @section('title', 'Add New Payment')
 @push('styles')
 <link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
+<style>
+	.loader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: url('https://lkp.dispendik.surabaya.go.id/assets/loading.gif') 50% 50% no-repeat rgb(249,249,249);
+}
+.table-bordered thead td, .table-bordered thead th{
+	border-bottom-width: 1px;
+}
+</style>
 @endpush
 @section('content')
 
-
+<div class="loader"></div>
 <!-- start page title -->
 <div class="row">
 	<div class="col-12">
@@ -34,7 +48,7 @@
 				<div class="clearfix">
 					<div class="float-sm-left">
 						<h4 class="text-uppercase mt-0">New Vision Information Technology</h4>
-						<strong>Executive Name:-{{ $sdata->executive->name}}</strong>
+						<strong>Executive Name:-{{ $stdetl->executive->name}}</strong>
 					</div>
 					<div class="float-sm-right mt-4 mt-sm-0">
 						<h5>MR # <br>
@@ -47,10 +61,10 @@
 					<div class="col-12">
 						<div class="float-sm-left mt-4">
 							<address>
-								<strong>{{ $sdata->name }}</strong><br>
-								{{ $sdata->address }}<br>
-								{{ $sdata->email }}<br>
-								<abbr title="Phone">P:</abbr> {{ $sdata->contact }}
+								<strong>{{ $stdetl->name }}</strong><br>
+								{{ $stdetl->address }}<br>
+								{{ $stdetl->email }}<br>
+								<abbr title="Phone">P:</abbr> {{ $stdetl->contact }}
 							</address>
 						</div>
 						<div class="col-lg-3 float-right">
@@ -84,40 +98,78 @@
 				<!-- end row -->
 
 				<div class="row mt-4">
-					<div class="col-12">
+					<div class="col-md-12">
 					
 						@csrf
 						<input type="hidden" value="{{ Session::get('user') }}" name="userId">
 						<div class="table-responsive">
-							<table class="table table-nowrap">
+							<table class="table table-bordered mb-5 text-center"">
 								<thead>
 									<tr>
-										<th>Course Name</th>
+										<th colspan="4">Payment Details</th>
+									</tr>
+									<tr>
+										<th>Batch</th>
 										<th>Price</th>
-										<th>Discount</th>
-										<!-- <th>Type</th> -->
+										<!-- <th>Discount</th>
+										<th>Type</th> -->
 										<th>Due Date</th>
 										<th>Payment</th>
 									</tr>
 								</thead>
 								<tbody>
-									<input type="hidden" name="studentId" value="{{encryptor('encrypt',$sdata->id)}}">
-									<input type="hidden" name="executiveId" value="{{$sdata->executiveId}}">
+									<input type="hidden" name="studentId" value="{{encryptor('encrypt',$stdetl->id)}}">
+									<input type="hidden" name="executiveId" value="{{$stdetl->executiveId}}">
 									@php
 									$tPayable =0;
 									@endphp
-									@foreach($sdata->enroll_data as $s)
-									<input type="hidden" name="courseId[]" value="{{ $s->id }}">
+									@foreach($sdata as $s)
+									<input type="hidden" name="batch_id[]" value="{{ $s->batch_id }}">
 									<tr>
-										<td><input type="text" class="form-control" value="{{ $s->courseName }}" readonly></td>
 										@php
-											$batch = \DB::table('batches')->where('courseId',$s->id)->first();
-											$tPayable += $batch->price;
+										$batches = \DB::table('batches')->where('id',$s->batch_id)->first();
+										$course = \DB::table('courses')->where('id',$batches->courseId)->first();
 										@endphp
-										<input type="hidden" name="price[]" value="{{$batch->price}}">
-										<input type="hidden" name="discount[]" value="{{$batch->discount}}">
-										<td><input type="text" class="form-control" value="{{$batch->discount}}" readonly></td>
-										<td><input type="text" class="form-control" value="{{$batch->discount}}" readonly></td>
+										<td>
+											<input type="text" class="form-control" value="{{$batches->batchId}}" readonly>
+										</td>
+										@php
+										$packages = \DB::select("SELECT * from packages where '$s->entryDate' BETWEEN startDate and endDate and batchId = $s->batch_id");
+										//echo '<pre>';
+										//print_r($course);
+										@endphp
+										<td>
+											<input type="text" class="form-control" name="cPayable[]" value="@if($packages){{$packages[0]->price}}@else{{$course->rPrice}}@endif" readonly id="coursepricebyRow_{{$loop->index}}">
+											<input type="checkbox" value="{{$course->mPrice}}" id="material_{{$loop->index}}" onclick="checkMaterial('{{$loop->index}}')"><span>Material Price: {{$course->mPrice}}</span>
+											<input type="text" name="m_price[]" id="m_price_{{$loop->index}}">
+										</td>
+										@php
+										if($packages){
+											$tPayable += $packages[0]->price;
+										@endphp
+										<!-- <td>
+											<input type="text" class="form-control" value="{{$packages[0]->price}}" readonly>
+											<input type="checkbox" checked><span>Material Price: {{$course->mPrice}}</span>
+										</td> -->
+										@php
+										}
+										else{
+											$tPayable += $course->rPrice;
+										@endphp
+										<!-- <td>
+											<input type="text" class="form-control" value="{{$course->rPrice}}" readonly>
+											<input type="checkbox" checked><span>Material Price: {{$course->mPrice;}}</span>
+										</td> -->
+										@php
+										}
+										@endphp
+									
+										
+
+										<!-- <input type="hidden" name="price[]" value="{{$s->batch_id}}">
+										<input type="hidden" name="discount[]" value="{{$s->batch_id}}"> -->
+									
+										<!-- <td><input type="text" class="form-control" value="{{$s->batch_id}}" readonly></td> -->
 										<!-- <td>
 											<select class="form-control" name="type">
 												<option value="">Select</option>
@@ -133,27 +185,35 @@
 												</div>
 											</div><!-- input-group -->
 										</td>
-										<td><input type="text" class="form-control" value="{{$batch->price}}"></td>
+										<td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" id="paidpricebyRow_{{$loop->index}}" onkeyup="checkPrice('{{$loop->index}}')"></td>
+									</tr>
+									<tr>
+										<th colspan="4">Payment History</th>
+									</tr>
+									<tr>
+										<th>Batch</th>
+										<th>Price</th>
+										<th>Due Date</th>
+										<th>Payment</th>
 									</tr>
 									@endforeach
-									<input type="hidden" name="invoiceId">
 								</tbody>
 								<tfoot>
 									<tr>
-										<th colspan="4" class="text-right">Copun Discount</th>
+										<th colspan="3" class="text-right">Copun Discount</th>
 										<td>
-											<input type="text" class="coupon form-control">
-											<button class="btn btn-primary btn-sm my-1" onclick="coupon()">Apply</button>
+											<input type="text" class="coupon form-control" name="discount">
+											<button type="button" class="btn btn-primary btn-sm my-1" onclick="coupon()">Apply</button>
 										</td>
 									</tr>
 									<tr>
-										<th colspan="4" class="text-right">Sub Total</th>
+										<th colspan="3" class="text-right">Sub Total</th>
 										<td><input type="text" name="tPayable" class="tPayable form-control" name="tPayable" value="{{$tPayable}}" readonly></td>
 									</tr>
 									<tr>
-										<th colspan="4" class="text-right">Total Paid</th>
+										<th colspan="3" class="text-right">Total Paid</th>
 										<td>
-											<input type="text" name="paidAmount" class="tPaid form-control" onkeyup="calculate()">
+											<input type="text" name="paidAmount" class="tPaid form-control" readonly>
 											@if($errors->has('paidAmount'))
 											<small class="d-block text-danger mb-3">
 												{{ $errors->first('paidAmount') }}
@@ -162,8 +222,8 @@
 										</td>
 									</tr>
 									<tr>
-										<th colspan="4" class="text-right">Total Due</th>
-										<td><input type="text" class="tDue form-control"></td>
+										<th colspan="3" class="text-right">Total Due</th>
+										<td><input type="text" class="tDue form-control" readonly></td>
 									</tr>
 									<!-- <tr>
 										<th colspan="4" class="text-right">Balance</th>
@@ -223,7 +283,35 @@
 		/*$('form').submit(function( event ) {
 			event.preventDefault();
 		});*/
+		function checkMaterial(index){
+			$('#material_'+index).prop("checked") == true;
+			var total=0.0;
+			var tPayable = parseFloat($('.tPayable').val());
+			if($('#material_'+index).prop("checked") == true)
+		{
+		$('#m_price_'+index).val($('#material_'+index).val())
+		total =parseFloat(tPayable)+ parseFloat($('#material_'+index).val());
+		} else {
+		total =parseFloat(tPayable)- parseFloat($('#material_'+index).val());
+		$('#m_price_'+index).val(0)
+		}
+		$('.tPayable').val(total);
+		coupon();
+		checkPrice(index)
+		}
+	
 		function coupon(){
+			var coupon = parseFloat($('.coupon').val())?parseFloat($('.coupon').val()):0;
+			var tPayable = parseFloat($('.tPayable').val());
+			var tPaid = parseFloat($('.tPaid').val());
+			if(coupon > tPayable){
+			toastr["warning"]("Coupon Amount Cannot be Greater Than Course Price!!");
+			return false;
+			}
+			/*alert(tPayable)
+			alert(tPaid)
+			alert(coupon)*/
+			$('.tDue').val(tPayable-tPaid-coupon);
 		}
 		function calculate(){
 			var tPayable = parseFloat($('.tPayable').val());
@@ -261,5 +349,76 @@
 				down: "mdi mdi-chevron-down"
 			}
 		});
+		/*=====Un used Code====*/
+		/*$(document).on('submit','#addform',function(e){
+		$.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    	});
+        e.preventDefault();
+		$.ajax({
+           url:"{{route(currentUser().'.payment.store')}}",
+		   type:'POST',
+           dataType: "json",
+			data: new FormData(this),
+			processData:false,
+			contentType:false,
+			beforeSend:function(){
+				console.log("Wait data is Loading.......");
+			},
+			success:function(response){
+				console.log(response);
+			},
+			error:function(request,error){
+				console.log(arguments);
+				console.log("Error:"+error);
+			}
+        });
+	});*/
+	/*== To check Document Loading finished== */
+	$(window).on('load', function(){
+		$(".loader").fadeOut("slow");
+	});
+    
+
+
+	/*$('input[type=checkbox]').each(function () {
+		$(this).prop('checked',true);
+		var tPayable = parseFloat($('.tPayable').val());
+		tPayable += parseFloat($(this).val());
+		$('.tPayable').val(tPayable)
+ 	});*/
+	/*=== Check Input Price== */
+	function checkPrice(index){
+		var paidpricebyRow 		= parseFloat($('#paidpricebyRow_'+index).val());
+		var coursepricebyRow 	= parseFloat($('#coursepricebyRow_'+index).val());
+		/*console.log(paidpricebyRow);
+		console.log(coursepricebyRow);*/
+		var tPayable = parseFloat($('.tPayable').val());
+		if(paidpricebyRow > coursepricebyRow){
+			toastr["warning"]("Payable Amount Cannot be Greater Than Course Price!!");
+			return false;
+		}else{
+			var total = 0;
+			$('.paidpricebyRow').each(function(index, element){
+			if($(element).val()!="")
+            total += parseFloat($(element).val());
+			
+			
+			
+
+		});
+		$('.tPaid').val(total);
+		$('.tDue').val(tPayable-total);
+		coupon();
+		}
+	}
+	/*===== Payment Calculation======*/
+	
+	function calculate(){
+		
+	}
+	
 	</script>
 	@endpush
