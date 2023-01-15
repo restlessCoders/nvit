@@ -1,4 +1,9 @@
 .wrapper {
     padding: 60px 12px 0 12px;
 }
-s
+.form-control.is-invalid, .was-validated .form-control:invalid{
+    background-image:none;
+}
+.select2-container .select2-selection--single{
+    height: 38px !important;
+}

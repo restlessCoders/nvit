@@ -31,10 +31,10 @@
                                     <div class="text-center">
                                         <div class="my-3">
                                             <a href="index.html">
-                                                <span><img src="{{asset('backend/images/logo.png')}}" alt="" height="28"></span>
+                                                <span><img src="{{asset('backend/images/logo.webp')}}" alt="" height="80"></span>
                                             </a>
                                         </div>
-                                        <h5 class="text-muted text-uppercase py-3 font-16">Sign In</h5>
+                                        <h5 class="text-muted text-uppercase py-3 font-16">Log In</h5>
                                     </div>
     
                                     <form action="{{route('logIn')}}" class="mt-2" method="post">

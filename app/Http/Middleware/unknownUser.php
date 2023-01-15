@@ -25,7 +25,7 @@ class unknownUser
             $user = User::find(encryptor('decrypt', Session::get('user')));
             $role = Role::find(encryptor('decrypt', Session::get('roleId')));
             
-            if (!!$user && $role->identity == 'superadmin' && $user->sv ) 
+            if (!!$user && $role->identity == 'superadmin') 
                 return redirect(route('superadminDashboard'));
             else if (!!$user && $role->identity == 'owner')
                 return redirect(route('ownerDashboard'));

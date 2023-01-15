@@ -25,7 +25,6 @@ class updateUserRequest extends FormRequest
     {
         return [
             'role' => 'required|integer',
-            'timezone' => 'required|string',
             'fullName' => 'required|string',
             'username' => 'required|string',
             'mobileNumber' => 'required|numeric',

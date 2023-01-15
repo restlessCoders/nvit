@@ -12,12 +12,28 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
+    <!-- Date and Time Picker -->
+    <link href="{{asset('backend/libs/bootstrap-timepicker/bootstrap-timepicker.min.css')}}" rel="stylesheet">
+    <link href="{{asset('backend/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backend/libs/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
+
+    <!-- Notification css (Toastr) -->
+    <link href="{{asset('backend/libs/toastr/toastr.min.css')}}" rel="stylesheet" type="text/css" />
+
+    <!-- Table datatable css -->
+    <link href="{{asset('backend/libs/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backend/libs/datatables/buttons.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backend/libs/datatables/responsive.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backend/libs/datatables/select.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
+
+
+
     <!-- App css -->
     <link href="{{asset('backend/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bootstrap-stylesheet" />
     <link href="{{asset('backend/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{asset('backend/css/app.min.css')}}" rel="stylesheet" type="text/css" id="app-stylesheet" />
-	<!-- Custom Style -->
-	<link href="{{asset('backend/css/style.css')}}" rel="stylesheet" type="text/css" />
+    <!-- Custom Style -->
+    <link href="{{asset('backend/css/style.css')}}" rel="stylesheet" type="text/css" />
     <style>
         .navbar-right .topnav-menu .nav-link {
             padding: 0 15px;
@@ -29,9 +45,9 @@
             max-height: 70px;
         }
     </style>
-	<!--begin::Page Scripts(used by this page)-->
-		@stack('styles')
-	<!--end::Page Scripts-->
+    <!--begin::Page Scripts(used by this page)-->
+    @stack('styles')
+    <!--end::Page Scripts-->
 </head>
 
 <body>
@@ -43,21 +59,121 @@
                     <div id="navigation">
                         <!-- Navigation Menu-->
                         <ul class="navigation-menu">
-                            <li class="has-submenu">
-                                <a href="">
+                            <li class="has-submenu @if(Request::segment(2) == 'dashboard') active @endif">
+                                <a href="{{route(currentUser().'Dashboard')}}">
                                     <i class="mdi mdi-view-dashboard"></i>Dashboard
                                 </a>
                             </li>
 
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
+                                <a href="#">
+                                    <i class="mdi mdi-package-variant-closed"></i>Settings<div class="arrow-down"></div>
+                                </a>
+                                <ul class="submenu">
+                                    <li class="has-submenu">
+                                        <a href="#">Reference<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.reference.create')}} @endif">Add Reference</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.reference.index')}} @endif">All Reference</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Courses <div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.course.create')}} @endif">Add New</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.course.index')}} @endif">All Courses</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Course Package <div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.package.create')}} @endif">Add New</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.package.index')}} @endif">All Package</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Class Room<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.classroom.create')}} @endif">Add New</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.classroom.index')}} @endif">All Classroom</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Batch Slot <div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchslot.create')}} @endif">Add New</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.batchslot.index')}} @endif">All Batcch Slot</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Batch Time <div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchtime.create')}} @endif">Add New</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.batchtime.index')}} @endif">All Batcch Time</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Division<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.division.create')}} @endif">Add Division</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.division.index')}} @endif">All Division</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">District<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.district.create')}} @endif">Add District</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.district.index')}} @endif">All District</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Upazila<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.upazila.create')}} @endif">Add Upazila</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.upazila.index')}} @endif">All Upazila</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+
+                            <li class="has-submenu @if(Request::segment(2) == 'user') active @endif @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager') @else d-none @endif">
+                                <a href="#">
+                                    <i class="mdi mdi-account-multiple-outline"></i>User<div class="arrow-down"></div></a>
+                                <ul class="submenu">
+                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager') {{route(currentUser().'.allUser')}} @endif">All User</a></li>
+                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager') {{route(currentUser().'.addNewUserForm')}} @endif">Add New User</a></li>
+                                </ul>
+                            </li>
+
+                            <li class="has-submenu @if(Request::segment(2) == 'student') active @endif">
+                                <a href="#">
+                                    <i class="fas fa-users"></i>Students <div class="arrow-down"></div></a>
+                                <ul class="submenu">
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.addNewStudentForm')}} @endif">Add New</a></li>
+                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesexecutive' || currentUser() == 'salesmanager' ||currentUser() == 'frontdesk' ||currentUser() == 'operationmanager' || currentUser() == 'accountmanager') {{route(currentUser().'.allStudent')}} @endif">All Students</a></li>
+                                </ul>
+                            </li>
 
                             <li class="has-submenu">
                                 <a href="#">
-                                    <i class="mdi mdi-package-variant-closed"></i>Students <div class="arrow-down"></div></a>
+                                    <i class="ti-layout-grid3"></i>Batches <div class="arrow-down"></div></a>
                                 <ul class="submenu">
-                                    <li><a href="">Add New</a></li>
-                                    <li><a href="">All Students</a></li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin'  || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batch.create')}} @endif">Add New</a></li>
+                                    <li><a href="{{route(currentUser().'.batch.index')}}">All Batch</a></li>
                                 </ul>
                             </li>
+
+                            <li class="has-submenu">
+                                <a href="#">
+                                    <i class="ti-layout-grid3"></i>Payments <div class="arrow-down"></div></a>
+                                <ul class="submenu">
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin'  || currentUser() == 'accountmanager') {{route(currentUser().'.payment.index')}} @endif">All Payment</a></li>
+                                </ul>
+                            </li>
+
+
 
 
                         </ul>
@@ -118,7 +234,7 @@
         <!-- ============================================================== -->
         <div class="wrapper">
             <div class="container-fluid">
-				@yield('content')
+                @yield('content')
             </div> <!-- end container-fluid -->
         </div>
         <!-- end wrapper -->
@@ -151,7 +267,7 @@
             </div>
             <div class="slimscroll-menu">
 
-                <div class="p-4">
+                <!-- <div class="p-4">
                     <div class="alert alert-warning" role="alert">
                         <strong>Customize </strong> the overall color scheme, layout, etc.
                     </div>
@@ -180,7 +296,7 @@
                     </div>
 
                     
-                </div>
+                </div> -->
             </div> <!-- end slimscroll-menu-->
         </div>
         <!-- /Right-bar -->
@@ -202,13 +318,42 @@
     <!-- Dashboard init js-->
     <!-- <script src="{{asset('backend/js/pages/dashboard.init.js')}}"></script> -->
 
+    <!-- Toastr js -->
+    <script src="{{asset('backend/libs/toastr/toastr.min.js')}}"></script>
+
+    <!-- Datatable plugin js -->
+    <script src="{{asset('backend/libs/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{asset('backend/libs/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <script src="{{asset('backend/libs/datatables/dataTables.responsive.min.js')}}"></script>
+    <script src="{{asset('backend/libs/datatables/responsive.bootstrap4.min.js')}}"></script>
+
+    <script src="{{asset('backend/libs/datatables/dataTables.buttons.min.js')}}"></script>
+    <script src="{{asset('backend/libs/datatables/buttons.bootstrap4.min.js')}}"></script>
+
+    <script src="{{asset('backend/libs/jszip/jszip.min.js')}}"></script>
+    <script src="{{asset('backend/libs/pdfmake/pdfmake.min.js')}}"></script>
+    <script src="{{asset('backend/libs/pdfmake/vfs_fonts.js')}}"></script>
+
+    <script src="{{asset('backend/libs/datatables/buttons.html5.min.js')}}"></script>
+    <script src="{{asset('backend/libs/datatables/buttons.print.min.js')}}"></script>
+
+    <script src="{{asset('backend/libs/datatables/dataTables.keyTable.min.js')}}"></script>
+    <script src="{{asset('backend/libs/datatables/dataTables.select.min.js')}}"></script>
+    
+    <!-- Date and Time Picker plugins -->
+    <script src="{{asset('backend/libs/moment/moment.min.js')}}"></script>
+    <script src="{{asset('backend/libs/bootstrap-timepicker/bootstrap-timepicker.min.js')}}"></script>
+    <script src="{{asset('backend/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
+    <script src="{{asset('backend/libs/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
+
     <!-- App js -->
     <script src="{{asset('backend/js/app.min.js')}}"></script>
-	<!-- App js -->
+    <!-- App js -->
     <script src="{{asset('backend/js/custom.js')}}"></script>
-	<!--begin::Page Scripts(used by this page)-->
-		@stack('scripts')
-	<!--end::Page Scripts-->
+    <!--begin::Page Scripts(used by this page)-->
+    @stack('scripts')
+    <!--end::Page Scripts-->
 </body>
 
 </html>

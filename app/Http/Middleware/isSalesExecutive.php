@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Http\Traits\ResponseTrait;
 use Session;
 
-class isSalesMan
+class isSalesExecutive
 {
      use ResponseTrait;
     /**
@@ -27,7 +27,7 @@ class isSalesMan
             $role = Role::find(encryptor('decrypt', Session::get('roleId')));
             if(!$user || !$role){
                 return redirect()->route('logOut');
-            }else if ($role->identity != 'salesman') {
+            }else if ($role->identity != 'salesexecutive') {
                 return redirect(route($role->identity.'Dashboard'))->with($this->responseMessage(true, null, 'Access Deined'));
             }else{
                 return $next($request);
