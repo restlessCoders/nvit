@@ -16,7 +16,7 @@ use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\UpazilaController;
 use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\ReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -104,6 +104,10 @@ Route::group(['middleware' => 'isSuperAdmin'], function(){
         Route::resource('/district',DistrictController::class,["as" => "superadmin"]);
         Route::resource('/upazila',UpazilaController::class,["as" => "superadmin"]);
         Route::resource('/payment',PaymentController::class,["as" => "superadmin"]);
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
 	});
 });
 
@@ -126,6 +130,10 @@ Route::group(['middleware' => 'isFrontdesk'], function(){
             Route::get('/all',  [StudentController::class,'index'])->name('frontdesk.allStudent');
         });
         Route::resource('/batch',BatchController::class,["as" => "frontdesk"])->only(['index']);
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('frontdesk.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('frontdesk.batchwiseEnrollStudent');
     });
 });
 
@@ -175,7 +183,10 @@ Route::group(['middleware' => 'isSalesManager'], function(){
         Route::resource('/district',DistrictController::class,["as" => "salesmanager"]);
         Route::resource('/upazila',UpazilaController::class,["as" => "salesmanager"]);
 
-      
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
+
     });
 });
 
@@ -207,6 +218,10 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
         Route::get('/batch/all',[BatchController::class,'all'])->name('salesexecutive.allBatches');
         Route::resource('/batch',BatchController::class,["as" => "salesexecutive"])->only(['index']);
         Route::get('/batchById',[BatchController::class,'batchById'])->name('salesexecutive.batchById');
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
     });
 });
 
@@ -250,7 +265,15 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         Route::resource('/division',DivisionController::class,["as" => "operationmanager"]);
         Route::resource('/district',DistrictController::class,["as" => "operationmanager"]);
         Route::resource('/upazila',UpazilaController::class,["as" => "operationmanager"]);
-      
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
+        
+        /*==Batch Transfer==*/
+        Route::get('/student/batch/transfer', [StudentController::class,'batchTransfer'])->name('operationmanager.batchTransfer');
+        Route::get('/student/batch/enroll', [StudentController::class,'studentEnrollBatch'])->name('operationmanager.studentEnrollBatch');
+        Route::post('/student/transfer', [StudentController::class,'transfer'])->name('operationmanager.transfer');
     });
 });
 
@@ -274,6 +297,10 @@ Route::group(['middleware' => 'isAccountmanager'], function(){
         });
         Route::resource('/batch',BatchController::class,["as" => "accountmanager"])->only(['index']);
         Route::resource('/payment',PaymentController::class,["as" => "accountmanager"]);
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
     });
 });
 

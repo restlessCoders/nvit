@@ -21,6 +21,7 @@ use App\Models\Batchtime;
 use Image;
 use Exception;
 use DB;
+use Illuminate\Database\Console\Migrations\StatusCommand;
 use Illuminate\Support\Carbon;
 class StudentController extends Controller
 {
@@ -72,10 +73,10 @@ class StudentController extends Controller
         return view('student.enroll_data_by_student', compact(['sedata']));
     }
     public function paymentStudent($id,$entryDate){
-        $stdetl = Student::find(encryptor('decrypt', $id))->first();
+        $stdetl = Student::find(encryptor('decrypt', $id));
         $sdata = DB::table('student_batches')
         ->select('batch_id','entryDate')
-        ->where(['student_id'=>encryptor('decrypt', $id),'entryDate' => $entryDate])
+        ->where(['student_id'=>encryptor('decrypt', $id),'entryDate' => $entryDate,'status' => 2])
         ->get();
        /* echo '<pre>';
         print_r($sdata);die;*/
@@ -165,11 +166,7 @@ class StudentController extends Controller
         return view('student.courseAssign', compact(['allCourse','sdata','allBatchTime','allBatchSlot','allBatch']));
     }
     public function addstudentCourseAssign(StudentCourseRequest $request, $id){
-        $s_id =  encryptor('decrypt', $id);
-        $batch_id = $request->post('batch_id');
-        foreach($request->batch_id as $key => $cdata){
-            $s_batch_data = DB::table('student_batches')->where(['student_id'=>$s_id,'batch_id'=>$batch_id[$key]])->first();
-           
+            $s_batch_data = DB::table('student_batches')->where(['student_id'=>$request->s_id,'batch_id'=>$request->batch_id])->first();
             if(!empty($s_batch_data)){
                 /*If Student Course Active By Account Change Denied */
                 if($s_batch_data->acc_approve){
@@ -186,20 +183,34 @@ class StudentController extends Controller
                         'entryDate'=> date('Y-m-d'),
                         'updated_at' => Carbon::now()
                     );
-                    DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
-                    return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));;
-                }
+                    if($request->status == 2){
+                        $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
+                        join student_batches on student_batches.batch_id=batches.id
+                        WHERE batches.id=$s_batch_data->batch_id
+                        GROUP by student_batches.batch_id,batches.seat");
+                        //print_r($seat_data);die;
+                        if($seat_data[0]->tst>$seat_data[0]->seat_available)
+                            return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+                        }
+                        DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                        return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
+                    }
             }else{
-                $data = array(
-                    'batch_id' => $batch_id[$key],
-                    'student_id' =>  $s_id,
-                    'entryDate'=> date('Y-m-d'),
-                    'status' => $request->status,
-                    'created_at' => Carbon::now()
-                );
-                DB::table('student_batches')->insert($data);
-                return redirect()->back();
-            }
+                $student_id = $request->post('student_id');
+                $batch_id = $request->post('batch_id');
+                $status = $request->post('status');
+                foreach($request->batch_id as $key => $cdata){
+                    $data = array(
+                        'batch_id' => $batch_id[$key],
+                        'student_id' =>  $student_id[$key],
+                        'entryDate'=> date('Y-m-d'),
+                        'status' => $status[$key],
+                        'created_at' => Carbon::now()
+                    );
+                    DB::table('student_batches')->insert($data);
+                }
+                return redirect()->back()->with($this->responseMessage(true, null, 'Course Assigned Successful'));
+            
         }
     }
     public function editForm($id)
@@ -306,5 +317,82 @@ class StudentController extends Controller
         $dumpStudent->status=1;
         $dumpStudent->save();
         return back();
+    }
+    public function batchTransfer(){
+        $allStudent = DB::table('students')
+        ->selectRaw("students.name,students.id,student_batches.batch_id")
+        ->join('student_batches','student_batches.student_id','=','students.id','left')
+        ->where(['student_batches.status'=>2])
+        ->groupBy('student_batches.batch_id','students.id','students.name')
+        ->get();
+        return view('student.batchTransfer',compact('allStudent'));
+    }
+    public function transfer(Request $request){
+        DB::beginTransaction();
+
+        try {
+        $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
+                        join student_batches on student_batches.batch_id=batches.id
+                        WHERE batches.id=$request->newbatchId
+                        GROUP by student_batches.batch_id,batches.seat");
+                        //print_r($seat_data);die;
+                        if($seat_data[0]->tst>$seat_data[0]->seat_available){
+                            return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+                        }
+                        $data = array(
+                            'batch_id' => $request->newbatchId,
+                            'updated_at' => Carbon::now()
+                        );
+                        DB::table('student_batches')->where(['id'=>$request->student_id,'batch_id'=>$request->curbatchId])->update($data);
+                        $data2 = array(
+                            'student_id' => $request->student_id,
+                            'curbatchId' => $request->curbatchId,
+                            'newbatchId' =>  $request->newbatchId,
+                            'userId'=> currentUserId(),
+                            'note' => $request->note,
+                            //'created_at' => Carbon::now()
+                        );
+                        DB::table('batch_transfers')->insert($data2);
+                        DB::commit();
+                        return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
+                    } catch (\Exception $e) {
+                        DB::rollback();
+                        // something went wrong
+                        dd($e);
+                        return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+                        return false;
+                    }
+    }
+    public function studentEnrollBatch(Request $request){
+        $e_data = DB::table('student_batches')
+        ->selectRaw("student_batches.batch_id,batches.batchId")
+        ->join('batches','batches.id','=','student_batches.batch_id','left')
+        ->where(['student_id'=>$request->id,'student_batches.status'=>2])
+        ->groupBy('student_batches.batch_id','batches.batchId')
+        ->get();
+        $data ='<label for="curbatchId" class="col-sm-3 col-form-label">From Batch</label>
+            <div class="col-sm-9">
+            <select class="js-example-basic-single form-control" id="curbatchId" name="curbatchId" required>
+            <option value="">Select</option>';
+            foreach($e_data as $e){
+                $data.= '<option value="'.$e->batch_id.'">'.$e->batchId.'</option>';
+            }
+        $data.='</select></div>';
+
+        $allBatch = DB::table('batches')
+        ->join('student_batches','batches.id','=','student_batches.batch_id','left')
+        ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.userId,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
+        ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.userId','batches.created_at','batches.updated_at'])
+        ->get();
+
+        $data2 ='<label for="newbatchId" class="col-sm-3 col-form-label">To Batch</label>
+        <div class="col-sm-9">
+        <select class="js-example-basic-single form-control" id="newbatchId" name="newbatchId" required>
+        <option value="">Select</option>';
+        foreach($allBatch as $b){
+            $data2.= '<option value="'.$b->id.'">'.$b->batchId.'</option>';
+        }
+        $data2.='</select></div>';
+        return response()->json(array('data' =>$data,'data2' =>$data2));
     }
 }

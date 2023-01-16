@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ResponseTrait;
 use Exception;
 use DB;
+use Illuminate\Support\Carbon;
 
 class PaymentController extends Controller
 {
@@ -68,7 +69,7 @@ class PaymentController extends Controller
                     // 'updated_at'        => date("Y-m-d h:i:s"),
                 ]
             );
- 
+            
 
             // Payment Detail
             $batch_id       = $request->post('batch_id');
@@ -93,6 +94,14 @@ class PaymentController extends Controller
                 /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
 
                 DB::table('paymentdetails')->insert($payment_detail);
+
+                /*To Update Account Approve */
+                $s_batch_data = DB::table('student_batches')->where(['student_id'=>encryptor('decrypt', $request->studentId),'batch_id'=>$batch_id[$key]])->first();
+                $data = array(
+                    'acc_approve' => 1,
+                    'updated_at' => Carbon::now()
+                );
+                DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
                 DB::commit();
             }
             

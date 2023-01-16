@@ -390,8 +390,10 @@
 								<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$allassignBatch->student_id)) }}" method="POST" enctype="multipart/form-data">
 								@csrf
 								<td>{{ $loop->iteration }}</td>
+								<input type="hidden" name="s_id" value="{{$allassignBatch->student_id}}">
+								<input type="hidden" name="batch_id" value="{{$allassignBatch->batch_id}}">
 								<td>
-									<select class="form-control" name="batch_id[]">
+									<select class="form-control" name="" disabled>
 									@forelse($allBatch as $batch)
 										<option value="{{$batch->id}}" @if($allassignBatch->batch_id == $batch->id) selected @endif>{{$batch->batchId}}</option>
 										@empty
@@ -463,16 +465,17 @@
                         name: data.term
                     },
                     success: function(res){
-						console.log(res);
+						//console.log(res);
                         var result;
                         result = {label: 'No Records Found ',value: ''};
                         if (res.length) {
                             result = $.map(res, function(el){
                                 return {
-                                    label: 'Available Seat:-('+el.seat+') '+el.batchId,
+                                    label: 'Available Seat:-('+(el.seat-el.tst)+') '+el.batchId,
                                     value: '',
                                     id: el.id,
-                                    batchId: el.batchId
+                                    batchId: el.batchId,
+									seat:(el.seat-el.tst)
                                 };
                             });
                         }
@@ -487,7 +490,7 @@
                     $(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
                     $(this).autocomplete("close");
                 }
-                //console.log(ui.content[0].id);
+                console.log(ui);
             },
                 //loader start
             search: function (e, ui) {},
@@ -496,12 +499,14 @@
                     if(isNaN(ui.content[0].id)){
                         return;
                     }
-                    var batchId=ui.content[0].id;
+					var batchId=ui.content[0].id;
                 }
                 else{
                     var batchId=ui.item.id;
+					var seat = ui.item.seat;
                 }
-                return_row_with_data(batchId);
+				if(seat == 0){toastr['error']("No Seat Available!!");return false;}
+				return_row_with_data(batchId);
                 $("#item_search").val('');
             },   
             //loader end
@@ -521,7 +526,7 @@
                 batchId:batchId,rowcount:rowcount,student_id:student_id
             },
             success: function(res){
-				console.log(res.data);
+				//console.log(res.data);
 				var item_check=check_same_item(batchId);
         		if(!item_check){$("#item_search").removeClass('ui-autocomplete-loader-center');return false;}
 				if(res.data.error){toastr['error']("Batch In List!!");return false;}

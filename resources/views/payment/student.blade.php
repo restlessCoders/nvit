@@ -396,10 +396,10 @@
 		/*console.log(paidpricebyRow);
 		console.log(coursepricebyRow);*/
 		var tPayable = parseFloat($('.tPayable').val());
-		if(paidpricebyRow > coursepricebyRow){
+		/*if(paidpricebyRow > coursepricebyRow){
 			toastr["warning"]("Payable Amount Cannot be Greater Than Course Price!!");
 			return false;
-		}else{
+		}else{*/
 			var total = 0;
 			$('.paidpricebyRow').each(function(index, element){
 			if($(element).val()!="")
@@ -412,7 +412,7 @@
 		$('.tPaid').val(total);
 		$('.tDue').val(tPayable-total);
 		coupon();
-		}
+		//}
 	}
 	/*===== Payment Calculation======*/
 	
