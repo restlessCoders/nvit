@@ -34,10 +34,11 @@ class BatchController extends Controller
         if(!$data_exists){
         $batch = Batch::find($request->batchId);
         $data='<tr class="productlist" id="row_'.$request->rowcount.'" data-item-id="'.$batch->id.'">';
+        $data.='<input name="student_id[]" type="hidden" value="'.$request->student_id.'">';
         $data.='<td>'.$batch->batchId.'<input name="batch_id[]" type="hidden" value="'.$batch->id.'"></td>';
         $data.='							
         <td>
-            <select class="js-example-basic-single form-control" id="status" name="status" required>
+            <select class="js-example-basic-single form-control" id="status" name="status[]" required>
                 <option value="">Select</option>
                 <option value="2">Enroll</option>
                 <option value="3">Knocking</option>

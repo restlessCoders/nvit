@@ -172,6 +172,20 @@
                                     <li class="@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin'  || currentUser() == 'accountmanager') {{route(currentUser().'.payment.index')}} @endif">All Payment</a></li>
                                 </ul>
                             </li>
+                            <li class="has-submenu">
+                                <a href="#">
+                                    <i class="ti-layout-grid3"></i>Reports<div class="arrow-down"></div></a>
+                                <ul class="submenu">
+                                    <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">Batch Enrollment Report</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-submenu">
+                                <a href="#">
+                                    <i class="ti-layout-grid3"></i>Transfer<div class="arrow-down"></div></a>
+                                <ul class="submenu">
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchTransfer')}} @endif">Batch Transfer</a></li>
+                                </ul>
+                            </li>
 
 
 
