@@ -29,4 +29,8 @@ class Batch extends Model
         ->selectRaw('sum(student_batches.student_id) as tst')
         ->groupBy('student_batches.batch_id');
     }
+    public function studentsBatches()
+    {
+        return $this->belongsToMany(Student::class, 'student_batches')->select(['course_price','entryDate']);
+    }
 }

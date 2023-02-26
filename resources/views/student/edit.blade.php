@@ -28,13 +28,16 @@
 		<div class="card-box">
 			<ul class="nav nav-tabs my-3" id="myTab" role="tablist">
 				<li class="nav-item">
-					<a class="nav-link active" id="edit-student-tab" data-toggle="tab" href="#edit_student" role="tab" aria-controls="edit_student" aria-expanded="true" aria-selected="true">Edit Student Data</a>
+					<a class="nav-link active" id="edit-student-tab" data-toggle="tab" href="#edit_student" role="tab" aria-controls="edit_student" aria-expanded="true" aria-selected="true">Edit</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Student Course Enroll | Register | Evaluation</a>
+					<a class="nav-link" id="course-pre" data-toggle="tab" href="#course_pre" role="tab" aria-controls="course_pre">Course Preference</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" id="operation-student-tab" data-toggle="tab" href="#operation_student" role="tab" aria-controls="operation_student"></a>
+					<a class="nav-link" id="batch-student-tab" data-toggle="tab" href="#batch_student" role="tab" aria-controls="batch_student">Batch Enroll | Register | Evaluation</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Course Enroll</a>
 				</li>
 			</ul>
 			<div class="tab-content text-muted" id="myTabContent">
@@ -63,30 +66,6 @@
 								</div>
 							</div>
 							@endif
-							<div class="col-lg-4 row">
-								<label for="name" class="col-sm-3 col-form-label">Time Slot</label>
-								<div class="col-sm-9">
-									<select name="js-example-basic-single batch_time_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Time Slot...">
-										@if(count($allBatchTime))
-										@foreach($allBatchTime as $batchTime)
-										<option value="{{ $batchTime->id}}" {{ old('batch_time_id',$sdata->batch_time_id) == $batchTime->id ? "selected" : "" }}>{{$batchTime->time}}</option>
-										@endforeach
-										@endif
-									</select>
-								</div>
-							</div>
-							<div class="col-lg-4 row">
-								<label for="name" class="col-sm-3 col-form-label">Batch Slot</label>
-								<div class="col-sm-9">
-									<select name="js-example-basic-single batch_slot_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch Slot...">
-										@if(count($allBatchSlot))
-										@foreach($allBatchSlot as $batchSlot)
-										<option value="{{ $batchSlot->id}}" {{ old('batch_slot_id',$sdata->batch_slot_id) == $batchSlot->id ? "selected" : "" }}>{{$batchSlot->slotName}}</option>
-										@endforeach
-										@endif
-									</select>
-								</div>
-							</div>
 						</div>
 						<div class="form-group row">
 							<div class="col-lg-6 row">
@@ -103,7 +82,7 @@
 							<div class="col-lg-6 row">
 								<label for="contact" class="col-sm-2 col-form-label">Contact Number</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="contact" name="contact" value="{{old('contact', $sdata->contact)}}" placeholder="Student Contact Number" @if(currentUser() != 'superadmin' || currentUser() != 'operationmanager' || currentUser() != 'salesmanager') readonly @endif>
+									<input type="text" class="form-control" id="contact" name="contact" value="{{old('contact', $sdata->contact)}}" placeholder="Student Contact Number" @if(currentUser() !='superadmin' || currentUser() !='operationmanager' || currentUser() !='salesmanager' ) readonly @endif>
 									@if($errors->has('contact'))
 									<small class="d-block text-danger mb-3">
 										{{ $errors->first('contact') }}
@@ -148,20 +127,6 @@
 											</div>
 										</div><!-- input-group -->
 									</div>
-								</div>
-							</div>
-							<div class="col-lg-4 row">
-								<label for="name" class="col-sm-3 col-form-label">Select Course</label>
-								<div class="col-sm-9">
-									<select name="course_id[]" class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose Course...">
-										<optgroup label="">
-										@if(count($allCourse))
-											@foreach($allCourse as $course)
-											<option value="{{ $course->id}}">{{$course->courseName}}</option>
-											@endforeach
-										@endif
-										</optgroup>
-									</select>
 								</div>
 							</div>
 							@if(currentUser() != 'salesexecutive')
@@ -277,7 +242,7 @@
 						</div>
 					</form>
 				</div>
-				<div class="tab-pane fade" id="course_student" role="tabpanel" aria-labelledby="course-student-tab">
+				<div class="tab-pane fade" id="batch_student" role="tabpanel" aria-labelledby="batch-student-tab">
 
 					<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$sdata->id)) }}" method="POST" enctype="multipart/form-data">
 						@csrf
@@ -300,23 +265,23 @@
 							<div class="col-lg-12 row">
 								<label for="name" class="col-sm-2 col-form-label">Select Course</label>
 								<div class="col-sm-10">
-								
-                                        <input type="text" name="" id="item_search" class="form-control  ui-autocomplete-input" placeholder="Search Batch">
-                                   
-								
+
+									<input type="text" name="" id="item_search" class="form-control  ui-autocomplete-input" placeholder="Search Batch">
+
+
 									<!-- <select class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose Course..."> -->
 									<!-- <select id="batch_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch..." name="batch_id"> -->
-										{{--@if(count($allBatch))
+									{{--@if(count($allBatch))
 											<option value=""></option>
 											@foreach($allBatch as $batch)
 											<option value="{{ $batch->id}}">{{$batch->batchId}}</option>
-											@endforeach
-										@endif
+									@endforeach
+									@endif
 									</select>
 									@if($errors->has('batch_id'))
-										<small class="d-block text-danger mb-3">
-											{{ $errors->first('batch_id') }}
-										</small>
+									<small class="d-block text-danger mb-3">
+										{{ $errors->first('batch_id') }}
+									</small>
 									@endif--}}
 								</div>
 							</div>
@@ -349,19 +314,19 @@
 							</div>-->
 						</div>
 
-							<input type="hidden" value='1' id="hidden_rowcount" name="hidden_rowcount">
-							<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" id="course_table">
-								<thead>
-									<tr>
-										<th>Batch</th>
-										<th>Status</th>
-										<th>Action</th>
-									</tr>
-								</thead>
-								<tbody id="details_data">
-								</tbody>
-							</table>
-					
+						<input type="hidden" value='1' id="hidden_rowcount" name="hidden_rowcount">
+						<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" id="course_table">
+							<thead>
+								<tr>
+									<th>Batch</th>
+									<th>Status</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody id="details_data">
+							</tbody>
+						</table>
+
 						<div class="form-group text-right mb-0">
 							<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
 								Submit
@@ -388,38 +353,38 @@
 							@foreach($allassignBatches as $allassignBatch)
 							<tr>
 								<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$allassignBatch->student_id)) }}" method="POST" enctype="multipart/form-data">
-								@csrf
-								<td>{{ $loop->iteration }}</td>
-								<input type="hidden" name="s_id" value="{{$allassignBatch->student_id}}">
-								<input type="hidden" name="batch_id" value="{{$allassignBatch->batch_id}}">
-								<td>
-									<select class="form-control" name="" disabled>
-									@forelse($allBatch as $batch)
-										<option value="{{$batch->id}}" @if($allassignBatch->batch_id == $batch->id) selected @endif>{{$batch->batchId}}</option>
-										@empty
-									@endforelse
-									</select>
-								</td>
-								<td>{{$allassignBatch->accountsNote}}</td>
-								<td>@if($allassignBatch->acc_approve) Yes @else No @endif</td>
-								<td>
-									<select class="js-example-basic-single form-control" id="status" name="status">
-										<option value="">Select</option>
-										<option value="2" @if($allassignBatch->status == 2) selected @endif>Enroll</option>
-										<option value="3" @if($allassignBatch->status == 3) selected @endif>Knocking</option>
-										<option value="4" @if($allassignBatch->status == 4) selected @endif>Evloulation</option>
-									</select>
-									@if($errors->has('status'))
+									@csrf
+									<td>{{ $loop->iteration }}</td>
+									<input type="hidden" name="s_id" value="{{$allassignBatch->student_id}}">
+									<input type="hidden" name="batch_id" value="{{$allassignBatch->batch_id}}">
+									<td>
+										<select class="form-control" name="" disabled>
+											@forelse($allBatch as $batch)
+											<option value="{{$batch->id}}" @if($allassignBatch->batch_id == $batch->id) selected @endif>{{$batch->batchId}}</option>
+											@empty
+											@endforelse
+										</select>
+									</td>
+									<td>{{$allassignBatch->accountsNote}}</td>
+									<td>@if($allassignBatch->acc_approve) Yes @else No @endif</td>
+									<td>
+										<select class="js-example-basic-single form-control" id="status" name="status">
+											<option value="">Select</option>
+											<option value="2" @if($allassignBatch->status == 2) selected @endif>Enroll</option>
+											<option value="3" @if($allassignBatch->status == 3) selected @endif>Knocking</option>
+											<option value="4" @if($allassignBatch->status == 4) selected @endif>Evloulation</option>
+										</select>
+										@if($errors->has('status'))
 										<small class="d-block text-danger mb-3">
 											{{ $errors->first('status') }}
 										</small>
-									@endif
-								</td>
-								<td>
-									@if(!$allassignBatch->acc_approve)
+										@endif
+									</td>
+									<td>
+										@if(!$allassignBatch->acc_approve)
 										<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
-									@endif
-								</td>
+										@endif
+									</td>
 								</form>
 							</tr>
 							@endforeach
@@ -427,8 +392,234 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="tab-pane fade" id="operation_student" role="tabpanel" aria-labelledby="operation-student-tab">
-					Operation Data
+				<div class="tab-pane fade" id="course_student" role="tabpanel" aria-labelledby="course-student-tab">
+					<form action="{{ route(currentUser().'.courseEnroll') }}" method="POST" enctype="multipart/form-data">
+						@csrf
+						<input type="hidden" class="form-control" value="{{ $sdata->id }}" name="student_id">
+						<div class="form-group row">
+							<div class="col-lg-4 row">
+								<label for="name" class="col-sm-3 col-form-label">Time Slot</label>
+								<div class="col-sm-9">
+									<select required name="batch_time_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Time Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchTime))
+										@foreach($allBatchTime as $batchTime)
+										<option value="{{ $batchTime->id}}" {{ old('batch_time_id',$sdata->batch_time_id) == $batchTime->id ? "selected" : "" }}>{{$batchTime->time}}</option>
+										@endforeach
+										@endif
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-4 row">
+								<label for="name" class="col-sm-3 col-form-label">Batch Slot</label>
+								<div class="col-sm-9">
+									<select required name="batch_slot_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchSlot))
+										@foreach($allBatchSlot as $batchSlot)
+										<option value="{{ $batchSlot->id}}" {{ old('batch_slot_id',$sdata->batch_slot_id) == $batchSlot->id ? "selected" : "" }}>{{$batchSlot->slotName}}</option>
+										@endforeach
+										@endif
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-4 row">
+								<label for="name" class="col-sm-3 col-form-label">Select Course</label>
+								<div class="col-sm-9">
+									<select required name="course_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Course...">
+										<option value="">Select</option>
+										<optgroup label="">
+											@if(count($allCourse))
+											@foreach($allCourse as $course)
+											<option value="{{ $course->id}}">{{$course->courseName}}</option>
+											@endforeach
+											@endif
+										</optgroup>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="form-group text-right mb-0">
+							<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
+								Submit
+							</button>
+							<button type="reset" class="btn btn-secondary waves-effect">
+								Cancel
+							</button>
+						</div>
+					</form>
+					<h5 class="page-title">Course Wise Enroll History</h5>
+					<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+						<thead>
+							<tr>
+								<th>SL.</th>
+								<th>Course Name</th>
+								<th>Time Slot</th>
+								<th>Batch Slot</th>
+								<th>Price</th>
+								<th>Status</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+						@if(count($allcourseEnroll))
+							@foreach($allcourseEnroll as $cw)
+							<tr>
+								<td>{{ $loop->iteration }}</td>
+								<td>
+									<select name="course_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Course...">
+										<optgroup label="">
+											@if(count($allCourse))
+											@foreach($allCourse as $course)
+											<option value="{{ $course->id}}" @if($cw->course_id == $course->id) selected @endif>{{$course->courseName}}</option>
+											@endforeach
+											@endif
+										</optgroup>
+									</select>
+								</td>
+								<td>
+									<select required name="batch_time_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Time Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchTime))
+										@foreach($allBatchTime as $batchTime)
+										<option value="{{ $batchTime->id}}" {{ old('batch_time_id',$cw->batch_time_id) == $batchTime->id ? "selected" : "" }}>{{$batchTime->time}}</option>
+										@endforeach
+										@endif
+									</select>
+								</td>
+								<td>
+									<select required name="batch_slot_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchSlot))
+										@foreach($allBatchSlot as $batchSlot)
+										<option value="{{ $batchSlot->id}}" {{ old('batch_slot_id',$cw->batch_slot_id) == $batchSlot->id ? "selected" : "" }}>{{$batchSlot->slotName}}</option>
+										@endforeach
+										@endif
+									</select>
+								</td>
+								<td>{{$cw->price}}</td>
+								<td>@if($cw->status==1) Batch Assigned @else Batch Pending @endif</td>
+								<td>
+								@if($cw->status==0)
+									<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
+								@endif	
+								</td>
+							</tr>
+							@endforeach
+							@endif
+						</tbody>
+					</table>
+				</div>
+				<div class="tab-pane fade" id="course_pre" role="tabpanel" aria-labelledby="course-pre-tab">
+					<form action="{{ route(currentUser().'.coursePreference') }}" method="POST" enctype="multipart/form-data">
+						@csrf
+						<input type="hidden" class="form-control" value="{{ $sdata->id }}" name="student_id">
+						<div class="form-group row">
+							<div class="col-lg-4 row">
+								<label for="name" class="col-sm-3 col-form-label">Time Slot</label>
+								<div class="col-sm-9">
+									<select required name="batch_time_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Time Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchTime))
+										@foreach($allBatchTime as $batchTime)
+										<option value="{{ $batchTime->id}}" {{ old('batch_time_id',$sdata->batch_time_id) == $batchTime->id ? "selected" : "" }}>{{$batchTime->time}}</option>
+										@endforeach
+										@endif
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-4 row">
+								<label for="name" class="col-sm-3 col-form-label">Batch Slot</label>
+								<div class="col-sm-9">
+									<select required name="batch_slot_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchSlot))
+										@foreach($allBatchSlot as $batchSlot)
+										<option value="{{ $batchSlot->id}}" {{ old('batch_slot_id',$sdata->batch_slot_id) == $batchSlot->id ? "selected" : "" }}>{{$batchSlot->slotName}}</option>
+										@endforeach
+										@endif
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-4 row">
+								<label for="name" class="col-sm-3 col-form-label">Select Course</label>
+								<div class="col-sm-9">
+									<select name="course_id[]" class="form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose Course...">
+										<optgroup label="">
+											@if(count($allCourse))
+											@foreach($allCourse as $course)
+											<option value="{{ $course->id}}">{{$course->courseName}}</option>
+											@endforeach
+											@endif
+										</optgroup>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="form-group text-right mb-0">
+							<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
+								Submit
+							</button>
+							<button type="reset" class="btn btn-secondary waves-effect">
+								Cancel
+							</button>
+						</div>
+					</form>
+					<h5 class="page-title">Course Interests History</h5>
+					<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+						<thead>
+							<tr>
+								<th>SL.</th>
+								<th>Course Name</th>
+								<th>Time Slot</th>
+								<th>Batch Slot</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if(count($allPreference))
+							@foreach($allPreference as $p)
+							<tr>
+								<td>{{ $loop->iteration }}</td>
+								<td>
+									<select name="course_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Course...">
+										<optgroup label="">
+											@if(count($allCourse))
+											@foreach($allCourse as $course)
+											<option value="{{ $course->id}}" @if($p->course_id == $course->id) selected @endif>{{$course->courseName}}</option>
+											@endforeach
+											@endif
+										</optgroup>
+									</select>
+								</td>
+								<td>
+									<select required name="batch_time_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Time Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchTime))
+										@foreach($allBatchTime as $batchTime)
+										<option value="{{ $batchTime->id}}" {{ old('batch_time_id',$p->batch_time_id) == $batchTime->id ? "selected" : "" }}>{{$batchTime->time}}</option>
+										@endforeach
+										@endif
+									</select>
+								</td>
+								<td>
+									<select required name="batch_slot_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch Slot...">
+										<option value="">Select</option>
+										@if(count($allBatchSlot))
+										@foreach($allBatchSlot as $batchSlot)
+										<option value="{{ $batchSlot->id}}" {{ old('batch_slot_id',$p->batch_slot_id) == $batchSlot->id ? "selected" : "" }}>{{$batchSlot->slotName}}</option>
+										@endforeach
+										@endif
+									</select>
+								</td>
+								<td>
+									<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
+								</td>
+							</tr>
+							@endforeach
+							@endif
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -440,7 +631,7 @@
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
 <script>
-	function change(batch_id,status,bid){
+	function change(batch_id, status, bid) {
 		$('#batch_id').val(batch_id); // Change the value or make some change to the internal state
 		$('#batch_id').trigger('change.select2'); // Notify only Select2 of changes
 		$("#status").val(status).change();
@@ -450,115 +641,127 @@
 	$('.js-example-basic-single').select2();
 
 
-	$("#item_search").bind("paste", function(e){
-            $("#item_search").autocomplete('search');
-        } );
-        $("#item_search").autocomplete({
-            source: function(data, cb){
-				console.log(data);
-                $.ajax({
-                    autoFocus:true,
-                    url: "{{route(currentUser().'.allBatches')}}",
-                    method: 'GET',
-                    dataType: 'json',
-					data: {
-                        name: data.term
-                    },
-                    success: function(res){
-						//console.log(res);
-                        var result;
-                        result = {label: 'No Records Found ',value: ''};
-                        if (res.length) {
-                            result = $.map(res, function(el){
-                                return {
-                                    label: 'Available Seat:-('+(el.seat-el.tst)+') '+el.batchId,
-                                    value: '',
-                                    id: el.id,
-                                    batchId: el.batchId,
-									seat:(el.seat-el.tst)
-                                };
-                            });
-                        }
-                        cb(result);
-                    },error: function(e){
-                        console.log(e);
-                    }
-                });
-            },
-            response:function(e,ui){
-                if(ui.content.length==1){
-                    $(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
-                    $(this).autocomplete("close");
-                }
-                console.log(ui);
-            },
-                //loader start
-            search: function (e, ui) {},
-            select: function (e, ui) { 
-                if(typeof ui.content!='undefined'){
-                    if(isNaN(ui.content[0].id)){
-                        return;
-                    }
-					var batchId=ui.content[0].id;
-                }
-                else{
-                    var batchId=ui.item.id;
-					var seat = ui.item.seat;
-                }
-				if(seat == 0){toastr['error']("No Seat Available!!");return false;}
-				return_row_with_data(batchId);
-                $("#item_search").val('');
-            },   
-            //loader end
-        });
+	$("#item_search").bind("paste", function(e) {
+		$("#item_search").autocomplete('search');
+	});
+	$("#item_search").autocomplete({
+		source: function(data, cb) {
+			console.log(data);
+			$.ajax({
+				autoFocus: true,
+				url: "{{route(currentUser().'.allBatches')}}",
+				method: 'GET',
+				dataType: 'json',
+				data: {
+					name: data.term
+				},
+				success: function(res) {
+					//console.log(res);
+					var result;
+					result = {
+						label: 'No Records Found ',
+						value: ''
+					};
+					if (res.length) {
+						result = $.map(res, function(el) {
+							return {
+								label: 'Available Seat:-(' + (el.seat - el.tst) + ') ' + el.batchId,
+								value: '',
+								id: el.id,
+								batchId: el.batchId,
+								seat: (el.seat - el.tst)
+							};
+						});
+					}
+					cb(result);
+				},
+				error: function(e) {
+					console.log(e);
+				}
+			});
+		},
+		response: function(e, ui) {
+			if (ui.content.length == 1) {
+				$(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
+				$(this).autocomplete("close");
+			}
+			console.log(ui);
+		},
+		//loader start
+		search: function(e, ui) {},
+		select: function(e, ui) {
+			if (typeof ui.content != 'undefined') {
+				if (isNaN(ui.content[0].id)) {
+					return;
+				}
+				var batchId = ui.content[0].id;
+			} else {
+				var batchId = ui.item.id;
+				var seat = ui.item.seat;
+			}
+			if (seat == 0) {
+				toastr['error']("No Seat Available!!");
+				return false;
+			}
+			return_row_with_data(batchId);
+			$("#item_search").val('');
+		},
+		//loader end
+	});
 
 
-		function return_row_with_data(batchId){
-        $("#item_search").addClass('ui-autocomplete-loader-center');
-		var student_id=$('#student_id').val();
-		var rowcount=$("#hidden_rowcount").val();
-        $.ajax({
-            autoFocus:true,
-            url: "{{route(currentUser().'.batchById')}}",
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                batchId:batchId,rowcount:rowcount,student_id:student_id
-            },
-            success: function(res){
+	function return_row_with_data(batchId) {
+		$("#item_search").addClass('ui-autocomplete-loader-center');
+		var student_id = $('#student_id').val();
+		var rowcount = $("#hidden_rowcount").val();
+		$.ajax({
+			autoFocus: true,
+			url: "{{route(currentUser().'.batchById')}}",
+			method: 'GET',
+			dataType: 'json',
+			data: {
+				batchId: batchId,
+				rowcount: rowcount,
+				student_id: student_id
+			},
+			success: function(res) {
 				//console.log(res.data);
-				var item_check=check_same_item(batchId);
-        		if(!item_check){$("#item_search").removeClass('ui-autocomplete-loader-center');return false;}
-				if(res.data.error){toastr['error']("Batch In List!!");return false;}
-                $('#details_data').append(res.data);
-				$("#hidden_rowcount").val(parseFloat(rowcount)+1);
-                $("#item_search").val('');
-                $("#item_search").removeClass('ui-autocomplete-loader-center');
-            },error: function(e){
-                console.log(e);
-            }
-        });
-        
-    }
+				var item_check = check_same_item(batchId);
+				if (!item_check) {
+					$("#item_search").removeClass('ui-autocomplete-loader-center');
+					return false;
+				}
+				if (res.data.error) {
+					toastr['error']("Batch In List!!");
+					return false;
+				}
+				$('#details_data').append(res.data);
+				$("#hidden_rowcount").val(parseFloat(rowcount) + 1);
+				$("#item_search").val('');
+				$("#item_search").removeClass('ui-autocomplete-loader-center');
+			},
+			error: function(e) {
+				console.log(e);
+			}
+		});
 
-function check_same_item(item_id){
-  if($("#course_table tr").length>1){
-    var rowcount=$("#hidden_rowcount").val();
-    for(i=0;i<=rowcount;i++){
-            if($("#row_"+i).attr('data-item-id')==item_id){
-              return false;
-            }
-      }//end for
-  }
-  return true;
-  }
-            
-function removerow(id){//id=Rowid  
-	$("#row_"+id).remove();
-}
-    
+	}
 
+	function check_same_item(item_id) {
+		if ($("#course_table tr").length > 1) {
+			var rowcount = $("#hidden_rowcount").val();
+			for (i = 0; i <= rowcount; i++) {
+				if ($("#row_" + i).attr('data-item-id') == item_id) {
+					return false;
+				}
+			} //end for
+		}
+		return true;
+	}
 
+	function removerow(id) { //id=Rowid  
+		$("#row_" + id).remove();
+	}
 </script>
 @if(Session::has('response'))
 @php print_r(Session::has('response')); @endphp

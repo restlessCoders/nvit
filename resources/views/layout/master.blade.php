@@ -152,7 +152,7 @@
                                     <i class="fas fa-users"></i>Students <div class="arrow-down"></div></a>
                                 <ul class="submenu">
                                     <li class="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.addNewStudentForm')}} @endif">Add New</a></li>
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesexecutive' || currentUser() == 'salesmanager' ||currentUser() == 'frontdesk' ||currentUser() == 'operationmanager' || currentUser() == 'accountmanager') {{route(currentUser().'.allStudent')}} @endif">All Students</a></li>
+                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesexecutive' || currentUser() == 'salesmanager' ||currentUser() == 'frontdesk' ||currentUser() == 'operationmanager') {{route(currentUser().'.allStudent')}} @endif">All Students</a></li>
                                 </ul>
                             </li>
 
@@ -169,7 +169,8 @@
                                 <a href="#">
                                     <i class="ti-layout-grid3"></i>Payments <div class="arrow-down"></div></a>
                                 <ul class="submenu">
-                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin'  || currentUser() == 'accountmanager') {{route(currentUser().'.payment.index')}} @endif">All Payment</a></li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin'  || currentUser() == 'accountmanager') {{route(currentUser().'.payment.index')}} @endif">Batch Payment</a></li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin'  || currentUser() == 'accountmanager') {{route(currentUser().'.payments.index')}} @endif">Others Payment</a></li>
                                 </ul>
                             </li>
                             <li class="has-submenu">

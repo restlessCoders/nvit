@@ -18,4 +18,8 @@ class Payment extends Model
     public function postedData(){
         return $this->belongsTo(user::class,'createdBy','id');
     }
+    public function paymentDetail()
+    {
+        return $this->hasMany(PaymentDetail::class,'paymentId','id');
+    }
 }

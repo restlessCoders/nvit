@@ -1,0 +1,47 @@
+        $stData = DB::table('paymentdetails')->select('batches.batchId', 'paymentdetails.*')
+        ->join('student_batches', 'paymentdetails.studentId', '=', 'student_batches.student_id')
+        ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
+        ->where('paymentdetails.studentId', $request->sId);
+        if($request->systmVal){
+            $stData->where('student_batches.systemId', $request->systmVal);
+        }
+        if($request->batchId){
+            $stData->where('student_batches.batch_id', $request->batchId);
+            $stData->where('paymentdetails.batchId', $request->batchId);
+        }
+        if($request->feeType){
+            /*Registration Fee Or Course Fee*/
+            $stData->where('paymentdetails.feeType', $request->feeType);
+        }
+        $stData = $stData->get();
+        return response()->json(array('data' =>$stData));
+
+
+
+if(opt == 1){
+				var feeType = $('#pType option:selected').val();
+				var batchId = $('#batch_id option:selected').val();
+
+				
+				
+				$.ajax({
+					url: "{{route(currentUser().'.allPaymentReportBySid')}}",
+					method: 'GET',
+					dataType: 'json',
+					data: {
+						systmVal: systmVal,
+						sId:sId,
+						feeType:feeType,//Registration Fee or Course Fee
+						batchId:batchId
+					},
+					success: function(res) {
+						console.log(res.data);
+						$('#paymentTblData').empty();
+						$('#paymentTblData').append(res.data);
+					},
+					error: function(e) {
+						console.log(e);
+					}
+				});
+				
+			}

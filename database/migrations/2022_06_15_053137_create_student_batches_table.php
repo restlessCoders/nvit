@@ -25,6 +25,8 @@ class CreateStudentBatchesTable extends Migration
             //$table->integer("status")->default(1)->comment('0 => inactive, 1 => active, 2 => waiting' );
             //$table->integer("status")->comment('0 => Close, 1 => Running, 2=> Knocking, 3=> Enroll 4=> Registered 5=> Evoulation');
             $table->integer("status")->comment('0 => course complete, 1 => Payment Complete, 2=> Enrolled , 3=> Knocking, 4=> Evoulation');
+            $table->integer("cstatus")->comment('0 => course incomplete, 1 => course Complete');
+            $table->integer("pstatus")->comment('0 => payment incomplete, 1 => Payment Complete');
             $table->timestamps();
         });
     }
