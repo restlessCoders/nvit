@@ -102,7 +102,7 @@
 					<div class="col-lg-4">
 						<label>Start Date<span class="text-danger sup">*</span></label>
 						<div class="input-group">
-							<input type="text" name="startDate" class="form-control" value="{{ old('startDate',$bdata->startDate) }}" placeholder="dd/mm/yyyy" data-provide="datepicker" data-date-autoclose="true">
+							<input type="text" name="startDate" class="form-control" value="{{ old('startDate',$bdata->startDate) }}">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
@@ -111,7 +111,7 @@
 					<div class="col-lg-4">
 						<label>End Date<span class="text-danger sup">*</span></label>
 						<div class="input-group">
-							<input type="text" name="endDate" class="form-control" value="{{ old('endDate',$bdata->endDate) }}" placeholder="dd/mm/yyyy" data-provide="datepicker" data-date-autoclose="true">
+							<input type="text" name="endDate" class="form-control" value="{{ old('endDate',$bdata->endDate) }}">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
@@ -120,7 +120,7 @@
 					<div class="col-lg-4">
 						<label>Exam Date<span class="text-danger sup">*</span></label>
 						<div class="input-group">
-							<input type="text" name="examDate" class="form-control" value="{{ old('examDate',$bdata->examDate) }}" placeholder="dd/mm/yyyy" data-provide="datepicker" data-date-autoclose="true">
+							<input type="text" name="examDate" class="form-control" value="{{ old('examDate',$bdata->examDate) }}">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
@@ -172,14 +172,18 @@
 					<div class="col-lg-4">
 						<label class="control-label">Status: </label>
 						<select name="status" class="form-control @if($errors->has('status')) {{ 'is-invalid' }} @endif">
-							<option value="1" selected>Active</option>
-							<option value="0">Inactive</option>
+							<option value="1" @if($bdata->status ==1) selected @endif>Active</option>
+							<option value="0" @if($bdata->status ==0) selected @endif>Inactive</option>
 						</select>
 						@if($errors->has('status'))
 						<small class="d-block text-danger mb-3">
 							{{ $errors->first('status') }}
 						</small>
 						@endif
+					</div>
+					<div class="col-lg-4">
+						<label class="control-label">Number Of Class: </label>
+						<input type="text" name="totalClass" class="form-control" value="{{$bdata->totalClass}}">
 					</div>
 				</div>
 				<div class="form-group text-right mb-0">

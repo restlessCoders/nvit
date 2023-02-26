@@ -16,6 +16,8 @@ use App\Http\Requests\Batch\UpdateBatchRequest;
 use App\Http\Traits\ResponseTrait;
 use Exception;
 use DB;
+use Carbon\Carbon;
+
 class BatchController extends Controller
 {
     use ResponseTrait;
@@ -119,7 +121,11 @@ class BatchController extends Controller
             //echo $courseMax;die;
             $course = Course::where('id',$request->courseId)->first();
             $batch = new Batch;
-            $batch->batchId = $course->courseName.'-'.$courseMax;
+            if($request->type==2){
+                $batch->batchId = $course->courseName.'-'.$courseMax.' (Carsh)';
+            }else{
+                $batch->batchId = $course->courseName.'-'.$courseMax;
+            }
             $batch->courseId = $request->courseId;
             $batch->startDate = date('Y-m-d',strtotime($request->startDate));
             $batch->endDate = date('Y-m-d',strtotime($request->endDate));
@@ -134,6 +140,7 @@ class BatchController extends Controller
             $batch->discount = $request->discount;*/
             $batch->status =1;
             $batch->userId = encryptor('decrypt', $request->userId);
+            $batch->totalClass = $request->totalClass;
             if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch created'));
         } catch (Exception $e) {
             dd($e);
@@ -181,20 +188,19 @@ class BatchController extends Controller
     {
         try {
         $batch = Batch::find(encryptor('decrypt', $id));
-            $batch->startDate = date('Y-m-d',strtotime($request->startDate));
-            $batch->endDate = date('Y-m-d',strtotime($request->endDate));
+            $batch->startDate = Carbon::createFromFormat('d/m/Y', $request->startDate)->format('Y-m-d');
+            $batch->endDate = Carbon::createFromFormat('d/m/Y', $request->endDate)->format('Y-m-d');
             $batch->bslot = $request->bslot;
             $batch->btime = $request->btime;
             $batch->trainerId = $request->trainerId;
-            $batch->examDate = date('Y-m-d',strtotime($request->examDate));
+            $batch->examDate = Carbon::createFromFormat('d/m/Y', $request->examDate)->format('Y-m-d');
             $batch->examTime = date('H:i:s',strtotime($request->examTime));
             $batch->examRoom = $request->examRoom;
-            $batch->price = $request->price;
-            $batch->discount = $request->discount;
-            $batch->status =$request->discount;
+            $batch->status =$request->status;
             $batch->userId = encryptor('decrypt', $request->userId);
             $batch->seat = $request->seat;//Before update total number of enroll student
-        $batch->save();
+            $batch->totalClass = $request->totalClass;
+            $batch->save();
         if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch updated'));
         } catch (Exception $e) {
 			dd($e);

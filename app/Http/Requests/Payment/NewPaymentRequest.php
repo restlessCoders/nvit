@@ -25,15 +25,8 @@ class NewPaymentRequest extends FormRequest
     {
         return [
             'mrNo' 		        => 'required|string',
-            'paidAmount'        => 'required',
-            'paymentDate'       => 'required',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'required' => 'This field is required.'
+            /*'paidAmount'        => 'required',
+            'paymentDate'       => 'required',*/
         ];
     }
 }

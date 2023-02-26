@@ -21,8 +21,6 @@ return new class extends Migration
             $table->date('paymentDate');
             $table->unsignedFloat('tPayable', 10, 2)->default(0);
             $table->unsignedFloat('paidAmount', 10, 2)->default(0);
-            $table->unsignedBigInteger('couponId')->nullable();;
-            $table->unsignedFloat('discount', 10, 2)->default(0)->nullable();
             /*$table->boolean('mr')->default(5)->nullable();*/
             $table->boolean('status')->default(1)->comment('1 => due, 0=> paid');
             $table->unsignedBigInteger('createdBy');

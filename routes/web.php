@@ -17,6 +17,8 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\UpazilaController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PaymentReportController;
+use App\Http\Controllers\OtherPaymentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -222,6 +224,12 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
+
+        /*Course Preference */
+        Route::post('/course/preference/', [StudentController::class,'coursePreference'])->name('salesexecutive.coursePreference');
+
+        /*Course Wise Enroll */
+        Route::post('/course/wise/enroll', [StudentController::class,'courseEnroll'])->name('salesexecutive.courseEnroll');
     });
 });
 
@@ -291,16 +299,45 @@ Route::group(['middleware' => 'isAccountmanager'], function(){
 
         Route::prefix('student')->group(function () {
             //Student Controller
-            Route::get('/all',  [StudentController::class,'confirmStudents'])->name('accountmanager.allStudent');
+            //Route::get('/all',  [StudentController::class,'confirmStudents'])->name('accountmanager.allStudent');
             Route::get('/student/enroll/details/{id}',  [StudentController::class,'studentenrollById'])->name('accountmanager.studentenrollById');
             Route::get('/payment/{id}/{entryDate}',  [StudentController::class,'paymentStudent'])->name('accountmanager.paymentStudent');
         });
         Route::resource('/batch',BatchController::class,["as" => "accountmanager"])->only(['index']);
+
+        /*====Batch Payment====*/
+        Route::get('/payment/invoice',[PaymentController::class,'searchStData'])->name('accountmanager.searchStData');
+        Route::get('/payment/enroll',[PaymentController::class,'enrollData'])->name('accountmanager.enrollData');
+        Route::get('/payment/databySystemId',[PaymentController::class,'databySystemId'])->name('accountmanager.databySystemId');
+        Route::get('/payment/data',[PaymentController::class,'paymentData'])->name('accountmanager.paymentData');
+        
         Route::resource('/payment',PaymentController::class,["as" => "accountmanager"]);
+        
+        /*=== Payment Edit====*/
+        Route::get('/payment/report/{id}/{sId}',[PaymentController::class,'edit'])->name('accountmanager.payment.edit');
+        /*===Payment report==*/
+        Route::get('/payment/report/all',[PaymentReportController::class,'allPaymentReportBySid'])->name('accountmanager.allPaymentReportBySid');
+
+        
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
+
+        /*===Other Payment===*/
+        Route::prefix('other')->name('accountmanager.')->group(function () {
+            Route::resource('payments', OtherPaymentController::class);
+
+            Route::get('/payment/invoice/search',[OtherPaymentController::class,'searchStudent'])->name('searchStudent');
+            Route::get('/payment/invoice/enroll',[OtherPaymentController::class,'stData'])->name('stData');
+            Route::get('/payment/invoice/databyStudentId',[OtherPaymentController::class,'databyStudentId'])->name('databyStudentId');
+            Route::get('/payment/invoice/other',[OtherPaymentController::class,'otherPaymentByStudentId'])->name('otherPaymentByStudentId');
+            Route::get('/payment/invoice/course',[OtherPaymentController::class,'coursePaymentByStudentId'])->name('coursePaymentByStudentId');
+            Route::post('/payment/course/',[OtherPaymentController::class,'coursestore'])->name('payments.coursestore');
+        });
+        
+        
+
     });
 });
 

@@ -101,7 +101,7 @@
 					<div class="col-lg-4">
 						<label>Start Date<span class="text-danger sup">*</span></label>
 						<div class="input-group">
-							<input type="text" name="startDate" class="form-control" value="{{ old('startDate') }}" placeholder="dd/mm/yyyy" data-provide="datepicker" data-date-autoclose="true">
+							<input type="text" name="startDate" class="form-control" value="{{ old('startDate') }}" placeholder="dd/mm/yyyy">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
@@ -110,7 +110,7 @@
 					<div class="col-lg-4">
 						<label>End Date<span class="text-danger sup">*</span></label>
 						<div class="input-group">
-							<input type="text" name="endDate" class="form-control" value="{{ old('endDate') }}" placeholder="dd/mm/yyyy" data-provide="datepicker" data-date-autoclose="true">
+							<input type="text" name="endDate" class="form-control" value="{{ old('endDate') }}" placeholder="dd/mm/yyyy">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
@@ -119,7 +119,7 @@
 					<div class="col-lg-4">
 						<label>Exam Date<span class="text-danger sup">*</span></label>
 						<div class="input-group">
-							<input type="text" name="examDate" class="form-control" value="{{ old('examDate') }}" placeholder="dd/mm/yyyy" data-provide="datepicker" data-date-autoclose="true">
+							<input type="text" name="examDate" class="form-control" value="{{ old('examDate') }}" placeholder="dd/mm/yyyy">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
@@ -179,6 +179,17 @@
 							{{ $errors->first('status') }}
 						</small>
 						@endif
+					</div>
+					<div class="col-lg-4">
+						<label class="control-label">Course Type: </label>
+						<select name="type" class="form-control">
+							<option value="1" selected>Regular</option>
+							<option value="2">Crash</option>
+						</select>
+					</div>
+					<div class="col-lg-4">
+						<label class="control-label">Number Of Class: </label>
+						<input type="text" name="totalClass" class="form-control">
 					</div>
 				</div>
 				<div class="form-group text-right mb-0">

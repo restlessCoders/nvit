@@ -17,7 +17,7 @@ class CreateStudentsTable extends Migration
             $table->bigIncrements('id');
             $table->string("name",255);
             $table->string("photo",255)->nullable();
-            $table->string("contact",13)->unique();;
+            $table->string("contact",13)->unique();
             $table->string("altContact",255)->nullable();
             $table->string("email",255)->unique()->nullable();
             $table->text("address")->nullable();

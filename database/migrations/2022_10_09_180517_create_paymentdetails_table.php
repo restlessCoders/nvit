@@ -22,8 +22,11 @@ return new class extends Migration
             $table->unsignedFloat('cPayable', 10, 2)->default(0);
             $table->unsignedFloat('cpaidAmount', 10, 2)->default(0);
             $table->unsignedFloat('m_price', 10, 2)->default(0);
-            $table->boolean('type')->default(1)->comment('1 => partial, 0=> full');
+            $table->boolean('payment_type')->default(1)->comment('1 => partial, 0=> full');
+            $table->boolean('feeType')->comment('1 => Registratio Fee, 2=> Course Fee');
+            $table->boolean('payment_mode')->comment('1 => Cash Fee, 2=> Bkash 3=> Card');
             $table->date('dueDate')->nullable();
+            $table->unsignedFloat('discount', 10, 2)->default(0);
             $table->timestamps();
         });
     }
