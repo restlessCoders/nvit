@@ -30,6 +30,8 @@ class CreateUsersTable extends Migration
 			$table->unsignedBigInteger('roleId');
             $table->index(['branchId']);
             $table->index(['email']);
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
 

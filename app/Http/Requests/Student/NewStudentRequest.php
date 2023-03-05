@@ -23,11 +23,14 @@ class NewStudentRequest extends FormRequest
      */
     public function rules()
     {
+        if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' ||  strtolower(currentUser()) === 'operationmanager') {
+            $rules['executiveId'] = 'required';
+        }
         return [
             'name' 		    => 'required|string',
             'contact'       => 'required|regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students',
-            'email'         => 'string|unique:students,email',
-            'executiveId' 	=> 'required',
+            'altContact'    => 'nullable|regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students',
+            'email'         => 'nullable|string|unique:students,email',
             'refId' 	    => 'required',
         ];
     }

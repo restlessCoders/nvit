@@ -21,7 +21,7 @@ class Batch extends Model
         return $this->belongsTo(User::class,'trainerId','id');
     }
     public function createdby(){
-        return $this->belongsTo(User::class,'userId','id');
+        return $this->belongsTo(User::class,'created_by','id');
     }
     public function students(){
         //return $this->belongsToMany(Batch::class, 'student_batches', 'batch_id');

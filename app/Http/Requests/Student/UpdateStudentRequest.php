@@ -31,8 +31,9 @@ class UpdateStudentRequest extends FormRequest
         }
         $rules = [
             'name' 		    => 'required|string',
-            'contact'       => "required|string|unique:students,contact,$id",
-            'email'         => "string|unique:students,email,$id",
+            'contact'       => "required|regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students,contact,$id",
+            'altContact'    => "nullable|regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students,altContact,$id",
+            'email'         => "nullable|string|unique:students,email,$id",
         ];
         return $rules;
     }

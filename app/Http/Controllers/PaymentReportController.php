@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 use App\Models\Payment;
+use App\Models\Batch;
 use App\Models\Paymentdetail;
 
 use Illuminate\Http\Request;
@@ -10,14 +12,39 @@ use Carbon\Carbon;
 
 class PaymentReportController extends Controller
 {
+    public function daily_collection_report_by_mr(){
+        $users = User::whereIn('roleId', [1,3,5,9])->get();
+        $batches = Batch::all();
+        $payments = Payment::with('paymentDetail')->get();
+       /* echo '<pre>';
+        print_r($payments->toArray());die;*/
+        return view('report.accounts.daily_collection_by_mr',compact('payments','users','batches'));
+    }
+    public function daily_collection_report(){
+        $users = User::whereIn('roleId', [1,3,5,9])->get();
+        $batches = Batch::all();
+
+        $payments = DB::table('payments')
+            ->select('paymentDate', DB::raw('SUM(paidAmount) as paidAmount,SUM(tPayable) as tPayable'))
+            ->groupBy('paymentDate')
+            ->get();
+
+        $salespersons = DB::table('payments')
+            ->select('payments.executiveId','users.username')
+            ->join('users', 'payments.executiveId', '=', 'users.id')
+            ->groupBy('payments.executiveId')
+            ->get();
+        return view('report.accounts.daily_collection_report',compact('payments','salespersons','users','batches'));
+    }
     public function allPaymentReportBySid(Request $request){
 
         $payments = DB::table('paymentdetails')
-        ->select('batches.batchId as batchName', 'paymentdetails.*','payments.invoiceId','payments.paymentDate')
-        ->join('student_batches', 'paymentdetails.studentId', '=', 'student_batches.student_id')
+        ->select('batches.batchId as batchName', 'paymentdetails.*','payments.paymentDate')
+        ->join('student_batches', 'paymentdetails.batchId', '=', 'student_batches.batch_id')
         ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
         ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
         ->where('paymentdetails.studentId', $request->sId);
+        
         if($request->systmVal){
             $payments->where('student_batches.systemId', $request->systmVal);
         }
@@ -30,7 +57,7 @@ class PaymentReportController extends Controller
             $payments->where('paymentdetails.feeType', $request->feeType);
         }
         
-        $payments = $payments->groupBy('student_batches.batch_id','student_batches.systemId')->get();
+        $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         //return response()->json(array('data' =>$payments));
             $data ='<h5 style="font-size:18px;line-height:70px;">All Payment List</h5>';    
             $data .='<table class="table table-bordered mb-5 text-center">

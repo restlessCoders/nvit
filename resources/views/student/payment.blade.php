@@ -8,9 +8,11 @@
 	.select2-container {
 		width: 100% !important;
 	}
-
 	.ui-widget {
 		font-size: 1em;
+	}
+	.form-control-sm {
+  	font-size: small;
 	}
 </style>
 @endpush
@@ -91,7 +93,7 @@ $(document).on('submit', '#my-form', function(event) {
 			// Redirect with success message
 			toastr.success(response.success);
 			
-			window.location.href = "{{route(currentUser().'.payment.index') }}";
+			window.location.href = "{{route(currentUser().'.daily_collection_report') }}";
         },
 		error: function (response) {
 			// handle errors
@@ -122,8 +124,6 @@ $(document).on('submit', '#my-form', function(event) {
 			data +='<option value="">Select</option>';
 				data +='<option value="1">Registration</option>';  
 				data +='<option value="2">Batch</option>';    
-				data +='<option value="3">Course (No Batch)</option>';  
-				data +='<option value="4">Others</option>'; 
 			data += '</select></div>';
 			// append the new div after the element with id="myElement"
 			$('#type').after(data);
@@ -238,6 +238,7 @@ function checkPrice(index){
 					}else{
 						$('#details_data').html('');
 						$('#student_detl_data').html('');
+						$('#paymentTblData').html('');
 					}
 					cb(result);
 				},
@@ -264,6 +265,7 @@ function checkPrice(index){
 			} else {
 				var student_id = ui.item.id;
 			}
+			
 			return_row_with_data(student_id);
 			$("#item_search").val('');
 		},
@@ -286,6 +288,8 @@ function checkPrice(index){
 			success: function(res) {
 				//console.log(res.data);
 				if(res.data){
+					$('#student_detl_data').html('');
+					$('#paymentTblData').html('');
 					$('#details_data').append(res.data);
 					$('#student_detl_data').append(res.sdata);
 					$('#showData').show();

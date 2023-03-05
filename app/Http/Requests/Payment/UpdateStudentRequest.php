@@ -32,6 +32,7 @@ class UpdateStudentRequest extends FormRequest
         $rules = [
             'name' 		    => 'required|string',
             'contact'       => "required|string|unique:students,contact,$id",
+            'altContact'    => "regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students,$id",
             'email'         => "string|unique:students,email,$id",
         ];
         return $rules;

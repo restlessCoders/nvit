@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PackageController;
@@ -94,6 +95,36 @@ Route::group(['middleware' => 'isSuperAdmin'], function(){
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('superadmin.addstudentCourseAssign');
         });
 
+        Route::resource('/notes',NoteController::class,["as" => "superadmin"]);
+        
+        Route::get('/batch/all',[BatchController::class,'all'])->name('superadmin.allBatches');
+        Route::resource('/batch',BatchController::class,["as" => "superadmin"]);
+        Route::get('/batchById',[BatchController::class,'batchById'])->name('superadmin.batchById');
+
+        /*==Student Transfer==*/
+        Route::get('/student/transfer/list', [StudentController::class,'studentTransferList'])->name('superadmin.studentTransferList');
+        Route::get('/student/transfer', [StudentController::class,'studentTransfer'])->name('superadmin.studentTransfer');
+        Route::get('/student/executive', [StudentController::class,'studentExecutive'])->name('superadmin.studentExecutive');
+        Route::post('/student/transfer/save', [StudentController::class,'stTransfer'])->name('superadmin.stTransfer');
+        
+
+
+
+        /*==Batch Transfer==*/
+        Route::get('/student/batch/transfer/list', [StudentController::class,'batchTransferList'])->name('superadmin.batchTransferList');
+        Route::get('/student/batch/transfer', [StudentController::class,'batchTransfer'])->name('superadmin.batchTransfer');
+        Route::get('/student/batch/enroll', [StudentController::class,'studentEnrollBatch'])->name('superadmin.studentEnrollBatch');
+        Route::post('/student/transfer', [StudentController::class,'transfer'])->name('superadmin.transfer');
+
+        /*Course Wise Enroll */
+        Route::post('/course/wise/enroll', [StudentController::class,'courseEnroll'])->name('superadmin.courseEnroll');
+
+        /*Course Preference */
+        Route::post('/course/preference/', [StudentController::class,'coursePreference'])->name('superadmin.coursePreference');
+
+        /*==Course Search==*/
+        Route::post('/course/search',[CourseController::class,'courseSearch'])->name('superadmin.courseSearch');
+
         Route::resource('/package',PackageController::class,["as" => "superadmin"]);
         Route::resource('/batch',BatchController::class,["as" => "superadmin"]);
         Route::resource('/reference',ReferenceController::class,["as" => "superadmin"]);
@@ -110,6 +141,14 @@ Route::group(['middleware' => 'isSuperAdmin'], function(){
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
+
+        /*===Payment report==*/
+        Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('superadmin.daily_collection_report');
+        Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('superadmin.daily_collection_report_by_mr');
+
+        /*Attendance Report */
+        Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('superadmin.batchwiseAttendance');
+        Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('superadmin.batchwiseAttendanceReport');
 	});
 });
 
@@ -136,6 +175,7 @@ Route::group(['middleware' => 'isFrontdesk'], function(){
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('frontdesk.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('frontdesk.batchwiseEnrollStudent');
+        
     });
 });
 
@@ -189,6 +229,10 @@ Route::group(['middleware' => 'isSalesManager'], function(){
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
 
+        /*===Payment report==*/
+        Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('salesmanager.daily_collection_report');
+        Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('salesmanager.daily_collection_report_by_mr');
+
     });
 });
 
@@ -217,6 +261,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesexecutive.addstudentCourseAssign');
         });
         
+        Route::resource('/notes',NoteController::class,["as" => "salesexecutive"]);
+
         Route::get('/batch/all',[BatchController::class,'all'])->name('salesexecutive.allBatches');
         Route::resource('/batch',BatchController::class,["as" => "salesexecutive"])->only(['index']);
         Route::get('/batchById',[BatchController::class,'batchById'])->name('salesexecutive.batchById');
@@ -230,6 +276,10 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
 
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class,'courseEnroll'])->name('salesexecutive.courseEnroll');
+
+        /*===Payment report==*/
+        Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('salesexecutive.daily_collection_report');
+        Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('salesexecutive.daily_collection_report_by_mr');
     });
 });
 
@@ -282,6 +332,10 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         Route::get('/student/batch/transfer', [StudentController::class,'batchTransfer'])->name('operationmanager.batchTransfer');
         Route::get('/student/batch/enroll', [StudentController::class,'studentEnrollBatch'])->name('operationmanager.studentEnrollBatch');
         Route::post('/student/transfer', [StudentController::class,'transfer'])->name('operationmanager.transfer');
+
+        /*===Payment report==*/
+        Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('operationmanager.daily_collection_report');
+        Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('operationmanager.daily_collection_report_by_mr');
     });
 });
 
@@ -317,12 +371,16 @@ Route::group(['middleware' => 'isAccountmanager'], function(){
         Route::get('/payment/report/{id}/{sId}',[PaymentController::class,'edit'])->name('accountmanager.payment.edit');
         /*===Payment report==*/
         Route::get('/payment/report/all',[PaymentReportController::class,'allPaymentReportBySid'])->name('accountmanager.allPaymentReportBySid');
+        Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('accountmanager.daily_collection_report');
+        Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('accountmanager.daily_collection_report_by_mr');
+
 
         
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
+
 
         /*===Other Payment===*/
         Route::prefix('other')->name('accountmanager.')->group(function () {

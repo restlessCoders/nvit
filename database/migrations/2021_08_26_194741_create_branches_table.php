@@ -20,6 +20,8 @@ class CreateBranchesTable extends Migration
 			$table->string('branch_email')->nullable();
 			$table->string('branch_add_a')->nullable();
 			$table->string('branch_add_b')->nullable();
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

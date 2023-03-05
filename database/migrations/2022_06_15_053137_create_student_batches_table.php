@@ -17,6 +17,8 @@ class CreateStudentBatchesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('batch_id');
             $table->unsignedBigInteger('student_id');
+            $table->string('systemId',100);
+            $table->unsignedFloat('course_price', 10, 2)->default(0);
             $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->date('entryDate')->nullable();
@@ -27,6 +29,8 @@ class CreateStudentBatchesTable extends Migration
             $table->integer("status")->comment('0 => course complete, 1 => Payment Complete, 2=> Enrolled , 3=> Knocking, 4=> Evoulation');
             $table->integer("cstatus")->comment('0 => course incomplete, 1 => course Complete');
             $table->integer("pstatus")->comment('0 => payment incomplete, 1 => Payment Complete');
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

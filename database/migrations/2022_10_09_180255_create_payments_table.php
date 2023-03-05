@@ -17,17 +17,12 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('studentId');
             $table->unsignedBigInteger('executiveId');
-            $table->unsignedBigInteger('invoiceId')->nullable();
             $table->date('paymentDate');
             $table->unsignedFloat('tPayable', 10, 2)->default(0);
             $table->unsignedFloat('paidAmount', 10, 2)->default(0);
-            /*$table->boolean('mr')->default(5)->nullable();*/
-            $table->boolean('status')->default(1)->comment('1 => due, 0=> paid');
-            $table->unsignedBigInteger('createdBy');
-            $table->unsignedBigInteger('updatedBy')->nullable();
             $table->text("accountNote")->nullable();
-            $table->boolean('type')->default(1)->comment('1 => due, 0=> complete');
-            //ki droner fee ei tah ei column a raka jabe naki inno new column kora hobe mane hocce kon doroner registraton fee naki onno kichu
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
