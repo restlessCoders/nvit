@@ -18,19 +18,19 @@ class CreateStudentsTable extends Migration
             $table->string("name",255);
             $table->string("photo",255)->nullable();
             $table->string("contact",13)->unique();
-            $table->string("altContact",255)->nullable();
-            $table->string("email",255)->unique()->nullable();
+            $table->string("altContact",13)->nullable();
+            $table->string("email",100)->unique()->nullable();
             $table->text("address")->nullable();
             $table->integer("division_id")->nullable();
             $table->integer("district_id")->nullable();
             $table->integer("upazila_id")->nullable();
             $table->text("otherInfo")->nullable();
             $table->integer("executiveId");
-            $table->date("executiveReminder")->nullable();
+            /*$table->date("executiveReminder")->nullable();*/
             $table->text("executiveNote")->nullable();
-            $table->integer('batch_slot_id')->nullable();
+            /*$table->integer('batch_slot_id')->nullable();
             $table->integer('batch_time_id')->nullable();
-            $table->string('course_id',100)->nullable();
+            $table->string('course_id',100)->nullable();*/
 			$table->integer('refId')->unsigned();
 			$table->foreign("refId")->references('id')->on('references')->onDelete('cascade');
             $table->integer("status")->default(1)->comment('0 => inactive, 1 => active, 2 => waiting, 3 => dump' );
@@ -39,6 +39,8 @@ class CreateStudentsTable extends Migration
             $table->index(['email']);
             $table->index(['name']);
             $table->index(['contact']);
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

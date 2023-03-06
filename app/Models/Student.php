@@ -30,4 +30,8 @@ class Student extends Model
     public function executive(){
         return $this->belongsTo(User::class,'executiveId','id');
     }
+    public function notes(){
+        return $this->hasMany(Note::class,'student_id','id');
+    }
+
 }

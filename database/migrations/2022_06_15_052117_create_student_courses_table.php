@@ -14,12 +14,14 @@ class CreateStudentCoursesTable extends Migration
     public function up()
     {
         Schema::create('student_courses', function (Blueprint $table) {
-            $table->integer('course_id')->unsigned();
-            $table->integer('student_id')->unsigned();
+            $table->unsignedBigInteger('course_id');
+            $table->unsignedBigInteger('student_id');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->text("executiveNote")->nullable();
             $table->integer("status")->default(1)->comment('0 => inactive, 1 => active, 2 => waiting' );
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

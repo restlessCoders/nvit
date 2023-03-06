@@ -28,8 +28,10 @@ class CreateBatchesTable extends Migration
 			/*$table->unsignedFloat('price', 10, 2)->default(0);
 			$table->unsignedFloat('discount', 10, 2)->default(0);*/
             $table->integer('seat')->comment('Total Available Seat');
+            $table->integer('totalClass')->comment('Total Class')->default(0);;
             $table->boolean('status')->default(1)->comment('1 => Running, 0=> Closing');
-            $table->unsignedBigInteger('userId');
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

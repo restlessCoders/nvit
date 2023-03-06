@@ -18,14 +18,23 @@
 		<div class="card-box">
 	
 				
-					<table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
 							<tr>
 								<th>SL.</th>
-								<th>Batch Id</th>
-								<th>Batch Details</th>
+								<th>Batch</th>
+								<th>Course</th>
+								<th>Op. Date</th>
+								<th>End Date</th>
+								<th>Week Slot</th>
+								<th>Time Slot</th>
+								<!-- <th>Exam Date</th>
+								<th>Exam Time</th> -->
+								<th>Room</th>
+								<th>Available</th>
 								<th>Trainer</th>
 								<th>Status</th>
+								<th>Created</th>
 								<th>Action</th>
 							</tr>
 						</thead>
@@ -36,49 +45,17 @@
 								<td>{{ $loop->iteration }}</td>
 								<td>
 									{{$batch->batchId}}<br>
-									By:-{{\DB::table('users')->select('name')->where('id',$batch->userId)->first()->name}}
-								</td>
-								<td>
-									<table class="table table-border table-striped">
-										<tr>
-											<td><strong>Course Name : </strong></td>
-											<td>{{\DB::table('courses')->select('courseName')->where('id',$batch->courseId)->first()->courseName}}</td>
-										</tr>
-										<tr>
-											<td><strong>Start Date :</strong></td>
-											<td>{{$batch->startDate}}</td>
-										</tr>
-										<tr>
-											<td><strong>End Date :</strong></td>
-											<td>{{$batch->endDate}}</td>
-										</tr>
-										<tr>
-											<td><strong>Batch Slot :</strong></td>
-											<td>{{\DB::table('batchslots')->select('slotName')->where('id',$batch->bslot)->first()->slotName}}</td>
-										</tr>
-										<tr>
-											<td><strong>Batch Time :</strong></td>
-											<td>{{\DB::table('batchtimes')->select('time')->where('id',$batch->btime)->first()->time}}</td>
-										</tr>
-										<tr>
-											<td><strong>Exam Date :</strong></td>
-											<td>{{$batch->examDate}}</td>
-										</tr>
-										<tr>
-											<td><strong>Exam Time :</strong></td>
-											<td>{{$batch->examTime}}</td>
-										</tr>
-										<tr>
-											<td><strong>Classroom : </strong></td>
-											<td>{{$batch->examRoom}}</td>
-										</tr>
-										<tr>
-											<td><strong>Seat Reamining : </strong></td>
-											<td>{{$batch->seat-$batch->tst}}</td>
-										</tr>
-									</table>
-								</td>
-								<td>{{\DB::table('users')->select('name')->where('id',$batch->trainerId)->first()->name}}</td>
+								</td>		
+								<td>{{$batch->course->courseName}}</td>
+								<td>{{$batch->startDate}}</td>
+								<td>{{$batch->endDate}}</td>
+								<td>{{$batch->batchslot->slotName}}</td>
+								<td>{{$batch->batchtime->time}}</td>
+								<!-- <td>{{$batch->examDate}}</td>
+								<td>{{$batch->examTime}}</td> -->
+								<td>{{$batch->examRoom}}</td>
+								<td>{{$batch->seat-$batch->tst}}</td>
+								<td>{{$batch->trainer->name}}</td>
 								<td>
 									@if($batch->status == 1)
 									<span>Active</span>
@@ -86,10 +63,11 @@
 									<span>Inactive</span>
 									@endif
 								</td>
-								<td>
+								<td>{{$batch->createdby->name}}</td>
+								<td width="80px">
 									@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
-									<a href="{{route(currentUser().'.batch.edit',[encryptor('encrypt', $batch->id)])}}" class="text-success"><i class="far fa-edit mr-2"></i>Edit</a><br/>
-									<a href="{{route(currentUser().'.batch.destroy',[encryptor('encrypt', $batch->id)])}}" class="text-danger"><i class="far fa-trash-alt mr-2"></i>Delete</a>
+									<a href="{{route(currentUser().'.batch.edit',[encryptor('encrypt', $batch->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
+									<a href="{{route(currentUser().'.batch.destroy',[encryptor('encrypt', $batch->id)])}}" title="delete" class="text-danger"><i class="fas fa-trash-alt"></i></a>
 									@endif
 								</td>
 							</tr>

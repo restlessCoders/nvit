@@ -56,7 +56,7 @@ class PackageController extends Controller
             $package->endTime = date('H:i',strtotime($request->endTime));
             $package->status =0;
             $package->note =$request->note;
-            $package->userId = encryptor('decrypt', $request->userId);
+            $package->created_by = encryptor('decrypt', $request->userId);
             if(!!$package->save()) return redirect(route(currentUser().'.package.index'))->with($this->responseMessage(true, null, 'Package created'));
         } catch (Exception $e) {
             dd($e);
@@ -109,6 +109,7 @@ class PackageController extends Controller
             $package->updateBy = encryptor('decrypt', $request->userId);
             $package->status =$request->status;
             $package->note =$request->note;
+            $package->updated_by = encryptor('decrypt', $request->userId);
             $package->save();
         if(!!$package->save()) return redirect(route(currentUser().'.package.index'))->with($this->responseMessage(true, null, 'Package updated'));
         } catch (Exception $e) {

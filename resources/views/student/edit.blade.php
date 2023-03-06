@@ -39,6 +39,9 @@
 				<li class="nav-item">
 					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Course Enroll</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="notes-student-tab" data-toggle="tab" href="#note_student" role="tab" aria-controls="note_student">Note History</a>
+				</li>
 			</ul>
 			<div class="tab-content text-muted" id="myTabContent">
 				<div role="tabpanel" class="tab-pane fade in active show" id="edit_student" aria-labelledby="edit-student-tab">
@@ -93,13 +96,18 @@
 							<div class="col-lg-6 row">
 								<label for="altContact" class="col-sm-2 col-form-label">Alt. Number</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="altContact" name="altContact" value="{{old('altContact', $sdata->altContact)}}" placeholder="Student Alternative Contact Number" v-model="form.altContact">
+									<input type="text" class="form-control" id="altContact" name="altContact" value="{{old('altContact', $sdata->altContact)}}" placeholder="Student Alternative Contact Number">
+									@if($errors->has('altContact'))
+									<small class="d-block text-danger mb-3">
+										{{ $errors->first('altContact') }}
+									</small>
+									@endif
 								</div>
 							</div>
 							<div class="col-lg-6 row">
 								<label for="email" class="col-sm-2 col-form-label">Email</label>
 								<div class="col-sm-10">
-									<input type="email" class="form-control" id="email" name="email" value="{{old('email', $sdata->email)}}" placeholder="Student Email" v-model="form.email">
+									<input type="email" class="form-control" id="email" name="email" value="{{old('email', $sdata->email)}}" placeholder="Student Email">
 									@if($errors->has('email'))
 									<small class="d-block text-danger mb-3">
 										{{ $errors->first('email') }}
@@ -116,12 +124,13 @@
 								</div>
 							</div>
 							@endif
+							@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
 							<div class="col-lg-4 row">
-								<label for="" class="col-sm-3 col-form-label">Ex. Reminder</label>
+								<label for="" class="col-sm-3 col-form-label">Recall Date</label>
 								<div class="col-sm-9">
 									<div>
 										<div class="input-group">
-											<input type="date" class="form-control" placeholder="mm/dd/yyyy" data-provide="datepicker" name="executiveReminder" value="{{old('executiveReminder', $sdata->executiveReminder)}}">
+											<input type="text" name="executiveReminder" class="form-control" placeholder="dd/mm/yyyy">
 											<div class="input-group-append">
 												<span class="input-group-text"><i class="icon-calender"></i></span>
 											</div>
@@ -129,6 +138,7 @@
 									</div>
 								</div>
 							</div>
+							@endif
 							@if(currentUser() != 'salesexecutive')
 							<div class="col-lg-4 row">
 								<label for="executiveId" class="col-sm-3 col-form-label">Select Executive</label>
@@ -168,10 +178,10 @@
 								</div>
 							</div> -->
 							<div class="col-lg-6 row">
-								<label for="executiveNote" class="col-sm-2 col-form-label">Ex. Note</label>
+								<label for="executiveNote" class="col-sm-2 col-form-label">Note</label>
 								<div class="col-sm-10">
-									<textarea class="form-control" id="executiveNote" name="executiveNote" rows="5" placeholder="Executive Note" style="
-                                resize:none;">{{old('executiveNote', $sdata->executiveNote)}}</textarea>
+									<textarea class="form-control" id="executiveNote" name="executiveNote" rows="5" placeholder="First Note" style="
+                                resize:none;" @if(!empty($sdata->executiveNote)) readonly @endif>{{old('executiveNote', $sdata->executiveNote)}}</textarea>
 								</div>
 							</div>
 							<div class="col-lg-6 row">
@@ -621,6 +631,33 @@
 						</tbody>
 					</table>
 				</div>
+				<div role="tabpanel" class="tab-pane fade" id="note_student" aria-labelledby="note-student-tab">
+				<h5 class="page-title">Note History</h5>
+					<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+						<thead>
+							<tr>
+								<th>Sl.</th>
+								<th>Recall Date</th>
+								<th>Note</th>
+								<th>Created By</th>
+								<th>Created On</th>
+							</tr>
+						</thead>
+						<tbody>
+							@forelse($notes as $note)
+							<tr>
+								<td>{{ $loop->iteration }}</td>
+								<td width="120px">{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}</td>
+								<td>{{$note->note}}</td>
+								<td>{{$note->noteCreated->name}}</td>
+								<td>{{$note->created_at}}</td>
+							</tr>
+							@empty
+							@endforelse
+						</tbody>
+					</table>
+					{{$notes->links()}}
+				</div>	
 			</div>
 		</div>
 	</div>
@@ -762,6 +799,18 @@
 	function removerow(id) { //id=Rowid  
 		$("#row_" + id).remove();
 	}
+
+    $("input[name='executiveReminder']").daterangepicker({
+        singleDatePicker: true,
+        startDate: new Date(),
+        showDropdowns: true,
+        autoUpdateInput: true,
+        format: 'dd/mm/yyyy',
+    }).on('changeDate', function(e) {
+        var date = moment(e.date).format('YYYY/MM/DD');
+        $(this).val(date);
+    });
+
 </script>
 @if(Session::has('response'))
 @php print_r(Session::has('response')); @endphp

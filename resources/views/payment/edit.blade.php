@@ -1,5 +1,12 @@
 @extends('layout.master')
 @section('title', 'Payment List')
+@push('styles')
+<style>
+	.form-control-sm {
+  	font-size: small;
+	}
+</style>
+@endpush
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -16,6 +23,9 @@
     </div>
     <div class="col-12">
         <div class="card-box">
+            <form action="{{ route(currentUser().'.payment.update',[encryptor('encrypt', $paymentdetl->id)]) }}" method="POST">
+            @csrf
+            @method('PUT')
             <div class="row">
                 <div class="col-sm-3">
                     <label for="name" class="col-form-label">Student ID</label>
@@ -31,15 +41,11 @@
                     <input type="text" class="form-control" value="{{$sdata->exName}}" readonly name="executiveId">
                 </div>
             </div>
-            <form action="{{ route(currentUser().'.payment.update',[encryptor('encrypt', $paymentdetl->id)]) }}" method="POST">
-                    @csrf
-				    @method('PUT')
             <h5 style="font-size:18px;line-height:70px;">Recipt Details</h5>
-            <table class="table table-bordered mb-5 text-center">
+            <table class="table table-sm table-bordered mb-5 text-center">
                 <thead>
                     <tr>
                         <th><strong>Money Receipt No: </strong></th>
-                        <th><strong>Invoice No:</strong></th>
                         <th><strong>Payment Date:</strong></th>
                     </tr>
                 </thead>
@@ -52,10 +58,6 @@
                         <td>
                             <input type="text" id="mrNo" class="form-control" name="mrNo" class="form-control" value="{{ $paymentdetl->paymentDetail->first()->mrNo }}">
                             <div class="invalid-feedback" id="mrNo-error"></div>
-                        </td>
-                        <td>
-                            <input type="text" id="invoiceId" class="form-control" name="invoiceId" class="form-control"  value="{{ $paymentdetl->invoiceId }}">
-                            <div class="invalid-feedback" id="invoiceId-error"></div>
                         </td>
                         <td>
                             <div class="input-group">
@@ -71,18 +73,19 @@
                 </tbody>
             </table>
             <h5 style="font-size:18px;line-height:70px;">Payment details</h5>
-            <table class="table table-bordered mb-5 text-center">
+            <table class="table table-sm table-bordered mb-5 text-center">
                 <thead>
                     <tr>
                         <th>Batch|Enroll Date</th>
+                        <th width="90px">Inv</th>
                         <th width="100px">Price</th>
-                        <th width="100px">Due</th>
                         <th width="120px">Type</th>
-                        <th>Due Date</th>
+                        <th width="160px">Due Date</th>
                         <th width="120px">Mode</th>
                         <th width="120px">Fee Type</th>
                         <th width="110px">Discount</th>
                         <th width="110px">Amount</th>
+                        <th width="100px">Due</th>
                     </tr>
                 </thead>
                 @php $tPayable =0; @endphp
@@ -95,9 +98,10 @@
                         <p class="my-0">{{$p->batch->batchId}}</p>
                         <p class="my-0">{{$p->batch->studentsBatches[0]->course_price}}</p>
                     </td>
-                    <input type="text" name="id[]" value="{{$p->id}}">
+                    <input type="hidden" name="id[]" value="{{$p->id}}">
+                    <input type="text" name="batch_id[]" value="{{$p->batchId}}">
+                    <td><input type="text" id="invoiceId" class="form-control" name="invoiceId[]" class="form-control"></td>
                     <td><input type="text" class="form-control" readonly value="{{$p->batch->studentsBatches[0]->course_price}}"></td>
-                    <td><input name="cPayable[]" type="text" class="form-control" readonly value="{{($p->batch->studentsBatches[0]->course_price-($p->cpaidAmount+$p->discount))}}" id="coursepricebyRow_{{$key}}"></td>
                     <td><select class="form-control" name="payment_type[]">
                             <option value=""></option>
                             <option value="1" @if($p->payment_type == 1) selected @endif>Full</option>
@@ -124,6 +128,7 @@
                         </select></td>
                     <td><input type="text" name="discount[]" class="paidpricebyRow form-control" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice()"></td>
                     <td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice()"></td>
+                    <td><input name="cPayable[]" type="text" class="form-control" readonly value="{{($p->batch->studentsBatches[0]->course_price-($p->cpaidAmount+$p->discount))}}" id="coursepricebyRow_{{$key}}"></td>
                 </tr>
                 @endforeach
                 <tfoot>

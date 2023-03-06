@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('classrooms', function (Blueprint $table) {
+        Schema::create('student_transfers', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('classroom', 255)->nullable();
-            $table->unsignedTinyInteger('pc_seat')->nullable();
-            $table->unsignedTinyInteger('no_pc_seat')->nullable();
-            $table->boolean('status')->default(0)->comment('0 => inactive, 1 => active');
+            $table->integer('student_id');
+            $table->integer('curexId');
+            $table->integer('newexId');
+            $table->text('note')->nullable();
             $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('classrooms');
+        Schema::dropIfExists('student_transfers');
     }
 };

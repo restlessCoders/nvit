@@ -66,9 +66,9 @@
 					@endif
 				</tbody>
 			</table>
+			{{ $allCourses->appends(request()->all())->links() }}
 		</div>
 	</div>
-	{{ $allCourses->appends(request()->all())->links() }}
 </div> <!-- end row -->
 @endsection
 @push('scripts')

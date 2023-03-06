@@ -59,12 +59,12 @@ class BatchController extends Controller
     }
     public function index(Request $request)
     {
-        //$allBatch = Batch::paginate();
-        $allBatch = DB::table('batches')
+        $allBatch = Batch::paginate();
+        /*$allBatch = DB::table('batches')
         ->join('student_batches','batches.id','=','student_batches.batch_id','left')
-        ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.userId,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
-        ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.userId','batches.created_at','batches.updated_at'])
-        ->paginate();
+        ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,batches.created_by,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
+        ->groupBy('student_batches.batch_id')
+        ->paginate();*/
         return view('batch.index',compact('allBatch'));
     }
     public function all(Request $request)
@@ -72,8 +72,8 @@ class BatchController extends Controller
         //$allBatch = Batch::paginate();
         $allBatch = DB::table('batches')
         ->join('student_batches','batches.id','=','student_batches.batch_id','left')
-        ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.userId,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
-        ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.userId','batches.created_at','batches.updated_at'])
+        ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.created_by,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
+        ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.created_by','batches.created_at','batches.updated_at'])
         ->where('batches.batchId', 'like', '%'.$request->name.'%')
         ->get();
         return response()->json($allBatch);
@@ -139,7 +139,7 @@ class BatchController extends Controller
             /*$batch->price = $request->price;
             $batch->discount = $request->discount;*/
             $batch->status =1;
-            $batch->userId = encryptor('decrypt', $request->userId);
+            $batch->created_by = encryptor('decrypt', $request->userId);
             $batch->totalClass = $request->totalClass;
             if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch created'));
         } catch (Exception $e) {
@@ -197,7 +197,7 @@ class BatchController extends Controller
             $batch->examTime = date('H:i:s',strtotime($request->examTime));
             $batch->examRoom = $request->examRoom;
             $batch->status =$request->status;
-            $batch->userId = encryptor('decrypt', $request->userId);
+            $batch->created_by = encryptor('decrypt', $request->userId);
             $batch->seat = $request->seat;//Before update total number of enroll student
             $batch->totalClass = $request->totalClass;
             $batch->save();

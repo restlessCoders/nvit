@@ -29,7 +29,7 @@
 			</ul>
 			<div class="tab-content text-muted" id="myTabContent">
 				<div role="tabpanel" class="tab-pane fade in active show" id="waiting_students" aria-labelledby="waiting-students-tab">
-					<table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table class="waiting-student table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
 							<tr>
 								<th>SL.</th>
@@ -88,15 +88,15 @@
 									$student_id = encryptor('encrypt', $student->id)
 									@endphp
 									<form id="active-form" method="POST" action="{{route(currentUser().'.activeStudent',$student_id)}}">
-                            		@csrf
-                            		<input name="_method" type="hidden" value="PUT">
-									<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
+										@csrf
+										<input name="_method" type="hidden" value="PUT">
+										<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
 									</form>
 									<form id="dump-form" method="POST" action="{{route(currentUser().'.dumpStudent',$student_id)}}">
-                            		@csrf
-                            		<input name="_method" type="hidden" value="PUT">
-                            		<a href="javascript.void(0)" data-name="{{$student->name}}" type="submit" class="dump text-danger" data-toggle="tooltip" title='Dump'><i class="far fa-trash-alt"></i>Dump</a>
-                        			</form>
+										@csrf
+										<input name="_method" type="hidden" value="PUT">
+										<a href="javascript.void(0)" data-name="{{$student->name}}" type="submit" class="dump text-danger" data-toggle="tooltip" title='Dump'><i class="far fa-trash-alt"></i>Dump</a>
+									</form>
 									@endif
 								</td>
 							</tr>
@@ -108,18 +108,17 @@
 							@endif
 						</tbody>
 					</table>
-					{{--$allwaitingStudent->links()--}}
+					{{$allwaitingStudent->links()}}
 				</div>
 				<div class="tab-pane fade" id="active_students" role="tabpanel" aria-labelledby="active-students-tab">
-					<table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table class="table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
 							<tr>
 								<th>SL.</th>
 								<th>Student ID</th>
 								<th>Name</th>
-								<th>Contact | Address</th>
-								<th>Details</th>
-								<th>Interest</th>
+								<th>Contact</th>
+								<th>Recall | Note</th>
 								<th>Status</th>
 								<th>Action</th>
 							</tr>
@@ -132,35 +131,29 @@
 								<td>{{$student->id}}</td>
 								<td>{{$student->name}}</td>
 								<td>
-									<p class="my-0"><strong class="mr-1">{{$student->contact}}</strong></p>
-									@if($student->altContact)
-									<p class="my-0"><strong class="mr-1">Alt:</strong>{{$student->altContact}}</p>
+									<p class="my-0"><span class="text-success">{{$student->contact}}</span>
+										@if($student->altContact)
+										<span class="text-success"> , {{$student->altContact}}</span>
+									</p>
 									@endif
-									<hr/>
-									@if($student->email)
-									<p class="my-0"><strong class="mr-1">Email:</strong>{{$student->email}}</p>
-									@endif
-									
-									<!-- <p class="my-0">{{$student->address}}</p> -->
-									<!-- <p class="my-0"><strong class="mr-1">Division:</strong>{{optional($student->division)->name}}</p>
-									<p class="my-0"><strong class="mr-1">District:</strong>{{optional($student->district)->name}}</p>
-									<p class="my-0"><strong class="mr-1">Upazila:</strong>{{optional($student->upazila)->name}}</p> -->
 								</td>
 								<td>
-									<p class="my-0"><strong class="mr-1">Ex.Reminder:</strong>{{$student->executiveReminder}}</p>
-									<p class="my-0"><strong class="mr-1">Batch Slot:</strong>{{$student->batch_slot_id}}</p>
-									<p class="my-0"><strong class="mr-1">Time Slot:</strong>{{$student->batch_time_id}}</p>
-								</td>
-								<td>
-									@if($student->course_id)
-										<ul style="margin:0;padding:0;list-style:none;">
-										@php 
-										$courses = \DB::table('courses')->whereIn('id',explode(",",$student->course_id))->get();
-										@endphp
-										@foreach($courses as $c)
-											<li>{{$c->courseName}}</li>
-										@endforeach
-										</ul>
+									@if($student->notes->count() > 0)
+									@php $note = $student->notes->last(); @endphp
+									@if($note->re_call_date)
+										<p class="text-center m-0"><strong>Recall :</strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}</p>
+									@endif
+									@if($note->note)
+										<p class="text-center m-0"><strong>Note :</strong>{{$note->note}}</p>
+									@else	
+										<p class="text-center m-0">No Notes</p>
+									@endif
+									@if($note->created_at)
+										<p class="text-center m-0"><strong>Posted On :</strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($note->created_at))->format('j M, Y')}}</p>
+									@endif
+									@else
+									<p class="text-center m-0">{{$student->executiveNote}}</p>
+									<p class="text-center my-0"><strong class="mr-1"></strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}</p>
 									@endif
 								</td>
 								<td>
@@ -174,30 +167,58 @@
 									<span>Inactive</span>
 									@endif
 								</td>
-								<td>
+								<td width="130px">
 									@if(strtolower(currentUser()) != 'frontdesk')
-									<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="text-success"><i class="fas fa-eye mr-2"></i>Details</a><br/>
-									<button class="text-danger" style="padding:0;outline:none;background:none;border:none" data-id="{{$student->executiveNote}}"  onclick="$('#dataid').text($(this).data('id')); $('#showmodal').modal('show');" ><i class="fas fa-lock mr-2"></i>Note</button>
+									<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#addNoteModal" class="text-info" title="note"><i class="far fa-sticky-note mr-1"></i></a>
+									<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
+									<a href="" class="text-danger" title="delete"><i class="far fa-trash-alt mr-1"></i></a>
+									<a href="" class="text-warning" title="note"><i class="fas fa-redo-alt"></i></a>
+									<a href="" class="text-purple" title="dump"><i class="fas fa-dumpster"></i></a>
 									@endif
 								</td>
+
+
+
+								<!-- <button class="text-danger" style="padding:0;outline:none;background:none;border:none" data-id="{{$student->executiveNote}}"  onclick="$('#dataid').text($(this).data('id')); $('#showmodal').modal('show');" ><i class="fas fa-lock mr-2"></i>Note</button> -->
+
+
 							</tr>
 							@endforeach
 							@endif
 						</tbody>
 					</table>
-					<div id="showmodal" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog" aria-labelledby="myCenterModalLabel" aria-hidden="true" style="display: none;">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="myCenterModalLabel">Executive Note</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                        </div>
-                                        <div class="modal-body">
-											<p name="dataid" id="dataid"></p>
-                                        </div>
-                                    </div><!-- /.modal-content -->
-                                </div><!-- /.modal-dialog -->
-                            </div><!-- /.modal -->
+					<!-- Modal -->
+					<div class="modal fade" id="addNoteModal" tabindex="-1" role="dialog" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<form action="{{ route(currentUser().'.notes.store') }}" method="POST">
+									@csrf
+									<input type="hidden" id="student_id" name="student_id" value="">
+									<input type="hidden" value="{{ Session::get('user') }}" name="userId">
+									<div class="modal-header">
+										<h5 class="modal-title" id="addNoteModalLabel">Add Note For <span id="student_name"></span></h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="form-group">
+											<label for="note">Re Call Date:</label>
+											<input type="date" id="re_call_date" name="re_call_date" class="form-control">
+										</div>
+										<div class="form-group">
+											<label for="note">Note:</label>
+											<textarea class="form-control" id="note" name="note" rows="3"></textarea>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+										<button type="submit" class="btn btn-primary" onclick="disableButton(this)">Add Note</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
 					{{--$allactiveStudent->links()--}}
 				</div>
 				<div class="tab-pane fade" id="dump_students" role="tabpanel" aria-labelledby="dump-students-tab">
@@ -244,12 +265,12 @@
 									@endif
 								</td>
 								<td>
-								@if(strtolower(currentUser()) != 'frontdesk')
+									@if(strtolower(currentUser()) != 'frontdesk')
 									<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-edit text-info font-16"></i>Edit</a><br>
 									<a href="{{route(currentUser().'.studentCourseAssign',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-pen text-info success-16"></i>Course Assign</a><br>
 									<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-lock text-primary font-16"></i>Enorll</a><br>
 									{{--<a href="{{route(currentUser().'.deleteStudent', [encryptor('encrypt', $student->id)])}}"><i class="fas fa-trash-alt text-danger font-16"></i></a>--}}
-								@endif
+									@endif
 								</td>
 							</tr>
 							@endforeach
@@ -269,11 +290,12 @@
 @endsection
 @push('scripts')
 <script>
-	$('.responsive-datatable').DataTable();
+	//This code will use if data table used
+	//$('.responsive-datatable').DataTable();
 </script>
 @if(Session::has('response'))
 <script>
-	Command: toastr["{{Session::get('response')['errors']}}"]("{{Session::get('response')['message']}}")
+	Command: toastr["{{Session::get('response')['class']}}"]("{{Session::get('response')['message']}}")
 	toastr.options = {
 		"closeButton": false,
 		"debug": false,
@@ -295,39 +317,71 @@
 @endif
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
-	$('.responsive-datatable tbody').on('click', '.dump', function (event) {
-          var name = $(this).data("name");
-          event.preventDefault();
-          swal({
-              title: `Are you sure you want to Dump this ${name}?`,
-              text: "If you dump this, it will be in dump list.",
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-				$('#dump-form').submit();
-            }
-          });
-      });    
+	$('.responsive-datatable tbody').on('click', '.dump', function(event) {
+		var name = $(this).data("name");
+		event.preventDefault();
+		swal({
+				title: `Are you sure you want to Dump this ${name}?`,
+				text: "If you dump this, it will be in dump list.",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$('#dump-form').submit();
+				}
+			});
+	});
 </script>
 <script>
-	$('.responsive-datatable tbody').on('click', '.active_student', function (event) {
-          var name = $(this).data("name");
-          event.preventDefault();
-          swal({
-              title: `Are you sure you want to Active this ${name}?`,
-              text: "If you Active this, it will be in Active list.",
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-              $('#active-form').submit();
-            }
-          });
-      });    
-</script>
+	$('.waiting-student tbody').on('click', '.active_student', function(event) {
+		var name = $(this).data("name");
+		event.preventDefault();
+		swal({
+				title: `Are you sure you want to Active this ${name}?`,
+				text: "If you Active this, it will be in Active list.",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$('#active-form').submit();
+				}
+			});
+	});
+
+
+	$('#addNoteModal').on('show.bs.modal', function(event) {
+		var button = $(event.relatedTarget);
+		var studentId = button.data('student-id');
+		var studentName = button.data('student-name');
+
+		var modal = $(this);
+		modal.find('#student_id').val(studentId);
+		modal.find('#student_name').text(studentName);
+	});
+	function disableButton(btn) {
+    btn.disabled = true;
+    btn.form.submit();
+  }
+
+	</script>
+
+@if(old('tab'))
+  <script>
+    $(function(){
+		$('#myTab .nav-link').removeClass('active');
+		$('.tab-content .tab-pane').removeClass('in active show');
+		var selectedTab = '{{ old("tab") }}';
+		// Show the selected tab
+		if (selectedTab) {
+			$('#myTab a[href="#' + selectedTab + '"]').addClass('active').tab('show');
+			$('#'+selectedTab).addClass('in active show');
+		}
+    });
+  </script>
+@endif
+
 @endpush

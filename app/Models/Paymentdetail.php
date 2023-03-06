@@ -10,10 +10,13 @@ class Paymentdetail extends Model
     use HasFactory;
     public function payment()
     {
-        return $this->hasone(Payment::class,'id','paymentId');
+        return $this->hasOne(Payment::class,'id','paymentId');
     }
     public function batch()
     {
-        return $this->hasone(Batch::class,'id','batchId');
+        return $this->hasOne(Batch::class,'id','batchId');
+    }
+    public function student(){
+        return $this->hasOne(Student::class,'id','studentId');
     }
 }

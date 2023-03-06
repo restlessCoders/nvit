@@ -17,6 +17,8 @@ class CreateDivisionsTable extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('enabled')->default(1);
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Batch Transfer')
+@section('title', 'Student Transfer')
 @push('styles')
 <link href="{{asset('backend/libs/multiselect/multi-select.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
@@ -12,16 +12,15 @@
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
                     <li class="breadcrumb-item"><a href="javascript: void(0);">Student</a></li>
-                    <li class="breadcrumb-item active">Batch Transfer</li>
+                    <li class="breadcrumb-item active">Transfer</li>
                 </ol>
             </div>
-            <h4 class="page-title">Add New Transfer</h4>
+            <h4 class="page-title">Add Transfer</h4>
         </div>
     </div>
     <div class="col-12">
         <div class="card-box">
-            <form action="{{ route(currentUser().'.transfer') }}" method="POST" enctype="multipart/form-data">
-            <input type="hidden" value="{{ Session::get('user') }}" name="userId">
+            <form action="{{ route(currentUser().'.stTransfer') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group row">
                     <div class="col-lg-4 row">
@@ -81,7 +80,7 @@
         $('select[name=student_id]').on('change', function() {
             var student_id = $.trim($("select[name=student_id]").children("option:selected").val());
             $.ajax({
-                url: "{{route(currentUser().'.studentEnrollBatch')}}",
+                url: "{{route(currentUser().'.studentExecutive')}}",
                 method: 'GET',
                 dataType: 'json',
                 data: {

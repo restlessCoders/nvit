@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('batch_transfers', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('student_id');
             $table->string('curbatchId', 255);
             $table->string('newbatchId', 255);
             $table->text("note")->nullable();
-            $table->unsignedBigInteger('userId');
+            $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

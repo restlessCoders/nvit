@@ -8,7 +8,6 @@
 	.select2-container {
 		width: 100% !important;
 	}
-
 	.ui-widget {
 		font-size: 1em;
 	}
@@ -148,6 +147,7 @@ $(document).on('submit', '#my-form', function(event) {
 	}
 
 		$(document).on('click', '#showData', function() {
+		
 			var optType = $('#optType option:selected').val();
 
 			var opt = $('#opt option:selected').val();

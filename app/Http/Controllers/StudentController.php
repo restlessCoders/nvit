@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Note;
 use App\Models\Division;
 use App\Models\District;
 use App\Models\Upazila;
@@ -40,14 +41,14 @@ class StudentController extends Controller
             /*== Waiting Students ==*/
             $allwaitingStudent = Student::where('status', '=', 2)->orderBy('id', 'DESC')->paginate(25);
             /*== Active Students ==*/
-            $allactiveStudent = Student::where('status', '=', 1)->orderBy('id', 'DESC')->paginate(25);
+            $allactiveStudent = Student::with('notes')->where('status', '=', 1)->orderBy('id', 'DESC')->paginate(25);
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->orderBy('id', 'DESC')->paginate(25);
         } else {
             /*== Waiting Students ==*/
             $allwaitingStudent = Student::where('status', '=', 2)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
             /*== Active Students ==*/
-            $allactiveStudent = Student::where('status', '=', 1)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
+            $allactiveStudent = Student::with('notes')->where('status', '=', 1)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
         }
@@ -253,6 +254,8 @@ class StudentController extends Controller
         $allBatchTime    = Batchtime::where('status', 1)->orderBy('id', 'ASC')->get();
         $allBatchSlot    = Batchslot::where('status', 1)->orderBy('id', 'ASC')->get();
 
+        $notes = Note::where('student_id',encryptor('decrypt', $id))->orderBy('id','desc')->paginate(15);;
+
         $allassignBatches = DB::table('student_batches')->where('student_id', $sdata->id)->orderBy('batch_id')->get();
 
         /*Course Preference */
@@ -261,7 +264,7 @@ class StudentController extends Controller
         /*Course Wise Enroll */
         $allcourseEnroll = DB::table('student_courses')->where('student_id', $sdata->id)->get();
 
-        return view('student.edit', compact(['allcourseEnroll','allPreference', 'sdata', 'allassignBatches', 'allDivision', 'allDistrict', 'allUpazila', 'allReference', 'allExecutive', 'allCourse', 'sdata', 'allBatchTime', 'allBatchSlot', 'allBatch']));
+        return view('student.edit', compact(['notes','allcourseEnroll','allPreference', 'sdata', 'allassignBatches', 'allDivision', 'allDistrict', 'allUpazila', 'allReference', 'allExecutive', 'allCourse', 'sdata', 'allBatchTime', 'allBatchSlot', 'allBatch']));
     }
 
     /**
@@ -273,6 +276,7 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, $id)
     {
+        
         try {
             $student = Student::find(encryptor('decrypt', $id));
             if ($request->photo) {
@@ -365,6 +369,9 @@ class StudentController extends Controller
         DB::beginTransaction();
 
         try {
+            if ($request->curbatchId == $request->newbatchId) {
+                return redirect()->back()->with($this->responseMessage(false, null, 'Current Batch and Transferred Batch Same!!'));
+            }
             $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
                         join student_batches on student_batches.batch_id=batches.id
                         WHERE batches.id=$request->newbatchId
@@ -378,13 +385,14 @@ class StudentController extends Controller
                 'updated_at' => Carbon::now()
             );
             DB::table('student_batches')->where(['id' => $request->student_id, 'batch_id' => $request->curbatchId])->update($data);
+            /*=== Here Need To update Payment Details Batch Id If Batch Id Has Changed=== */
             $data2 = array(
                 'student_id' => $request->student_id,
                 'curbatchId' => $request->curbatchId,
                 'newbatchId' =>  $request->newbatchId,
-                'userId' => currentUserId(),
+                'created_by' => currentUserId(),
                 'note' => $request->note,
-                //'created_at' => Carbon::now()
+                'created_at' => Carbon::now()
             );
             DB::table('batch_transfers')->insert($data2);
             DB::commit();
@@ -396,6 +404,14 @@ class StudentController extends Controller
             return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
             return false;
         }
+    }
+    public function batchTransferList(){
+        $student_transfers = DB::table('batch_transfers')
+        ->join('students','batch_transfers.student_id','students.id')
+        ->join('users','batch_transfers.created_by','users.id')
+        ->select('batch_transfers.*','students.name as stuname','users.name as uname')
+        ->get();
+        return view('student.batchTransferList',compact('student_transfers'));
     }
     public function studentEnrollBatch(Request $request)
     {
@@ -416,8 +432,8 @@ class StudentController extends Controller
 
         $allBatch = DB::table('batches')
             ->join('student_batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
-            ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.userId,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
-            ->groupBy(['student_batches.batch_id', 'batches.id', 'batches.batchId', 'batches.courseId', 'batches.startDate', 'batches.endDate', 'batches.bslot', 'batches.btime',    'batches.trainerId', 'batches.examDate', 'batches.examTime', 'batches.examRoom', 'batches.seat', 'batches.status', 'batches.userId', 'batches.created_at', 'batches.updated_at'])
+            ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
+            ->groupBy('student_batches.batch_id')
             ->get();
 
         $data2 = '<label for="newbatchId" class="col-sm-3 col-form-label">To Batch</label>
@@ -440,7 +456,7 @@ class StudentController extends Controller
                 'batch_slot_id' => $request->batch_slot_id,
                 'student_id' =>  $request->student_id,
                 'course_id' => $course_id[$key],
-                'user_Id' => currentUserId(),
+                'created_by' => currentUserId(),
                 'created_at' => Carbon::now()
             );
             DB::table('course_preferences')->insert($data);
@@ -461,5 +477,73 @@ class StudentController extends Controller
         );
         DB::table('student_courses')->insert($data);
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Enroll Successful'));
+    }
+
+    /*Student Transfer */
+    public function studentTransfer()
+    {
+        $allStudent = Student::all();
+        return view('student.studentTransfer', compact('allStudent'));
+    }
+    public function studentExecutive(Request $request)
+    {
+        $old_ex = Student::where('id',$request->id)->first();
+        $ex_list = User::whereIn('roleId',[1,3,9])->whereNot('id','=',$old_ex->executiveId)->get();
+        $old_ex_data = User::find($old_ex->executiveId);
+        $data = '
+        <label for="curexId" class="col-sm-3">Old Executive</label>
+        <div class="col-sm-9">
+        <input type="text" class="form-control" value="'.$old_ex_data->name.'" readonly>
+        <input type="hidden" class="form-control" value="'.$old_ex_data->id.'" name="curexId">
+        </div>
+    ';
+        //return response()->json(array('data' => $ex_list));
+        $data2 = '<label for="newexId" class="col-sm-3">To Executive</label>
+            <div class="col-sm-9">
+            <select class="js-example-basic-single form-control" id="newexId" name="newexId" required>
+            <option value="">Select</option>';
+        foreach ($ex_list as $e) {
+            $data2 .= '<option value="' . $e->id . '">' . $e->name . '</option>';
+        }
+        $data2 .= '</select></div>';
+
+
+        return response()->json(array('data' => $data,'data2' =>$data2));
+    }
+    public function stTransfer(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $data = array(
+                'executiveId' => $request->newexId
+            );
+            DB::table('students')->where('id',$request->student_id)->update($data);
+            $data2 = array(
+                'student_id' => $request->student_id,
+                'curexId' => $request->curexId,
+                'newexId' =>  $request->newexId,
+                'created_by' => currentUserId(),
+                'note' => $request->note,
+                'created_at' => Carbon::now()
+            );
+            DB::table('student_transfers')->insert($data2);
+            DB::commit();
+            return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
+        } catch (\Exception $e) {
+            DB::rollback();
+            // something went wrong
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }
+    }
+    public function studentTransferList(){
+        $student_transfers = DB::table('student_transfers')
+        ->join('students','student_transfers.student_id','students.id')
+        ->join('users','student_transfers.created_by','users.id')
+        ->select('student_transfers.*','students.name as stuname','users.name as uname')
+        ->get();
+        return view('student.studentTransferList',compact('student_transfers'));
     }
 }

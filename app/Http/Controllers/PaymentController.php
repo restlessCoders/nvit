@@ -67,9 +67,7 @@ class PaymentController extends Controller
         $data .='<div class="col-sm-3" id="type"><select class="form-control" id="opt" name="type" onchange="paymentType(this.value)">';
         $data.='<option value="">Select</option>';
             $data .='<option value="1">Report</option>';  
-            $data .='<option value="2">Batch</option>';  
-            $data .='<option value="3">Course (No Batch)</option>';
-            $data .='<option value="4">Others Payment</option>';    
+            $data .='<option value="2">Batch</option>';     
         $data .= '</select></div>';
         return response()->json(array('data' =>$data));
     }
@@ -135,11 +133,10 @@ class PaymentController extends Controller
     //return response()->json(array('sdata' => $stData));
         
         $data ='<h5 style="font-size:18px;line-height:70px;">Recipt Details</h5>';
-        $data .= '<table class="table table-bordered mb-5 text-center">
+        $data .= '<table class="table table-sm table-bordered mb-5 text-center" style="font-size: small;">
                 <thead>
                     <tr>
                         <th><strong>Money Receipt No: </strong></th>
-                        <th><strong>Invoice No:</strong></th>
                         <th><strong>Payment Date:</strong></th>
                     </tr>
                 </thead> 
@@ -148,10 +145,6 @@ class PaymentController extends Controller
                         <td>
                             <input type="text" id="mrNo" class="form-control" name="mrNo" class="form-control" required>
                             <div class="invalid-feedback" id="mrNo-error"></div>
-                        </td>
-                        <td> 
-                            <input type="text" id="invoiceId" class="form-control" name="invoiceId" class="form-control">
-                            <div class="invalid-feedback" id="invoiceId-error"></div>
                         </td>
                         <td>
                             <div class="input-group">
@@ -166,18 +159,19 @@ class PaymentController extends Controller
                 </tbody>   
             </table>';
         $data .='<h5 style="font-size:18px;line-height:70px;">Payment details</h5>';    
-        $data .='<table class="table table-bordered mb-5 text-center">
+        $data .='<table class="table table-sm table-bordered mb-5 text-center" style="font-size: small;">
             <thead>
                 <tr>
                     <th>Batch|Enroll Date</th>
+                    <th width="90px">Inv</th>
                     <th width="110px">Price</th>
-                    <th width="110px">Due</th>
-                    <th>Type</th>
-                    <th>Due Date</th>
-                    <th>Mode</th>
-                    <th>Fee Type</th>
+                    <th width="108px">Type</th>
+                    <th width="160px">Due Date</th>
+                    <th width="95px">Mode</th>
+                    <th width="140">Fee Type</th>
                     <th width="110px">Discount</th>
                     <th width="110px">Amount</th>
+                    <th width="110px">Due</th>
                 </tr>
             </thead>';
             $tPayable =0;
@@ -190,11 +184,11 @@ class PaymentController extends Controller
                                 <p class="my-0">'.$s->batchId.'</p>
                                 <p class="my-0">'.$s->entryDate.'</p>
                             </td>';
+                    $data .='<td><input type="text" id="invoiceId" class="form-control" name="invoiceId[]" class="form-control"></td>';       
                     $data .='<input type="hidden" name="tPayable" value="'.$tPayable.'">';        
                     $data .='<input type="hidden" name="batch_id[]" value="'.$s->batch_id.'">';        
                     $data .='<td><input type="text" class="form-control" readonly value="'.$s->course_price.'"></td>';
-                    $data .='<td><input name="cPayable[]" type="text" class="form-control" readonly value="'.($s->course_price-($s->cpaid+$s->discount)).'" id="coursepricebyRow_'.$key.'"></td>';
-                    $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option value="2">Partial</option></select></td>';
+                    $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option selected value="2">Partial</option></select></td>';
                     $data .='<td>
                                 <div class="input-group">
                                     <input type="text" name="dueDate[]" id="dueDate_'.$key.'" class="form-control">
@@ -203,11 +197,12 @@ class PaymentController extends Controller
                                     </div>
                                 </div>
                             </td>';
-                $data .='<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option value="1">Cash</option><option value="2">Bkash</option><option value="3">Card</option></select></td>';
+                $data .='<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option selected value="1">Cash</option><option value="2">Bkash</option><option value="3">Bank</option></select></td>';
                 $data .='<td><select class="form-control" id="feeType" name="feeType[]" required><option value="">Select</option>';
-                $data .='<option value="1">Registration</option><option value="2" required>Course</option></select></td>';
+                $data .='<option selected value="1">Registration</option><option value="2" required>Course</option></select></td>';
                 $data .='<td><input type="text" name="discount[]" class="paidpricebyRow form-control" id="discountbyRow_'.$key.'"  onkeyup="checkPrice('.$key.')"></td>';
                 $data .='<td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" required id="paidpricebyRow_'.$key.'" onkeyup="checkPrice('.$key.')"></td>';
+                $data .='<td><input name="cPayable[]" type="text" class="form-control" readonly value="'.($s->course_price-($s->cpaid+$s->discount)).'" id="coursepricebyRow_'.$key.'"></td>';
                 $data .='</tr>';
                 $data .='<script>$("input[name=\'paymentDate\'],#dueDate_'.$key.'").daterangepicker({
                     singleDatePicker: true,
@@ -294,13 +289,12 @@ class PaymentController extends Controller
        
         try {
 
-            $paymentId = DB::table('payments')->insert(
+            DB::table('payments')->insert(
                 [
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
                     'studentId'         =>  $request->studentId,
                     'executiveId'       =>  $request->executiveId,
                     'createdBy'         =>  encryptor('decrypt', $request->userId),
-                    'invoiceId'         =>  $request->invoiceId?$request->invoiceId:null,
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
                     'accountNote'       =>  $request->accountNote,
@@ -309,7 +303,7 @@ class PaymentController extends Controller
                     // 'updated_at'        => date("Y-m-d h:i:s"),
                 ]
             );
-            
+            $paymentId = DB::getPdo()->lastInsertId();
 
             // Payment Detail
             $batch_id       = $request->post('batch_id');
@@ -318,8 +312,9 @@ class PaymentController extends Controller
             $cpaidAmount	= $request->post('cpaidAmount');
             $payment_type	= $request->post('payment_type');
             $discount	    = $request->post('discount');
-            $payment_mode	    = $request->post('payment_mode');
+            $payment_mode	= $request->post('payment_mode');
             $feeType	    = $request->post('feeType');
+            $invoiceId      = $request->post('invoiceId');
             
             //$m_price	    = $request->post('m_price');
             foreach($request->cpaidAmount as $key => $cdata){
@@ -328,13 +323,20 @@ class PaymentController extends Controller
                 }*/
                 $payment_detail['paymentId']        = $paymentId;
                 $payment_detail['mrNo']             = $request->mrNo;
+                $payment_detail['invoiceId']        = $invoiceId[$key];
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['batchId']          = $batch_id[$key];
                 $payment_detail['cPayable']         = $cPayable[$key];
                 $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
                 //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
                 $payment_detail['payment_type']             = $payment_type[$key];//($cPayable[$key] == $cpaidAmount[$key])?0:1;
-                $payment_detail['dueDate']          = date('Y-m-d',strtotime($dueDate[$key]));
+                if($cpaidAmount[$key] < $cPayable[$key]){
+                    //$payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
+                    $date = new Carbon($dueDate[$key]);
+                    $date->addMonth();
+                    $payment_detail['dueDate']      = $date->toDateString();
+
+                }
                 $payment_detail['created_at']       = date("Y-m-d h:i:s");
                 /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
                 $payment_detail['discount']     = $discount[$key];
@@ -345,11 +347,20 @@ class PaymentController extends Controller
 
                 /*To Update Account Approve */
                 $s_batch_data = DB::table('student_batches')->where(['student_id'=>$request->studentId,'batch_id'=>$batch_id[$key]])->first();
-                $data = array(
-                    'acc_approve' => 1,
-                    'updated_at' => Carbon::now()
-                );
-                DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                if($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]){
+                    $data = array(
+                        'acc_approve' => 1,
+                        'updated_at' => Carbon::now(),
+                    );
+                    DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                }else if($s_batch_data->acc_approve == 1 && $cpaidAmount[$key] == $cPayable[$key]){
+                    $data = array(
+                        'acc_approve' => 1,
+                        'updated_at' => Carbon::now(),
+                        'pstatus' => 1
+                    );
+                    DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                }
                 DB::commit();
             }
             return response()->json(['success' => 'Payment Complete successfully.']);
@@ -430,7 +441,6 @@ class PaymentController extends Controller
                 [
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
                     'createdBy'         =>  encryptor('decrypt', $request->userId),
-                    'invoiceId'         =>  $request->invoiceId?$request->invoiceId:null,
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
                     'accountNote'       =>  $request->accountNote,
@@ -449,16 +459,25 @@ class PaymentController extends Controller
             $discount	    = $request->post('discount');
             $payment_mode	    = $request->post('payment_mode');
             $feeType	    = $request->post('feeType');
+            $invoiceId      = $request->post('invoiceId');
+            $batch_id       = $request->post('batch_id');
             
             //$m_price	    = $request->post('m_price');
             foreach($request->id as $key => $cdata){
                 $payment_detail = Paymentdetail::findOrFail($id[$key]);
                 $payment_detail['mrNo']             = $request->mrNo;
+                $payment_detail['invoiceId']        = $invoiceId[$key]?$invoiceId[$key]:null;
                 $payment_detail['cPayable']         = $cPayable[$key];
                 $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
                 //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
                 $payment_detail['payment_type']             = $payment_type[$key];//($cPayable[$key] == $cpaidAmount[$key])?0:1;
-                $payment_detail['dueDate']          = date('Y-m-d',strtotime($dueDate[$key]));
+                if($cpaidAmount[$key] < $cPayable[$key]){
+                    //$payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
+                    $date = new Carbon($dueDate[$key]);
+                    $date->addMonth();
+                    $payment_detail['dueDate']      = $date->toDateString();
+
+                }
                 $payment_detail['created_at']       = date("Y-m-d h:i:s");
                 /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
                 $payment_detail['discount']     = $discount[$key];
@@ -466,10 +485,28 @@ class PaymentController extends Controller
                 $payment_detail['feeType']          = $feeType[$key];
                 $payment_detail->save();
 
+                /*To Update Account Approve */
+                $s_batch_data = DB::table('student_batches')->where(['student_id'=>$request->studentId,'batch_id'=>$batch_id[$key]])->first();
+
+                if($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]){
+                    $data = array(
+                        'acc_approve' => 1,
+                        'updated_at' => Carbon::now(),
+                        'pstatus' => 0
+                    );
+                    DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                }else if($s_batch_data->acc_approve == 1 && $cpaidAmount[$key] == $cPayable[$key]){
+                    $data = array(
+                        'acc_approve' => 1,
+                        'updated_at' => Carbon::now(),
+                        'pstatus' => 1
+                    );
+                    DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                }
 
                 DB::commit();
             }
-            return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));
+            return redirect(route(currentUser().'.daily_collection_report_by_mr'))->with($this->responseMessage(true, null, 'Payment Received'));
         } catch (\Exception $e) {
             DB::rollback();
             // something went wrong
