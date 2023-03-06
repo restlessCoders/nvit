@@ -1,904 +1,259 @@
-@extends('layout.admin.admin_master')
-@section('title', 'Sales Man | Dashboard')
+@extends('layout.master')
+@section('title', 'Sales Executive | Dashboard')
 @section('content')
-<?php
-	$montharr=array('Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sept','Oct','nov','Dec');
-	/* customer data init */
-	$cust_count="";
-	$cust_month="";
-	$tcust_count=0;
-	if($customer){
-		foreach($customer as $cust){
-			$tcust_count+=$cust->ccount;
-			$cust_count.=$cust->ccount.', ';
-			$cust_month.='"'.$montharr[$cust->cmonth].'", ';
-		}
-		$cust_count=rtrim($cust_count,', ');
-		$cust_month=rtrim($cust_month,', ');
-	}
-	
-	/* supplier data init */
-	$sup_count="";
-	$sup_month="";
-	$tsup_count=0;
-	if($suppliers){
-		foreach($suppliers as $sup){
-			$tsup_count+=$sup->ccount;
-			$sup_count.=$sup->ccount.', ';
-			$sup_month.='"'.$montharr[$sup->cmonth].'", ';
-		}
-		$sup_count=rtrim($sup_count,', ');
-		$sup_month=rtrim($sup_month,', ');
-	}
-
-	$Revenue="";
-	$tRevenue=0;
-	$ttax=0;
-	$tdis=0;
-	$month="";
-	$rcount=0;
-	if($rev_date){
-		foreach($rev_date as $rd){
-			$tRevenue+=$rd->tm;
-			$ttax+=$rd->tax;
-			$tdis+=$rd->dis;
-			$rcount++;
-		}
-		foreach($rev_date as $rd){
-			$Revenue.=round(($rd->tm*100)/$tRevenue).', ';
-			$month.='"'.$montharr[$rd->bd].' '.$company->currency_symble.$rd->tm.'", ';
-		}
-		$Revenue=rtrim($Revenue,', ');
-		$month=rtrim($month,', ');
-	}
-?>
-
-<div class="content flex-column-fluid" id="kt_content">
-	<!--begin::Dashboard-->
-	
-  <!--Begin::Row-->
-  <div class="row">
-    <div class="col-xl-3 py-3">
-        <a href="{{route(currentUser().'.addNewBillForm')}}" class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x svg-icon-success">
-                <i class="icon-2x flaticon2-add-square"></i>
-            </span>
-            New Bill
-        </a>
-    </div>
-    <div class="col-xl-3 py-3">
-        <a href="{{route(currentUser().'.addNewPurchaseForm')}}" class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x svg-icon-success">
-                <i class="icon-2x flaticon2-add-square"></i>
-            </span>
-            New Purchese
-        </a>
-    </div>
-    <div class="col-xl-3 py-3">
-        <a href="{{route(currentUser().'.addNewAppointmentForm')}}"
-            class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x svg-icon-success">
-                <i class="icon-2x flaticon-calendar-with-a-clock-time-tools"></i>
-            </span>
-            Book Appointmen
-        </a>
-    </div>
-    <div class="col-xl-3 py-3">
-        <a href="{{route(currentUser().'.addNewCustomerForm')}}" class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x svg-icon-success">
-                <i class="icon-2x flaticon-user-add"></i>
-            </span>
-            New Customer
-        </a>
-    </div>
-</div>
-<!--End::Row-->
-
-
-<!--Begin::Row-->
+<!-- start page title -->
 <div class="row">
-    <div class="col-xl-3 py-3">
-
-        <a href="{{route(currentUser().'.allBill')}}" class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x svg-icon-success">
-                <i class="icon-2x flaticon2-list"></i>
-            </span>
-            Bill List
-        </a>
-    </div>
-    <div class="col-xl-3 py-3">
-
-        <a href="{{route(currentUser().'.allPurchase')}}" class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x svg-icon-success">
-                <i class="icon-2x flaticon2-list"></i>
-            </span>
-            Purchese List
-        </a>
-    </div>
-    <div class="col-xl-3 py-3">
-
-        <a href="{{route(currentUser().'.allAppointment')}}" class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x">
-                <i class="icon-2x flaticon-list-3"></i>
-            </span>
-            Appointment List
-        </a>
-    </div>
-    <div class="col-xl-3 py-3">
-
-        <a href="{{route(currentUser().'.addNewSupplierForm')}}" class="btn btn-primary font-weight-bolder d-block">
-            <span class="svg-icon svg-icon-2x svg-icon-success">
-                <i class="icon-2x flaticon-user-add"></i>
-            </span>
-            New Supplier
-        </a>
-    </div>
-</div>
-<!--End::Row-->
-
-
-<!--begin::Row-->
-<div class="row mt-5">
-    <div class="col-xl-4">
-
-        <div class="card card-custom bgi-no-repeat bgi-size-cover gutter-b h-100"
-        style="background-image: url(assets/media/stock-600x400/img-28.jpg)">
-        <!--begin::Body-->
-        <div class="card-body">
-            <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                Total Profit
-                <h3 style="margin:10px 0;">{{$company->currency_symble}}
-                    @php $pro=0; @endphp
-                @if($profit)
-                    @foreach($profit as $p)
-                        @php $pro+=$p->profit; @endphp
-                    @endforeach
-                @endif
-                {{ round($pro) }}</h3>
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
             </div>
-            <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                Average Sale
-                <h3 style="margin:10px 0;">{{$company->currency_symble}}{{ $tRevenue==0?0:round($tRevenue/$rcount) }}</h3>
-            </div>
-            <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                Annual Income
-                <h3 style="margin:10px 0;">
-                    {{$company->currency_symble}}{{round($tRevenue)}}
-                </h3>
-            </div>
-        </div>
-        <!--end::Body-->
-    </div>
-    </div>
-    <div class="col-xl-8">
-        <div class="row">
-            <div class="col-xl-6">
-                <!--begin::Tiles Widget 21-->
-                <div class="card card-custom gutter-b" style="height: 180px">
-                    <!--begin::Body-->
-                    <div class="card-body d-flex flex-column p-0">
-                        <!--begin::Stats-->
-                        <div class="flex-grow-1 card-spacer pb-0">
-                            <span class="svg-icon svg-icon-2x svg-icon-info">
-                                <!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Group.svg-->
-                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                        <polygon points="0 0 24 0 24 24 0 24" />
-                                        <path d="M18,14 C16.3431458,14 15,12.6568542 15,11 C15,9.34314575 16.3431458,8 18,8 C19.6568542,8 21,9.34314575 21,11 C21,12.6568542 19.6568542,14 18,14 Z M9,11 C6.790861,11 5,9.209139 5,7 C5,4.790861 6.790861,3 9,3 C11.209139,3 13,4.790861 13,7 C13,9.209139 11.209139,11 9,11 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" />
-                                        <path d="M17.6011961,15.0006174 C21.0077043,15.0378534 23.7891749,16.7601418 23.9984937,20.4 C24.0069246,20.5466056 23.9984937,21 23.4559499,21 L19.6,21 C19.6,18.7490654 18.8562935,16.6718327 17.6011961,15.0006174 Z M0.00065168429,20.1992055 C0.388258525,15.4265159 4.26191235,13 8.98334134,13 C13.7712164,13 17.7048837,15.2931929 17.9979143,20.2 C18.0095879,20.3954741 17.9979143,21 17.2466999,21 C13.541124,21 8.03472472,21 0.727502227,21 C0.476712155,21 -0.0204617505,20.45918 0.00065168429,20.1992055 Z" fill="#000000" fill-rule="nonzero" />
-                                    </g>
-                                </svg>
-                                <!--end::Svg Icon-->
-                            </span>
-                            <div class="font-weight-boldest font-size-h3 pt-2">{{ $tcust_count }}</div>
-                            <div class="text-muted font-weight-bold">Total Customers</div>
-                        </div>
-                        <!--end::Stats-->
-                        <!--begin::Chart-->
-                        <div id="kt_tiles_widget_21_chart" class="card-rounded-bottom" data-color="info" style="height: 100px"></div>
-                        <!--end::Chart-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Tiles Widget 21-->
-            </div>
-            <div class="col-xl-6">
-                <!--begin::Tiles Widget 21-->
-                <div class="card card-custom gutter-b" style="height: 180px">
-                    <!--begin::Body-->
-                    <div class="card-body d-flex flex-column p-0">
-                        <!--begin::Stats-->
-                        <div class="flex-grow-1 card-spacer pb-0">
-                            <span class="svg-icon svg-icon-2x svg-icon-info">
-                                <!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Group.svg-->
-                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                        <polygon points="0 0 24 0 24 24 0 24" />
-                                        <path d="M18,14 C16.3431458,14 15,12.6568542 15,11 C15,9.34314575 16.3431458,8 18,8 C19.6568542,8 21,9.34314575 21,11 C21,12.6568542 19.6568542,14 18,14 Z M9,11 C6.790861,11 5,9.209139 5,7 C5,4.790861 6.790861,3 9,3 C11.209139,3 13,4.790861 13,7 C13,9.209139 11.209139,11 9,11 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" />
-                                        <path d="M17.6011961,15.0006174 C21.0077043,15.0378534 23.7891749,16.7601418 23.9984937,20.4 C24.0069246,20.5466056 23.9984937,21 23.4559499,21 L19.6,21 C19.6,18.7490654 18.8562935,16.6718327 17.6011961,15.0006174 Z M0.00065168429,20.1992055 C0.388258525,15.4265159 4.26191235,13 8.98334134,13 C13.7712164,13 17.7048837,15.2931929 17.9979143,20.2 C18.0095879,20.3954741 17.9979143,21 17.2466999,21 C13.541124,21 8.03472472,21 0.727502227,21 C0.476712155,21 -0.0204617505,20.45918 0.00065168429,20.1992055 Z" fill="#000000" fill-rule="nonzero" />
-                                    </g>
-                                </svg>
-                                <!--end::Svg Icon-->
-                            </span>
-                            <div class="font-weight-boldest font-size-h3 pt-2">{{ $tsup_count }}</div>
-                            <div class="text-muted font-weight-bold">Total Supplier</div>
-                        </div>
-                        <!--end::Stats-->
-                        <!--begin::Chart-->
-                        <div id="kt_tiles_widget_22_chart" class="card-rounded-bottom" data-color="info" style="height: 100px"></div>
-                        <!--end::Chart-->
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Tiles Widget 21-->
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-4">
-                <!--begin::Tiles Widget 24-->
-                <div class="card card-custom bgi-no-repeat bgi-size-cover gutter-b h-100" style="background-image: url(assets/media/stock-600x400/img-28.jpg)">
-                    <!--begin::Body-->
-                    <div class="card-body">
-                        <a href='#' class="text-dark-75 text-hover-primary font-weight-bolder font-size-h3">This Month Sales</a>
-                        <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                            @if($billMonth)
-                                {{ $billMonth[0]->cid }} Sales
-                            @else
-                                0 Sales
-                            @endif
-                        </div>
-                        <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                            @if($billMonth)
-                                {{$company->currency_symble}} {{ $billMonth[0]->am }}
-                            @else
-                                {{$company->currency_symble}} 0
-                            @endif
-                        </div>
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Tiles Widget 24-->
-            </div>
-            <div class="col-xl-4">
-                <!--begin::Tiles Widget 24-->
-                <div class="card card-custom bgi-no-repeat bgi-size-cover gutter-b h-100" style="background-image: url(assets/media/stock-600x400/img-28.jpg)">
-                    <!--begin::Body-->
-                    <div class="card-body">
-                        <a href='#' class="text-dark-75 text-hover-primary font-weight-bolder font-size-h3">This Week Sales</a>
-                        <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                            @if($billWeek)
-                                {{ $billWeek[0]->cid }} Sales
-                            @else
-                                0 Sales
-                            @endif
-                        </div>
-                        <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                            @if($billWeek)
-                                {{$company->currency_symble}} {{ $billWeek[0]->am }}
-                            @else
-                                {{$company->currency_symble}} 0
-                            @endif
-                        </div>
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Tiles Widget 24-->
-            </div>
-            <div class="col-xl-4">
-                <!--begin::Tiles Widget 24-->
-                <div class="card card-custom bgi-no-repeat bgi-size-cover gutter-b h-100" style="background-image: url(assets/media/stock-600x400/img-28.jpg)">
-                    <!--begin::Body-->
-                    <div class="card-body">
-                        <a href='#' class="text-dark-75 text-hover-primary font-weight-bolder font-size-h3">Today Sales</a>
-                        <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                            @if($billToday)
-                                {{ $billToday[0]->cid }} Sales
-                            @else
-                                0 Sales
-                            @endif
-                        </div>
-                        <div class="text-dark-50 font-weight-bold font-size-lg pt-2">
-                            @if($billToday)
-                                {{$company->currency_symble}} {{ $billToday[0]->am }}
-                            @else
-                                {{$company->currency_symble}} 0
-                            @endif
-                        </div>
-                    </div>
-                    <!--end::Body-->
-                </div>
-                <!--end::Tiles Widget 24-->
-            </div>
+            <h4 class="page-title">Dashboard</h4>
         </div>
     </div>
 </div>
-<!--end::Row-->
-	
-	<!--end::Dashboard-->
+<!-- end page title -->
+
+<div class="row">
+    <div class="col-md-12 d-flex justify-content-end">
+
+        <div class="text-center mb-3">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-sm btn-secondary">Today</button>
+                <button type="button" class="btn btn-sm btn-secondary">This Month</button>
+                <button type="button" class="btn btn-sm btn-secondary">This Year</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card-box tilebox-one">
+            <i class="icon-layers float-right m-0 h2 text-muted"></i>
+            <h6 class="text-muted text-uppercase mt-0">Visitors</h6>
+            <h3 class="my-3" data-plugin="counterup">1,587</h3>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card-box tilebox-one">
+            <i class="icon-paypal float-right m-0 h2 text-muted"></i>
+            <h6 class="text-muted text-uppercase mt-0">Enrollment</h6>
+            <h3 class="my-3">$<span data-plugin="counterup">46,782</span></h3>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card-box tilebox-one">
+            <i class="icon-chart float-right m-0 h2 text-muted"></i>
+            <h6 class="text-muted text-uppercase mt-0">Sales</h6>
+            <h3 class="my-3">$<span data-plugin="counterup">15.9</span></h3>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card-box tilebox-one">
+            <i class="icon-rocket float-right m-0 h2 text-muted"></i>
+            <h6 class="text-muted text-uppercase mt-0">Target</h6>
+            <h3 class="my-3" data-plugin="counterup">1,890</h3>
+        </div>
+    </div>
 </div>
-<!--end::Content-->
+<!-- end row -->
+
+
+<div class="row">
+    <div class="col-lg-6 col-xl-8">
+        <div class="card-box">
+            <h4 class="header-title mb-3">Sales Statistics</h4>
+
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list mb-0">
+                    <li class="list-inline-item">
+                        <h6 class="text-info"><i class="mdi mdi-circle-outline mr-1"></i>Series A</h6>
+                    </li>
+                    <li class="list-inline-item">
+                        <h6 class="text-success"><i class="mdi mdi-triangle-outline mr-1"></i>Series B</h6>
+                    </li>
+                    <li class="list-inline-item">
+                        <h6 class="text-muted"><i class="mdi mdi-square-outline mr-1"></i>Series C</h6>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="morris-bar-stacked" class="morris-chart" style="height: 320px; position: relative; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"><svg height="320" version="1.1" width="731" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="overflow: hidden; position: relative; left: -0.25px; top: -0.59375px;">
+                    <desc style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">Created with Raphaël 2.3.0</desc>
+                    <defs style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></defs><text x="33.84765625" y="281" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">0</tspan>
+                    </text>
+                    <path fill="none" stroke="#6c7897" d="M46.34765625,281H706" stroke-opacity="0.1" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path><text x="33.84765625" y="217" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">100</tspan>
+                    </text>
+                    <path fill="none" stroke="#6c7897" d="M46.34765625,217H706" stroke-opacity="0.1" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path><text x="33.84765625" y="153" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">200</tspan>
+                    </text>
+                    <path fill="none" stroke="#6c7897" d="M46.34765625,153H706" stroke-opacity="0.1" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path><text x="33.84765625" y="89" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">300</tspan>
+                    </text>
+                    <path fill="none" stroke="#6c7897" d="M46.34765625,89H706" stroke-opacity="0.1" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path><text x="33.84765625" y="25" text-anchor="end" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: end; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">400</tspan>
+                    </text>
+                    <path fill="none" stroke="#6c7897" d="M46.34765625,25H706" stroke-opacity="0.1" stroke-width="0.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path><text x="676.0158025568181" y="293.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,7)">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2015</tspan>
+                    </text><text x="556.079012784091" y="293.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,7)">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2013</tspan>
+                    </text><text x="436.1422230113636" y="293.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,7)">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2011</tspan>
+                    </text><text x="316.2054332386364" y="293.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,7)">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2009</tspan>
+                    </text><text x="196.2686434659091" y="293.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,7)">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2007</tspan>
+                    </text><text x="76.33185369318181" y="293.5" text-anchor="middle" font-family="sans-serif" font-size="12px" stroke="none" fill="#888888" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: sans-serif; font-size: 12px; font-weight: normal;" font-weight="normal" transform="matrix(1,0,0,1,0,7)">
+                        <tspan dy="4" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">2005</tspan>
+                    </text>
+                    <rect x="64.33817471590909" y="252.2" width="23.987357954545455" height="28.80000000000001" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="64.33817471590909" y="137" width="23.987357954545455" height="115.19999999999999" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="64.33817471590909" y="73" width="23.987357954545455" height="64" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="124.30656960227272" y="233" width="23.987357954545455" height="48" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="124.30656960227272" y="191.4" width="23.987357954545455" height="41.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="124.30656960227272" y="140.20000000000002" width="23.987357954545455" height="51.19999999999999" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="184.27496448863633" y="217" width="23.987357954545455" height="64" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="184.27496448863633" y="159.4" width="23.987357954545455" height="57.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="184.27496448863633" y="123.56" width="23.987357954545455" height="35.84" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="244.243359375" y="233" width="23.987357954545455" height="48" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="244.243359375" y="191.4" width="23.987357954545455" height="41.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="244.243359375" y="134.44" width="23.987357954545455" height="56.96000000000001" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="304.2117542613636" y="217" width="23.987357954545455" height="64" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="304.2117542613636" y="159.4" width="23.987357954545455" height="57.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="304.2117542613636" y="82.6" width="23.987357954545455" height="76.80000000000001" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="364.18014914772726" y="233" width="23.987357954545455" height="48" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="364.18014914772726" y="191.4" width="23.987357954545455" height="41.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="364.18014914772726" y="121" width="23.987357954545455" height="70.4" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="424.1485440340909" y="249" width="23.987357954545455" height="32" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="424.1485440340909" y="223.4" width="23.987357954545455" height="25.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="424.1485440340909" y="169" width="23.987357954545455" height="54.400000000000006" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="484.1169389204545" y="233" width="23.987357954545455" height="48" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="484.1169389204545" y="191.4" width="23.987357954545455" height="41.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="484.1169389204545" y="158.12" width="23.987357954545455" height="33.28" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="544.0853338068181" y="249" width="23.987357954545455" height="32" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="544.0853338068181" y="223.4" width="23.987357954545455" height="25.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="544.0853338068181" y="174.12" width="23.987357954545455" height="49.28" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="604.0537286931818" y="233" width="23.987357954545455" height="48" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="604.0537286931818" y="191.4" width="23.987357954545455" height="41.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="604.0537286931818" y="133.8" width="23.987357954545455" height="57.599999999999994" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="664.0221235795455" y="217" width="23.987357954545455" height="64" rx="0" ry="0" fill="#3db9dc" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="664.0221235795455" y="159.4" width="23.987357954545455" height="57.599999999999994" rx="0" ry="0" fill="#1bb99a" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                    <rect x="664.0221235795455" y="76.20000000000002" width="23.987357954545455" height="83.19999999999999" rx="0" ry="0" fill="#ebeff2" stroke="none" fill-opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); fill-opacity: 1;"></rect>
+                </svg>
+                <div class="morris-hover morris-default-style" style="left: 28.7772px; top: 107px; display: none;">
+                    <div class="morris-hover-row-label">2005</div>
+                    <div class="morris-hover-point" style="color: #3db9dc">
+                        Series A:
+                        45
+                    </div>
+                    <div class="morris-hover-point" style="color: #1bb99a">
+                        Series B:
+                        180
+                    </div>
+                    <div class="morris-hover-point" style="color: #ebeff2">
+                        Series C:
+                        100
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div><!-- end col-->
+
+    <div class="col-lg-6 col-xl-4">
+        <div class="card-box">
+            <h4 class="header-title mb-3">Most Trending Course Monthly</h4>
+
+            <div class="text-center mb-3">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-sm btn-secondary">Today</button>
+                    <button type="button" class="btn btn-sm btn-secondary">This Week</button>
+                    <button type="button" class="btn btn-sm btn-secondary">Last Week</button>
+                </div>
+            </div>
+
+            <div id="morris-donut-example" class="morris-chart" style="height: 268px;"><svg height="268" version="1.1" width="333.484" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="overflow: hidden; position: relative; left: -0.25px; top: -0.203125px;">
+                    <desc style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">Created with Raphaël 2.3.0</desc>
+                    <defs style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></defs>
+                    <path fill="none" stroke="#3db9dc" d="M166.742,216.66666666666669A82.66666666666667,82.66666666666667,0,0,0,244.96442484829822,160.74004541189322" stroke-width="2" opacity="0" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); opacity: 0;"></path>
+                    <path fill="#3db9dc" stroke="#ffffff" d="M166.742,219.66666666666669A85.66666666666667,85.66666666666667,0,0,0,247.80314187908326,161.71045028571194L279.344442221139,172.49272666147533A119,119,0,0,1,166.742,253Z" stroke-width="3" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
+                    <path fill="none" stroke="#1bb99a" d="M244.96442484829822,160.74004541189322A82.66666666666667,82.66666666666667,0,0,0,92.60244423163182,97.43356664580473" stroke-width="2" opacity="1" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); opacity: 1;"></path>
+                    <path fill="#1bb99a" stroke="#ffffff" d="M247.80314187908326,161.71045028571194A85.66666666666667,85.66666666666667,0,0,0,89.91189583681201,96.10655898375732L55.53266634744773,79.1503499687071A124,124,0,0,1,284.07563727244735,174.11006811783983Z" stroke-width="3" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
+                    <path fill="none" stroke="#ebeff2" d="M92.60244423163182,97.43356664580473A82.66666666666667,82.66666666666667,0,0,0,166.71602950115752,216.66666258723023" stroke-width="2" opacity="0" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); opacity: 0;"></path>
+                    <path fill="#ebeff2" stroke="#ffffff" d="M89.91189583681201,96.10655898375732A85.66666666666667,85.66666666666667,0,0,0,166.71508702337695,219.66666243918615L166.70461504803725,252.99999412758544A119,119,0,0,1,60.016913672147425,81.36202940545279Z" stroke-width="3" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path><text x="166.742" y="124" text-anchor="middle" font-family="&quot;Arial&quot;" font-size="15px" stroke="none" fill="#000000" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: Arial; font-size: 15px; font-weight: 800;" font-weight="800" transform="matrix(1.1172,0,0,1.1172,-19.5661,-15.5883)" stroke-width="0.8950904107862903">
+                        <tspan dy="5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">Italian Language 02</tspan>
+                    </text><text x="166.742" y="144" text-anchor="middle" font-family="&quot;Arial&quot;" font-size="14px" stroke="none" fill="#000000" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); text-anchor: middle; font-family: Arial; font-size: 14px;" transform="matrix(1.6209,0,0,1.6209,-103.5326,-84.134)" stroke-width="0.6169354838709677">
+                        <tspan dy="4.5" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">30</tspan>
+                    </text>
+                </svg></div>
+
+            <div class="text-center">
+                <ul class="list-inline chart-detail-list mb-0 mt-2">
+                    <li class="list-inline-item">
+                        <h6 class="text-info"><i class="mdi mdi-circle-outline mr-1"></i>Web Design</h6>
+                    </li>
+                    <li class="list-inline-item">
+                        <h6 class="text-success"><i class="mdi mdi-triangle-outline mr-1"></i>Web development</h6>
+                    </li>
+                    <li class="list-inline-item">
+                        <h6 class="text-muted"><i class="mdi mdi-square-outline mr-1"></i>Mos</h6>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div><!-- end col-->
+</div>
+<!-- end row -->
+
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card-box">
+            <h4 class="header-title mb-3">Today Recall List</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-nowrap mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student Id</th>
+                            <th>Student Name</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div><!-- end col-->
+    <div class="col-xl-6">
+        <div class="card-box">
+            <h4 class="header-title mb-3">Today Due List</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-nowrap mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student Id</th>
+                            <th>Student Name</th>
+                            <th>BatchId</th>
+                            <th>Due Amount</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div><!-- end col-->
+</div>
+<!-- end row -->
 @endsection
-
-@push('scripts')
-
-<script>
-"use strict";
-
-// Class definition
-var KTWidgets = function() {
-
-    // Charts widgets
-    var _initMixedWidget6 = function() {
-        var element = document.getElementById("kt_mixed_widget_6_chart");
-        var height = parseInt(KTUtil.css(element, 'height'));
-
-        if (!element) {
-            return;
-        }
-
-        var options = {
-            series: [{
-                name: 'Revenue',
-                data: [{{ $Revenue }}]
-            }],
-            chart: {
-                type: 'bar',
-                height: height,
-                toolbar: {
-                    show: false
-                },
-                sparkline: {
-                    enabled: true
-                },
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: ['30%'],
-                    endingShape: 'rounded'
-                },
-            },
-            legend: {
-                show: false
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 1,
-                colors: ['transparent']
-            },
-            xaxis: {
-                categories: [<?=$month?>],
-                axisBorder: {
-                    show: false,
-                },
-                axisTicks: {
-                    show: false
-                },
-                labels: {
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            yaxis: {
-                min: 0,
-                max: 100,
-                labels: {
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            fill: {
-                type: ['solid'],
-                opacity: [0.8]
-            },
-            states: {
-                normal: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                hover: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                active: {
-                    allowMultipleDataPointsSelection: false,
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                }
-            },
-            tooltip: {
-                style: {
-                    fontSize: '12px',
-                    fontFamily: KTApp.getSettings()['font-family']
-                },
-                y: {
-                    formatter: function(val) {
-                        return  val + "%"
-                    }
-                },
-                marker: {
-                    show: false
-                }
-            },
-            colors: ['#ffffff'],
-            grid: {
-                borderColor: KTApp.getSettings()['colors']['gray']['gray-200'],
-                strokeDashArray: 4,
-                yaxis: {
-                    lines: {
-                        show: true
-                    }
-                },
-                padding: {
-                    left: 20,
-                    right: 20
-                }
-            }
-        };
-
-        var chart = new ApexCharts(element, options);
-        chart.render();
-    }
-    // Mixed widgets
-
-    var _initMixedWidget21 = function() {
-        var element = document.getElementById("kt_tiles_widget_21_chart");
-        var height = parseInt(KTUtil.css(element, 'height'));
-        var color = KTUtil.hasAttr(element, 'data-color') ? KTUtil.attr(element, 'data-color') : 'info';
-
-        if (!element) {
-            return;
-        }
-
-        var options = {
-            series: [{
-                name: 'Customer',
-                data: [{{ $cust_count }}]
-            }],
-            chart: {
-                type: 'area',
-                height: height,
-                toolbar: {
-                    show: false
-                },
-                zoom: {
-                    enabled: false
-                },
-                sparkline: {
-                	enabled: true
-                }
-            },
-            plotOptions: {},
-            legend: {
-                show: false
-            },
-            dataLabels: {
-                enabled: false
-            },
-            fill: {
-                type: 'solid',
-                opacity: 1
-            },
-            stroke: {
-                curve: 'smooth',
-                show: true,
-                width: 3,
-                colors: [KTApp.getSettings()['colors']['theme']['base'][color]]
-            },
-            xaxis: {
-                categories: [<?= $cust_month ?>],
-                axisBorder: {
-                    show: false,
-                },
-                axisTicks: {
-                    show: false
-                },
-                labels: {
-                    show: false,
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                },
-                crosshairs: {
-                    show: false,
-                    position: 'front',
-                    stroke: {
-                        color: KTApp.getSettings()['colors']['gray']['gray-300'],
-                        width: 1,
-                        dashArray: 3
-                    }
-                },
-                tooltip: {
-                    enabled: true,
-                    formatter: undefined,
-                    offsetY: 0,
-                    style: {
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            yaxis: {
-                min: 0,
-                max: 32,
-                labels: {
-                    show: false,
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            states: {
-                normal: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                hover: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                active: {
-                    allowMultipleDataPointsSelection: false,
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                }
-            },
-            tooltip: {
-                style: {
-                    fontSize: '12px',
-                    fontFamily: KTApp.getSettings()['font-family']
-                },
-                y: {
-                    formatter: function(val) {
-                        return val + " Customers"
-                    }
-                }
-            },
-            colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
-            markers: {
-                colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
-                strokeColor: [KTApp.getSettings()['colors']['theme']['base'][color]],
-                strokeWidth: 3
-            }
-        };
-
-        var chart = new ApexCharts(element, options);
-        chart.render();
-    }
-
-    var _initMixedWidget22 = function() {
-        var element = document.getElementById("kt_tiles_widget_22_chart");
-        var height = parseInt(KTUtil.css(element, 'height'));
-        var color = KTUtil.hasAttr(element, 'data-color') ? KTUtil.attr(element, 'data-color') : 'info';
-
-        if (!element) {
-            return;
-        }
-
-        var options = {
-            series: [{
-                name: 'Supplier',
-                data: [{{ $sup_count }}]
-            }],
-            chart: {
-                type: 'area',
-                height: height,
-                toolbar: {
-                    show: false
-                },
-                zoom: {
-                    enabled: false
-                },
-                sparkline: {
-                	enabled: true
-                }
-            },
-            plotOptions: {},
-            legend: {
-                show: false
-            },
-            dataLabels: {
-                enabled: false
-            },
-            fill: {
-                type: 'solid',
-                opacity: 1
-            },
-            stroke: {
-                curve: 'smooth',
-                show: true,
-                width: 3,
-                colors: [KTApp.getSettings()['colors']['theme']['base'][color]]
-            },
-            xaxis: {
-                categories: [<?= $sup_month ?>],
-                axisBorder: {
-                    show: false,
-                },
-                axisTicks: {
-                    show: false
-                },
-                labels: {
-                    show: false,
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                },
-                crosshairs: {
-                    show: false,
-                    position: 'front',
-                    stroke: {
-                        color: KTApp.getSettings()['colors']['gray']['gray-300'],
-                        width: 1,
-                        dashArray: 3
-                    }
-                },
-                tooltip: {
-                    enabled: true,
-                    formatter: undefined,
-                    offsetY: 0,
-                    style: {
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            yaxis: {
-                min: 0,
-                max: 32,
-                labels: {
-                    show: false,
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            states: {
-                normal: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                hover: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                active: {
-                    allowMultipleDataPointsSelection: false,
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                }
-            },
-            tooltip: {
-                style: {
-                    fontSize: '12px',
-                    fontFamily: KTApp.getSettings()['font-family']
-                },
-                y: {
-                    formatter: function(val) {
-                        return val + " Supplier"
-                    }
-                }
-            },
-            colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
-            markers: {
-                colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
-                strokeColor: [KTApp.getSettings()['colors']['theme']['base'][color]],
-                strokeWidth: 3
-            }
-        };
-
-        var chart = new ApexCharts(element, options);
-        chart.render();
-    }
-
-    /*var _initMixedWidget23 = function() {
-        var element = document.getElementById("kt_tiles_widget_23_chart");
-        var height = parseInt(KTUtil.css(element, 'height'));
-        var color = KTUtil.hasAttr(element, 'data-color') ? KTUtil.attr(element, 'data-color') : 'primary';
-
-        if (!element) {
-            return;
-        }
-
-        var options = {
-            series: [{
-                name: 'Net Profit',
-                data: [15, 25, 15, 40, 20, 50]
-            }],
-            chart: {
-                type: 'area',
-                height: 125,
-                toolbar: {
-                    show: false
-                },
-                zoom: {
-                    enabled: false
-                },
-                sparkline: {
-                	enabled: true
-                }
-            },
-            plotOptions: {},
-            legend: {
-                show: false
-            },
-            dataLabels: {
-                enabled: false
-            },
-            fill: {
-                type: 'solid',
-                opacity: 1
-            },
-            stroke: {
-                curve: 'smooth',
-                show: true,
-                width: 3,
-                colors: [KTApp.getSettings()['colors']['theme']['base'][color]]
-            },
-            xaxis: {
-                categories: ['Jan, 2020', 'Feb, 2020', 'Mar, 2020', 'Apr, 2020', 'May, 2020', 'Jun, 2020'],
-                axisBorder: {
-                    show: false,
-                },
-                axisTicks: {
-                    show: false
-                },
-                labels: {
-                    show: false,
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                },
-                crosshairs: {
-                    show: false,
-                    position: 'front',
-                    stroke: {
-                        color: KTApp.getSettings()['colors']['gray']['gray-300'],
-                        width: 1,
-                        dashArray: 3
-                    }
-                },
-                tooltip: {
-                    enabled: true,
-                    formatter: undefined,
-                    offsetY: 0,
-                    style: {
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            yaxis: {
-                min: 0,
-                max: 55,
-                labels: {
-                    show: false,
-                    style: {
-                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
-                }
-            },
-            states: {
-                normal: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                hover: {
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                },
-                active: {
-                    allowMultipleDataPointsSelection: false,
-                    filter: {
-                        type: 'none',
-                        value: 0
-                    }
-                }
-            },
-            tooltip: {
-                style: {
-                    fontSize: '12px',
-                    fontFamily: KTApp.getSettings()['font-family']
-                },
-                y: {
-                    formatter: function(val) {
-                        return "$" + val + " thousands"
-                    }
-                }
-            },
-            colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
-            markers: {
-                colors: [KTApp.getSettings()['colors']['theme']['light'][color]],
-                strokeColor: [KTApp.getSettings()['colors']['theme']['base'][color]],
-                strokeWidth: 3
-            }
-        };
-
-        var chart = new ApexCharts(element, options);
-        chart.render();
-    }
-*/
-
-    var _initAdvancedTableGroupSelection = function(element) {
-        var table = KTUtil.getById(element);
-
-        KTUtil.on(table, 'thead th .checkbox > input', 'change', function(e) {
-            var checkboxes = KTUtil.findAll(table, 'tbody td .checkbox > input');
-
-            for (var i = 0, len = checkboxes.length; i < len; i++) {
-                checkboxes[i].checked = this.checked;
-            }
-        });
-    }
-
-    // Public methods
-    return {
-        init: function() {
-            // Charts Widgets
-            _initMixedWidget6();
-            _initMixedWidget21();
-            _initMixedWidget22();
-            //_initMixedWidget23();
-
-            // Table Widgets
-            _initAdvancedTableGroupSelection('kt_advance_table_widget_1');
-            _initAdvancedTableGroupSelection('kt_advance_table_widget_2');
-            _initAdvancedTableGroupSelection('kt_advance_table_widget_3');
-            _initAdvancedTableGroupSelection('kt_advance_table_widget_4');
-        }
-    }
-}();
-
-// Webpack support
-if (typeof module !== 'undefined') {
-    module.exports = KTWidgets;
-}
-
-jQuery(document).ready(function() {
-    KTWidgets.init();
-});
-</script>
-@endpush

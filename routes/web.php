@@ -280,6 +280,10 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
         /*===Payment report==*/
         Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('salesexecutive.daily_collection_report');
         Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('salesexecutive.daily_collection_report_by_mr');
+
+        /*=== Course Report= ==*/
+        Route::get('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('salesexecutive.coursewiseStudent');
+        Route::post('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('salesexecutive.coursewiseStudent');
     });
 });
 
@@ -350,9 +354,9 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('operationmanager.daily_collection_report');
         Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('operationmanager.daily_collection_report_by_mr');
 
-         /*Attendance Report */
-         Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('operationmanager.batchwiseAttendance');
-         Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('operationmanager.batchwiseAttendanceReport');
+        /*Attendance Report */
+        Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('operationmanager.batchwiseAttendance');
+        Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('operationmanager.batchwiseAttendanceReport');
     });
 });
 
