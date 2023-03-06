@@ -199,7 +199,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Course <div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">Course Wise Report</a></li>
+                                        <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">Course Wise Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>

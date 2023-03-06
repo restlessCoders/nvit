@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Batch Wise Studnet Enroll List')
+@section('title', 'Course Wise Studnet List')
 @push('styles')
 <link href="{{asset('backend/libs/multiselect/multi-select.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
@@ -15,25 +15,25 @@
 					<li class="breadcrumb-item active">List</li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Enrolled Students</h4>
+			<h4 class="page-title">All Course Students</h4>
 		</div>
 	</div>
 	<div class="col-12">
 		<div class="card-box">
 			<div class="col-md-12 text-center">
 				<h5>NEW VISION INFORMATION TECHNOLOGY LTD.</h5>
-				<p class="p-0" style="font-size:16px"><strong>Batch Wise Report</strong></p>
+				<p class="p-0" style="font-size:16px"><strong>Course Wise Report</strong></p>
 			</div>
 
-			<form action="{{route(currentUser().'.batchwiseEnrollStudent')}}" method="post" role="search">
+			<form action="{{route(currentUser().'.coursewiseStudent')}}" method="post" role="search">
 				@csrf
 				<div class="row">
 					<div class="col-sm-3">
-						<label for="batch_id" class="col-form-label">Select Batch</label>
-						<select name="batch_id" class="js-example-basic-single form-control" required>
-							<option value="">Select Batch</option>
-							@forelse($batches as $batch)
-							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
+						<label for="course_id" class="col-form-label">Select Course</label>
+						<select name="course_id" class="js-example-basic-single form-control" required>
+							<option value="">Select Course</option>
+							@forelse($courses as $course)
+							<option value="{{$course->id}}">{{$course->courseName}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -58,26 +58,15 @@
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-3">
-						<label for="status" class="col-form-label">Select Status</label>
-						<select class="js-example-basic-single form-control" id="status" name="status">
-							<option value="">Select Status</option>
-							<option value="2">Enroll</option>
-							<option value="3">Knocking</option>
-							<option value="4">Evloulation</option>
-						</select>
-					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
 					</div>
 				</div>
 			</form>
 
-			@if($batchInfo)
+			@if($courseInfo)
 			<div class="col-md-12">
-				<h4 class="text-center">{{$batchInfo->batchId}}</h4>
-				<p class="m-0 text-center text-success"><strong>Start Date: @php echo date('d-m-Y',strtotime($batchInfo->startDate)) @endphp</strong></p>
-				<p class="m-0 text-center text-danger"><strong>Seat Available: {{$batchInfo->seat-$batch_seat_count}}</strong></p>
+				<h4 class="text-center">{{$courseInfo->courseName}}</h4>
 			</div>
 			@endif
 			<table class="table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -87,32 +76,19 @@
 						<th>Student Name</th>
 						<th>Executive</th>
 						<th>Reference</th>
-						<th>Batch</th>
-						<th>Enroll Date</th>
-						<th>Paid Amount</th>
-						<th>Status</th>
-						<th>Action</th>
+						<th>Course</th>
 					</tr>
 				</thead>
 				<tbody>
-					@if(count($allBatches))
-					@foreach($allBatches as $batch)
+					@if(count($courses_pre))
+					@foreach($courses_pre as $course)
 					<tr>
 						<td>{{$loop->iteration}}</td>
-						<td>{{$batch->sName}}</td>
-						<td>{{$batch->exName}}</td>
-						<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
-						<td>{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}</td>
-						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')}}</td>
-						<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
-						<td>
-							@if($batch->status == 2) Enroll @endif
-							@if($batch->status == 3) Knocking @endif
-							@if($batch->status == 4)Evloulation @endif
-						</td>
-						<td>
-							<!-- <a href="" class="text-info"><i class="fas fa-edit"></i></a> -->
-						</td>
+						<td>{{$course->sName}}</td>
+						<td>{{$course->exName}}</td>
+						<td>{{\DB::table('references')->where('id',$course->refId)->first()->refName}}</td>
+						<td>{{\DB::table('courses')->where('id',$course->course_id)->first()->courseName}}</td>
+						<!--<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($course->created_at))->format('j M, Y')--}}</td>-->
 					</tr>
 					@endforeach
 					@else
