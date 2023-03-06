@@ -171,15 +171,6 @@
 
                             <li class="has-submenu @if(currentUser() == 'accountmanager') @else d-none @endif">
                                 <a href="#">
-                                    <i class="ti-layout-grid3"></i>Student Batch Transfer <div class="arrow-down"></div></a>
-                                <ul class="submenu">
-                                    <li class="@if(currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'batchTransfer') {{route(currentUser().'.batchTransfer')}} @endif">Batch Payment</a></li>
-                                    <li class="@if(currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'accountmanager') {{route(currentUser().'.payments.index')}} @endif">Others Payment</a></li>
-                                </ul>
-                            </li>
-
-                            <li class="has-submenu @if(currentUser() == 'accountmanager') @else d-none @endif">
-                                <a href="#">
                                     <i class="ti-layout-grid3"></i>Payments <div class="arrow-down"></div></a>
                                 <ul class="submenu">
                                     <li class="@if(currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'accountmanager') {{route(currentUser().'.payment.index')}} @endif">Batch Payment</a></li>
@@ -206,23 +197,22 @@
                                         </ul>
                                     </li>
                                     <li class="has-submenu">
-                                        <a href="#">Reference <div class="arrow-down"></div></a>
+                                        <a href="#">Course <div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">Reference Wise Report</a></li>
+                                        <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">Course Wise Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
 
-                            <li class="has-submenu">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-hand"></i>Batch<div class="arrow-down"></div></a>
                                 <ul class="submenu">
-
                                     <li class="has-submenu">
                                         <a href="#">Attendance<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="{{route(currentUser().'.batchwiseAttendance')}}">Report</a></li>
+                                        <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -236,7 +226,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Certificate<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">List</a></li>
+                                        <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.batchwiseEnrollStudent')}} @endif">List</a></li>
                                         </ul>
                                     </li>
                                 </ul>

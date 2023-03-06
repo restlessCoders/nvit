@@ -324,6 +324,19 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         Route::resource('/district',DistrictController::class,["as" => "operationmanager"]);
         Route::resource('/upazila',UpazilaController::class,["as" => "operationmanager"]);
 
+        /*==Student Transfer==*/
+        Route::get('/student/transfer/list', [StudentController::class,'studentTransferList'])->name('operationmanager.studentTransferList');
+        Route::get('/student/transfer', [StudentController::class,'studentTransfer'])->name('operationmanager.studentTransfer');
+        Route::get('/student/executive', [StudentController::class,'studentExecutive'])->name('operationmanager.studentExecutive');
+        Route::post('/student/transfer/save', [StudentController::class,'stTransfer'])->name('operationmanager.stTransfer');
+
+
+        /*==Batch Transfer==*/
+        Route::get('/student/batch/transfer/list', [StudentController::class,'batchTransferList'])->name('operationmanager.batchTransferList');
+        Route::get('/student/batch/transfer', [StudentController::class,'batchTransfer'])->name('operationmanager.batchTransfer');
+        Route::get('/student/batch/enroll', [StudentController::class,'studentEnrollBatch'])->name('operationmanager.studentEnrollBatch');
+        Route::post('/student/transfer', [StudentController::class,'transfer'])->name('operationmanager.transfer');
+
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
@@ -336,6 +349,10 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         /*===Payment report==*/
         Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('operationmanager.daily_collection_report');
         Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('operationmanager.daily_collection_report_by_mr');
+
+         /*Attendance Report */
+         Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('operationmanager.batchwiseAttendance');
+         Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('operationmanager.batchwiseAttendanceReport');
     });
 });
 
