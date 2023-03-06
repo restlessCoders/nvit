@@ -188,6 +188,7 @@
 						</tbody>
 					</table>
 					<!-- Modal -->
+					@if(strtolower(currentUser()) != 'frontdesk')
 					<div class="modal fade" id="addNoteModal" tabindex="-1" role="dialog" aria-labelledby="addNoteModalLabel" aria-hidden="true">
 						<div class="modal-dialog" role="document">
 							<div class="modal-content">
@@ -219,6 +220,7 @@
 							</div>
 						</div>
 					</div>
+					@endif
 					{{--$allactiveStudent->links()--}}
 				</div>
 				<div class="tab-pane fade" id="dump_students" role="tabpanel" aria-labelledby="dump-students-tab">

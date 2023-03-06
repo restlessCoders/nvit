@@ -149,6 +149,10 @@ Route::group(['middleware' => 'isSuperAdmin'], function(){
         /*Attendance Report */
         Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('superadmin.batchwiseAttendance');
         Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('superadmin.batchwiseAttendanceReport');
+
+        /*=== Course Report= ==*/
+        Route::get('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('superadmin.coursewiseStudent');
+        Route::post('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('superadmin.coursewiseStudent');
 	});
 });
 
@@ -233,6 +237,9 @@ Route::group(['middleware' => 'isSalesManager'], function(){
         Route::get('/daily/collection/report',[PaymentReportController::class,'daily_collection_report'])->name('salesmanager.daily_collection_report');
         Route::get('/daily/collection/report/mr',[PaymentReportController::class,'daily_collection_report_by_mr'])->name('salesmanager.daily_collection_report_by_mr');
 
+        /*=== Course Report= ==*/
+        Route::get('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('salesmanager.coursewiseStudent');
+        Route::post('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('salesmanager.coursewiseStudent');
     });
 });
 
@@ -357,6 +364,10 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         /*Attendance Report */
         Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('operationmanager.batchwiseAttendance');
         Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('operationmanager.batchwiseAttendanceReport');
+        
+        /*=== Course Report= ==*/
+        Route::get('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
+        Route::post('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
     });
 });
 
