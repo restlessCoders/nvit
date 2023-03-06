@@ -217,6 +217,8 @@ Route::group(['middleware' => 'isSalesManager'], function(){
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesmanager.addstudentCourseAssign');
         });
 
+        Route::resource('/notes',NoteController::class,["as" => "salesmanager"]);
+
         Route::resource('/package',PackageController::class,["as" => "salesmanager"]);
         Route::resource('/batch',BatchController::class,["as" => "salesmanager"]);
         Route::resource('/reference',ReferenceController::class,["as" => "salesmanager"]);
@@ -319,6 +321,8 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('operationmanager.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('operationmanager.addstudentCourseAssign');
         });
+
+        Route::resource('/notes',NoteController::class,["as" => "operationmanager"]);
 
         Route::resource('/batch',BatchController::class,["as" => "operationmanager"]);
         Route::resource('/package',PackageController::class,["as" => "operationmanager"]);
