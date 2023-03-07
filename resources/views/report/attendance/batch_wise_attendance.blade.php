@@ -8,14 +8,44 @@
 	.table-sm th {
 		padding: 0.1rem;
 	}
-	table,tbody,tr,th,td {
-    font-size: 0.9em;
+
+	table,
+	tbody,
+	tr,
+	th,
+	td {
+		font-size: 0.9em;
 	}
-	h5{
-		font-size:12px;
+
+	h5 {
+		font-size: 12px;
 	}
-	p{
-		font-size:10px;
+
+	p {
+		font-size: 10px;
+	}
+
+	body {
+			font-size: 12pt;
+			line-height: 1.2;
+		}
+
+		h1,
+		h2,
+		h3 {
+			page-break-after: avoid;
+		}
+	@media print {
+		body {
+			font-size: 12pt;
+			line-height: 1.2;
+		}
+
+		h1,
+		h2,
+		h3 {
+			page-break-after: avoid;
+		}
 	}
 </style>
 @endpush
@@ -68,7 +98,7 @@
 					<button type="button" class="batch-attn-btn btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
 				</div>
 				<div class="col-sm-12 d-flex justify-content-end my-1">
-				<button class="btn btn-primary" onclick="printSelectedArea()"><i class="fa fa-print fa-sm"></i></button>
+					<button class="btn btn-primary" onclick="printPageArea('data')"><i class="fa fa-print fa-sm"></i></button>
 				</div>
 
 				<div class="col-md-12 selected-area" id="data">
@@ -126,18 +156,15 @@
 			});
 		})
 
-		function printSelectedArea() {
-  window.print = function() {
-    var printContents = document.getElementsByClassName("selected-area")[0].innerHTML;
-    var originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-  };
-  window.print();
-}
-
-
+		function printPageArea(areaID) {
+			var printContent = document.getElementById(areaID);
+			var WinPrint = window.open('', '', 'width=900,height=650');
+			WinPrint.document.write(printContent.innerHTML);
+			WinPrint.document.close();
+			WinPrint.focus();
+			WinPrint.print();
+			WinPrint.close();
+		}
 	</script>
 
 	@endpush

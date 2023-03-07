@@ -137,6 +137,7 @@ class BatchController extends Controller
             $batch->examTime = date('H:i:s',strtotime($request->examTime));
             $batch->examRoom = $request->examRoom;
             $batch->seat = $request->seat;
+            $batch->type = $request->type;
             /*$batch->price = $request->price;
             $batch->discount = $request->discount;*/
             $batch->status =1;
@@ -144,6 +145,7 @@ class BatchController extends Controller
             $batch->courseDuration = $request->courseDuration;
             $batch->classHour = $request->classHour;
             $batch->totalClass = $request->courseDuration/$request->classHour;
+            $batch->remarks = $request->remarks;
             if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch created'));
         } catch (Exception $e) {
             dd($e);
@@ -203,6 +205,8 @@ class BatchController extends Controller
             $batch->created_by = encryptor('decrypt', $request->userId);
             $batch->seat = $request->seat;//Before update total number of enroll student
             $batch->totalClass = $request->totalClass;
+            $batch->type = $request->type;
+            $batch->remarks = $request->remarks;
             $batch->save();
         if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch updated'));
         } catch (Exception $e) {
