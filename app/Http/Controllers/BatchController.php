@@ -204,7 +204,9 @@ class BatchController extends Controller
             $batch->status =$request->status;
             $batch->created_by = encryptor('decrypt', $request->userId);
             $batch->seat = $request->seat;//Before update total number of enroll student
-            $batch->totalClass = $request->totalClass;
+            $batch->courseDuration = $request->courseDuration;
+            $batch->classHour = $request->classHour;
+            $batch->totalClass = $request->courseDuration/$request->classHour;
             $batch->type = $request->type;
             $batch->remarks = $request->remarks;
             $batch->save();
