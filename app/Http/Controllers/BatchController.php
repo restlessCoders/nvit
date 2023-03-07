@@ -121,11 +121,11 @@ class BatchController extends Controller
             //echo $courseMax;die;
             $course = Course::where('id',$request->courseId)->first();
             $batch = new Batch;
-            if($request->type==2){
+            /*if($request->type==2){
                 $batch->batchId = $course->courseName.'-'.$courseMax.' (Carsh)';
             }else{
                 $batch->batchId = $course->courseName.'-'.$courseMax;
-            }
+            }*/
             $batch->courseId = $request->courseId;
             $batch->batchId = str_replace(' ', '-', $request->batchId);
             $batch->startDate = date('Y-m-d',strtotime($request->startDate));
@@ -193,6 +193,7 @@ class BatchController extends Controller
     {
         try {
         $batch = Batch::find(encryptor('decrypt', $id));
+            $batch->batchId = str_replace(' ', '-', $request->batchId);
             $batch->startDate = Carbon::createFromFormat('d/m/Y', $request->startDate)->format('Y-m-d');
             $batch->endDate = Carbon::createFromFormat('d/m/Y', $request->endDate)->format('Y-m-d');
             $batch->bslot = $request->bslot;
