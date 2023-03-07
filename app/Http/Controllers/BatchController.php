@@ -127,6 +127,7 @@ class BatchController extends Controller
                 $batch->batchId = $course->courseName.'-'.$courseMax;
             }
             $batch->courseId = $request->courseId;
+            $batch->batchId = str_replace(' ', '-', $request->batchId);
             $batch->startDate = date('Y-m-d',strtotime($request->startDate));
             $batch->endDate = date('Y-m-d',strtotime($request->endDate));
             $batch->bslot = $request->bslot;
@@ -140,7 +141,9 @@ class BatchController extends Controller
             $batch->discount = $request->discount;*/
             $batch->status =1;
             $batch->created_by = encryptor('decrypt', $request->userId);
-            $batch->totalClass = $request->totalClass;
+            $batch->courseDuration = $request->courseDuration;
+            $batch->classHour = $request->classHour;
+            $batch->totalClass = $request->courseDuration/$request->classHour;
             if(!!$batch->save()) return redirect(route(currentUser().'.batch.index'))->with($this->responseMessage(true, null, 'Batch created'));
         } catch (Exception $e) {
             dd($e);
@@ -155,7 +158,7 @@ class BatchController extends Controller
      * @param  \App\Models\Division  $division
      * @return \Illuminate\Http\Response
      */
-    public function show(Division $division)
+    public function show()
     {
         //
     }
@@ -215,16 +218,9 @@ class BatchController extends Controller
      * @param  \App\Models\Division  $division
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Division $division)
+    public function destroy()
     {
         //
     }
-    public function enableDisable($id){
-        $division = Division::findOrFail($id);
-        $division->enabled = !$division->enabled;
-        $division->save();
-        return redirect(route('divisions.index'))->with(
-            ['message' =>'Division Updated']
-        );
-    }
+
 }

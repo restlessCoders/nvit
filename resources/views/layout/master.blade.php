@@ -138,12 +138,12 @@
 
 
 
-                            <li class="has-submenu @if(Request::segment(2) == 'user') active @endif @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager') @else d-none @endif">
+                            <li class="has-submenu @if(Request::segment(2) == 'user') active @endif @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-account-multiple-outline"></i>User<div class="arrow-down"></div></a>
                                 <ul class="submenu">
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager') {{route(currentUser().'.allUser')}} @endif">All User</a></li>
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager') {{route(currentUser().'.addNewUserForm')}} @endif">Add New User</a></li>
+                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.allUser')}} @endif">All User</a></li>
+                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.addNewUserForm')}} @endif">Add New User</a></li>
                                 </ul>
                             </li>
 

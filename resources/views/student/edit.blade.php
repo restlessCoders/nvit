@@ -30,6 +30,7 @@
 				<li class="nav-item">
 					<a class="nav-link active" id="edit-student-tab" data-toggle="tab" href="#edit_student" role="tab" aria-controls="edit_student" aria-expanded="true" aria-selected="true">Edit</a>
 				</li>
+				@if($sdata->executiveId == currentUserId())
 				<li class="nav-item">
 					<a class="nav-link" id="course-pre" data-toggle="tab" href="#course_pre" role="tab" aria-controls="course_pre">Course Preference</a>
 				</li>
@@ -39,6 +40,7 @@
 				<li class="nav-item">
 					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Course Enroll</a>
 				</li>
+				@endif
 				<li class="nav-item">
 					<a class="nav-link" id="notes-student-tab" data-toggle="tab" href="#note_student" role="tab" aria-controls="note_student">Note History</a>
 				</li>

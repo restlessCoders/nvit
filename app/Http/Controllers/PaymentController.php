@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ResponseTrait;
 use App\Models\Student;
 use Exception;
+use Session;
 use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
@@ -145,6 +146,7 @@ class PaymentController extends Controller
                         <td>
                             <input type="text" id="mrNo" class="form-control" name="mrNo" class="form-control" required>
                             <div class="invalid-feedback" id="mrNo-error"></div>
+                            <input type="text" value="'.Session::get("user").'" name="userId">
                         </td>
                         <td>
                             <div class="input-group">
@@ -294,12 +296,11 @@ class PaymentController extends Controller
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
                     'studentId'         =>  $request->studentId,
                     'executiveId'       =>  $request->executiveId,
-                    'createdBy'         =>  encryptor('decrypt', $request->userId),
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
                     'accountNote'       =>  $request->accountNote,
-                    'status'            =>  ($request->tPayable == ($request->paidAmount+$request->disocunt))?0:1,
                     'created_at'        => date("Y-m-d h:i:s"),
+                    'created_by'        => encryptor('decrypt', $request->userId),
                     // 'updated_at'        => date("Y-m-d h:i:s"),
                 ]
             );
@@ -342,6 +343,7 @@ class PaymentController extends Controller
                 $payment_detail['discount']     = $discount[$key];
                 $payment_detail['payment_mode']     = $payment_mode[$key];
                 $payment_detail['feeType']          = $feeType[$key];
+                $payment_detail['created_by']        = encryptor('decrypt', $request->userId);
 
                 DB::table('paymentdetails')->insert($payment_detail);
 

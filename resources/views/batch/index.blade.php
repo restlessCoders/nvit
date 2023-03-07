@@ -25,14 +25,15 @@
 								<th>Batch</th>
 								<th>Course</th>
 								<th>Op. Date</th>
-								<th>End Date</th>
-								<th>Week Slot</th>
-								<th>Time Slot</th>
+								<th>E.Date</th>
+								<th>W.Slot</th>
+								<th>T.Slot</th>
 								<!-- <th>Exam Date</th>
 								<th>Exam Time</th> -->
 								<th>Room</th>
 								<th>Available</th>
 								<th>Trainer</th>
+								<th>T.Class</th>
 								<th>Status</th>
 								<th>Created</th>
 								<th>Action</th>
@@ -56,6 +57,7 @@
 								<td>{{$batch->examRoom}}</td>
 								<td>{{$batch->seat-$batch->tst}}</td>
 								<td>{{$batch->trainer->name}}</td>
+								<td>{{$batch->totalClass}}</td>
 								<td>
 									@if($batch->status == 1)
 									<span>Active</span>

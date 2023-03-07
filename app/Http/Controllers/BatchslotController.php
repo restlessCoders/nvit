@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Batchslot;
 use Illuminate\Http\Request;
-
+use App\Http\Traits\ResponseTrait;
+use Exception;
 
 class BatchslotController extends Controller
 {
+    use ResponseTrait;
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +17,7 @@ class BatchslotController extends Controller
      */
     public function index()
     {
-        $allBatchslots = Batchslot::orderBy('id', 'DESC')->paginate(25);
+        $allBatchslots = Batchslot::where('status',1)->orderBy('id', 'DESC')->paginate(25);
         return view('batchslot.index', compact('allBatchslots'));
     }
 
@@ -26,6 +28,7 @@ class BatchslotController extends Controller
      */
     public function create()
     {
+        return view('batchslot.add_new');
     }
 
     /**
@@ -36,7 +39,17 @@ class BatchslotController extends Controller
      */
     public function store(Request $request)
     {
-        
+        try {
+            $batchslot = New Batchslot();
+            $batchslot->slotName = $request->slotName;
+            $batchslot->created_by = encryptor('decrypt', $request->userId);
+            $batchslot->save();
+            if(!!$batchslot->save()) return redirect(route(currentUser().'.batchslot.index'))->with($this->responseMessage(true, null, 'Batch slot created'));
+            } catch (Exception $e) {
+                dd($e);
+                return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+                return false;
+            }
     }
 
     /**
@@ -45,7 +58,7 @@ class BatchslotController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function show(Wallet $wallet)
+    public function show()
     {
         //
     }
@@ -58,7 +71,8 @@ class BatchslotController extends Controller
      */
     public function edit($id)
     {
-        
+        $batchslot = BatchSlot::find(encryptor('decrypt', $id));
+        return view('batchslot.edit',compact('batchslot'));
     }
 
     /**
@@ -70,7 +84,17 @@ class BatchslotController extends Controller
      */
     public function update(Request $request, $id)
     {
-       
+        try {
+            $batchslot = Batchslot::find(encryptor('decrypt', $id));
+            $batchslot->slotName = $request->slotName;
+            $batchslot->updated_by = encryptor('decrypt', $request->userId);
+            $batchslot->save();
+            if(!!$batchslot->save()) return redirect(route(currentUser().'.batchslot.index'))->with($this->responseMessage(true, null, 'Batch slot Updated'));
+            } catch (Exception $e) {
+                dd($e);
+                return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+                return false;
+            }
     }
 
     /**
@@ -79,8 +103,18 @@ class BatchslotController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        
+
+        try {
+            $batchslot = BatchSlot::find(encryptor('decrypt', $id));
+            $batchslot->status = 0;
+            $batchslot->updated_by = currentUserId();
+            if(!!$batchslot->save())return redirect(route(currentUser().'.batchslot.index'))->with($this->responseMessage(false, true, 'Batch Slot Deleted'));
+            } catch (Exception $e) {
+                dd($e);
+                return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+                return false;
+            }
     }
 }

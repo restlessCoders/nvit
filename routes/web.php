@@ -302,7 +302,16 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
     Route::prefix('operation-manager')->group(function () {
         Route::get('/', [DashboardController::class,'operationgmanager']);
         Route::get('/dashboard', [DashboardController::class,'operationmanager'])->name('operationmanagerDashboard');
-       
+        
+        Route::prefix('user')->group(function () {
+            Route::get('/all', [UserController::class,'index'])->name('operationmanager.allUser');
+            Route::get('/add', [UserController::class,'addForm'])->name('operationmanager.addNewUserForm');
+            Route::post('/add', [UserController::class,'store'])->name('operationmanager.addNewUser');
+            Route::get('/edit/{name}/{id}', [UserController::class,'editForm'])->name('operationmanager.editUser');
+            Route::post('/update', [UserController::class,'update'])->name('operationmanager.updateUser');
+            Route::get('/delete/{name}/{id}', [UserController::class,'UserController@delete'])->name('operationmanager.deleteUser');
+        });
+
         Route::get('/profile', [UserController::class,'userProfile'])->name('operationmanager.userProfile');
         Route::post('/profile', [UserController::class,'storeProfile'])->name('operationmanager.storeProfile');
         Route::post('/changePass', [UserController::class,'changePass'])->name('operationmanager.changePass');
@@ -324,11 +333,17 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
 
         Route::resource('/notes',NoteController::class,["as" => "operationmanager"]);
 
-        Route::resource('/batch',BatchController::class,["as" => "operationmanager"]);
+        
         Route::resource('/package',PackageController::class,["as" => "operationmanager"]);
         Route::resource('/reference',ReferenceController::class,["as" => "operationmanager"]);
 
+        Route::get('/batch/all',[BatchController::class,'all'])->name('operationmanager.allBatches');
+        Route::resource('/batch',BatchController::class,["as" => "operationmanager"]);
+        Route::get('/batchById',[BatchController::class,'batchById'])->name('operationmanager.batchById');
+
         Route::resource('/course',CourseController::class,["as" => "operationmanager"]);
+        /*Course Preference */
+        Route::post('/course/preference/', [StudentController::class,'coursePreference'])->name('operationmanager.coursePreference');
         /*==Course Search==*/
         Route::post('/course/search',[CourseController::class,'courseSearch'])->name('operationmanager.courseSearch');
 
@@ -345,6 +360,8 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         Route::get('/student/executive', [StudentController::class,'studentExecutive'])->name('operationmanager.studentExecutive');
         Route::post('/student/transfer/save', [StudentController::class,'stTransfer'])->name('operationmanager.stTransfer');
 
+        /*Course Wise Enroll */
+        Route::post('/course/wise/enroll', [StudentController::class,'courseEnroll'])->name('operationmanager.courseEnroll');
 
         /*==Batch Transfer==*/
         Route::get('/student/batch/transfer/list', [StudentController::class,'batchTransferList'])->name('operationmanager.batchTransferList');
@@ -372,6 +389,8 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
+
+
     });
 });
 
