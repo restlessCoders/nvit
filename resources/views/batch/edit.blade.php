@@ -41,6 +41,10 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
+						<label>Batch Name<span class="text-danger sup">*</span></label>
+						<input id="batchId" type="text" class="form-control" name="batchId" value="{{ old('batchId',$bdata->batchId) }}" required>
+					</div>
+					<div class="col-lg-4">
 						<label>Batch Time: <span class="text-danger sup">*</span></label>
 						<select name="btime" class="js-example-basic-single form-control select2 @if($errors->has('btime')) {{ 'is-invalid' }} @endif">
 							<option></option>
@@ -182,8 +186,27 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
+						<label class="control-label">Course Type: </label>
+						<select name="type" class="form-control">
+							<option value="1" @if($bdata->type ==1) selected @endif>Regular</option>
+							<option value="2" @if($bdata->type ==2) selected @endif>Crash</option>
+						</select>
+					</div>
+					<div class="col-lg-2">
+						<label class="control-label">Course Duration: </label>
+						<input type="text" name="courseDuration" class="form-control" value="{{ old('courseDuration',$bdata->courseDuration) }}" required>
+					</div>
+					<div class="col-lg-2">
+						<label class="control-label">Per Class Hour: </label>
+						<input type="text" name="classHour" class="form-control" value="{{ old('courseDuration',$bdata->classHour) }}" required>
+					</div>
+					<div class="col-lg-4">
 						<label class="control-label">Number Of Class: </label>
-						<input type="text" name="totalClass" class="form-control" value="{{$bdata->totalClass}}">
+						<input type="text" name="totalClass" class="form-control" value="{{$bdata->totalClass}}" readonly>
+					</div>
+					<div class="col-lg-12">
+						<label class="control-label">Remarks: </label>
+						<textarea name="remarks" class="form-control" rows="5" style="resize:none;">{{ old('remarks',$bdata->remarks) }}</textarea>
 					</div>
 				</div>
 				<div class="form-group text-right mb-0">

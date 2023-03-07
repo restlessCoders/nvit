@@ -33,6 +33,7 @@ class CreateBatchesTable extends Migration
             $table->integer('totalClass')->comment('Total Class');
             $table->text('remarks')->comment('Course Remarks')->nullable();
             $table->boolean('status')->default(1)->comment('1 => Running, 0=> Closing');
+            $table->boolean('type')->default(1)->comment('1 => Regular, 0=> Crash');
             $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
