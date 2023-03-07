@@ -30,7 +30,7 @@ class UserController extends Controller
         if(currentUser() == 'superadmin'){
             $allUser = User::with('role')->orderBy('id', 'DESC')->paginate(25);
         }elseif(currentUser() == 'salesmanager' || currentUser() == 'accountmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainingmanager' || currentUser() == 'admin'){
-            $allUser = User::where(['roleId' => 9])->with('role')->orderBy('id', 'DESC')->paginate(25);
+            $allUser = User::whereIn('roleId',[9,11])->with('role')->orderBy('id', 'DESC')->paginate(25);
         }elseif(currentUser() == 'accountmanager' || currentUser() == 'trainingmanager'){
             $allUser = User::where(['userCreatorId' => encryptor('decrypt', request()->session()->get('user'))])->with('role')->orderBy('id', 'DESC')->paginate(25);
         }/*elseif(currentUser() == 'executive' || currentUser() == 'accountmanager' || currentUser() == 'marketingmanager' || currentUser() == 'admin'){
@@ -48,6 +48,9 @@ class UserController extends Controller
 		$roles = [];
         if(currentUser() == 'superadmin'){
             $roles = Role::whereIn('identity', ['superadmin','admin','operationmanager','accountmanager','salesmanager','facilitymanager','trainingmanager','frontdesk','salesexecutive','facilityexecutive','trainer'])->get();
+        }
+        elseif(currentUser() == 'operationmanager'){
+            $roles = Role::whereIn('identity', ['accountmanager','salesmanager','facilitymanager','trainingmanager','superadmin','frontdesk','salesexecutive','facilityexecutive','trainer'])->get();
         }
         elseif(currentUser() == 'admin'){
             $roles = Role::whereIn('identity', ['executive'])->get();

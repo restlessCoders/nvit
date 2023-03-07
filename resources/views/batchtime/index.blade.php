@@ -18,7 +18,7 @@
 		<div class="card-box">
 	
 				
-					<table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table class="batchtime table table-bordered">
 						<thead>
 							<tr>
 								<th>SL.</th>
@@ -41,7 +41,15 @@
 									@endif
 								</td>
 								<td>
-
+									@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
+									<a href="{{route(currentUser().'.batchtime.edit',[encryptor('encrypt', $allBatchtime->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
+									<form id="active-form" method="POST" action="{{route(currentUser().'.batchtime.destroy',[encryptor('encrypt', $allBatchtime->id)])}}" style="display: inline;">
+										@csrf
+										@method('DELETE')
+										<input name="_method" type="hidden" value="DELETE">
+										<a href="javascript:void(0)" data-name="{{$allBatchtime->time}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
+									</form>
+									@endif
 								</td>
 							</tr>
 							@endforeach
@@ -61,12 +69,29 @@
 </div> <!-- end row -->
 @endsection
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
 	$('.responsive-datatable').DataTable();
+	$('.batchtime').on('click', '.delete', function(event) {
+		var name = $(this).data("name");
+		event.preventDefault();
+		swal({
+				title: `Are you sure you want to Delete this ${name}?`,
+				text: "If you Delete this, it will be Deleted.",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$('#active-form').submit();
+				}
+			});
+	});
 </script>
 @if(Session::has('response'))
 <script>
-	Command: toastr["{{Session::get('response')['errors']}}"]("{{Session::get('response')['message']}}")
+	Command: toastr["{{Session::get('response')['class']}}"]("{{Session::get('response')['message']}}")
 	toastr.options = {
 		"closeButton": false,
 		"debug": false,
