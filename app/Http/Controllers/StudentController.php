@@ -214,7 +214,7 @@ class StudentController extends Controller
                         return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
                 }
                 DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
-            }else{
+            }if($s_batch_data->type){
                 /* If Executive change Full to Installment or Installment to Full Payment Course Price Will change until invoice has posted in paymentdetails table */
                 /* use to check date | now for both date and time */
                 $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate and batchId = $s_batch_data->batch_id and status=1");
