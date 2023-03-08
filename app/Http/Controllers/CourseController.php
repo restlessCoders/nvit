@@ -57,6 +57,7 @@ class CourseController extends Controller
         $course->courseName         = $request->courseName;
         $course->courseDescription  = $request->courseDescription;
         $course->rPrice             = $request->rPrice;
+        $course->iPrice             = $request->iPrice;
         $course->mPrice             = $request->mPrice;
         $course->save();
         if(!!$course->save()) return redirect(route(currentUser().'.course.index'))->with($this->responseMessage(true, null, 'Course created'));
@@ -104,6 +105,7 @@ class CourseController extends Controller
             $course->courseName         = $request->courseName;
             $course->courseDescription  = $request->courseDescription;
             $course->rPrice             = $request->rPrice;
+            $course->iPrice             = $request->iPrice;
             $course->mPrice             = $request->mPrice;
             $course->save();
         if(!!$course->save()) return redirect(route(currentUser().'.course.index'))->with($this->responseMessage(true, null, 'Course created'));

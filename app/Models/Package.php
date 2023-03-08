@@ -11,4 +11,7 @@ class Package extends Model
     public function course(){
         return $this->belongsTo(Course::class,'courseId','id');
     }
+    public function batch(){
+        return $this->belongsTo(Batch::class,'batchId','id');
+    }
 }

@@ -331,6 +331,7 @@
 							<thead>
 								<tr>
 									<th>Batch</th>
+									<th>Payment Type</th>
 									<th>Status</th>
 									<th>Action</th>
 								</tr>
@@ -348,15 +349,17 @@
 							</button>
 						</div>
 					</form>
-					<h5 class="page-title">Student Course History</h5>
-					<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<h5 class="page-title">Enrollment History</h5>
+					<table class="mt-3 enrol table table-bordered">
 						<thead>
 							<tr>
 								<th>SL.</th>
 								<th>Batch Name</th>
-								<th>Accounts Note</th>
-								<th>Approved</th>
+								<th>Note</th>
+								<!-- <th>Approved</th> -->
 								<th>Status</th>
+								<th>Payment Type</th>
+								<th>Price</th>
 								<th>Action</th>
 							</tr>
 						</thead>
@@ -377,10 +380,10 @@
 											@endforelse
 										</select>
 									</td>
-									<td>{{$allassignBatch->accountsNote}}</td>
-									<td>@if($allassignBatch->acc_approve) Yes @else No @endif</td>
+									<td>{{$allassignBatch->note}}</td>
+									{{--<td>@if($allassignBatch->acc_approve) Yes @else No @endif</td>--}}
 									<td>
-										<select class="js-example-basic-single form-control" id="status" name="status">
+										<select class="js-example-basic-single form-control" id="status" name="status" @if($allassignBatch->acc_approve) disabled @endif>
 											<option value="">Select</option>
 											<option value="2" @if($allassignBatch->status == 2) selected @endif>Enroll</option>
 											<option value="3" @if($allassignBatch->status == 3) selected @endif>Knocking</option>
@@ -393,11 +396,28 @@
 										@endif
 									</td>
 									<td>
-										@if(!$allassignBatch->acc_approve)
+										<select class="js-example-basic-single form-control" id="type" name="type" @if($allassignBatch->acc_approve == 2) disabled @endif >
+											<option value="">Select</option>
+											<option value="1" @if($allassignBatch->type == 1) selected @endif>Full</option>
+											<option value="2" @if($allassignBatch->type == 2) selected @endif>Intallment(Partial)</option>
+										</select>
+									</td>
+									<td>{{$allassignBatch->course_price}}</td>
+									<td>
+										@if($allassignBatch->acc_approve != 2)
 										<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
+										</form>
+										@endif
+										@if($allassignBatch->acc_approve == 0)
+										<form id="active-form" method="POST" action="{{route(currentUser().'.enrollment.destroy',[encryptor('encrypt', $allassignBatch->id)])}}" style="display: inline;">
+											@csrf
+											@method('DELETE')
+											<input name="_method" type="hidden" value="DELETE">
+											<a href="javascript:void(0)" type="submit" class="delete mr-2 btn btn-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i>Delete</a>
+										</form>
 										@endif
 									</td>
-								</form>
+								
 							</tr>
 							@endforeach
 							@endif
@@ -669,7 +689,26 @@
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
+/*====Delete Enrollment ===*/	
+$('.enrol').on('click', '.delete', function(event) {
+		event.preventDefault();
+		swal({
+				title: `Are you sure you want to Delete this ?`,
+				text: "If you Delete this, it will be Deleted.",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$('#active-form').submit();
+				}
+			});
+	});
+
+
 	function change(batch_id, status, bid) {
 		$('#batch_id').val(batch_id); // Change the value or make some change to the internal state
 		$('#batch_id').trigger('change.select2'); // Notify only Select2 of changes

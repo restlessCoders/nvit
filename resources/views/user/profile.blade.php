@@ -51,11 +51,8 @@
 								<div class="card">
 									<div class="row no-gutters align-items-center">
 										<div class="col-md-5">
-											@php
-											$photo= $UserData->details->photo
-											@endphp
-											@if($photo)
-											<img class="card-img" src="{{asset('storage/images/user/photo/'.$photo)}})">
+											@if($UserData->details()->whereNotNull('photo')->exists())
+											<img class="card-img" src="{{asset('storage/images/user/photo/'.$UserData->details->photo)}})">
 											@else
 											<img class="card-img" src="{{asset('backend/images/small/img-12.jpg')}}" alt="Card image cap">
 											@endif
@@ -67,7 +64,7 @@
 												<p class="card-text">Role : {{currentUser()}}<br />
 													Email: {{ $UserData->email }}<br />
 													Phone: {{ $UserData->mobileNumber }}<br />
-													Location: {{ $UserData->address }}</p>
+													Location:@if($UserData->details()->whereNotNull('address')->exists()) {{$UserData->details->address}} @endif </p>
 												<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
 											</div>
 										</div>
@@ -109,7 +106,7 @@
 										</div>
 										<div class="form-group">
 											<label for="address">Address</label>
-											<input type="text" class="form-control" id="address" name="address" value="{{$UserData->details->address}}">
+											<input type="text" class="form-control" id="address" name="address" value="@if($UserData->details()->whereNotNull('address')->exists()) {{$UserData->details->address}} @endif">
 										</div>
 										<div class="form-group">
 											<label for="mobileNumber">Mobile Number</label>

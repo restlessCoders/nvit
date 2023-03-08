@@ -18,17 +18,18 @@
 		<div class="card-box">
 	
 				
-					<table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table class="table table-bordered">
 						<thead>
 							<tr>
 								<th>SL.</th>
-								<th>Package Name</th>
-								<th>Course Name</th>
+								<th>Package</th>
+								<th>Course</th>
+								<th>Batch</th>
 								<th>Note</th>
-								<th>Promotion Price</th>
-								<th>Start Date</th>
-								<th>End Date</th>
-								<th>Time</th>
+								<th>P.Price</th>
+								<th>Start</th>
+								<th>End</th>
+								<th>Till</th>
 								<th>Created By</th>
 								<th>Updated By</th>
 								<th>Status</th>
@@ -42,6 +43,7 @@
 								<td>{{ $loop->iteration }}</td>
 								<td>{{$package->pName}}</td>
 								<td>{{$package->course->courseName}}</td>
+								<td>{{optional($package->batch)->batchId}}</td>
 								<td>{{$package->note}}</td>
 								<td>{{$package->price}}</td>
 								<td>{{$package->startDate}}</td>

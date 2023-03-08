@@ -42,6 +42,15 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
+						<label>Installment Price: <span class="text-danger sup">*</span></label>
+						<input type="text" name="iPrice" value="{{ old('iPrice') }}" class="form-control @if($errors->has('iPrice')) {{ 'is-invalid' }} @endif" placeholder="Regular Price" />
+						@if($errors->has('iPrice'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('iPrice') }}
+						</small>
+						@endif
+					</div>
+					<div class="col-lg-4">
 						<label>Material Price: <span class="text-danger sup">*</span></label>
 						<div class="input-group">
 							<div class="input-group-prepend">

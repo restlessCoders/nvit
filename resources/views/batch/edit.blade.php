@@ -200,10 +200,10 @@
 						<label class="control-label">Per Class Hour: </label>
 						<input type="text" name="classHour" class="form-control" value="{{ old('courseDuration',$bdata->classHour) }}" required>
 					</div>
-					<div class="col-lg-4">
+					{{--<div class="col-lg-4">
 						<label class="control-label">Number Of Class: </label>
 						<input type="text" name="totalClass" class="form-control" value="{{$bdata->totalClass}}" readonly>
-					</div>
+					</div>--}}
 					<div class="col-lg-12">
 						<label class="control-label">Remarks: </label>
 						<textarea name="remarks" class="form-control" rows="5" style="resize:none;">{{ old('remarks',$bdata->remarks) }}</textarea>

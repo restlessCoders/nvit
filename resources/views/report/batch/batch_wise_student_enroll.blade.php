@@ -89,7 +89,10 @@
 						<th>Reference</th>
 						<th>Batch</th>
 						<th>Enroll Date</th>
+						<th>Inv</th>
+						<th>Course Price</th>
 						<th>Paid Amount</th>
+						<th>Type</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
@@ -97,6 +100,7 @@
 				<tbody>
 					@if(count($allBatches))
 					@foreach($allBatches as $batch)
+					<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">
 					<tr>
 						<td>{{$loop->iteration}}</td>
 						<td>{{$batch->sName}}</td>
@@ -104,6 +108,14 @@
 						<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
 						<td>{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}</td>
 						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')}}</td>
+						<td>
+							@if(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNotNull('invoiceId')->exists())
+							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNotNull('invoiceId')->first()->invoiceId}}
+							@else
+							-
+							@endif
+						</td>
+						<td>{{$batch->course_price}}</td>
 						<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
 						<td>
 							@if($batch->status == 2) Enroll @endif
@@ -111,9 +123,17 @@
 							@if($batch->status == 4)Evloulation @endif
 						</td>
 						<td>
-							<!-- <a href="" class="text-info"><i class="fas fa-edit"></i></a> -->
+							@if($batch->type == 1)
+							At a Time
+							@else
+							Installment
+							@endif
+						</td>
+						<td>
+						<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
 						</td>
 					</tr>
+</form>
 					@endforeach
 					@else
 					<tr>

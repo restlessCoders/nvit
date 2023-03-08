@@ -21,7 +21,7 @@ class ReportController extends Controller
         $batch_seat_count = DB::table('student_batches')->where('batch_id',$request->batch_id)->count('student_id');
       
         $allBatches = DB::table('student_batches')
-            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id')
+            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id','student_batches.type','student_batches.course_price','student_batches.pstatus')
             ->join('students','students.id','=','student_batches.student_id')
             ->join('users','users.id','=','students.executiveId');
             

@@ -185,20 +185,23 @@ class StudentController extends Controller
     public function addstudentCourseAssign(StudentCourseRequest $request, $id)
     {
         $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->s_id, 'batch_id' => $request->batch_id])->first();
-        if (!empty($s_batch_data)) {
+        if (!empty($s_batch_data) && $request->status) {
             /*If Student Course Active By Account Change Denied */
-            if ($s_batch_data->acc_approve) {
+            /*if($s_batch_data->acc_approve) {
                 return redirect()->back()->with($this->responseMessage(false, null, 'Status Can not be Changed!!'));
+            }*/
+            /*If Same Course and Status Data Found*/ 
+            /*else if ($s_batch_data->status == $request->status) {
+                return redirect()->back()->with($this->responseMessage(true, null, 'Same Status can not be edited!!'));
             }
-            /*If Same Course and Status Data Found*/ else if ($s_batch_data->status == $request->status) {
-                return redirect()->back()->with($this->responseMessage(false, null, 'Same Status can not be edited!!'));
-            } else {
+            else {*/
                 /*No Match Proceed To Update */
                 //echo 'proceed to update';
                 $data = array(
                     'status' => $request->status,
                     'entryDate' => date('Y-m-d'),
-                    'updated_at' => Carbon::now()
+                    'updated_at' => Carbon::now(),
+                    'updated_by' => currentUserId(),
                 );
                 if ($request->status == 2) {
                     $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
@@ -211,20 +214,57 @@ class StudentController extends Controller
                 }
                 DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
                 return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
-            }
-        } else {
-            $student_id = $request->post('student_id');
-            $batch_id = $request->post('batch_id');
-            $status = $request->post('status');
-            /*Stystem Id */
-            $systemId = substr(uniqid(Str::random(6), true), 0, 6);
-            foreach ($request->batch_id as $key => $cdata) {
-                $packages = DB::select("SELECT * from packages where date('Y-m-d') BETWEEN startDate and endDate and batchId = $batch_id[$key]");
-                $course = DB::select("SELECT courses.rPrice FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$batch_id[$key]");
+           // }
+        }
+        
+
+            /* If Executive change Full to Installment or Installment to Full Payment Course Price Will change until invoice has posted in paymentdetails table */
+           else if($s_batch_data->type) {
+                /* use to check date | now for both date and time */
+                $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate and batchId = $s_batch_data->batch_id and status=1");
+                /*==Course Price  is Full or Partial==*/
+                if($request->type == 1 && !$packages){
+                    $course = DB::select("SELECT courses.rPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$s_batch_data->batch_id");
+                }else{
+                    $course = DB::select("SELECT courses.iPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$s_batch_data->batch_id");
+                }
+                
                 if($packages){
                     $course_price = $packages[0]->price;
                 }else{
-                    $course_price = $course[0]->rPrice;
+                    $course_price = $course[0]->price;
+                }
+                $data = array(
+                    'course_price' => $course_price,
+                    'type' => $request->type,
+                    'updated_at' => Carbon::now(),
+                    'updated_by' => currentUserId(),
+                );
+                DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                return redirect()->back()->with($this->responseMessage(true, null, 'Payment Type change Sussessful'));
+        }
+
+        else {
+            $student_id = $request->post('student_id');
+            $batch_id = $request->post('batch_id');
+            $status = $request->post('status');
+            $type = $request->post('type');
+            /*Stystem Id */
+            $systemId = substr(uniqid(Str::random(6), true), 0, 6);
+            foreach ($request->batch_id as $key => $cdata) {
+                /* use to check date | now for both date and time */
+                $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate and batchId = $batch_id[$key] and status=1");
+                /*==Course Price  is Full or Partial==*/
+                if($type[$key] == 1 && !$packages){
+                    $course = DB::select("SELECT courses.rPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$batch_id[$key]");
+                }else{
+                    $course = DB::select("SELECT courses.iPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$batch_id[$key]");
+                }
+                
+                if($packages){
+                    $course_price = $packages[0]->price;
+                }else{
+                    $course_price = $course[0]->price;
                 }
                 $data = array(
                     'batch_id' => $batch_id[$key],
@@ -233,12 +273,18 @@ class StudentController extends Controller
                     'status' => $status[$key],
                     'systemId' => $systemId,
                     'course_price' => $course_price,
-                    'created_at' => Carbon::now()
+                    'type' => $type[$key],
+                    'created_at' => Carbon::now(),
+                    'created_by' => currentUserId(),
                 );
                 DB::table('student_batches')->insert($data);
             }
             return redirect()->back()->with($this->responseMessage(true, null, 'Course Assigned Successful'));
         }
+    }
+    public function deleteEnroll(Request $request,$id){
+        if(DB::table('student_batches')->where('id',encryptor('decrypt', $id))->delete());
+        return redirect()->back()->with($this->responseMessage(true, null, 'Enrollment Delete Successful'));
     }
     public function editForm($id)
     {
