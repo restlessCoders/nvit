@@ -185,7 +185,7 @@ class StudentController extends Controller
     public function addstudentCourseAssign(StudentCourseRequest $request, $id)
     {
         $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->s_id, 'batch_id' => $request->batch_id])->first();
-        if (!empty($s_batch_data) && $request->status) {
+        if (!empty($s_batch_data)) {
             /*If Student Course Active By Account Change Denied */
             /*if($s_batch_data->acc_approve) {
                 return redirect()->back()->with($this->responseMessage(false, null, 'Status Can not be Changed!!'));
@@ -195,6 +195,7 @@ class StudentController extends Controller
                 return redirect()->back()->with($this->responseMessage(true, null, 'Same Status can not be edited!!'));
             }
             else {*/
+                if($s_batch_data->status){
                 /*No Match Proceed To Update */
                 //echo 'proceed to update';
                 $data = array(
@@ -213,13 +214,8 @@ class StudentController extends Controller
                         return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
                 }
                 DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
-                return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
-           // }
-        }
-        
-
-            /* If Executive change Full to Installment or Installment to Full Payment Course Price Will change until invoice has posted in paymentdetails table */
-           else if($s_batch_data->type) {
+            }else{
+                /* If Executive change Full to Installment or Installment to Full Payment Course Price Will change until invoice has posted in paymentdetails table */
                 /* use to check date | now for both date and time */
                 $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate and batchId = $s_batch_data->batch_id and status=1");
                 /*==Course Price  is Full or Partial==*/
@@ -228,7 +224,7 @@ class StudentController extends Controller
                 }else{
                     $course = DB::select("SELECT courses.iPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$s_batch_data->batch_id");
                 }
-                
+
                 if($packages){
                     $course_price = $packages[0]->price;
                 }else{
@@ -241,8 +237,15 @@ class StudentController extends Controller
                     'updated_by' => currentUserId(),
                 );
                 DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
-                return redirect()->back()->with($this->responseMessage(true, null, 'Payment Type change Sussessful'));
+            }
+                return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
+                
+           // }
         }
+        
+
+            
+
 
         else {
             $student_id = $request->post('student_id');
