@@ -32,6 +32,7 @@
 						<th>Course Name</th>
 						<th>Course Description</th>
 						<th>Regular Price</th>
+						<th>Installment Price</th>
 						<th>Material Price</th>
 						<th>Status</th>
 						<th>Action</th>
@@ -45,6 +46,7 @@
 						<td>{{$course->courseName}}</td>
 						<td>{{$course->courseDescription}}</td>
 						<td>{{$course->rPrice}}</td>
+						<td>{{$course->iPrice}}</td>
 						<td>{{$course->mPrice}}</td>
 						<td>
 							@if($course->status == 1)

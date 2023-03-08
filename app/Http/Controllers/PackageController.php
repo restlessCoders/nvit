@@ -50,11 +50,12 @@ class PackageController extends Controller
             $package = new Package;
             $package->pName = $request->pName;
             $package->courseId = $request->courseId;
+            $package->batchId = $request->batchId;
             $package->price = $request->price;
             $package->startDate = date('Y-m-d',strtotime($request->startDate));
             $package->endDate = date('Y-m-d',strtotime($request->endDate));
             $package->endTime = date('H:i',strtotime($request->endTime));
-            $package->status =0;
+            $package->status =1;
             $package->note =$request->note;
             $package->created_by = encryptor('decrypt', $request->userId);
             if(!!$package->save()) return redirect(route(currentUser().'.package.index'))->with($this->responseMessage(true, null, 'Package created'));
@@ -85,8 +86,9 @@ class PackageController extends Controller
     public function edit($id)
     {
         $allCourses = Course::all();
+        $allBatch = Batch::all();
         $pdata = Package::find(encryptor('decrypt', $id));
-        return view('package.edit',compact(['allCourses','pdata']));
+        return view('package.edit',compact(['allCourses','pdata','allBatch']));
     }
 
     /**
@@ -102,6 +104,7 @@ class PackageController extends Controller
             $package = Package::find(encryptor('decrypt', $id));
             $package->pName = $request->pName;
             $package->courseId = $request->courseId;
+            $package->batchId = $request->batchId;
             $package->price = $request->price;
             $package->startDate = date('Y-m-d',strtotime($request->startDate));
             $package->endDate = date('Y-m-d',strtotime($request->endDate));

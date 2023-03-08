@@ -93,6 +93,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function(){
             Route::put('/active/{id}', [StudentController::class,'active'])->name('superadmin.activeStudent');
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('superadmin.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('superadmin.addstudentCourseAssign');
+            Route::delete('/enroll/delete/{id}', [StudentController::class,'deleteEnroll'])->name('superadmin.enrollment.destroy');
         });
 
         Route::resource('/notes',NoteController::class,["as" => "superadmin"]);
@@ -215,6 +216,7 @@ Route::group(['middleware' => 'isSalesManager'], function(){
             Route::put('/active/{id}', [StudentController::class,'active'])->name('salesmanager.activeStudent');
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('salesmanager.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesmanager.addstudentCourseAssign');
+            Route::delete('/enroll/delete/{id}', [StudentController::class,'deleteEnroll'])->name('salesmanager.enrollment.destroy');
         });
 
         Route::resource('/notes',NoteController::class,["as" => "salesmanager"]);
@@ -268,6 +270,7 @@ Route::group(['middleware' => 'isSalesExecutive'], function(){
             Route::put('/active/{id}', [StudentController::class,'active'])->name('salesexecutive.activeStudent');
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('salesexecutive.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('salesexecutive.addstudentCourseAssign');
+            Route::delete('/enroll/delete/{id}', [StudentController::class,'deleteEnroll'])->name('salesexecutive.enrollment.destroy');
         });
         
         Route::resource('/notes',NoteController::class,["as" => "salesexecutive"]);
@@ -329,6 +332,7 @@ Route::group(['middleware' => 'isOperationmanager'], function(){
             Route::put('/active/{id}', [StudentController::class,'active'])->name('operationmanager.activeStudent');
             Route::get('/course/assign/{id}', [StudentController::class,'studentCourseAssign'])->name('operationmanager.studentCourseAssign');
             Route::post('/course/assign/{id}', [StudentController::class,'addstudentCourseAssign'])->name('operationmanager.addstudentCourseAssign');
+            Route::delete('/enroll/delete/{id}', [StudentController::class,'deleteEnroll'])->name('operationmanager.enrollment.destroy');
         });
 
         Route::resource('/notes',NoteController::class,["as" => "operationmanager"]);

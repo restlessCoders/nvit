@@ -43,6 +43,17 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
+					<label>Select Batch: <span class="text-danger sup">*</span></label>
+						<select name="batchId" class="js-example-basic-single form-control select2 @if($errors->has('batchId')) {{ 'is-invalid' }} @endif">
+							<option></option>
+							@if(count($allBatch) > 0)
+							@foreach($allBatch as $batch)
+							<option value="{{ $batch->id }}" {{ old('batchId',$pdata->batchId) == $batch->id ? "selected" : "" }}>{{ $batch->batchId }}</option>
+							@endforeach
+							@endif
+						</select>
+					</div>
+					<div class="col-lg-4">
 						<label>Select Courses: <span class="text-danger sup">*</span></label>
 						<select name="courseId" class="js-example-basic-single form-control select2 @if($errors->has('courseId')) {{ 'is-invalid' }} @endif">
 							<option></option>

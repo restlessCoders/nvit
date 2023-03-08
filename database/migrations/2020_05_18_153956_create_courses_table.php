@@ -17,7 +17,8 @@ class CreateCoursesTable extends Migration
             $table->bigIncrements('id');
             $table->string('courseName', 255)->nullable();
             $table->text('courseDescription')->nullable();
-            $table->unsignedFloat('rPrice', 10, 2)->comment('regular Course Price')->default(0);
+            $table->unsignedFloat('rPrice', 10, 2)->comment('At a Time Payment Price')->default(0);
+            $table->unsignedFloat('iPrice', 10, 2)->comment('Installment Price')->default(0);
             $table->unsignedFloat('mPrice', 10, 2)->comment('Course Material Price')->default(0);
             $table->boolean('status')->default(0)->comment('0 => inactive, 1 => active');
             $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');

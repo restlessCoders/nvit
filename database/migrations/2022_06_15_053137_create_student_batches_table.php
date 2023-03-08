@@ -22,13 +22,14 @@ class CreateStudentBatchesTable extends Migration
             $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->date('entryDate')->nullable();
-            $table->text("accountsNote")->nullable();
-            $table->integer("acc_approve")->default(0)->comment('0 => inactive, 1 => active');
+            $table->text("note")->nullable();
+            $table->integer("acc_approve")->default(0)->comment('0 => no Invoice, 2 => Invoice posted');
             //$table->integer("status")->default(1)->comment('0 => inactive, 1 => active, 2 => waiting' );
             //$table->integer("status")->comment('0 => Close, 1 => Running, 2=> Knocking, 3=> Enroll 4=> Registered 5=> Evoulation');
-            $table->integer("status")->comment('0 => course complete, 1 => Payment Complete, 2=> Enrolled , 3=> Knocking, 4=> Evoulation');
             $table->integer("cstatus")->comment('0 => course incomplete, 1 => course Complete');
+            $table->integer("status")->comment('2=> Enrolled , 3=> Knocking, 4=> Evoulation');
             $table->integer("pstatus")->comment('0 => payment incomplete, 1 => Payment Complete');
+            $table->integer("type")->comment('1 => At A Time,2 => Installment');
             $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

@@ -40,6 +40,14 @@ class BatchController extends Controller
         $data.='<td>'.$batch->batchId.'<input name="batch_id[]" type="hidden" value="'.$batch->id.'"></td>';
         $data.='							
         <td>
+            <select class="js-example-basic-single form-control" id="pstatus" name="type[]" required>
+                <option value="">Select</option>
+                <option value="1" selected>Full</option>
+                <option value="2">Intallment(Partial)</option>
+            </select>
+        </td>';
+        $data.='							
+        <td>
             <select class="js-example-basic-single form-control" id="status" name="status[]" required>
                 <option value="">Select</option>
                 <option value="2">Enroll</option>

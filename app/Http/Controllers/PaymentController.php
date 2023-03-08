@@ -81,6 +81,7 @@ class PaymentController extends Controller
         ->where('student_batches.student_id',$request->student_id)
         ->groupBy('student_batches.systemId')
         ->get();
+        
         $data ='<div class="col-sm-3" id="systemId"><select class="js-example-basic-single form-control" id="systmVal" onchange="databySystemId(this.value);">';
         $data.='<option value="">Select</option>';
         foreach($enrollStudent as $e){
@@ -124,6 +125,7 @@ class PaymentController extends Controller
     ->groupBy('student_batches.batch_id', 'student_batches.systemId')
     ->select(
         'batches.batchId',
+        'batches.id as bid',
         'student_batches.course_price',
         'student_batches.entryDate',
         'student_batches.batch_id',
@@ -186,9 +188,15 @@ class PaymentController extends Controller
                                 <p class="my-0">'.$s->batchId.'</p>
                                 <p class="my-0">'.$s->entryDate.'</p>
                             </td>';
-                    $data .='<td><input type="text" id="invoiceId" class="form-control" name="invoiceId[]" class="form-control"></td>';       
+                    $inv = DB::table('paymentdetails')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
+                    //return response()->json(array('data' =>$inv));
+                    if(is_null($inv)){
+                        $data .='<td><input type="text" id="invoiceId" class="form-control" name="invoiceId[]"></td>'; 
+                    }else{
+                        $data .='<td><input type="text" id="invoiceId" class="form-control" readonly value="'.$inv->invoiceId.'"></td>';
+                    }       
                     $data .='<input type="hidden" name="tPayable" value="'.$tPayable.'">';        
-                    $data .='<input type="hidden" name="batch_id[]" value="'.$s->batch_id.'">';        
+                    $data .='<input type="text" name="batch_id[]" value="'.$s->batch_id.'">';        
                     $data .='<td><input type="text" class="form-control" readonly value="'.$s->course_price.'"></td>';
                     $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option selected value="2">Partial</option></select></td>';
                     $data .='<td>
@@ -336,7 +344,6 @@ class PaymentController extends Controller
                     $date = new Carbon($dueDate[$key]);
                     $date->addMonth();
                     $payment_detail['dueDate']      = $date->toDateString();
-
                 }
                 $payment_detail['created_at']       = date("Y-m-d h:i:s");
                 /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
@@ -349,18 +356,28 @@ class PaymentController extends Controller
 
                 /*To Update Account Approve */
                 $s_batch_data = DB::table('student_batches')->where(['student_id'=>$request->studentId,'batch_id'=>$batch_id[$key]])->first();
+               /* print_r($batch_id);die;
+ print_r($s_batch_data);die;*/
                 if($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]){
                     $data = array(
-                        'acc_approve' => 1,
+                        'acc_approve' => $invoiceId[$key]?2:1,
                         'updated_at' => Carbon::now(),
                     );
                     DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
                 }else if($s_batch_data->acc_approve == 1 && $cpaidAmount[$key] == $cPayable[$key]){
                     $data = array(
-                        'acc_approve' => 1,
+                        'acc_approve' => $invoiceId[$key]?2:1,
                         'updated_at' => Carbon::now(),
                         'pstatus' => 1
                     );
+                    DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+                }else{
+                    if(request()->has("invoiceId.$key")) {
+                        $data = array(
+                            'acc_approve' => 2,
+                            'updated_at' => Carbon::now(),
+                        );
+                    }
                     DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
                 }
                 DB::commit();
