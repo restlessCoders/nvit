@@ -69,7 +69,7 @@
 								<td width="80px">
 									@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
 									<a href="{{route(currentUser().'.batch.edit',[encryptor('encrypt', $batch->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
-									<a href="{{route(currentUser().'.batch.destroy',[encryptor('encrypt', $batch->id)])}}" title="delete" class="text-danger"><i class="fas fa-trash-alt"></i></a>
+									{{--<a href="{{route(currentUser().'.batch.destroy',[encryptor('encrypt', $batch->id)])}}" title="delete" class="text-danger"><i class="fas fa-trash-alt"></i></a>--}}
 									@endif
 								</td>
 							</tr>

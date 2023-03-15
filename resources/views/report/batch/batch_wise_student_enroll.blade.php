@@ -31,7 +31,7 @@
 					<div class="col-sm-3">
 						<label for="batch_id" class="col-form-label">Select Batch</label>
 						<select name="batch_id" class="js-example-basic-single form-control" required>
-							<option value="">Select Batch</option>
+							<option></option>
 							@forelse($batches as $batch)
 							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
 							@empty
@@ -41,7 +41,7 @@
 					<div class="col-sm-3">
 						<label for="executiveId" class="col-form-label">Select Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control">
-							<option value="">Select Executive</option>
+							<option></option>
 							@forelse($executives as $e)
 							<option value="{{$e->id}}">{{$e->name}}</option>
 							@empty
@@ -51,7 +51,7 @@
 					<div class="col-sm-3">
 						<label for="refId" class="col-form-label">Select Reference</label>
 						<select name="refId" class="js-example-basic-single form-control">
-							<option value="">Select Reference</option>
+							<option></option>
 							@forelse($references as $ref)
 							<option value="{{$ref->id}}">{{$ref->refName}}</option>
 							@empty
@@ -61,14 +61,15 @@
 					<div class="col-sm-3">
 						<label for="status" class="col-form-label">Select Status</label>
 						<select class="js-example-basic-single form-control" id="status" name="status">
-							<option value="">Select Status</option>
+							<option value=""></option>
 							<option value="2">Enroll</option>
 							<option value="3">Knocking</option>
 							<option value="4">Evloulation</option>
 						</select>
 					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+						<button type="submit" class="btn btn-primary mr-1"><i class="fa fa-search fa-sm"></i></button>
+						<button type="button" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></button>
 					</div>
 				</div>
 			</form>
@@ -153,7 +154,14 @@
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
-	$('.js-example-basic-single').select2();
+	$('.js-example-basic-single').select2({
+		placeholder: 'Select Option',
+		allowClear: true
+	});
+	$('.reset-btn').on('click',function(){
+		$('.js-example-basic-single').val(null).trigger('change');
+	});
+
 </script>
 @if(Session::has('response'))
 <script>

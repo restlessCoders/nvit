@@ -33,27 +33,20 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
-					<label>Select Batch: <span class="text-danger sup">*</span></label>
-						<select name="batchId" class="js-example-basic-single form-control select2 @if($errors->has('batchId')) {{ 'is-invalid' }} @endif">
+					<label>Select Package Option:</label>
+						<select name="packageType" class="js-example-basic-single form-control select2 @if($errors->has('packageType')) {{ 'is-invalid' }} @endif">
 							<option></option>
-							@if(count($allBatch) > 0)
-							@foreach($allBatch as $batch)
-							<option value="{{ $batch->id }}" {{ old('batchId') == $batch->id ? "selected" : "" }}>{{ $batch->batchId }}</option>
-							@endforeach
-							@endif
+							<option value="1" {{ old('packageType') == 1 ? "selected" : "" }}>Batch|Course Offer</option>
+							<option value="2" {{ old('packageType') == 2 ? "selected" : "" }}>Other Offer</option>
 						</select>
-					</div>
-					<div class="col-lg-4">
-						<label>Package Price: <span class="text-danger sup">*</span></label>
-						<input type="text" name="price" value="{{ old('price') }}" class="form-control @if($errors->has('price')) {{ 'is-invalid' }} @endif" placeholder="Price" />
-						@if($errors->has('price'))
+						@if($errors->has('packageType'))
 						<small class="d-block text-danger mb-3">
-							{{ $errors->first('price') }}
+							{{ $errors->first('packageType') }}
 						</small>
 						@endif
 					</div>
 					<div class="col-lg-4">
-						<label>Select Courses: <span class="text-danger sup">*</span></label>
+						<label>Select Courses:</label>
 						<select name="courseId" class="js-example-basic-single form-control select2 @if($errors->has('courseId')) {{ 'is-invalid' }} @endif">
 							<option></option>
 							@if(count($allCourses) > 0)
@@ -65,6 +58,40 @@
 						@if($errors->has('courseId'))
 						<small class="d-block text-danger mb-3">
 							{{ $errors->first('courseId') }}
+						</small>
+						@endif
+					</div>
+					<div class="col-lg-4">
+					<label>Select Batch:</label>
+						<select name="batchId" class="js-example-basic-single form-control select2 @if($errors->has('batchId')) {{ 'is-invalid' }} @endif">
+							<option></option>
+							@if(count($allBatch) > 0)
+							@foreach($allBatch as $batch)
+							<option value="{{ $batch->id }}" {{ old('batchId') == $batch->id ? "selected" : "" }}>{{ $batch->batchId }}</option>
+							@endforeach
+							@endif
+						</select>
+						@if($errors->has('batchId'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('batchId') }}
+						</small>
+						@endif
+					</div>
+					<div class="col-lg-4">
+						<label>Regular Price: <span class="text-danger sup">*</span></label>
+						<input type="text" name="price" value="{{ old('price') }}" class="form-control @if($errors->has('price')) {{ 'is-invalid' }} @endif" placeholder="Regular Price" />
+						@if($errors->has('price'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('price') }}
+						</small>
+						@endif
+					</div>
+					<div class="col-lg-4">
+						<label>Installment Price: <span class="text-danger sup">*</span></label>
+						<input type="text" name="iPrice" value="{{ old('iPrice') }}" class="form-control @if($errors->has('iPrice')) {{ 'is-invalid' }} @endif" placeholder="Installment Price" />
+						@if($errors->has('iPrice'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('iPrice') }}
 						</small>
 						@endif
 					</div>
@@ -97,19 +124,20 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
-						<label>Package Ending Time<span class="text-danger sup">*</span></label>
+						<label>Package Discount Ratio<span class="text-danger sup">*</span></label>
 						<div class="input-group">
-							<input id="timepicker" type="text" class="form-control" name="endTime" value="{{ old('endTime') }}">
+							<input id="dis" type="text" class="form-control" name="dis" value="{{ old('dis') }}">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="mdi mdi-clock-outline"></i></span>
 							</div>
 						</div><!-- input-group -->
-						@if($errors->has('endTime'))
-						<small class="d-block text-danger mb-3">
-							{{ $errors->first('endTime') }}
-						</small>
+						@if($errors->has('dis'))
+							<small class="d-block text-danger mb-3">
+								{{ $errors->first('dis') }}
+							</small>
 						@endif
 					</div>
+
 					<!-- <div class="col-lg-4">
 						<label class="control-label">Status: </label>
 						<select name="status" class="form-control @if($errors->has('status')) {{ 'is-invalid' }} @endif">
@@ -122,8 +150,8 @@
 						</small>
 						@endif
 					</div> -->
-					<div class="col-lg-4">
-						<label class="control-label">Package Note: </label>
+					<div class="col-lg-12">
+						<label class="control-label">Note: </label>
 						<textarea name="note" class="form-control" rows="5">{{ old('note') }}</textarea>
 					</div>
 				</div>
