@@ -25,18 +25,25 @@ class NewPackageRequest extends FormRequest
     {
         return [
             'pName'           => 'required',
-            'price'           => 'required',
-            'courseId'        => 'required',
+            'packageType'     => 'required',
+            'batchId'         => 'required_if:packageType,1',
+            'courseId'        => 'required_if:packageType,1',
+            'price'           => 'required_if:packageType,1',
+            'iPrice'          => 'required_if:packageType,1',
             'startDate'       => 'required',
             'endDate'         => 'required',
-            'endTime'         => 'required',
+            'dis'             => 'required_if:packageType,2'
         ];
     }
 
     public function messages()
     {
         return [
-            'required' => 'This field is required.'
+            'required' => 'This field is required.',
+            'packageType.required' =>  'Package Type is mandatory Field',
+            'batchId.required_if' =>  'Batch is mandatory Field',
+            'courseId.required_if' =>  'Course is mandatory Field',
+            'dis.required_if' =>  'Discount is mandatory Field'
         ];
     }
 }

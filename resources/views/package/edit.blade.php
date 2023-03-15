@@ -34,11 +34,33 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
-						<label>Package Price: <span class="text-danger sup">*</span></label>
-						<input type="text" name="price" value="{{ old('price',$pdata->price) }}" class="form-control @if($errors->has('price')) {{ 'is-invalid' }} @endif" placeholder="Price" />
+					<label>Select Package Option:</label>
+						<select name="packageType" class="js-example-basic-single form-control select2 @if($errors->has('packageType')) {{ 'is-invalid' }} @endif">
+							<option></option>
+							<option value="1" {{ old('packageType',$pdata->packageType) == 1 ? "selected" : "" }}>Batch|Course Offer</option>
+							<option value="2" {{ old('packageType',$pdata->packageType) == 2 ? "selected" : "" }}>Other Offer</option>
+						</select>
+						@if($errors->has('packageType'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('packageType') }}
+						</small>
+						@endif
+					</div>
+					<div class="col-lg-4">
+						<label>Regular Price: <span class="text-danger sup">*</span></label>
+						<input type="text" name="price" value="{{ old('price',$pdata->price) }}" class="form-control @if($errors->has('price')) {{ 'is-invalid' }} @endif" placeholder="Regular Price" />
 						@if($errors->has('price'))
 						<small class="d-block text-danger mb-3">
 							{{ $errors->first('price') }}
+						</small>
+						@endif
+					</div>
+					<div class="col-lg-4">
+						<label>Installment Price: <span class="text-danger sup">*</span></label>
+						<input type="text" name="iPrice" value="{{ old('iPrice',$pdata->iPrice) }}" class="form-control @if($errors->has('iPrice')) {{ 'is-invalid' }} @endif" placeholder="Installment Price" />
+						@if($errors->has('iPrice'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('iPrice') }}
 						</small>
 						@endif
 					</div>
@@ -52,6 +74,11 @@
 							@endforeach
 							@endif
 						</select>
+						@if($errors->has('batchId'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('batchId') }}
+						</small>
+						@endif
 					</div>
 					<div class="col-lg-4">
 						<label>Select Courses: <span class="text-danger sup">*</span></label>
@@ -97,7 +124,7 @@
 						</small>
 						@endif
 					</div>
-					<div class="col-lg-4">
+					{{--<div class="col-lg-4">
 						<label>Package Ending Time<span class="text-danger sup">*</span></label>
 						<div class="input-group">
 							<input id="timepicker" type="text" class="form-control" name="endTime" value="{{ old('endTime',$pdata->endTime) }}">
@@ -110,7 +137,7 @@
 							{{ $errors->first('endTime') }}
 						</small>
 						@endif
-					</div>
+					</div>--}}
 					<div class="col-lg-4">
 						<label class="control-label">Status: </label>
 						<select name="status" class="form-control @if($errors->has('status')) {{ 'is-invalid' }} @endif">
@@ -124,6 +151,20 @@
 						@endif
 					</div>
 					<div class="col-lg-4">
+						<label>Package Discount Ratio<span class="text-danger sup">*</span></label>
+						<div class="input-group">
+							<input id="dis" type="text" class="form-control" name="dis" value="{{ old('dis',$pdata->dis) }}">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="mdi mdi-clock-outline"></i></span>
+							</div>
+						</div><!-- input-group -->
+						@if($errors->has('dis'))
+							<small class="d-block text-danger mb-3">
+								{{ $errors->first('dis') }}
+							</small>
+						@endif
+					</div>
+					<div class="col-lg-12">
 						<label class="control-label">Package Note: </label>
 						<textarea name="note" class="form-control" rows="5">{{ old('note',$pdata->note) }}</textarea>
 					</div>

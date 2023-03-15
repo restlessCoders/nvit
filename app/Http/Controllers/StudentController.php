@@ -198,13 +198,13 @@ class StudentController extends Controller
                 if($s_batch_data->status){
                 /*No Match Proceed To Update */
                 //echo 'proceed to update';
-                $data = array(
-                    'status' => $request->status,
-                    'entryDate' => date('Y-m-d'),
-                    'updated_at' => Carbon::now(),
-                    'updated_by' => currentUserId(),
-                );
+
                 if ($request->status == 2) {
+                    $data = array(
+                        'status' => $request->status,
+                        'updated_at' => Carbon::now(),
+                        'updated_by' => currentUserId(),
+                    );
                     $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
                         join student_batches on student_batches.batch_id=batches.id
                         WHERE batches.id=$s_batch_data->batch_id
@@ -212,23 +212,55 @@ class StudentController extends Controller
                     //print_r($seat_data);die;
                     if ($seat_data[0]->tst > $seat_data[0]->seat_available)
                         return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+                }else{
+                    $data = array(
+                        'status' => $request->status,
+                        'entryDate' => date('Y-m-d'),
+                        'updated_at' => Carbon::now(),
+                        'updated_by' => currentUserId(),
+                    );
                 }
                 DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
             }if($s_batch_data->type){
                 /* If Executive change Full to Installment or Installment to Full Payment Course Price Will change until invoice has posted in paymentdetails table */
                 /* use to check date | now for both date and time */
-                $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate and batchId = $s_batch_data->batch_id and status=1");
+                $packages = DB::select("SELECT * from packages where /*curdate()*/ '$s_batch_data->entryDate' BETWEEN startDate and endDate /*and batchId = $s_batch_data->batch_id*/ and status=1");
+                /*echo $request->type.'<br>';
+                echo '<pre>';
+                print_r($packages);die;*/
                 /*==Course Price  is Full or Partial==*/
-                if($request->type == 1 && !$packages){
+                if($request->type == 1){
                     $course = DB::select("SELECT courses.rPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$s_batch_data->batch_id");
                 }else{
                     $course = DB::select("SELECT courses.iPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$s_batch_data->batch_id");
                 }
 
-                if($packages){
-                    $course_price = $packages[0]->price;
+                if($request->type == 1){
+                    if($packages){
+                        if($packages[0]->price > 0){
+                            $course_price = $packages[0]->price;
+                            $package_id = $packages[0]->id;
+                        }elseif($packages[0]->dis > 0){
+                            $course_price = $course[0]->price-($course[0]->price*$packages[0]->dis/100);
+                            $package_id = $packages[0]->id;
+                        }
+                    }else{
+                        $course_price = $course[0]->price;
+                        $package_id = null;
+                    }
                 }else{
-                    $course_price = $course[0]->price;
+                    if($packages){
+                        if($packages[0]->iPrice > 0){
+                            $course_price = $packages[0]->iPrice;
+                            $package_id = $packages[0]->id;
+                        }elseif($packages[0]->dis > 0){
+                            $course_price = $course[0]->price-($course[0]->price*$packages[0]->dis/100);
+                            $package_id = $packages[0]->id;
+                        }
+                    }else{
+                        $course_price = $course[0]->price;
+                        $package_id = null;
+                    }
                 }
                 $data = array(
                     'course_price' => $course_price,
@@ -256,22 +288,48 @@ class StudentController extends Controller
             $systemId = substr(uniqid(Str::random(6), true), 0, 6);
             foreach ($request->batch_id as $key => $cdata) {
                 /* use to check date | now for both date and time */
-                $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate and batchId = $batch_id[$key] and status=1");
+                $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate /*and batchId = $batch_id[$key]*/ and status=1");
                 /*==Course Price  is Full or Partial==*/
-                if($type[$key] == 1 && !$packages){
+                if($type[$key] == 1){
                     $course = DB::select("SELECT courses.rPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$batch_id[$key]");
                 }else{
                     $course = DB::select("SELECT courses.iPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$batch_id[$key]");
                 }
-                
-                if($packages){
-                    $course_price = $packages[0]->price;
+                /*echo $type[$key];
+                print_r($packages);die;*/
+                if($type[$key] == 1){
+                    if($packages){
+                        if($packages[0]->price > 0){
+                            $course_price = $packages[0]->price;
+                            $package_id = $packages[0]->id;
+                        }elseif($packages[0]->dis > 0){
+                            $course_price = $course[0]->price-($course[0]->price*$packages[0]->dis/100);
+                            $package_id = $packages[0]->id;
+                        }
+                    }else{
+                        $course_price = $course[0]->price;
+                        $package_id = null;
+                    }
                 }else{
-                    $course_price = $course[0]->price;
+                    if($packages){
+                        if($packages[0]->iPrice > 0){
+                            $course_price = $packages[0]->iPrice;
+                            $package_id = $packages[0]->id;
+                        }elseif($packages[0]->dis > 0){
+                            $course_price = $course[0]->price-($course[0]->price*$packages[0]->dis/100);
+                            $package_id = $packages[0]->id;
+                        }
+                    }else{
+                        $course_price = $course[0]->price;
+                        $package_id = null;
+                    }
                 }
+
+
                 $data = array(
                     'batch_id' => $batch_id[$key],
                     'student_id' =>  $student_id[$key],
+                    'package_id' =>  $package_id,
                     'entryDate' => date('Y-m-d'),
                     'status' => $status[$key],
                     'systemId' => $systemId,

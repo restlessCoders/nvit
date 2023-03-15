@@ -30,7 +30,7 @@ class CourseController extends Controller
     }
     public function index()
     {
-        $allCourses = Course::orderBy('id', 'DESC')->paginate(25);
+        $allCourses = Course::where('status',1)->orderBy('id', 'DESC')->paginate(10);
         return view('course.index', compact('allCourses'));
     }
 
@@ -122,8 +122,17 @@ class CourseController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        
-    }
+        try {
+            $course = Course::find(encryptor('decrypt', $id));
+            $course->status = 0;
+            $course->updated_by = currentUserId();
+            if(!!$course->save())return redirect(route(currentUser().'.course.index'))->with($this->responseMessage(false, true, 'Course Deleted'));
+            } catch (Exception $e) {
+                dd($e);
+                return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+                return false;
+            }
+    }  
 }

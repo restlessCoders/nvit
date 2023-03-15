@@ -25,7 +25,7 @@
 			</ul>
 			<!-- <table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;"> -->
 
-			<table class="table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+			<table class="course table table-bordered">
 				<thead>
 					<tr>
 						<th>SL.</th>
@@ -57,7 +57,12 @@
 						</td>
 						<td>
 							<a href="{{route(currentUser().'.course.edit',[encryptor('encrypt', $course->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
-							<a href="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" class="text-danger"><i class="fas fa-trash-alt"></i></a>
+							<form id="active-form" method="POST" action="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" style="display: inline;">
+								@csrf
+								@method('DELETE')
+								<input name="_method" type="hidden" value="DELETE">
+								<a href="javascript:void(0)" data-name="{{$course->courseName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
+							</form>
 						</td>
 					</tr>
 					@endforeach
@@ -74,8 +79,25 @@
 </div> <!-- end row -->
 @endsection
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
 	$('.responsive-datatable').DataTable();
+	$('.course').on('click', '.delete', function(event) {
+		var name = $(this).data("name");
+		event.preventDefault();
+		swal({
+				title: `Are you sure you want to Delete this ${name}?`,
+				text: "If you Delete this, it will be Deleted.",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$('#active-form').submit();
+				}
+			});
+	});
 </script>
 @if(Session::has('response'))
 <script>

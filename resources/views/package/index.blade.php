@@ -18,22 +18,26 @@
 		<div class="card-box">
 	
 				
-					<table class="table table-bordered">
+					<table class="table table-bordered text-center">
 						<thead>
 							<tr>
-								<th>SL.</th>
-								<th>Package</th>
-								<th>Course</th>
-								<th>Batch</th>
-								<th>Note</th>
-								<th>P.Price</th>
-								<th>Start</th>
-								<th>End</th>
-								<th>Till</th>
-								<th>Created By</th>
-								<th>Updated By</th>
-								<th>Status</th>
-								<th>Action</th>
+								<th rowspan="2">SL.</th>
+								<th rowspan="2">Package</th>
+								<th rowspan="2">Course</th>
+								<th rowspan="2">Batch</th>
+								<th colspan="2">Price</th>
+								<th rowspan="2">Start</th>
+								<th rowspan="2">End</th>
+								<th rowspan="2">Dis</th>
+								<th rowspan="2">Note</th>
+								<th rowspan="2" >Declared</th>
+								<th rowspan="2">Changed</th>
+								<th rowspan="2">Status</th>
+								<th rowspan="2">Action</th>
+							</tr>
+							<tr>
+								<th>Regular</th>
+								<th>Installment</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -42,13 +46,14 @@
 							<tr>
 								<td>{{ $loop->iteration }}</td>
 								<td>{{$package->pName}}</td>
-								<td>{{$package->course->courseName}}</td>
+								<td>{{optional($package->course)->courseName}}</td>
 								<td>{{optional($package->batch)->batchId}}</td>
-								<td>{{$package->note}}</td>
 								<td>{{$package->price}}</td>
+								<td>{{$package->iPrice}}</td>
 								<td>{{$package->startDate}}</td>
 								<td>{{$package->endDate}}</td>
-								<td>{{$package->endTime}}</td>
+								<td>{{$package->dis}}</td>
+								<td>{{$package->note}}</td>
 								<td>{{$package->createdBy}}</td>
 								<td>{{$package->updateBy}}</td>
 								<td>

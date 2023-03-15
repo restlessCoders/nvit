@@ -18,10 +18,13 @@ return new class extends Migration
             $table->unsignedBigInteger('courseId')->nullable();
             $table->unsignedBigInteger('batchId')->nullable();
             $table->string('pName', 255);
-            $table->unsignedFloat('price', 10, 2)->comment('Price')->default(0);
+            $table->boolean('packageType')->comment('1 => Course|Batch, 0=> Other');
+            $table->unsignedFloat('price', 10, 2)->comment('regular Price')->default(0);
+            $table->unsignedFloat('iprice', 10, 2)->comment('installment Price')->default(0);
+            $table->integer('dis')->comment('Special Day Discount For All courses')->default(0);
             $table->date('startDate');
 			$table->date('endDate');
-            $table->time('endTime');
+            //$table->time('endTime');
             $table->unsignedBigInteger('userId')->comment('createdBy');
             $table->unsignedBigInteger('updateBy')->nullable();
             $table->text('note')->nullable();
