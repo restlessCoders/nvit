@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Bill;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Student;
 use Session;
 use Carbon\Carbon;
 use DB;
@@ -15,7 +16,11 @@ use DB;
 class DashboardController extends BaseController
 {
     public function index(){
-		return view('dashboard.superadmin_dashboard');
+      $recall_students = Student::join('notes','students.id','notes.student_id')
+      ->select('students.name','notes.student_id','notes.re_call_date','notes.note')
+      ->whereDate('re_call_date', '=', now()->toDateString())
+      ->paginate(8);
+      return view('dashboard.superadmin_dashboard',compact('recall_students'));
     }
 	
     public function admin(){
@@ -109,6 +114,11 @@ class DashboardController extends BaseController
         $billToday=DB::select(DB::raw("SELECT sum(total_amount) as am, count(id) as cid FROM bills WHERE companyId=$company_id and bill_date = date(now()) "));
         
 		return view('dashboard.salesman_dashboard',compact('todaySellSummary','profit','rev_date','company','customer','suppliers','billToday','billWeek','billMonth'));*/
-    return view('dashboard.salesexecutive_dashboard');
+    $recall_students = Student::join('notes','students.id','notes.student_id')
+    ->select('students.name','notes.student_id','notes.re_call_date','notes.note')
+    ->whereDate('re_call_date', '=', now()->toDateString())
+    ->where('executiveId',currentUserId())
+    ->paginate(8);
+    return view('dashboard.salesexecutive_dashboard',compact('recall_students'));
     }
 }
