@@ -202,6 +202,7 @@ class BatchController extends Controller
         try {
         $batch = Batch::find(encryptor('decrypt', $id));
             $batch->batchId = str_replace(' ', '-', $request->batchId);
+            $batch->courseId = $request->courseId;
             $batch->startDate = Carbon::createFromFormat('d/m/Y', $request->startDate)->format('Y-m-d');
             $batch->endDate = Carbon::createFromFormat('d/m/Y', $request->endDate)->format('Y-m-d');
             $batch->bslot = $request->bslot;
