@@ -33,5 +33,4 @@ class Student extends Model
     public function notes(){
         return $this->hasMany(Note::class,'student_id','id');
     }
-
 }

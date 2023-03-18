@@ -214,30 +214,40 @@
 
 
 <div class="row">
-    <div class="col-xl-6">
+    <div class="col-xl-12">
         <div class="card-box">
             <h4 class="header-title mb-3">Today Recall List</h4>
             <div class="table-responsive">
-                <table class="table table-bordered table-nowrap mb-0">
+                <table class="table table-bordered mb-0">
                     <thead>
                         <tr>
                             <th>Student Id</th>
                             <th>Student Name</th>
-                            <th>Note</th>
+                            <th>Last Recall Date</th>
+                            <th>Last Note</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
+                        @forelse($recall_students as $rs)
+                        <tr>
+                            <td>{{$rs->student_id}}</td>
+                            <td>{{$rs->name}}</td>
+                            <td>{{$rs->re_call_date}}</td>
+                            <td>{{$rs->note}}</td>
+                        </tr>
+                        @empty
+                        @endforelse
                     </tbody>
                 </table>
+                <div class="my-3">{{$recall_students->links()}}</div>
             </div>
         </div>
     </div><!-- end col-->
-    <div class="col-xl-6">
+    <div class="col-xl-12">
         <div class="card-box">
             <h4 class="header-title mb-3">Today Due List</h4>
             <div class="table-responsive">
-                <table class="table table-bordered table-nowrap mb-0">
+                <table class="table table-bordered mb-0">
                     <thead>
                         <tr>
                             <th>Student Id</th>
@@ -248,7 +258,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+                       
                     </tbody>
                 </table>
             </div>

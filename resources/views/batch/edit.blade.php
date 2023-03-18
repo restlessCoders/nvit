@@ -223,7 +223,7 @@
 	@push('scripts')
 	<script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 	<script>
-		$(".js-example-basic-courseId").prop("disabled", true);
+		$(".js-example-basic-courseId").prop("disabled", false);
 		$('.js-example-basic-single').select2({
 			placeholder: 'Select Option',
 			allowClear: true
