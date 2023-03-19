@@ -224,7 +224,7 @@ class StudentController extends Controller
             }if($s_batch_data->type){
                 /* If Executive change Full to Installment or Installment to Full Payment Course Price Will change until invoice has posted in paymentdetails table */
                 /* use to check date | now for both date and time */
-                $packages = DB::select("SELECT * from packages where /*curdate()*/ '$s_batch_data->entryDate' BETWEEN startDate and endDate /*and batchId = $s_batch_data->batch_id*/ and status=1");
+                $packages = DB::select("SELECT * from packages where /*curdate()*/ '$s_batch_data->entryDate' BETWEEN startDate and endDate and batchId = $s_batch_data->batch_id and status=1");
                 /*echo $request->type.'<br>';
                 echo '<pre>';
                 print_r($packages);die;*/
@@ -288,7 +288,7 @@ class StudentController extends Controller
             $systemId = substr(uniqid(Str::random(6), true), 0, 6);
             foreach ($request->batch_id as $key => $cdata) {
                 /* use to check date | now for both date and time */
-                $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate /*and batchId = $batch_id[$key]*/ and status=1");
+                $packages = DB::select("SELECT * from packages where curdate() BETWEEN startDate and endDate and batchId = $batch_id[$key] and status=1");
                 /*==Course Price  is Full or Partial==*/
                 if($type[$key] == 1){
                     $course = DB::select("SELECT courses.rPrice as price FROM batches join courses on batches.courseId = courses.id WHERE batches.id =$batch_id[$key]");
