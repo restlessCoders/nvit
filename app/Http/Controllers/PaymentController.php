@@ -198,7 +198,7 @@ class PaymentController extends Controller
                     $data .='<input type="hidden" name="tPayable" value="'.$tPayable.'">';        
                     $data .='<input type="text" name="batch_id[]" value="'.$s->batch_id.'">';        
                     $data .='<td><input type="text" class="form-control" readonly value="'.$s->course_price.'"></td>';
-                    $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option selected value="2">Partial</option></select></td>';
+                    $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option selected value="2" selected>Partial</option></select></td>';
                     $data .='<td>
                                 <div class="input-group">
                                     <input type="text" name="dueDate[]" id="dueDate_'.$key.'" class="form-control">
