@@ -68,7 +68,7 @@ class PaymentController extends Controller
         $data .='<div class="col-sm-3" id="type"><select class="form-control" id="opt" name="type" onchange="paymentType(this.value)">';
         $data.='<option value="">Select</option>';
             $data .='<option value="1">Report</option>';  
-            $data .='<option value="2">Batch</option>';     
+            $data .='<option value="2" selected>Batch</option>';     
         $data .= '</select></div>';
         return response()->json(array('data' =>$data));
     }
@@ -84,8 +84,9 @@ class PaymentController extends Controller
         
         $data ='<div class="col-sm-3" id="systemId"><select class="js-example-basic-single form-control" id="systmVal" onchange="databySystemId(this.value);">';
         $data.='<option value="">Select</option>';
-        foreach($enrollStudent as $e){
-            $data .='<option value="'.$e->systemId.'">'.$e->systemId.'</option>';  
+        $sl = 1;
+        foreach($enrollStudent as $key => $e){
+            $data .='<option value="'.$e->systemId.'">Admission-'.$sl++.'</option>';  
         }
         $data .= '</select></div>';
         /*==Student Data==*/
@@ -148,7 +149,7 @@ class PaymentController extends Controller
                         <td>
                             <input type="text" id="mrNo" class="form-control" name="mrNo" class="form-control" required>
                             <div class="invalid-feedback" id="mrNo-error"></div>
-                            <input type="text" value="'.Session::get("user").'" name="userId">
+                            <input type="hidden" value="'.Session::get("user").'" name="userId">
                         </td>
                         <td>
                             <div class="input-group">
@@ -196,9 +197,9 @@ class PaymentController extends Controller
                         $data .='<td><input type="text" id="invoiceId" class="form-control" readonly value="'.$inv->invoiceId.'"></td>';
                     }       
                     $data .='<input type="hidden" name="tPayable" value="'.$tPayable.'">';        
-                    $data .='<input type="text" name="batch_id[]" value="'.$s->batch_id.'">';        
+                    $data .='<input type="hidden" name="batch_id[]" value="'.$s->batch_id.'">';        
                     $data .='<td><input type="text" class="form-control" readonly value="'.$s->course_price.'"></td>';
-                    $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option selected value="2" selected>Partial</option></select></td>';
+                    $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option selected value="2">Partial</option></select></td>';
                     $data .='<td>
                                 <div class="input-group">
                                     <input type="text" name="dueDate[]" id="dueDate_'.$key.'" class="form-control">
@@ -281,11 +282,12 @@ class PaymentController extends Controller
     {
 
         $rules = [
-            'mrNo' 		        => 'required|string',
+            'mrNo' 		        => 'required|integer|unique:payments,mrNo',
             'paymentDate'       => 'required',
         ];
         $messages = [
             'mrNo.required' => 'The Money Receipt No field is required.',
+            'mrNo.unique' => 'Mr No Alreay Used!',
             'paymentDate.required' => 'The Payment Date field is required.'
         ];
     
@@ -303,6 +305,7 @@ class PaymentController extends Controller
                 [
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
                     'studentId'         =>  $request->studentId,
+                    'mrNo'              =>  $request->mrNo,
                     'executiveId'       =>  $request->executiveId,
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
@@ -331,7 +334,7 @@ class PaymentController extends Controller
                     $payment_detail['type']             = 0;
                 }*/
                 $payment_detail['paymentId']        = $paymentId;
-                $payment_detail['mrNo']             = $request->mrNo;
+                //$payment_detail['mrNo']             = $request->mrNo;
                 $payment_detail['invoiceId']        = $invoiceId[$key];
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['batchId']          = $batch_id[$key];

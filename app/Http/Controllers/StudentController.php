@@ -357,7 +357,7 @@ class StudentController extends Controller
         $allExecutive   = User::whereIn('roleId', ['5', '9'])->orderBy('name', 'ASC')->get();
 
         $allCourse    = Course::where('status', 1)->orderBy('courseName', 'ASC')->get();
-        $allBatch       = Batch::where('status', 1)->orderBy('id', 'DESC')->get();
+        $allBatch       = Batch::orderBy('id', 'DESC')->get();
         $allBatchTime    = Batchtime::where('status', 1)->orderBy('id', 'ASC')->get();
         $allBatchSlot    = Batchslot::where('status', 1)->orderBy('id', 'ASC')->get();
 

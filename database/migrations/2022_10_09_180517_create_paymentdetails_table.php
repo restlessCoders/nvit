@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('paymentdetails', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('paymentId');
-            $table->integer('mrNo')->unique()->index();
+            //$table->integer('mrNo')->unique()->index();
             $table->unsignedBigInteger('invoiceId')->nullable()->unique()->index();
             $table->unsignedBigInteger('studentId');
             $table->unsignedBigInteger('batchId');

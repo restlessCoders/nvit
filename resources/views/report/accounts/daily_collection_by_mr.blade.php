@@ -133,7 +133,6 @@
 					@foreach($payments as $p)
 					@php
 					//echo $p->paymentDetail->count();die;
-					$total_paid_amount += $p->tPayable;
 					@endphp
 					<tr>
 						<td rowspan="{{$p->paymentDetail->count()+ 1}}" class="align-middle">
@@ -142,9 +141,10 @@
 						<td rowspan="{{$p->paymentDetail->count()+ 1}}" class="align-middle">{{$p->user->username}}</td>
 					</tr>
 					@foreach($p->paymentDetail as $p)
+					@php $total_paid_amount += $p->cpaidAmount; @endphp
 					<tr>
 						<td class="align-middle">{{$p->invoiceId}}</td>
-						<td class="align-middle">{{$p->mrNo}}</td>
+						<td class="align-middle">{{$p->payment->mrNo}}</td>
 						<td class="align-middle">{{$p->student->name}}</td>
 						<td class="align-middle">{{$p->student->contact}}</td>
 						<td class="align-middle">{{$p->batch->batchId}}</td>
