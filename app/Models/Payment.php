@@ -20,7 +20,7 @@ class Payment extends Model
     }
     public function paymentDetail()
     {
-        return $this->hasMany(PaymentDetail::class,'paymentId','id');
+        return $this->hasMany(Paymentdetail::class,'paymentId','id');
     }
     public function user(){
         return $this->hasOne(User::class,'id','executiveId');
