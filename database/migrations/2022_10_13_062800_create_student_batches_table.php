@@ -21,7 +21,7 @@ class CreateStudentBatchesTable extends Migration
             $table->unsignedFloat('course_price', 10, 2)->default(0);
             $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
-            $table->foreign('package_id')->nullable();
+            $table->integer('package_id')->nullable();
             $table->date('entryDate')->nullable();
             $table->text("note")->nullable();
             $table->integer("acc_approve")->default(0)->comment('0 => no Invoice, 2 => Invoice posted');
