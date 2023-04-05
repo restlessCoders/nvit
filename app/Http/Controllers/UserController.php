@@ -249,6 +249,7 @@ class UserController extends Controller
 			$account->name = $request->name;
             $account->mobileNumber = $request->mobileNumber;
             $account->username = $request->username;
+            $account->email = $request->email;
 			$account->save();
 
             if(!!$persoanl->save())return redirect()->back()->with($this->responseMessage(true, null, 'Profile Information updated'));
