@@ -27,9 +27,9 @@ class UserController extends Controller
     use ResponseTrait, ImageHandleTraits;
     
     public function index(){
-        if(currentUser() == 'superadmin'){
+        if(currentUser() == 'superadmin' || currentUser() == 'operationmanager'){
             $allUser = User::with('role')->orderBy('id', 'DESC')->paginate(25);
-        }elseif(currentUser() == 'salesmanager' || currentUser() == 'accountmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainingmanager' || currentUser() == 'admin'){
+        }elseif(currentUser() == 'salesmanager' || currentUser() == 'accountmanager'  || currentUser() == 'trainingmanager' || currentUser() == 'admin'){
             $allUser = User::whereIn('roleId',[9,11])->with('role')->orderBy('id', 'DESC')->paginate(25);
         }elseif(currentUser() == 'accountmanager' || currentUser() == 'trainingmanager'){
             $allUser = User::where(['userCreatorId' => encryptor('decrypt', request()->session()->get('user'))])->with('role')->orderBy('id', 'DESC')->paginate(25);
