@@ -353,7 +353,7 @@
 					<table class="mt-3 enrol table table-bordered">
 						<thead>
 							<tr>
-								<th>SL.</th>
+								<th>SL.|Enrollment Date</th>
 								<th>Batch Name</th>
 								<th>Note</th>
 								<!-- <th>Approved</th> -->
@@ -365,11 +365,24 @@
 						</thead>
 						<tbody>
 							@if(count($allassignBatches))
+							@php
+								$admissionCount = 0;
+								$prevSystemId = '';
+							@endphp
 							@foreach($allassignBatches as $allassignBatch)
 							<tr>
 								<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$allassignBatch->student_id)) }}" method="POST" enctype="multipart/form-data">
 									@csrf
-									<td>{{ $loop->iteration }}</td>
+									@if ($allassignBatch->systemId != $prevSystemId)
+									@php
+										$admissionCount++;
+										$prevSystemId = $allassignBatch->systemId;
+									@endphp
+									<td rowspan="{{$admissionCount}}">
+										<p class="m-0">Admission {{ $admissionCount }}</p>
+										<small>{{$allassignBatch->entryDate}} </small>
+									</td>
+									@endif
 									<input type="hidden" name="s_id" value="{{$allassignBatch->student_id}}">
 									<input type="hidden" name="batch_id" value="{{$allassignBatch->batch_id}}">
 									<td>
@@ -405,7 +418,7 @@
 									<td>{{$allassignBatch->course_price}}</td>
 									<td>
 										@if($allassignBatch->acc_approve != 2)
-										<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
+										<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
 										</form>
 										@endif
 										@if($allassignBatch->acc_approve == 0)
@@ -413,7 +426,7 @@
 											@csrf
 											@method('DELETE')
 											<input name="_method" type="hidden" value="DELETE">
-											<a href="javascript:void(0)" type="submit" class="delete mr-2 btn btn-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i>Delete</a>
+											<a href="javascript:void(0)" type="submit" class="delete mr-2 btn btn-danger btn-sm" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i>Delete</a>
 										</form>
 										@endif
 									</td>

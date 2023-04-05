@@ -55,6 +55,8 @@
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
 <script>
+
+	
  
 $(document).on('submit', '#my-form', function(event) {
 		event.preventDefault();

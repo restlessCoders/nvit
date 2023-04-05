@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('studentId');
             $table->integer('mrNo')->unique()->index();
+            $table->unsignedBigInteger('invoiceId')->nullable()->index();
             $table->unsignedBigInteger('executiveId');
             $table->date('paymentDate');
             $table->unsignedFloat('tPayable', 10, 2)->default(0);

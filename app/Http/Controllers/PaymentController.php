@@ -141,15 +141,19 @@ class PaymentController extends Controller
                 <thead>
                     <tr>
                         <th><strong>Money Receipt No: </strong></th>
+                        <th><strong>Invoice No: </strong></th>
                         <th><strong>Payment Date:</strong></th>
                     </tr>
                 </thead> 
                 <tbody>
                     <tr>
                         <td>
-                            <input type="text" id="mrNo" class="form-control" name="mrNo" class="form-control" required>
+                            <input type="text" id="mrNo" class="form-control" name="mrNo" class="form-control" required onkeyup="btn()">
                             <div class="invalid-feedback" id="mrNo-error"></div>
                             <input type="hidden" value="'.Session::get("user").'" name="userId">
+                        </td>
+                        <td>
+                            <input type="text" id="invoiceId" class="form-control" name="invoiceId" class="form-control">
                         </td>
                         <td>
                             <div class="input-group">
@@ -168,7 +172,6 @@ class PaymentController extends Controller
             <thead>
                 <tr>
                     <th>Batch|Enroll Date</th>
-                    <th width="90px">Inv</th>
                     <th width="110px">Price</th>
                     <th width="108px">Type</th>
                     <th width="160px">Due Date</th>
@@ -189,13 +192,13 @@ class PaymentController extends Controller
                                 <p class="my-0">'.$s->batchId.'</p>
                                 <p class="my-0">'.$s->entryDate.'</p>
                             </td>';
-                    $inv = DB::table('paymentdetails')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
+                    //$inv = DB::table('paymentdetails')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
                     //return response()->json(array('data' =>$inv));
-                    if(is_null($inv)){
+                    /*if(is_null($inv)){
                         $data .='<td><input type="text" id="invoiceId" class="form-control" name="invoiceId[]"></td>'; 
                     }else{
                         $data .='<td><input type="text" id="invoiceId" class="form-control" readonly value="'.$inv->invoiceId.'"></td>';
-                    }       
+                    }*/       
                     $data .='<input type="hidden" name="tPayable" value="'.$tPayable.'">';        
                     $data .='<input type="hidden" name="batch_id[]" value="'.$s->batch_id.'">';        
                     $data .='<td><input type="text" class="form-control" readonly value="'.$s->course_price.'"></td>';
@@ -306,6 +309,7 @@ class PaymentController extends Controller
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
                     'studentId'         =>  $request->studentId,
                     'mrNo'              =>  $request->mrNo,
+                    'invoiceId'         =>  $request->invoiceId,
                     'executiveId'       =>  $request->executiveId,
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
@@ -335,7 +339,7 @@ class PaymentController extends Controller
                 }*/
                 $payment_detail['paymentId']        = $paymentId;
                 //$payment_detail['mrNo']             = $request->mrNo;
-                $payment_detail['invoiceId']        = $invoiceId[$key];
+                //$payment_detail['invoiceId']        = $invoiceId[$key];
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['batchId']          = $batch_id[$key];
                 $payment_detail['cPayable']         = $cPayable[$key];
@@ -363,19 +367,19 @@ class PaymentController extends Controller
  print_r($s_batch_data);die;*/
                 if($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]){
                     $data = array(
-                        'acc_approve' => $invoiceId[$key]?2:1,
+                        'acc_approve' => $invoiceId?2:1,
                         'updated_at' => Carbon::now(),
                     );
                     DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
                 }else if($s_batch_data->acc_approve == 1 && $cpaidAmount[$key] == $cPayable[$key]){
                     $data = array(
-                        'acc_approve' => $invoiceId[$key]?2:1,
+                        'acc_approve' => $invoiceId?2:1,
                         'updated_at' => Carbon::now(),
                         'pstatus' => 1
                     );
                     DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
                 }else{
-                    if(request()->has("invoiceId.$key")) {
+                    if(request()->has($invoiceId)) {
                         $data = array(
                             'acc_approve' => 2,
                             'updated_at' => Carbon::now(),
@@ -438,20 +442,19 @@ class PaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        /*$rules = [
-            'mrNo' 		        => 'required|string',
+        $rules = [
+            'mrNo' 		        => 'required|integer|unique:payments,mrNo,'.encryptor('decrypt',$id),
             'paymentDate'       => 'required',
         ];
         $messages = [
             'mrNo.required' => 'The Money Receipt No field is required.',
+            'mrNo.unique' => 'Mr No Alreay Used!',
             'paymentDate.required' => 'The Payment Date field is required.'
         ];
-    
         $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()],422);
-        }*/
-        
+        }
         // Code to store data in database
         //return response()->json($request->all(),200);
         DB::beginTransaction();
@@ -462,11 +465,13 @@ class PaymentController extends Controller
                 ->update(
                 [
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
-                    'createdBy'         =>  encryptor('decrypt', $request->userId),
+                    'mrNo'              =>  $request->mrNo,
+                    'invoiceId'         =>  $request->invoiceId,
+                    'updated_by'         =>  encryptor('decrypt', $request->userId),
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
                     'accountNote'       =>  $request->accountNote,
-                    'status'            =>  ($request->tPayable == ($request->paidAmount+$request->disocunt))?0:1,
+                    //'status'            =>  ($request->tPayable == ($request->paidAmount+$request->disocunt))?0:1,
                     'updated_at'        => date("Y-m-d h:i:s"),
                 ]
             );
@@ -483,14 +488,33 @@ class PaymentController extends Controller
             $feeType	    = $request->post('feeType');
             $invoiceId      = $request->post('invoiceId');
             $batch_id       = $request->post('batch_id');
-            
+           
             //$m_price	    = $request->post('m_price');
+            $tpaidAmt = 0;
             foreach($request->id as $key => $cdata){
+                
                 $payment_detail = Paymentdetail::findOrFail($id[$key]);
-                $payment_detail['mrNo']             = $request->mrNo;
-                $payment_detail['invoiceId']        = $invoiceId[$key]?$invoiceId[$key]:null;
-                $payment_detail['cPayable']         = $cPayable[$key];
-                $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
+                //$payment_detail['mrNo']             = $request->mrNo;
+                //$payment_detail['invoiceId']        = $invoiceId[$key]?$invoiceId[$key]:null;
+                if($cPayable[$key] !=0){
+                    $tpaidAmt += DB::table('paymentdetails')->where('studentId', '=', $request->studentId)->where('batchId', '=', $batch_id[$key])->sum('cpaidAmount');
+                    $batch = DB::table('student_batches')->where(['student_id'=>$request->studentId,'batch_id'=>$batch_id[$key]])->first();
+                    $paidAmtbyId = DB::table('paymentdetails')->select('cpaidAmount')->where('studentId', '=', $request->studentId)->where('batchId', '=', $batch_id[$key])->where('id', '=', $id[$key])->first();
+
+                    if($cPayable[$key] == ($batch->course_price-$tpaidAmt)){
+                        echo $cPayable[$key];
+                        echo $tpaidAmt;
+                        die;
+                        $payment_detail['cPayable']         = $paidAmtbyId->cpaidAmount+$cPayable[$key];
+                        $payment_detail['cpaidAmount']      = $paidAmtbyId->cpaidAmount+$cPayable[$key];
+                    }else{
+                        $payment_detail['cPayable']         = $cPayable[$key];
+                        $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
+                    }
+                    
+                }
+                
+                
                 //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
                 $payment_detail['payment_type']             = $payment_type[$key];//($cPayable[$key] == $cpaidAmount[$key])?0:1;
                 if($cpaidAmount[$key] < $cPayable[$key]){

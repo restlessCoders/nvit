@@ -187,7 +187,7 @@
                     <option value="">Select</option>
                     @if(count($allExecutive) > 0)
                     @foreach($allExecutive as $executive)
-                    <option value="{{ $executive->id }}" {{ old('executiveId') == $executive->id ? "selected" : "" }}>{{$executive->name}}</option>
+                    <option value="{{ $executive->id }}" {{ old('executiveId',currentUserId()) == $executive->id ? "selected" : "" }}>{{$executive->name}}</option>
                     @endforeach
                     @endif
                 </select>
