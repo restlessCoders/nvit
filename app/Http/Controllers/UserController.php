@@ -216,8 +216,8 @@ class UserController extends Controller
     public function changePass(ResetUserPasswordRequest $request){
         $pass = User::find(encryptor('decrypt', $request->id));
         try {
-            if($pass['password'] == md5($request->oldpass)){
-               $pass->password = md5($request->pass);
+            if($pass['password'] == sha1(md5($request->oldpass))){
+               $pass->password = sha1(md5($request->pass));
                if(!!$pass->save())return redirect()->back()->with($this->responseMessage(true, null, 'Password updated'));
             }else{
               return redirect()->back()->with($this->responseMessage(false, 'error', 'Old Password Mismathed!'));  
