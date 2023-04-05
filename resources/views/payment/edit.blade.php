@@ -46,6 +46,7 @@
                 <thead>
                     <tr>
                         <th><strong>Money Receipt No: </strong></th>
+                        <th><strong>Invoice No: </strong></th>
                         <th><strong>Payment Date:</strong></th>
                     </tr>
                 </thead>
@@ -56,8 +57,11 @@
                     @endphp
                     <tr>
                         <td>
-                            <input type="text" id="mrNo" class="form-control" name="mrNo" class="form-control" value="{{ $paymentdetl->paymentDetail->first()->mrNo }}">
+                            <input type="text" id="mrNo" class="form-control" name="mrNo" value="{{ $paymentdetl->mrNo }}">
                             <div class="invalid-feedback" id="mrNo-error"></div>
+                        </td>
+                        <td>
+                            <input type="text" id="invoiceId" class="form-control" name="invoiceId" value="{{ $paymentdetl->invoiceId }}">
                         </td>
                         <td>
                             <div class="input-group">
@@ -77,7 +81,6 @@
                 <thead>
                     <tr>
                         <th>Batch|Enroll Date</th>
-                        <th width="90px">Inv</th>
                         <th width="100px">Price</th>
                         <th width="120px">Type</th>
                         <th width="160px">Due Date</th>
@@ -88,10 +91,14 @@
                         <th width="100px">Due</th>
                     </tr>
                 </thead>
-                @php $tPayable =0; @endphp
+                @php $tPayable =0; $paidAmt =0; $coursPayable = 0; @endphp
                 @foreach($paymentdetl->paymentDetail as $key=> $p)   
                 @php 
-                    $tPayable += ($p->batch->studentsBatches[0]->course_price-($p->cpaidAmount+$p->discount));
+                    $total = DB::table('paymentdetails')->where('studentId', '=', $p->studentId)->where('batchId', '=', $p->batchId)->sum('cpaidAmount');
+                    $total += DB::table('paymentdetails')->where('studentId', '=', $p->studentId)->where('batchId', '=', $p->batchId)->sum('discount');
+                    $tPayable += ($p->batch->studentsBatches[0]->course_price-$total);
+                    $paidAmt += $total;
+                    $coursPayable +=$p->batch->studentsBatches[0]->course_price;
                 @endphp
                 <tr>
                     <td>
@@ -99,8 +106,7 @@
                         <p class="my-0">{{$p->batch->studentsBatches[0]->course_price}}</p>
                     </td>
                     <input type="hidden" name="id[]" value="{{$p->id}}">
-                    <input type="text" name="batch_id[]" value="{{$p->batchId}}">
-                    <td><input type="text" id="invoiceId" class="form-control" name="invoiceId[]" class="form-control"></td>
+                    <input type="hidden" name="batch_id[]" value="{{$p->batchId}}">
                     <td><input type="text" class="form-control" readonly value="{{$p->batch->studentsBatches[0]->course_price}}"></td>
                     <td><select class="form-control" name="payment_type[]">
                             <option value=""></option>
@@ -128,23 +134,23 @@
                         </select></td>
                     <td><input type="text" name="discount[]" class="paidpricebyRow form-control" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice()"></td>
                     <td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice()"></td>
-                    <td><input name="cPayable[]" type="text" class="form-control" readonly value="{{($p->batch->studentsBatches[0]->course_price-($p->cpaidAmount+$p->discount))}}" id="coursepricebyRow_{{$key}}"></td>
+                    <td><input name="cPayable[]" type="text" class="form-control" readonly value="{{($p->batch->studentsBatches[0]->course_price-$total)}}" id="coursepricebyRow_{{$key}}"></td>
                 </tr>
                 @endforeach
                 <tfoot>
                     <tr>
                         <th colspan="8" class="text-right">Sub Total</th>
-                        <td><input type="text" name="tPayable" class="tPayable form-control" name="tPayable" value="{{ $paymentdetl->tPayable }}" readonly></td>
+                        <td><input type="text" name="tPayable" class="tPayable form-control" name="tPayable" value="{{ $coursPayable }}" readonly></td>
                     </tr>
                     <tr>
                         <th colspan="8" class="text-right">Total Paid</th>
                         <td>
-                            <input type="text" name="paidAmount" class="tPaid form-control" readonly  value="{{ $paymentdetl->paidAmount }}">
+                            <input type="text" name="paidAmount" class="tPaid form-control" readonly  value="{{ $paidAmt }}">
                         </td>
                     </tr>
                     <tr>
                         <th colspan="8" class="text-right">Total Due</th>
-                        <td><input type="text" class="tDue form-control" readonly value="{{ ($paymentdetl->tPayable - $paymentdetl->paidAmount) }}"></td>
+                        <td><input type="text" class="tDue form-control" readonly value="{{ $tPayable }}"></td>
                     </tr>
                 </tfoot>
             </table>
@@ -180,7 +186,7 @@
     function dueDate(index,due_date) {
         $('.dueDate_'+index).daterangepicker({
         singleDatePicker: true,
-        startDate: new Date( due_date),
+        startDate: due_date,
         showDropdowns: true,
         autoUpdateInput: true,
         format: 'dd/mm/yyyy',
@@ -192,6 +198,7 @@
 /*=== Check Input Price== */
 function checkPrice(index){
     var paidpricebyRow 		= parseFloat($('#paidpricebyRow_'+index).val());
+    console.log(paidpricebyRow)
     var coursepricebyRow 	= parseFloat($('#coursepricebyRow_'+index).val());
     /*To Calculate discount With Paid Price */
     paidpricebyRow 	+= parseFloat($('#discountbyRow_'+index).val())?parseFloat($('#discountbyRow_'+index).val()):0;
