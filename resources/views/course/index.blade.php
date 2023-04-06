@@ -57,7 +57,7 @@
 						</td>
 						<td>
 							<a href="{{route(currentUser().'.course.edit',[encryptor('encrypt', $course->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
-							<form id="active-form" method="POST" action="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" style="display: inline;">
+							<form method="POST" action="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" style="display: inline;">
 								@csrf
 								@method('DELETE')
 								<input name="_method" type="hidden" value="DELETE">
@@ -94,7 +94,7 @@
 			})
 			.then((willDelete) => {
 				if (willDelete) {
-					$('#active-form').submit();
+					$(this).parent().submit();
 				}
 			});
 	});
