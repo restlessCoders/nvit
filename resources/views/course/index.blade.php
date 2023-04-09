@@ -8,7 +8,7 @@
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
 					<li class="breadcrumb-item"><a href="javascript: void(0);">Courses</a></li>
-					<li class="breadcrumb-item active"><a href="{{route(currentUser().'.course.index')}}">All</a></li>
+					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.course.create') }}">Add</a></li>
 				</ol>
 			</div>
 			<h4 class="page-title">All Courses</h4>
@@ -61,7 +61,7 @@
 								@csrf
 								@method('DELETE')
 								<input name="_method" type="hidden" value="DELETE">
-								<a href="javascript:void(0)" data-name="{{$course->courseName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
+								<a href="javascript:void(0)" data-status="{{$course->status}}" data-name="{{$course->courseName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
 							</form>
 						</td>
 					</tr>
@@ -84,13 +84,21 @@
 	$('.responsive-datatable').DataTable();
 	$('.course').on('click', '.delete', function(event) {
 		var name = $(this).data("name");
+		var status = $(this).data("status");
+		if(status){
+			var title = `Are you sure you want to Inactive this ${name}?`
+			var mode = true;
+		}else{
+			var title = `Are you sure you want to Active this ${name}?`
+			var mode = false;
+		}
 		event.preventDefault();
 		swal({
-				title: `Are you sure you want to Delete this ${name}?`,
+				title: title,
 				text: "If you Delete this, it will be Deleted.",
 				icon: "warning",
 				buttons: true,
-				dangerMode: true,
+				dangerMode: mode,
 			})
 			.then((willDelete) => {
 				if (willDelete) {

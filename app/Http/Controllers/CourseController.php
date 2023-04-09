@@ -30,7 +30,7 @@ class CourseController extends Controller
     }
     public function index()
     {
-        $allCourses = Course::where('status',1)->orderBy('id', 'DESC')->paginate(10);
+        $allCourses = Course::orderBy('id', 'DESC')->paginate(10);
         return view('course.index', compact('allCourses'));
     }
 
@@ -126,7 +126,7 @@ class CourseController extends Controller
     {
         try {
             $course = Course::find(encryptor('decrypt', $id));
-            $course->status = 0;
+            $course->status = !$course->status;
             $course->updated_by = currentUserId();
             if(!!$course->save())return redirect(route(currentUser().'.course.index'))->with($this->responseMessage(false, true, 'Course Deleted'));
             } catch (Exception $e) {

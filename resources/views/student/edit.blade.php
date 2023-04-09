@@ -889,4 +889,18 @@ $('.enrol').on('click', '.delete', function(event) {
 	}
 </script>
 @endif
+@if(old('tab'))
+  <script>
+    $(function(){
+		$('#myTab .nav-link').removeClass('active');
+		$('.tab-content .tab-pane').removeClass('in active show');
+		var selectedTab = '{{ old("tab") }}';
+		// Show the selected tab
+		if (selectedTab) {
+			$('#myTab a[href="#' + selectedTab + '"]').addClass('active').tab('show');
+			$('#'+selectedTab).addClass('in active show');
+		}
+    });
+  </script>
+@endif
 @endpush

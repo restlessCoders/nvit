@@ -19,4 +19,15 @@ class Paymentdetail extends Model
     public function student(){
         return $this->hasOne(Student::class,'id','studentId');
     }
+        // add an accessor for cPayableAmount
+        public function getCPayableAmountAttribute()
+        {
+            return $this->attributes['cPayableAmount'];
+        }
+    
+        // add a mutator for PaidAmount
+        public function setPaidAmountAttribute($value)
+        {
+            $this->attributes['PaidAmount'] = $value;
+        }
 }

@@ -20,6 +20,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\OtherPaymentController;
+use App\Http\Controllers\PaymentTransferController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -453,7 +454,7 @@ Route::group(['middleware' => 'isAccountmanager'], function(){
             Route::post('/payment/course/',[OtherPaymentController::class,'coursestore'])->name('payments.coursestore');
         });
         
-        
+        Route::resource('/payment-transfer',PaymentTransferController::class,["as" => "accountmanager"]);
 
     });
 });

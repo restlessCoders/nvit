@@ -11,7 +11,7 @@
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
 					<li class="breadcrumb-item"><a href="javascript: void(0);">Course</a></li>
-					<li class="breadcrumb-item active">Add</li>
+					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.course.index') }}">List</a></li>
 				</ol>
 			</div>
 			<h4 class="page-title">Add New Course</h4>

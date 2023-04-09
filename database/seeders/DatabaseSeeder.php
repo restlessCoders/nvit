@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
             $upazilaModel->district_id = $upazila['district_id'];
             $upazilaModel->save();
         }
-        Student::factory(50)->create();
+        Student::factory(5)->create();
         /*Student::factory(50)->create()->each(function ($student) {
             $student->courses()->attach(
                 Course::inRandomOrder()->first()->id,['status' => rand(1,5)]

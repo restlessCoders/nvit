@@ -146,7 +146,7 @@ class StudentController extends Controller
                 $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
-                $student->status           = 2;
+                $student->status           = 1;
             } else {
                 $student = new Student;
                 $student->name             = $request->name;
@@ -163,7 +163,7 @@ class StudentController extends Controller
                 $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
-                $student->status           = 2;
+                $student->status           = 1;
             }
 
             if (!!$student->save()) return redirect(route(currentUser() . '.allStudent'))->with($this->responseMessage(true, null, 'Student created'));
@@ -198,7 +198,6 @@ class StudentController extends Controller
                 if($s_batch_data->status){
                 /*No Match Proceed To Update */
                 //echo 'proceed to update';
-
                 if ($request->status == 2) {
                     $data = array(
                         'status' => $request->status,
@@ -212,9 +211,15 @@ class StudentController extends Controller
                     //print_r($seat_data);die;
                     if ($seat_data[0]->tst > $seat_data[0]->seat_available)
                         return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
-                }else{
+                }elseif($request->status == 3 || $request->status == 4 ){
                     $data = array(
                         'status' => $request->status,
+                        'entryDate' => date('Y-m-d'),
+                        'updated_at' => Carbon::now(),
+                        'updated_by' => currentUserId(),
+                    );
+                }else{
+                    $data = array(
                         'entryDate' => date('Y-m-d'),
                         'updated_at' => Carbon::now(),
                         'updated_by' => currentUserId(),
@@ -268,9 +273,32 @@ class StudentController extends Controller
                     'updated_at' => Carbon::now(),
                     'updated_by' => currentUserId(),
                 );
+                /*echo '<pre>';
+                print_r($data);
+                echo 'ok';die;*/
                 DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
+
+                $row = DB::table('paymentdetails')->where('studentId', '=', $request->s_id)->where('batchId', '=', $s_batch_data->batch_id)->first(); // Get the first row
+                if ($row) {
+                    DB::table('paymentdetails')
+                        ->where('id', $row->id) // Assuming your table has an 'id' column
+                        ->update(['cPayable' => $s_batch_data->course_price]); // Replace 'column_name' and 'new_value' with the actual column and value you want to update
+                }
+
+                $payable = DB::table('paymentdetails')->where('studentId', '=', $request->s_id)->where('batchId', '=', $s_batch_data->batch_id)->get();
+                
+                foreach ($payable as $p) {
+                    $sum = DB::table('paymentdetails')
+                        ->where('id', '<', $p->id)
+                        ->where('studentId', '=', $request->s_id)->where('batchId', '=', $s_batch_data->batch_id)
+                        ->sum('cpaidAmount');
+                    DB::table('paymentdetails')->where('id', $p->id)
+                        ->update(['cPayable' => $s_batch_data->course_price - $sum]);
+
+                }
             }
-                return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
+            //return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
+            return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'))->withInput(['tab' => 'batch_student']);
                 
            // }
         }

@@ -17,18 +17,18 @@
 	<div class="col-12">
 		<div class="card-box">
 			<ul class="nav nav-tabs my-3" id="myTab" role="tablist">
-				<li class="nav-item">
+				{{--<li class="nav-item">
 					<a class="nav-link active" id="waiting-students-tab" data-toggle="tab" href="#waiting_students" role="tab" aria-controls="waiting_students" aria-expanded="true" aria-selected="true">Waiting Students</a>
-				</li>
+				</li>--}}
 				<li class="nav-item">
-					<a class="nav-link" id="active-students-tab" data-toggle="tab" href="#active_students" role="tab" aria-controls="active_students">Active Students</a>
+					<a class="nav-link active" id="active-students-tab" data-toggle="tab" href="#active_students" role="tab" aria-controls="active_students">Active Students</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" id="dump-students-tab" data-toggle="tab" href="#dump_students" role="tab" aria-controls="dump_students">Dump Students</a>
 				</li>
 			</ul>
 			<div class="tab-content text-muted" id="myTabContent">
-				<div role="tabpanel" class="tab-pane fade in active show" id="waiting_students" aria-labelledby="waiting-students-tab">
+				{{--<div role="tabpanel" class="tab-pane fade in active show" id="waiting_students" aria-labelledby="waiting-students-tab">
 					<table class="waiting-student table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
 							<tr>
@@ -109,8 +109,8 @@
 						</tbody>
 					</table>
 					{{$allwaitingStudent->links()}}
-				</div>
-				<div class="tab-pane fade" id="active_students" role="tabpanel" aria-labelledby="active-students-tab">
+				</div>--}}
+				<div class="tab-pane fade in active show" id="active_students" role="tabpanel" aria-labelledby="active-students-tab">
 					<table class="table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
 							<tr>

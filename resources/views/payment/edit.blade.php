@@ -88,7 +88,7 @@
                         <th width="120px">Fee Type</th>
                         <th width="110px">Discount</th>
                         <th width="110px">Amount</th>
-                        <th width="100px">Due</th>
+                        <!-- <th width="100px">Due</th> -->
                     </tr>
                 </thead>
                 @php $tPayable =0; $paidAmt =0; $coursPayable = 0; @endphp
@@ -103,7 +103,7 @@
                 <tr>
                     <td>
                         <p class="my-0">{{$p->batch->batchId}}</p>
-                        <p class="my-0">{{$p->batch->studentsBatches[0]->course_price}}</p>
+                        <p class="my-0">{{$p->batch->studentsBatches[0]->entryDate}}</p>
                     </td>
                     <input type="hidden" name="id[]" value="{{$p->id}}">
                     <input type="hidden" name="batch_id[]" value="{{$p->batchId}}">
@@ -132,25 +132,27 @@
                             <option value="1" @if($p->feeType == 1) selected @endif>Reg</option>
                             <option value="2" @if($p->feeType == 2) selected @endif>Course</option>
                         </select></td>
-                    <td><input type="text" name="discount[]" class="paidpricebyRow form-control" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice()"></td>
-                    <td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice()"></td>
-                    <td><input name="cPayable[]" type="text" class="form-control" readonly value="{{($p->batch->studentsBatches[0]->course_price-$total)}}" id="coursepricebyRow_{{$key}}"></td>
+                    <td><input type="text" name="discount[]" class="paidpricebyRow form-control" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice({{$key}},{{$p->cpaidAmount}})"></td>
+                    <td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
+                    <input type="hidden" class="form-control" readonly value="{{($p->batch->studentsBatches[0]->course_price-$total)}}" id="coursepricebyRow_{{$key}}">
                 </tr>
                 @endforeach
                 <tfoot>
                     <tr>
-                        <th colspan="8" class="text-right">Sub Total</th>
-                        <td><input type="text" name="tPayable" class="tPayable form-control" name="tPayable" value="{{ $coursPayable }}" readonly></td>
-                    </tr>
-                    <tr>
-                        <th colspan="8" class="text-right">Total Paid</th>
+                        <th class="text-right">Total Paid</th>
                         <td>
-                            <input type="text" name="paidAmount" class="tPaid form-control" readonly  value="{{ $paidAmt }}">
+                            <input type="text" class="form-control" readonly  value="{{$paidAmt}}">
+                        </td>
+                        <th colspan="5" class="text-right">Money Receipt Amount</th>
+                        <td>
+                            <input type="text" name="paidAmount" class="tPaid form-control" readonly  value="{{ $p->payment->paidAmount }}">
                         </td>
                     </tr>
                     <tr>
-                        <th colspan="8" class="text-right">Total Due</th>
+                        <th colspan="1" class="text-right">Total Due</th>
                         <td><input type="text" class="tDue form-control" readonly value="{{ $tPayable }}"></td>
+                        <th colspan="5" class="text-right">Total Payable</th>
+                        <td><input type="text" name="tPayable" class="tPayable form-control" value="{{ $tPayable }}" readonly></td>
                     </tr>
                 </tfoot>
             </table>
@@ -196,9 +198,9 @@
         });
     }  
 /*=== Check Input Price== */
-function checkPrice(index){
+function checkPrice(index,cPaidAmount){
     var paidpricebyRow 		= parseFloat($('#paidpricebyRow_'+index).val());
-    console.log(paidpricebyRow)
+    console.log(index)
     var coursepricebyRow 	= parseFloat($('#coursepricebyRow_'+index).val());
     /*To Calculate discount With Paid Price */
     paidpricebyRow 	+= parseFloat($('#discountbyRow_'+index).val())?parseFloat($('#discountbyRow_'+index).val()):0;
@@ -207,13 +209,14 @@ function checkPrice(index){
     var tPayable = parseFloat($('.tPayable').val());
     if(paidpricebyRow > coursepricebyRow){
         toastr["warning"]("Paid Amount Cannot be Greater Than Course Price!!");
+        $('#paidpricebyRow_'+index).val(cPaidAmount);
+        window.location.reload();
         return false;
     }else{
         var total = 0;
         $('.paidpricebyRow').each(function(index, element){
         if($(element).val()!="")
         total += parseFloat($(element).val());
-
     });
     $('.tPaid').val(total);
     $('.tDue').val(tPayable-total);
