@@ -175,6 +175,7 @@
                                 <ul class="submenu">
                                     <li class="@if(currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'accountmanager') {{route(currentUser().'.payment.index')}} @endif">Batch Payment</a></li>
                                     <li class="@if(currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'accountmanager') {{route(currentUser().'.payments.index')}} @endif">Others Payment</a></li>
+                                    <li class="@if(currentUser() == 'accountmanager') @else d-none @endif"><a href="@if(currentUser() == 'accountmanager') {{route(currentUser().'.payment-transfer.index')}} @endif">Payment Transfer</a></li>
                                 </ul>
                             </li>
 

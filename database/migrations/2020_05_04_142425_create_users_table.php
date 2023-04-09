@@ -36,7 +36,7 @@ class CreateUsersTable extends Migration
         });
 
         DB::table('users')->insert([
-            [
+            /*[
                 'name' => 'Superadmin',
                 'username' => 'superadmin',
                 'email' => 'superadmin@gmail.com',
@@ -47,7 +47,7 @@ class CreateUsersTable extends Migration
                 'userCreatorId' => 1,
                 'branchId' => null,
                 'created_at' => Carbon::now()
-            ],
+            ],*/
             [
                 'name' => 'Operation Manager',
                 'username' => 'operation',

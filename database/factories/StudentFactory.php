@@ -32,7 +32,7 @@ class StudentFactory extends Factory
             'division_id' => Division::inRandomOrder()->first()->id,
             'district_id' => District::inRandomOrder()->first()->id,
             'upazila_id' => Upazila::inRandomOrder()->first()->id,
-            'executiveId' => User::where('roleId',9)->inRandomOrder()->first()->id,
+            'executiveId' => User::where('roleId','>',0)->inRandomOrder()->first()->id,
             'refId' => Reference::inRandomOrder()->first()->id,
             'status' => $this->faker->numberBetween(1,3),
             'branchId' => 1,
