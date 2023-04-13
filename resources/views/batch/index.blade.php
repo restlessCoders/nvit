@@ -56,7 +56,7 @@
 								<td>{{$batch->examTime}}</td> -->
 								<td>{{$batch->examRoom}}</td>
 								<td>{{$batch->seat-$batch->tst}}</td>
-								<td>{{$batch->trainer->name}}</td>
+								<td>{{optional($batch->trainer)->name}}</td>
 								<td>{{$batch->totalClass}}</td>
 								<td>
 									@if($batch->status == 1)
