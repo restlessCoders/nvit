@@ -46,7 +46,7 @@
 								<td>{{ $loop->iteration }}</td>
 								<td>
 									{{$batch->batchId}}<br>
-								</td>		
+								</td>	
 								<td>{{$batch->course->courseName}}</td>
 								<td>{{$batch->startDate}}</td>
 								<td>{{$batch->endDate}}</td>
@@ -65,7 +65,7 @@
 									<span>Inactive</span>
 									@endif
 								</td>
-								<td>{{$batch->createdby->name}}</td>
+								<td>{{optional($batch->createdby)->name}}</td>
 								<td width="80px">
 									@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
 									<a href="{{route(currentUser().'.batch.edit',[encryptor('encrypt', $batch->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>

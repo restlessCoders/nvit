@@ -149,7 +149,7 @@ class BatchController extends Controller
             /*$batch->price = $request->price;
             $batch->discount = $request->discount;*/
             $batch->status =1;
-            $batch->created_by = encryptor('decrypt', $request->userId);
+            $batch->created_by = currentUserId();
             $batch->courseDuration = $request->courseDuration;
             $batch->classHour = $request->classHour;
             $batch->totalClass = $request->courseDuration/$request->classHour;
