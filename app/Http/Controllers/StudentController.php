@@ -143,7 +143,7 @@ class StudentController extends Controller
                 $student->otherInfo        = $request->otherInfo;
                 //$student->operationNote    = $request->operationNote;
                 $student->executiveNote    = $request->executiveNote;
-                $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
+                //$student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
                 $student->status           = 1;
@@ -160,7 +160,7 @@ class StudentController extends Controller
                 $student->otherInfo        = $request->otherInfo;
                 //$student->operationNote    = $request->operationNote;
                 $student->executiveNote    = $request->executiveNote;
-                $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
+                //$student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
                 $student->status           = 1;
@@ -438,7 +438,7 @@ class StudentController extends Controller
                 $student->upazila_id       = $request->upazila_id;
                 $student->otherInfo        = $request->otherInfo;
                 $student->executiveNote    = $request->executiveNote;
-                $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
+                //$student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
             } else {
@@ -457,7 +457,7 @@ class StudentController extends Controller
                 $student->upazila_id       = $request->upazila_id;
                 $student->otherInfo        = $request->otherInfo;
                 $student->executiveNote    = $request->executiveNote;
-                $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
+                //$student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
             }
             $student->save();
             if (!!$student->save()) return redirect(route(currentUser() . '.allStudent'))->with($this->responseMessage(true, null, 'Student updated'));
