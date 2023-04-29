@@ -12,6 +12,7 @@ use App\Http\Requests\Package\UpdatePackageRequest;
 use App\Http\Traits\ResponseTrait;
 use Exception;
 use DB;
+
 class PackageController extends Controller
 {
     use ResponseTrait;
@@ -23,7 +24,7 @@ class PackageController extends Controller
     public function index()
     {
         $allPackage = Package::paginate();
-        return view('package.index',compact('allPackage'));
+        return view('package.index', compact('allPackage'));
     }
 
     /**
@@ -35,7 +36,7 @@ class PackageController extends Controller
     {
         $allCourses = Course::all();
         $allBatch = Batch::all();
-        return view('package.add_new',compact(['allCourses','allBatch']));
+        return view('package.add_new', compact(['allCourses', 'allBatch']));
     }
 
     /**
@@ -48,16 +49,16 @@ class PackageController extends Controller
     {
         try {
             /*===Before Insert New Package First Inactive All Active Package Bcz one time only package will active== */
-            $active_packages = Package::where('courseId',$request->courseId)->get();
-            if($active_packages){
-                foreach($active_packages as $package){
-                    Package::where('id', $package->id)->update(['status' => 0,'updated_by' => encryptor('decrypt', $request->userId)]);
+            $active_packages = Package::where('batchId', $request->batchId)->get();
+            if ($active_packages) {
+                foreach ($active_packages as $package) {
+                    Package::where('id', $package->id)->update(['status' => 0, 'updated_by' => encryptor('decrypt', $request->userId)]);
                 }
             }
             $package = new Package;
             $package->pName = $request->pName;
             $package->packageType = $request->packageType;
-            if($request->packageType == 1){
+            if ($request->packageType == 1) {
                 $package->courseId = $request->courseId;
                 $package->batchId = $request->batchId;
                 $package->price = $request->price;
@@ -65,20 +66,20 @@ class PackageController extends Controller
             }
             $package->courseId = $request->courseId;
             $package->batchId = $request->batchId;
-           
-            if($request->packageType == 2){
+
+            if ($request->packageType == 2) {
                 $package->dis = $request->dis;
             }
-            $package->startDate = date('Y-m-d',strtotime($request->startDate));
-            $package->endDate = date('Y-m-d',strtotime($request->endDate));
+            $package->startDate = date('Y-m-d', strtotime($request->startDate));
+            $package->endDate = date('Y-m-d', strtotime($request->endDate));
             //$package->endTime = date('H:i',strtotime($request->endTime));
-            $package->status =1;
-            $package->note =$request->note;
+            $package->status = 1;
+            $package->note = $request->note;
             $package->created_by = encryptor('decrypt', $request->userId);
-                        if($request->packageType == 2){
-            $package->dis = $request->dis;
+            if ($request->packageType == 2) {
+                $package->dis = $request->dis;
             }
-            if(!!$package->save()) return redirect(route(currentUser().'.package.index'))->with($this->responseMessage(true, null, 'Package created'));
+            if (!!$package->save()) return redirect(route(currentUser() . '.package.index'))->with($this->responseMessage(true, null, 'Package created'));
         } catch (Exception $e) {
             dd($e);
             return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
@@ -108,7 +109,7 @@ class PackageController extends Controller
         $allCourses = Course::all();
         $allBatch = Batch::all();
         $pdata = Package::find(encryptor('decrypt', $id));
-        return view('package.edit',compact(['allCourses','pdata','allBatch']));
+        return view('package.edit', compact(['allCourses', 'pdata', 'allBatch']));
     }
 
     /**
@@ -121,11 +122,11 @@ class PackageController extends Controller
     public function update(UpdatePackageRequest $request, $id)
     {
         /*===Before Insert New Package First Inactive All Active Package Bcz one time only package will active== */
-        if($request->status == 1){
-            $active_packages = Package::where('courseId',$request->courseId)->get();
-            if($active_packages){
-                foreach($active_packages as $package){
-                    Package::where('id', $package->id)->update(['status' => 0,'updated_by' => encryptor('decrypt', $request->userId)]);
+        if ($request->status == 1) {
+            $active_packages = Package::where('batchId', $request->batchId)->get();
+            if ($active_packages) {
+                foreach ($active_packages as $package) {
+                    Package::where('id', $package->id)->update(['status' => 0, 'updated_by' => encryptor('decrypt', $request->userId)]);
                 }
             }
         }
@@ -134,30 +135,30 @@ class PackageController extends Controller
             $package = Package::find(encryptor('decrypt', $id));
             $package->pName = $request->pName;
             $package->packageType = $request->packageType;
-            if($request->packageType == 1){
+            if ($request->packageType == 1) {
                 $package->courseId = $request->courseId;
                 $package->batchId = $request->batchId;
                 $package->price = $request->price;
                 $package->iPrice = $request->iPrice;
-            }else{
+            } else {
                 $package->courseId = null;
                 $package->batchId = null;
                 $package->price = 0.00;
                 $package->iPrice = 0.00;
             }
-            $package->startDate = date('Y-m-d',strtotime($request->startDate));
-            $package->endDate = date('Y-m-d',strtotime($request->endDate));
+            $package->startDate = date('Y-m-d', strtotime($request->startDate));
+            $package->endDate = date('Y-m-d', strtotime($request->endDate));
             /*$package->endTime = date('H:i',strtotime($request->endTime));*/
-            if($request->packageType == 2){
+            if ($request->packageType == 2) {
                 $package->dis = $request->dis;
             }
-            $package->status =$request->status;
-            $package->note =$request->note;
+            $package->status = $request->status;
+            $package->note = $request->note;
             $package->updated_by = encryptor('decrypt', $request->userId);
             $package->save();
-        if(!!$package->save()) return redirect(route(currentUser().'.package.index'))->with($this->responseMessage(true, null, 'Package updated'));
+            if (!!$package->save()) return redirect(route(currentUser() . '.package.index'))->with($this->responseMessage(true, null, 'Package updated'));
         } catch (Exception $e) {
-			dd($e);
+            dd($e);
             return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
             return false;
         }
@@ -169,16 +170,25 @@ class PackageController extends Controller
      * @param  \App\Models\Division  $division
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Division $division)
+    public function destroy(Request $request, $id)
     {
-        //
-    }
-    public function enableDisable($id){
-        $division = Division::findOrFail($id);
-        $division->enabled = !$division->enabled;
-        $division->save();
-        return redirect(route('divisions.index'))->with(
-            ['message' =>'Division Updated']
-        );
+        try {
+            $package = Package::find(encryptor('decrypt', $id));
+            /*===Before Insert New Package First Inactive All Active Package Bcz one time only package will active== */
+            $active_packages = Package::where('batchId', $request->batchId)->get();
+            if ($active_packages) {
+                foreach ($active_packages as $package) {
+                    Package::where('id', $package->id)->update(['status' => 0, 'updated_by' => encryptor('decrypt', $request->userId)]);
+                }
+            }
+
+            $package->status = !$package->status;
+            $package->updated_by = currentUserId();
+            if (!!$package->save()) return redirect(route(currentUser() . '.package.index'))->with($this->responseMessage(false, true, 'Package Updated'));
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }
     }
 }
