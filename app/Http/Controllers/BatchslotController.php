@@ -17,7 +17,7 @@ class BatchslotController extends Controller
      */
     public function index()
     {
-        $allBatchslots = Batchslot::where('status',1)->orderBy('id', 'DESC')->paginate(25);
+        $allBatchslots = Batchslot::orderBy('id', 'DESC')->paginate(25);
         return view('batchslot.index', compact('allBatchslots'));
     }
 
@@ -105,12 +105,11 @@ class BatchslotController extends Controller
      */
     public function destroy(Request $request,$id)
     {
-
         try {
             $batchslot = BatchSlot::find(encryptor('decrypt', $id));
-            $batchslot->status = 0;
+            $batchslot->status = !$batchslot->status;
             $batchslot->updated_by = currentUserId();
-            if(!!$batchslot->save())return redirect(route(currentUser().'.batchslot.index'))->with($this->responseMessage(false, true, 'Batch Slot Deleted'));
+            if(!!$batchslot->save())return redirect(route(currentUser().'.batchslot.index'))->with($this->responseMessage(false, true, 'BatchSlot Deleted'));
             } catch (Exception $e) {
                 dd($e);
                 return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
