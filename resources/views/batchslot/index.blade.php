@@ -42,12 +42,12 @@
 						</td>
 						<td>
 							@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
-							<a href="{{route(currentUser().'.batchslot.edit',[encryptor('encrypt', $allbatchslot->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
-							<form id="active-form" method="POST" action="{{route(currentUser().'.batchslot.destroy',[encryptor('encrypt', $allbatchslot->id)])}}" style="display: inline;">
+							<a href="{{route(currentUser().'.batchslot.edit',[encryptor('encrypt', $allbatchslot->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
+							<form method="POST" action="{{route(currentUser().'.batchslot.destroy',[encryptor('encrypt', $allbatchslot->id)])}}" style="display: inline;">
 								@csrf
 								@method('DELETE')
 								<input name="_method" type="hidden" value="DELETE">
-								<a href="javascript:void(0)" data-name="{{$allbatchslot->slotName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
+								<a href="javascript:void(0)" data-status="{{$allbatchslot->status}}" data-name="{{$allbatchslot->name}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
 							</form>
 							@endif
 						</td>
@@ -74,17 +74,25 @@
 	$('.responsive-datatable').DataTable();
 	$('.batchslot').on('click', '.delete', function(event) {
 		var name = $(this).data("name");
+		var status = $(this).data("status");
+		if(status){
+			var title = `Are you sure you want to Inactive this ${name}?`
+			var mode = true;
+		}else{
+			var title = `Are you sure you want to Active this ${name}?`
+			var mode = false;
+		}
 		event.preventDefault();
 		swal({
-				title: `Are you sure you want to Delete this ${name}?`,
+				title: title,
 				text: "If you Delete this, it will be Deleted.",
 				icon: "warning",
 				buttons: true,
-				dangerMode: true,
+				dangerMode: mode,
 			})
 			.then((willDelete) => {
 				if (willDelete) {
-					$('#active-form').submit();
+					$(this).parent().submit();
 				}
 			});
 	});
