@@ -101,7 +101,7 @@ class BatchController extends Controller
      */
     public function create()
     {
-        $allCourses = Course::all();
+        $allCourses = Course::where('status',1)->get();
         $allBatchTime    = Batchtime::where('status',1)->orderBy('id', 'ASC')->get();
         $allBatchSlot    = Batchslot::where('status',1)->orderBy('id', 'ASC')->get();
         $allClassroom    = Classroom::where('status',1)->orderBy('id', 'ASC')->get();
@@ -181,7 +181,7 @@ class BatchController extends Controller
      */
     public function edit($id)
     {
-        $allCourses = Course::all();
+        $allCourses = Course::where('status',1)->get();
         $allBatchTime    = Batchtime::where('status',1)->orderBy('id', 'ASC')->get();
         $allBatchSlot    = Batchslot::where('status',1)->orderBy('id', 'ASC')->get();
         $allClassroom    = Classroom::where('status',1)->orderBy('id', 'ASC')->get();
