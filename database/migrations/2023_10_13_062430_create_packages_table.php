@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('pName', 255);
             $table->boolean('packageType')->comment('1 => Course|Batch, 0=> Other');
             $table->unsignedFloat('price', 10, 2)->comment('regular Price')->default(0);
-            $table->unsignedFloat('iprice', 10, 2)->comment('installment Price')->default(0);
+            $table->unsignedFloat('iPrice', 10, 2)->comment('installment Price')->default(0);
             $table->integer('dis')->comment('Special Day Discount For All courses')->default(0);
             $table->date('startDate');
 			$table->date('endDate');

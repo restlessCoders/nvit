@@ -62,7 +62,7 @@ class PackageController extends Controller
                 $package->courseId = $request->courseId;
                 $package->batchId = $request->batchId;
                 $package->price = $request->price;
-                $package->iPrice = $request->iPrice;
+                $package->iprice = $request->iPrice;
             }
             $package->courseId = $request->courseId;
             $package->batchId = $request->batchId;
@@ -139,7 +139,7 @@ class PackageController extends Controller
                 $package->courseId = $request->courseId;
                 $package->batchId = $request->batchId;
                 $package->price = $request->price;
-                $package->iPrice = $request->iPrice;
+                $package->iprice = $request->iPrice;
             } else {
                 $package->courseId = null;
                 $package->batchId = null;
