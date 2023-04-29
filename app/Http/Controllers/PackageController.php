@@ -48,7 +48,7 @@ class PackageController extends Controller
     {
         try {
             /*===Before Insert New Package First Inactive All Active Package Bcz one time only package will active== */
-            $active_packages = Package::where('status',1)->get();
+            $active_packages = Package::where('courseId',$request->courseId)->get();
             if($active_packages){
                 foreach($active_packages as $package){
                     Package::where('id', $package->id)->update(['status' => 0,'updated_by' => encryptor('decrypt', $request->userId)]);
@@ -122,7 +122,7 @@ class PackageController extends Controller
     {
         /*===Before Insert New Package First Inactive All Active Package Bcz one time only package will active== */
         if($request->status == 1){
-            $active_packages = Package::where('status',1)->get();
+            $active_packages = Package::where('courseId',$request->courseId)->get();
             if($active_packages){
                 foreach($active_packages as $package){
                     Package::where('id', $package->id)->update(['status' => 0,'updated_by' => encryptor('decrypt', $request->userId)]);
