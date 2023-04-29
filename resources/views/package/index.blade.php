@@ -49,7 +49,7 @@
 						<td>{{optional($package->course)->courseName}}</td>
 						<td>{{optional($package->batch)->batchId}}</td>
 						<td>{{$package->price}}</td>
-						<td>{{$package->iprice}}</td>
+						<td>{{$package->iPrice}}</td>
 						<td>{{$package->startDate}}</td>
 						<td>{{$package->endDate}}</td>
 						<td>{{$package->dis}}</td>
