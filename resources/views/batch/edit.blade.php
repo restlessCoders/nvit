@@ -26,7 +26,7 @@
 				<div class="form-group row">
 					<div class="col-lg-4">
 						<label>Courses: <span class="text-danger sup">*</span></label>
-						<select name="courseId" class="js-example-basic-courseId form-control select2 @if($errors->has('courseId')) {{ 'is-invalid' }} @endif">
+						<select name="courseId" class="js-example-basic-single form-control select2 @if($errors->has('courseId')) {{ 'is-invalid' }} @endif">
 							<option></option>
 							@if(count($allCourses) > 0)
 							@foreach($allCourses as $course)
@@ -223,7 +223,7 @@
 	@push('scripts')
 	<script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 	<script>
-		$(".js-example-basic-courseId").prop("disabled", false);
+		/*$(".js-example-basic-courseId").prop("disabled", false);*/
 		$('.js-example-basic-single').select2({
 			placeholder: 'Select Option',
 			allowClear: true

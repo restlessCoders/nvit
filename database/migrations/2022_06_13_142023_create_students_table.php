@@ -26,7 +26,7 @@ class CreateStudentsTable extends Migration
             $table->integer("upazila_id")->nullable();
             $table->text("otherInfo")->nullable();
             $table->integer("executiveId");
-            /*$table->date("executiveReminder")->nullable();*/
+            $table->date("executiveReminder")->nullable();
             $table->text("executiveNote")->nullable();
             /*$table->integer('batch_slot_id')->nullable();
             $table->integer('batch_time_id')->nullable();
