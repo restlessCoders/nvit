@@ -27,22 +27,8 @@ class unknownUser
             
             if (!!$user && $role->identity == 'superadmin') 
                 return redirect(route('superadminDashboard'));
-            else if (!!$user && $role->identity == 'owner')
-                return redirect(route('ownerDashboard'));
-            else if (!!$user && $role->identity == 'salesmanager')
-                return redirect(route('salesmanagerDashboard'));
-            else if (!!$user && $role->identity == 'salesman')
-                return redirect(route('salesmanDashboard'));
-            else if (!!$user && $role->identity == 'admin')
-                return redirect(route('adminDashboard'));
-            else if (!!$user && $role->identity == 'dataentry')
-                return redirect(route('dataentryDashboard'));
-            else if (!!$user && $role->identity == 'executive')
-                return redirect(route('executiveDashboard'));
-            else if (!!$user && $role->identity == 'accountmanager')
-                return redirect(route('accountmanagerDashboard'));
-            else if (!!$user && $role->identity == 'marketingmanager')
-                return redirect(route('marketingmanagerDashboard'));
+            else if (!!$user && $role->identity == 'operationmanager')
+                return redirect(route('operationmanagerDashboard'));
             else 
                 return redirect(route('signInForm'))->with($this->responseMessage(false, "error", 'Log In faild'));
             
