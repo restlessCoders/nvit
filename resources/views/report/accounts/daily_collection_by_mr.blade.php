@@ -171,10 +171,12 @@
 
 						<td width="130px" class="align-middle">
 							<a href="" class="text-success" title="print"><i class="fas fa-print mr-1"></i></a>
+							@if(currentUser() == 'account' || currentUser() == 'superadmin')
 							<a href="{{route(currentUser().'.payment.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
 							<a href="" class="text-danger" title="delete"><i class="far fa-trash-alt mr-1"></i></a>
 							<a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
 							<a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>
+							@endif
 						</td>
 					</tr>
 					@endforeach

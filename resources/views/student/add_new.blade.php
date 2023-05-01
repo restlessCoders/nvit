@@ -1,5 +1,8 @@
 @extends('layout.master')
 @section('title', 'Add New Studdent')
+@push('styles')
+<link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
+@endpush
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -22,7 +25,7 @@
                     <div class="col-lg-4 row">
                         <label for="refId" class="col-sm-3 col-form-label">Select Reference</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="refId" name="refId">
+                            <select class="js-example-basic-single form-control select2" id="refId" name="refId">
                                 <option value="">Select</option>
                                 @if(count($allReference) > 0)
                                 @foreach($allReference as $reference)
@@ -113,7 +116,7 @@
         <div class="col-lg-4 row">
             <label for="division" class="col-sm-3 col-form-label">Select Division</label>
             <div class="col-sm-9">
-                <select class="form-control" id="division" name="division">
+                <select class="js-example-basic-single form-control select2" id="division" name="division">
                     <option value="">Select</option>
                     @if(count($allDivision) > 0)
                     @foreach($allDivision as $division)
@@ -126,7 +129,7 @@
         <div class="col-lg-4 row">
             <label for="district" class="col-sm-3 col-form-label">Select District</label>
             <div class="col-sm-9">
-                <select class="form-control" id="district" name="district">
+                <select class="js-example-basic-single form-control select2" id="district" name="district">
                     <option value="">Select</option>
                     @if(count($allDistrict) > 0)
                     @foreach($allDistrict as $district)
@@ -139,7 +142,7 @@
         <div class="col-lg-4 row">
             <label for="area" class="col-sm-3 col-form-label">Select Area</label>
             <div class="col-sm-9">
-                <select class="form-control" id="area" name="area">
+                <select class="js-example-basic-single form-control select2" id="area" name="area">
                     <option value="">Select</option>
                     @if(count($allUpazila) > 0)
                     @foreach($allUpazila as $upazila)
@@ -183,7 +186,7 @@
         <div class="col-lg-4 row mt-3">
             <label for="executiveId" class="col-sm-3 col-form-label">Select Executive</label>
             <div class="col-sm-9">
-                <select class="form-control" id="executiveId" name="executiveId">
+                <select class="js-example-basic-single form-control select2" id="executiveId" name="executiveId">
                     <option value="">Select</option>
                     @if(count($allExecutive) > 0)
                     @foreach($allExecutive as $executive)
@@ -253,7 +256,12 @@
 
 @endsection
 @push('scripts')
+<script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
+    $('.js-example-basic-single').select2({
+        placeholder: 'Select Option',
+        allowClear: true
+    });
     $("input[name='executiveReminder']").daterangepicker({
         singleDatePicker: true,
         startDate: new Date(),

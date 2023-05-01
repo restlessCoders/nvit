@@ -30,7 +30,7 @@
 				<li class="nav-item">
 					<a class="nav-link active" id="edit-student-tab" data-toggle="tab" href="#edit_student" role="tab" aria-controls="edit_student" aria-expanded="true" aria-selected="true">Edit</a>
 				</li>
-				@if($sdata->executiveId == currentUserId())
+				@if($sdata->executiveId == currentUserId() || currentUser() == 'superadmin')
 				<li class="nav-item">
 					<a class="nav-link" id="course-pre" data-toggle="tab" href="#course_pre" role="tab" aria-controls="course_pre">Course Preference</a>
 				</li>
@@ -55,7 +55,7 @@
 							<div class="col-lg-4 row">
 								<label for="refId" class="col-sm-3 col-form-label">Select Reference</label>
 								<div class="col-sm-9">
-									<select class="js-example-basic-single form-control" id="refId" name="refId">
+									<select class="js-example-basic-single form-control select2" id="refId" name="refId">
 										<option value="">Select</option>
 										@if(count($allReference) > 0)
 										@foreach($allReference as $reference)
@@ -141,11 +141,11 @@
 								</div>
 							</div>
 							@endif
-							@if(currentUser() != 'salesexecutive')
+							@if(currentUser() == 'superadmin')
 							<div class="col-lg-4 row">
 								<label for="executiveId" class="col-sm-3 col-form-label">Select Executive</label>
 								<div class="col-sm-9">
-									<select class="js-example-basic-single form-control" id="executiveId" name="executiveId">
+									<select class="js-example-basic-single form-control select2" id="executiveId" name="executiveId">
 										<option value="">Select</option>
 										@if(count($allExecutive) > 0)
 										@foreach($allExecutive as $executive)
@@ -198,7 +198,7 @@
 							<div class="col-lg-4 row">
 								<label for="division_id" class="col-sm-3 col-form-label">Select Division</label>
 								<div class="col-sm-9">
-									<select class="js-example-basic-single form-control" id="division_id" name="division_id">
+									<select class="js-example-basic-single form-control select2" id="division_id" name="division_id">
 										<option value="">Select</option>
 										@if(count($allDivision) > 0)
 										@foreach($allDivision as $division)
@@ -211,7 +211,7 @@
 							<div class="col-lg-4 row">
 								<label for="district_id" class="col-sm-3 col-form-label">Select District</label>
 								<div class="col-sm-9">
-									<select class="js-example-basic-single form-control" id="district_id" name="district_id">
+									<select class="js-example-basic-single form-control select2" id="district_id" name="district_id">
 										<option value="">Select</option>
 										@if(count($allDistrict) > 0)
 										@foreach($allDistrict as $district)
@@ -224,7 +224,7 @@
 							<div class="col-lg-4 row">
 								<label for="upazila_id" class="col-sm-3 col-form-label">Select Area</label>
 								<div class="col-sm-9">
-									<select class="js-example-basic-single form-control" id="upazila_id" name="upazila_id">
+									<select class="js-example-basic-single form-control select2" id="upazila_id" name="upazila_id">
 										<option value="">Select</option>
 										@if(count($allUpazila) > 0)
 										@foreach($allUpazila as $upazila)

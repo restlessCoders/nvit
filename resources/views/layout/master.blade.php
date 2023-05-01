@@ -133,19 +133,20 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.upazila.index')}} @endif">All Upazila</a></li>
                                         </ul>
                                     </li>
+                                    <li class="has-submenu @if(Request::segment(2) == 'user') active @endif @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
+                                        <a href="#">
+                                            <i class="mdi mdi-account-multiple-outline"></i>User<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.allUser')}} @endif">All User</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.addNewUserForm')}} @endif">Add New User</a></li>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </li>
 
 
 
-                            <li class="has-submenu @if(Request::segment(2) == 'user') active @endif @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
-                                <a href="#">
-                                    <i class="mdi mdi-account-multiple-outline"></i>User<div class="arrow-down"></div></a>
-                                <ul class="submenu">
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.allUser')}} @endif">All User</a></li>
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.addNewUserForm')}} @endif">Add New User</a></li>
-                                </ul>
-                            </li>
+
 
                             <li class="has-submenu @if(Request::segment(2) == 'student') active @endif">
                                 <a href="#">
@@ -187,7 +188,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Batch <div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">Batch Wise  Report</a></li>
+                                            <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">Batch Wise Report</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif">
@@ -200,7 +201,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Course <div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">Course Wise Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">Course Wise Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -213,7 +214,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Attendance<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -227,14 +228,14 @@
                                     <li class="has-submenu">
                                         <a href="#">Certificate<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                        <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.batchwiseEnrollStudent')}} @endif">List</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.batchwiseEnrollStudent')}} @endif">List</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
-                            
+
                         </ul>
-                        
+
                         <div class="navbar-right">
                             <ul class="list-unstyled topnav-menu float-right mb-0">
                                 <li class="dropdown notification-list">
@@ -398,7 +399,7 @@
 
     <script src="{{asset('backend/libs/datatables/dataTables.keyTable.min.js')}}"></script>
     <script src="{{asset('backend/libs/datatables/dataTables.select.min.js')}}"></script>
-    
+
     <!-- Date and Time Picker plugins -->
     <script src="{{asset('backend/libs/moment/moment.min.js')}}"></script>
     <script src="{{asset('backend/libs/bootstrap-timepicker/bootstrap-timepicker.min.js')}}"></script>

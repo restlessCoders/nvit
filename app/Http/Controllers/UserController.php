@@ -110,8 +110,8 @@ class UserController extends Controller
         elseif(currentUser() == 'admin'){
             $roles = Role::whereIn('identity', ['admin','operationmanager','accountmanager','salesmanager','facilitymanager','trainingmanager','frontdesk','salesexecutive','facilityexecutive','trainer'])->get();
         }
-        elseif(currentUser() == 'operation'){
-            $roles = Role::whereIn('identity', ['frontdesk','salesexecutive'])->get();
+        elseif(currentUser() == 'operationmanager'){
+            $roles = Role::whereIn('identity', ['superadmin','admin','operationmanager','accountmanager','salesmanager','facilitymanager','trainingmanager','frontdesk','salesexecutive','facilityexecutive','trainer','accountexecutive'])->get();
         }
         elseif(currentUser() == 'salesmanager'){
             $roles = Role::whereIn('identity', ['salesexecutive'])->get();
@@ -140,7 +140,7 @@ class UserController extends Controller
 			}
             $user->mobileNumber = $request->mobileNumber;
             $user->timezone = $request->timezone;
-            $user->password = $request->password == $user->password ? $user->password : md5($request->password);
+            $user->password = sha1(md5($request->password));
             $user->status = $request->status;
             $user->userCreatorId = encryptor('decrypt', $request->userId);
             $user->updated_at = Carbon::now();

@@ -17,37 +17,27 @@
 		font-size: 0.9em;
 	}
 
-	h5 {
-		font-size: 12px;
+	h4 {
+		font-size: 18px;
+		color: #000
 	}
 
-	p {
-		font-size: 10px;
+	p,
+	p strong,
+	table,
+	table td,
+	table th {
+		font-size: 13px;
+		color: #000
 	}
-
+	p strong{
+		margin-right:10px;
+	}
 	body {
-			font-size: 12pt;
-			line-height: 1.2;
-		}
-
-		h1,
-		h2,
-		h3 {
-			page-break-after: avoid;
-		}
-	@media print {
-		body {
-			font-size: 12pt;
-			line-height: 1.2;
-		}
-
-		h1,
-		h2,
-		h3 {
-			page-break-after: avoid;
-		}
+		font-size: 12pt;
 	}
 </style>
+
 @endpush
 @section('content')
 <div class="row">
@@ -156,14 +146,15 @@
 			});
 		})
 
-		function printPageArea(areaID) {
-			var printContent = document.getElementById(areaID);
-			var WinPrint = window.open('', '', 'width=900,height=650');
-			WinPrint.document.write(printContent.innerHTML);
-			WinPrint.document.close();
-			WinPrint.focus();
-			WinPrint.print();
-			WinPrint.close();
+		function printPageArea() {
+			var table = document.getElementById("data").outerHTML;
+			var newWin = window.open('', 'Print-Window');
+			newWin.document.open();
+			newWin.document.write('<html><style type="text/css" media="print"> p strong{font-size:14px;margin-right:8px;color:#000;} @page { font-size:14px; }.cell{width:100px;} table{font-size:12px;border-collapse: collapse;} table, td, th {border: 1px solid #000;} h4,p{text-align:center;padding:0;margin:0;color:#000}  table{margin-top:10px;}</style><body onload="window.print()">' + table + '</html>');
+			newWin.document.close();
+			setTimeout(function() {
+				newWin.close();
+			}, 10);
 		}
 	</script>
 

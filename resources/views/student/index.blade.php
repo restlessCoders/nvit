@@ -113,10 +113,11 @@
 				<div class="tab-pane fade in active show" id="active_students" role="tabpanel" aria-labelledby="active-students-tab">
 					<table class="table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
-							<tr>
+							<tr class="text-center">
 								<th>SL.</th>
-								<th>Student ID</th>
-								<th>Name</th>
+								<th width="50px">St. ID</th>
+								<th width="150px">Name</th>
+								<th width="150px">Executive</th>
 								<th>Contact</th>
 								<th>Recall | Note</th>
 								<th>Status</th>
@@ -126,14 +127,15 @@
 						<tbody>
 							@if(count($allactiveStudent))
 							@foreach($allactiveStudent as $student)
-							<tr>
+							<tr class="text-center">
 								<td>{{ $loop->iteration }}</td>
 								<td>{{$student->id}}</td>
 								<td>{{$student->name}}</td>
+								<td>{{optional($student->executive)->name}}</td>
 								<td>
-									<p class="my-0"><span class="text-success">{{$student->contact}}</span>
+									<p class="my-0"><span class="text-success">{{$student->contact}}<br></span>
 										@if($student->altContact)
-										<span class="text-success"> , {{$student->altContact}}</span>
+										<span class="text-success">{{$student->altContact}}</span>
 									</p>
 									@endif
 								</td>
@@ -221,7 +223,7 @@
 						</div>
 					</div>
 					@endif
-					{{--$allactiveStudent->links()--}}
+					{{$allactiveStudent->links()}}
 				</div>
 				<div class="tab-pane fade" id="dump_students" role="tabpanel" aria-labelledby="dump-students-tab">
 					<table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -283,7 +285,7 @@
 							@endif
 						</tbody>
 					</table>
-					{{--$alldumpStudent->links()--}}
+					{{$alldumpStudent->links()}}
 				</div>
 			</div>
 		</div>

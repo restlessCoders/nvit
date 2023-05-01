@@ -107,7 +107,7 @@ class StudentController extends Controller
         $allCourse    = Course::where('status', 1)->orderBy('courseName', 'ASC')->get();
         $allBatchTime    = Batchtime::where('status', 1)->orderBy('id', 'ASC')->get();
         $allBatchSlot    = Batchslot::where('status', 1)->orderBy('id', 'ASC')->get();
-        $allExecutive   = User::whereIn('roleId', ['3','5', '9'])->orderBy('name', 'ASC')->get();
+        $allExecutive   = User::whereIn('roleId', ['1','3','5', '9'])->orderBy('name', 'ASC')->get();
         return view('student.add_new', compact(['allDivision', 'allDistrict', 'allUpazila', 'allReference', 'allExecutive', 'allCourse', 'allBatchTime', 'allBatchSlot']));
     }
     /**
@@ -382,7 +382,8 @@ class StudentController extends Controller
         $allDistrict    = District::orderBy('name', 'ASC')->get();
         $allUpazila     = Upazila::orderBy('name', 'ASC')->get();
         $allReference   = Reference::orderBy('id', 'ASC')->get();
-        $allExecutive   = User::whereIn('roleId', ['5', '9'])->orderBy('name', 'ASC')->get();
+        $allExecutive   = User::whereIn('roleId', ['1','3','5', '9'])->orderBy('name', 'ASC')->get();
+   
 
         $allCourse    = Course::where('status', 1)->orderBy('courseName', 'ASC')->get();
         $allBatch       = Batch::orderBy('id', 'DESC')->get();

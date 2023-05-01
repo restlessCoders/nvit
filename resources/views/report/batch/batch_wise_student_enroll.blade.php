@@ -110,8 +110,12 @@
 						<td>{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}</td>
 						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')}}</td>
 						<td>
-							@if(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNotNull('invoiceId')->exists())
-							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNotNull('invoiceId')->first()->invoiceId}}
+							@if(\DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
+							{{\DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
 							@else
 							-
 							@endif
