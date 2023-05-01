@@ -73,19 +73,23 @@ class ReportController extends Controller
     }
     public function batchwiseAttendanceReport(Request $request){
         $batch_data = Batch::find($request->batch_id);
-
+        $image_path = asset('backend/images/logo.webp');
        $data = '<div class="col-md-12 text-center">';
-       $data .=     '<h5 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h5>';
+       $data .= '<div class="row">';
+       $data .= '<div class="col-md-2"><img src='.$image_path.' alt="" height="80"></div>';
+       $data .= '<div class="col-md-10">';
+       $data .=     '<h4 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
        $data .=     '<p class="m-0" style="font-size:10px"><strong>Trainer\'s Attendance Roster</strong></p>';
        $data .=     '<p class="m-0 d-flex justify-content-end">
-                        <strong style="margin-right:20px;">Started On : '.\Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y').'</strong>
-                        <strong style="margin-right:20px;">'.\DB::table('batchslots')->where('id',$batch_data->bslot)->first()->slotName.'</strong>
-                        <strong style="margin-right:20px;">'.\DB::table('batchtimes')->where('id',$batch_data->btime)->first()->time.'</strong>
-                        <strong style="margin-right:20px;">Trainer : '.\DB::table('users')->where('id',$batch_data->trainerId)->first()->name.'</strong>
-                        <strong style="margin-right:20px;">Course : '.\DB::table('courses')->where('id',$batch_data->courseId)->first()->courseName.'</strong>
+                        <strong>Started On : '.\Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y').'</strong>
+                        <strong>'.\DB::table('batchslots')->where('id',$batch_data->bslot)->first()->slotName.'</strong>
+                        <strong>'.\DB::table('batchtimes')->where('id',$batch_data->btime)->first()->time.'</strong>
+                        <strong>Trainer : '.\DB::table('users')->where('id',$batch_data->trainerId)->first()->name.'</strong>
+                        <strong>Course : '.\DB::table('courses')->where('id',$batch_data->courseId)->first()->courseName.'</strong>
                         <strong>Batch : '.$batch_data->batchId.'</strong></p>';
        $data .= '</div>';
-       
+       $data .= '</div>';
+       $data .= '</div>';
 
 
        $startDate = new DateTime($batch_data->startDate);
@@ -93,7 +97,7 @@ class ReportController extends Controller
 
        // Create a DateInterval of 1 day
        $interval = new DateInterval('P1D');
-
+ 
         $data .='<table class="table table-sm" style="border:1px solid #000;color:#000;">
                     <tbody>
                         <tr>
@@ -122,7 +126,7 @@ class ReportController extends Controller
                         <tr>
                             <th style="border:1px solid #000;;color:#000;"><strong>Trainer Sign:</strong></th>';
                             for($i=0;$i< $count;$i++){
-                                $data .= '<td rowspan="2" style="border:1px solid #000;color:#000;"></td>';   
+                                $data .= '<td class="cell" rowspan="2" style="border:1px solid #000;color:#000;"></td>';   
                             }
         $data .=    '</tr>';
         $data .=    '<tr>
@@ -132,11 +136,19 @@ class ReportController extends Controller
                         $batch_students = DB::table('student_batches')->where('batch_id',$request->batch_id)->where('status',2)->get();
                     }
                     foreach($batch_students as $batch_student){
-                        $s_data = \DB::table('students')->where('id',$batch_student->id)->first();
+                        $s_data = \DB::table('students')->where('id',$batch_student->student_id)->first();
                         $data .= '<tr>';
                         $data .= '<td style="border:1px solid #000;color:#000;">'.$s_data->name.'</td>';
-                        $data .= '<td style="border:1px solid #000;color:#000;">'.\DB::table('paymentdetails')->where(['batchId'=> $request->batch_id,'studentId'=>$batch_student->id])->whereNotNull('invoiceId')->exists()?'<td>-</td>':'<td>'.\DB::table('paymentdetails')->where(['batchId'=> $request->batch_id,'studentId'=>$batch_student->id])->whereNotNull('invoiceId')->first()->invoiceId.'</td>';
-                        $data .= '<td style="border:1px solid #000;color:#000;">'.\DB::table('users')->where('id',$s_data->id)->first()->name.'</td>';
+                        $data .= '<td style="border:1px solid #000;color:#000;">';
+                        if(\DB::table('payments')
+                        ->join('paymentdetails','paymentdetails.paymentId','payments.id')
+                        ->where(['paymentdetails.batchId'=> $request->batch_id,'paymentdetails.studentId'=>$batch_student->student_id])->whereNotNull('payments.invoiceId')->exists()){
+                        $data .=\DB::table('payments')->join('paymentdetails','paymentdetails.paymentId','payments.id')->where(['paymentdetails.batchId'=> $request->batch_id,'paymentdetails.studentId'=>$batch_student->student_id])->whereNotNull('payments.invoiceId')->first()->invoiceId;
+                        }else{
+                            $data .= '-';
+                        }
+                        '</td>';
+                        $data .= '<td style="border:1px solid #000;color:#000;">'.\DB::table('users')->where('id',$s_data->executiveId)->first()->name.'</td>';
                         for($i=0;$i< $count;$i++){
                             $data .= '<td style="border:1px solid #000;color:#000;"></td>';   
                         }
@@ -144,6 +156,7 @@ class ReportController extends Controller
                     }
         $data .=    '</tbody>
                 </table>';
+   
 
                
      

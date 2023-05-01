@@ -24,12 +24,12 @@ class CreateStudentBatchesTable extends Migration
             $table->integer('package_id')->nullable();
             $table->date('entryDate')->nullable();
             $table->text("note")->nullable();
-            $table->integer("acc_approve")->default(0)->comment('0 => no Invoice, 2 => Invoice posted');
+            $table->integer("acc_approve")->default(0)->comment('1 => no Invoice, 2 => Invoice posted');
             //$table->integer("status")->default(1)->comment('0 => inactive, 1 => active, 2 => waiting' );
             //$table->integer("status")->comment('0 => Close, 1 => Running, 2=> Knocking, 3=> Enroll 4=> Registered 5=> Evoulation');
-            $table->integer("cstatus")->comment('0 => course incomplete, 1 => course Complete');
+            $table->integer("cstatus")->comment('1 => course Complete,2 => course incomplete');
             $table->integer("status")->comment('2=> Enrolled , 3=> Knocking, 4=> Evoulation');
-            $table->integer("pstatus")->comment('0 => payment incomplete, 1 => Payment Complete');
+            $table->integer("pstatus")->comment('1 => Payment Complete, 2 => payment incomplete, ');
             $table->integer("type")->comment('1 => At A Time,2 => Installment');
             $table->unsignedBigInteger('created_by')->index()->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable()->index()->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');

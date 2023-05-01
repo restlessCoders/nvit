@@ -81,7 +81,7 @@
 							@endif
 						</tbody>
 					</table>
-					
+					{{$allBatch->links()}}
 				
 
 			

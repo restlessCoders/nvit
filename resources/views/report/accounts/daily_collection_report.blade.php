@@ -21,14 +21,14 @@
 	<div class="col-12">
 		<div class="card-box">
 
-			<form action="" method="post" role="search">
+			<form action="{{route(currentUser().'.daily_collection_report')}}" method="post" role="search">
 				@csrf
 
 				<div class="row">
 
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Year</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
+						<select name="year" class="js-example-basic-single form-control me-3" required>
 							<option value="">Select Year</option>
 							@php
 							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
@@ -86,20 +86,20 @@
 			<div class="col-md-12 text-center">
 				<h5>NEW VISION INFORMATION TECHNOLOGY LTD.</h5>
 				<p class="p-0" style="font-size:16px"><strong>Collection Report</strong></p>
-				<p class="p-0" style="font-size:14px"><strong>For the Month of February-2023</strong></p>
+				<p class="p-0" style="font-size:14px"><strong>For the Month of -2023</strong></p>
 			</div>
 			<table class="table table-bordered dt-responsive nowrap text-center" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 				<thead>
 					<tr>
 						<th rowspan="2">Date</th>
-						<th colspan="{{$salespersons->count()}}">Executives</th>
-						<th rowspan="2">Payable Course Fees </th>
-						<th rowspan="2">Paid Total</th>
+						<th colspan="{{$payments->count()}}">Executives</th>
+						<th rowspan="2">Discount</th>
+						<th rowspan="2">Total Course Fees</th>
 						<th rowspan="2">Action</th>
 					</tr>
 					<tr>
-						@foreach ($salespersons as $salesperson)
-						<td>{{$salesperson->username}}</td>
+						@foreach ($payments as $payment)
+						<td>{{$payment->executiveName}}</td>
 						@endforeach
 					</tr>
 				</thead>
@@ -107,14 +107,9 @@
 					@foreach ($payments as $payment)
 					<tr>
 						<td>{{ $payment->paymentDate }}</td>
-						@foreach ($salespersons as $salesperson)
-						<td>{{ DB::table('payments')
-                                ->where('paymentDate', $payment->paymentDate)
-                                ->where('executiveId', $salesperson->executiveId)
-                                ->sum('paidAmount') }}</td>
-						@endforeach
+						<td>{{ $payment->paidAmount -$payment->discount}}</td>
+						<td>{{ $payment->discount}}</td>
 						<td>{{ $payment->tPayable}}</td>
-						<td>{{ $payment->paidAmount }}</td>
 					</tr>
 					@endforeach
 

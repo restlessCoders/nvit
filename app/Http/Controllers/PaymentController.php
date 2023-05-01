@@ -342,7 +342,8 @@ class PaymentController extends Controller
                 $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
                 //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
                 $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
-                if ($cpaidAmount[$key] < $cPayable[$key]) {
+                
+                if ($cpaidAmount[$key] < $cPayable[$key]+$discount[$key]) {
                     //$payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
                     $date = new Carbon($dueDate[$key]);
                     $date->addMonth();
@@ -361,13 +362,13 @@ class PaymentController extends Controller
                 $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
                 /* print_r($batch_id);die;
  print_r($s_batch_data);die;*/
-                if ($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]) {
+                if ($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]+$discount[$key]) {
                     $data = array(
                         'acc_approve' => $invoiceId ? 2 : 1,
                         'updated_at' => Carbon::now(),
                     );
                     DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
-                } else if ($s_batch_data->acc_approve == 1 && $cpaidAmount[$key] == $cPayable[$key]) {
+                } else if ($s_batch_data->acc_approve == 1 && $cpaidAmount[$key] == $cPayable[$key]+$discount[$key]) {
                     $data = array(
                         'acc_approve' => $invoiceId ? 2 : 1,
                         'updated_at' => Carbon::now(),
