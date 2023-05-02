@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('student_courses', function (Blueprint $table) {
+            $table->id();
             $table->integer('batch_time_id')->nullable()->after('executiveNote');
             $table->integer('batch_slot_id')->nullable()->after('batch_time_id');
             $table->decimal('price',10,2)->default(0.00)->after('batch_slot_id');
@@ -29,10 +30,9 @@ return new class extends Migration
     public function down()
     {
         Schema::table('student_courses', function (Blueprint $table) {
-            $table->dropColumn('batch_time_id');
+            /*$table->dropColumn('batch_time_id');
             $table->dropColumn('batch_slot_id');
-            $table->dropColumn('price');
-            $table->dropColumn('price');
+            $table->dropColumn('price');*/
         });
     }
 };
