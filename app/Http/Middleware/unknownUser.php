@@ -29,6 +29,8 @@ class unknownUser
                 return redirect(route('superadminDashboard'));
             else if (!!$user && $role->identity == 'operationmanager')
                 return redirect(route('operationmanagerDashboard'));
+            else if (!!$user && $role->identity == 'salesexecutive')
+                return redirect(route('salesexecutiveDashboard'));
             else 
                 return redirect(route('signInForm'))->with($this->responseMessage(false, "error", 'Log In faild'));
             
