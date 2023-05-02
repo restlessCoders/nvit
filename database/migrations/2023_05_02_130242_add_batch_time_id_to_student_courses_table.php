@@ -30,9 +30,9 @@ return new class extends Migration
     public function down()
     {
         Schema::table('student_courses', function (Blueprint $table) {
-            /*$table->dropColumn('batch_time_id');
+            $table->dropColumn('batch_time_id');
             $table->dropColumn('batch_slot_id');
-            $table->dropColumn('price');*/
+            $table->dropColumn('price');
         });
     }
 };
