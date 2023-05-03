@@ -449,7 +449,7 @@ class StudentController extends Controller
                     $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                     $student->refId            = $request->refId;
                 }
-                $student->course_id        = (!empty($request->course_id)) ? implode(",", $request->course_id) : null;
+                //$student->course_id        = (!empty($request->course_id)) ? implode(",", $request->course_id) : null;
                 $student->altContact       = $request->altContact;
                 $student->email            = $request->email;
                 $student->address          = $request->address;
