@@ -221,6 +221,10 @@ Route::group(['middleware' => 'isSalesManager'], function () {
 
         Route::resource('/notes', NoteController::class, ["as" => "salesmanager"]);
 
+        Route::get('/batch/all', [BatchController::class, 'all'])->name('salesmanager.allBatches');
+        Route::resource('/batch', BatchController::class, ["as" => "salesmanager"])->only(['index']);
+        Route::get('/batchById', [BatchController::class, 'batchById'])->name('salesmanager.batchById');
+
         Route::resource('/package', PackageController::class, ["as" => "salesmanager"]);
         Route::resource('/batch', BatchController::class, ["as" => "salesmanager"]);
         Route::resource('/reference', ReferenceController::class, ["as" => "salesmanager"]);
