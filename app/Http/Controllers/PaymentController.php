@@ -120,7 +120,7 @@ class PaymentController extends Controller
         $stData = DB::table('student_batches')
             ->join('students', 'student_batches.student_id', '=', 'students.id')
             ->join('batches', 'student_batches.batch_id', '=', 'batches.id')
-            ->leftJoin('paymentdetails', 'student_batches.batch_id', '=', 'paymentdetails.batchId')
+            ->leftjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
             ->groupBy('student_batches.batch_id', 'student_batches.systemId')

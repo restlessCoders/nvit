@@ -24,7 +24,7 @@ class PaymentReportController extends Controller
     }
     public function daily_collection_report(Request $request)
     {
-        $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
+        /*$users = User::whereIn('roleId', [1, 3, 5, 9])->get();
         $batches = Batch::all();
 
         $payments = DB::table('payments')
@@ -44,7 +44,25 @@ class PaymentReportController extends Controller
         }
         $payments = $payments->groupBy('payments.paymentDate')->get();
 
-        return view('report.accounts.daily_collection_report', compact('payments', 'users', 'batches'));
+        return view('report.accounts.daily_collection_report', compact('payments', 'users', 'batches'));*/
+
+        $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
+        $batches = Batch::all();
+
+
+
+        $payments = DB::table('payments')
+            ->select('paymentDate', DB::raw('SUM(paidAmount) as paidAmount,SUM(tPayable) as tPayable'))
+            ->select('payments.id','payments.paymentDate', 'payments.executiveId', DB::raw('SUM(payments.paidAmount) as paidAmount,SUM(payments.tPayable) as tPayable'), DB::raw('SUM(discount) as discount'))
+            ->groupBy('paymentDate')->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
+            ->get();
+
+        $salespersons = DB::table('payments')
+            ->select('payments.executiveId', 'users.username')
+            ->join('users', 'payments.executiveId', '=', 'users.id')
+            ->groupBy('payments.executiveId')
+            ->get();
+        return view('report.accounts.daily_collection_report', compact('payments', 'salespersons', 'users', 'batches'));
     }
     public function allPaymentReportBySid(Request $request)
     {

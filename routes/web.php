@@ -503,5 +503,11 @@ Route::group(['middleware' => 'isTrainer'], function () {
         Route::post('/changePass', [UserController::class, 'changePass'])->name('trainer.changePass');
         Route::post('/changePer', [UserController::class, 'changePer'])->name('trainer.changePer');
         Route::post('/changeAcc', [UserController::class, 'changeAcc'])->name('trainer.changeAcc');
+
+        Route::resource('/batch', BatchController::class, ["as" => "trainer"])->only(['index']);
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('trainer.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('trainer.batchwiseEnrollStudent');
     });
 });

@@ -92,6 +92,45 @@
 				<thead>
 					<tr>
 						<th rowspan="2">Date</th>
+						<th colspan="{{$salespersons->count()}}">Executives</th>
+						<th rowspan="2">Total Course Fees</th>
+						<th rowspan="2">Action</th>
+					</tr>
+					<tr>
+						@foreach ($salespersons as $salesperson)
+						<td>{{$salesperson->username}}</td>
+						@endforeach
+					</tr>
+				</thead>
+				<tbody>
+					@php $total_course_fee = 0; @endphp
+					@foreach ($payments as $payment)
+					<tr>
+						<td>{{ $payment->paymentDate }}</td>
+						@foreach ($salespersons as $salesperson)
+						<td>
+							{{ 
+								 DB::table('payments')							
+								->where('paymentDate', $payment->paymentDate)
+								->where('executiveId', $salesperson->executiveId)
+								->sum('paidAmount')- 
+								DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->where('payments.executiveId', $salesperson->executiveId)
+								->sum('discount')
+								
+							}}
+						</td>
+						@endforeach
+						<td></td>
+						<td></td>
+					</tr>
+					@endforeach
+			</table>
+			{{--<thead>
+					<tr>
+						<th rowspan="2">Date</th>
 						<th colspan="{{$payments->count()}}">Executives</th>
 						<th rowspan="2">Discount</th>
 						<th rowspan="2">Total Course Fees</th>
@@ -113,8 +152,8 @@
 					</tr>
 					@endforeach
 
-				</tbody>
-			</table>
+				</tbody>--}}
+
 		</div>
 	</div>
 </div> <!-- end row -->
