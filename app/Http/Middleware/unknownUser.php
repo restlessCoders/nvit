@@ -33,6 +33,10 @@ class unknownUser
                 return redirect(route('salesexecutiveDashboard'));
             else if (!!$user && $role->identity == 'salesmanager')
                 return redirect(route('salesmanagerDashboard'));
+            else if (!!$user && $role->identity == 'accountmanager')
+                return redirect(route('accountmanagerDashboard'));
+            else if (!!$user && $role->identity == 'trainer')
+                return redirect(route('trainerDashboard'));
             else
                 return redirect(route('signInForm'))->with($this->responseMessage(false, "error", 'Log In faild'));
 
