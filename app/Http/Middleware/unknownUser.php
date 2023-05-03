@@ -20,20 +20,22 @@ class unknownUser
      */
     public function handle($request, Closure $next)
     {
-      
-        if(Session::has('user') && Session::get('user') !== null && Session::has('roleId')){
+
+        if (Session::has('user') && Session::get('user') !== null && Session::has('roleId')) {
             $user = User::find(encryptor('decrypt', Session::get('user')));
             $role = Role::find(encryptor('decrypt', Session::get('roleId')));
-            
-            if (!!$user && $role->identity == 'superadmin') 
+
+            if (!!$user && $role->identity == 'superadmin')
                 return redirect(route('superadminDashboard'));
             else if (!!$user && $role->identity == 'operationmanager')
                 return redirect(route('operationmanagerDashboard'));
             else if (!!$user && $role->identity == 'salesexecutive')
                 return redirect(route('salesexecutiveDashboard'));
-            else 
+            else if (!!$user && $role->identity == 'salesmanager')
+                return redirect(route('salesmanagerDashboard'));
+            else
                 return redirect(route('signInForm'))->with($this->responseMessage(false, "error", 'Log In faild'));
-            
+
             return $next($request);
         }
 
