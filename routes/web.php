@@ -234,6 +234,10 @@ Route::group(['middleware' => 'isSalesManager'], function(){
         Route::resource('/district',DistrictController::class,["as" => "salesmanager"]);
         Route::resource('/upazila',UpazilaController::class,["as" => "salesmanager"]);
 
+        
+        /*Course Wise Enroll */
+        Route::post('/course/wise/enroll', [StudentController::class,'courseEnroll'])->name('salesmanager.courseEnroll');
+
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
@@ -459,6 +463,10 @@ Route::group(['middleware' => 'isAccountmanager'], function(){
         });
         
         Route::resource('/payment-transfer',PaymentTransferController::class,["as" => "accountmanager"]);
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class,'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
 
     });
 });
