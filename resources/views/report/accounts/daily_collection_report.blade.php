@@ -98,7 +98,7 @@
 					</tr>
 					<tr>
 						@foreach ($salespersons as $salesperson)
-						<td>{{$salesperson->username}}</td>
+						<td>{{$salesperson->name}}</td>
 						@endforeach
 					</tr>
 				</thead>

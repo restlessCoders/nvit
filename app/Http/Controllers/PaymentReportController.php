@@ -58,7 +58,7 @@ class PaymentReportController extends Controller
             ->get();
 
         $salespersons = DB::table('payments')
-            ->select('payments.executiveId', 'users.username')
+            ->select('payments.executiveId', 'users.name')
             ->join('users', 'payments.executiveId', '=', 'users.id')
             ->groupBy('payments.executiveId')
             ->get();
