@@ -247,8 +247,8 @@ Route::group(['middleware' => 'isSalesManager'], function(){
         Route::post('/course/wise/report', [ReportController::class,'coursewiseStudent'])->name('salesmanager.coursewiseStudent');
 
          /*Attendance Report */
-         Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('operationmanager.batchwiseAttendance');
-         Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('operationmanager.batchwiseAttendanceReport');
+         Route::get('/batch/wise/attendance', [ReportController::class,'batchwiseAttendance'])->name('salesmanager.batchwiseAttendance');
+         Route::get('/batch/wise/attendance/report', [ReportController::class,'batchwiseAttendanceReport'])->name('salesmanager.batchwiseAttendanceReport');
     });
 });
 
