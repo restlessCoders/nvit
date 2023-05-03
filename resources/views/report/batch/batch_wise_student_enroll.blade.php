@@ -101,7 +101,8 @@
 				<tbody>
 					@if(count($allBatches))
 					@foreach($allBatches as $batch)
-					<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">
+					{{--<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">--}}
+					<form action="" method="POST" enctype="multipart/form-data">
 					<tr>
 						<td>{{$loop->iteration}}</td>
 						<td>{{$batch->sName}}</td>
