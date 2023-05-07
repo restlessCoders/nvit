@@ -35,13 +35,32 @@ class StudentController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function index()
+    public function index(Request $request)
     {
         if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' || strtolower(currentUser()) === 'frontdesk' || strtolower(currentUser()) === 'operationmanager') {
+            $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
             /*== Waiting Students ==*/
             $allwaitingStudent = Student::where('status', '=', 2)->orderBy('id', 'DESC')->paginate(25);
             /*== Active Students ==*/
-            $allactiveStudent = Student::with('notes')->where('status', '=', 1)->orderBy('id', 'DESC')->paginate(25);
+           
+            if($request->has('executiveId') || $request->has('sdata')){
+                $allactiveStudent = Student::with('notes')->where('status', '=', 1)->orderBy('id', 'DESC');
+            }else{
+                $allactiveStudent = Student::with('notes')->where('executiveId', '=', currentUserId())->where('status', '=', 1)->orderBy('id', 'DESC');
+            }
+            if($request->executiveId) {
+                $allactiveStudent = $allactiveStudent->where('executiveId', $request->executiveId);
+            }
+            if($request->sdata){
+                $allactiveStudent->where(function ($query) use ($request) {
+                    $query->where('students.id', '=', $request->sdata)
+                          ->orWhere('students.contact', '=', $request->sdata)
+                          ->orWhere('students.altContact', '=', $request->sdata);
+                });
+                $allactiveStudent = $allactiveStudent->orWhere('students.name', 'like', '%'.$request->sdata.'%');
+            }
+            $allactiveStudent = $allactiveStudent->paginate(25);
+            $requestData = $request->all();
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->orderBy('id', 'DESC')->paginate(25);
         } else {
@@ -52,7 +71,8 @@ class StudentController extends Controller
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
         }
-        return view('student.index', compact(['allwaitingStudent', 'allactiveStudent', 'alldumpStudent']));
+        //print_r($requestData);die;
+        return view('student.index', compact(['allwaitingStudent', 'allactiveStudent', 'alldumpStudent','users','requestData']));
     }
     
     public function confirmStudents()

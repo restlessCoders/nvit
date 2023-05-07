@@ -110,6 +110,30 @@
 					</table>
 					{{$allwaitingStudent->links()}}
 				</div>--}}
+				<form action="{{ route(currentUser().'.allStudent') }}" role="search">
+				@csrf
+				<div class="row">
+					<div class="col-sm-4">
+						<label for="sdata" class="col-form-label">Student ID|Name|Contact</label>
+						<input type="text" class="form-control" name="sdata" value="{{request()->get('sdata')}}">
+					</div>
+					<div class="col-sm-4">
+						<label for="name" class="col-form-label">Executive</label>
+						<select name="executiveId" class="js-example-basic-single form-control me-3">
+							<option value="">Select Executive</option>
+							@forelse($users as $user)
+							<option value="{{$user->id}}" @if(request()->get('executiveId') == $user->id) selected @endif>{{$user->name}}</option>
+							@empty
+							@endforelse
+						</select>
+					</div>
+					<div class="col-sm-12 d-flex justify-content-end my-1">
+						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+						<a href="{{ route(currentUser().'.allStudent') }}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
+					</div>
+				</div>
+			</form>
+
 				<div class="tab-pane fade in active show" id="active_students" role="tabpanel" aria-labelledby="active-students-tab">
 					<table class="table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
