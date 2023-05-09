@@ -42,13 +42,12 @@ class StudentController extends Controller
             /*== Waiting Students ==*/
             $allwaitingStudent = Student::where('status', '=', 2)->orderBy('id', 'DESC')->paginate(25);
             /*== Active Students ==*/
-           
             if($request->has('executiveId') || $request->has('sdata')){
                 $allactiveStudent = Student::with('notes')->where('status', '=', 1)->orderBy('id', 'DESC');
             }else{
                 $allactiveStudent = Student::with('notes')->where('executiveId', '=', currentUserId())->where('status', '=', 1)->orderBy('id', 'DESC');
             }
-            if($request->executiveId) {
+            if($request->executiveId && $request->executiveId !='all') {
                 $allactiveStudent = $allactiveStudent->where('executiveId', $request->executiveId);
             }
             if($request->sdata){
@@ -60,14 +59,22 @@ class StudentController extends Controller
                 $allactiveStudent = $allactiveStudent->orWhere('students.name', 'like', '%'.$request->sdata.'%');
             }
             $allactiveStudent = $allactiveStudent->paginate(25);
-            $requestData = $request->all();
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->orderBy('id', 'DESC')->paginate(25);
         } else {
             /*== Waiting Students ==*/
             $allwaitingStudent = Student::where('status', '=', 2)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
             /*== Active Students ==*/
-            $allactiveStudent = Student::with('notes')->where('status', '=', 1)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
+            $allactiveStudent = Student::with('notes')->where('status', '=', 1)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC');
+            if($request->sdata){
+                $allactiveStudent->where(function ($query) use ($request) {
+                    $query->where('students.id', '=', $request->sdata)
+                          ->orWhere('students.contact', '=', $request->sdata)
+                          ->orWhere('students.altContact', '=', $request->sdata);
+                });
+                $allactiveStudent = $allactiveStudent->orWhere('students.name', 'like', '%'.$request->sdata.'%');
+            }
+            $allactiveStudent = $allactiveStudent->paginate(25);
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
         }

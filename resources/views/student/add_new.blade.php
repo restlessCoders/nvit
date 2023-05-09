@@ -113,7 +113,7 @@
                 @endif
             </div>
         </div>
-        <div class="col-lg-4 row">
+        {{--<div class="col-lg-4 row">
             <label for="division" class="col-sm-3 col-form-label">Select Division</label>
             <div class="col-sm-9">
                 <select class="js-example-basic-single form-control select2" id="division" name="division">
@@ -151,7 +151,7 @@
                     @endif
                 </select>
             </div>
-        </div>
+        </div>--}}
         <div class="col-lg-6 row">
             <label for="address" class="col-sm-2 col-form-label">Address</label>
             <div class="col-sm-10">
@@ -264,6 +264,8 @@
     });
     $("input[name='executiveReminder']").daterangepicker({
         singleDatePicker: true,
+        minDate: moment().startOf('day'),
+        maxDate: moment().add(30, 'days').startOf('day'),
         startDate: new Date(),
         showDropdowns: true,
         autoUpdateInput: true,

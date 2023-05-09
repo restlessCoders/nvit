@@ -194,7 +194,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="form-group row">
+						{{--<div class="form-group row">
 							<div class="col-lg-4 row">
 								<label for="division_id" class="col-sm-3 col-form-label">Select Division</label>
 								<div class="col-sm-9">
@@ -233,7 +233,7 @@
 										@endif
 									</select>
 								</div>
-							</div>
+							</div>--}}
 							<!-- <div class="col-lg-12 row mt-3">
                             <label for="photo" class="col-sm-2 col-form-label">Student Photo</label>
                             <div class="col-sm-5">
@@ -243,7 +243,7 @@
 	                	        <img :src="form.photo" style="height:40px; width: 40px;">
 	                        </div>
                         </div>   -->
-						</div>
+						{{--</div>--}}
 						<div class="form-group text-right mb-0">
 							<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
 								Submit
@@ -856,6 +856,8 @@ $('.enrol').on('click', '.delete', function(event) {
 
     $("input[name='executiveReminder']").daterangepicker({
         singleDatePicker: true,
+		minDate: moment().startOf('day'),
+        maxDate: moment().add(30, 'days').startOf('day'),
         startDate: new Date(),
         showDropdowns: true,
         autoUpdateInput: true,
