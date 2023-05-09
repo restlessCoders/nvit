@@ -117,7 +117,7 @@
 						<label for="sdata" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="sdata" value="{{request()->get('sdata')}}">
 					</div>
-					@if(currentUser()) == 'superadmin' || currentUser()) != 'operationmanager' || currentUser()) != 'salesmanager')
+					@if(currentUser() == 'superadmin' || currentUser() != 'operationmanager' || currentUser() != 'salesmanager')
 					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control me-3">
