@@ -72,7 +72,7 @@ class StudentController extends Controller
             $alldumpStudent = Student::where('status', '=', 3)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
         }
         //print_r($requestData);die;
-        return view('student.index', compact(['allwaitingStudent', 'allactiveStudent', 'alldumpStudent','users','requestData']));
+        return view('student.index', compact(['allwaitingStudent', 'allactiveStudent', 'alldumpStudent','users']));
     }
     
     public function confirmStudents()
