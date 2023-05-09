@@ -37,8 +37,8 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
+        $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
         if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' || strtolower(currentUser()) === 'frontdesk' || strtolower(currentUser()) === 'operationmanager') {
-            $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
             /*== Waiting Students ==*/
             $allwaitingStudent = Student::where('status', '=', 2)->orderBy('id', 'DESC')->paginate(25);
             /*== Active Students ==*/

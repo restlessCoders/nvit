@@ -117,16 +117,18 @@
 						<label for="sdata" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="sdata" value="{{request()->get('sdata')}}">
 					</div>
+					@if(currentUser()) == 'superadmin' || currentUser()) != 'operationmanager' || currentUser()) != 'salesmanager')
 					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control me-3">
-							<option value="">Select Executive</option>
+							<option value="1">All</option>
 							@forelse($users as $user)
 							<option value="{{$user->id}}" @if(request()->get('executiveId') == $user->id) selected @endif>{{$user->name}}</option>
 							@empty
 							@endforelse
 						</select>
 					</div>
+					@endif
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
 						<a href="{{ route(currentUser().'.allStudent') }}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
