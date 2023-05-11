@@ -177,6 +177,7 @@
 										$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
 										$enroll = ($b_enroll+$c_enroll)
 										@endphp
+										@if($enroll == 0)
 										@if($today->lessThanOrEqualTo($re_call_date) )
 										<p class="text-center m-0">
 										@else
@@ -185,6 +186,9 @@
 											<strong>Recall :</strong>
 											{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}
 										</p>
+										@else
+										<p class="text-primary"><strong>Closed</strong></p>
+										@endif
 									@endif
 								@if($note->note)
 								<p class="text-center m-0"><strong>Note :</strong>{{$note->note}}</p>
@@ -199,6 +203,7 @@
 									$executiveReminder = \Carbon\Carbon::parse($student->executiveReminder); 
 									@endphp
 									<p class="text-center m-0"><strong>Note :</strong>{{$student->executiveNote}}</p>
+									@if($enroll == 0)
 									@if($today->lessThanOrEqualTo($executiveReminder))
 									<p class="text-center my-0">
 									@else	
@@ -207,6 +212,9 @@
 										<strong>Recall :</strong>
 										<strong class="mr-1"></strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}
 									</p>
+									@else
+									<p class="text-primary"><strong>Closed</strong></p>
+									@endif
 								@endif
 							</td>
 							<td>
