@@ -167,15 +167,17 @@
 								@endif
 							</td>
 							<td>
-								@php $today = \Carbon\Carbon::today(); @endphp
+								@php 
+								$today = \Carbon\Carbon::today(); 
+								$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->count();
+								$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
+								$enroll = ($b_enroll+$c_enroll)
+								@endphp
 								@if($student->notes->count() > 0)
 									@php $note = $student->notes->last(); @endphp
 									@if(!empty($note->re_call_date))
 										@php 
 										$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
-										$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->count();
-										$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
-										$enroll = ($b_enroll+$c_enroll)
 										@endphp
 										@if($enroll == 0)
 										@if($today->lessThanOrEqualTo($re_call_date) )
