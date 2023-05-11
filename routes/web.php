@@ -421,6 +421,9 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
+
+        /*Note History */
+        Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('operationmanager.noteHistoryByStId');
     });
 });
 
