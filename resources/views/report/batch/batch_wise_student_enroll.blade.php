@@ -92,7 +92,9 @@
 						<th>Enroll Date</th>
 						<th>Inv</th>
 						<th>Course Price</th>
+						@if(currentUser() == 'superadmin')
 						<th>Paid Amount</th>
+						@endif
 						<th>Type</th>
 						<th>Status</th>
 						<th>Action</th>
@@ -121,7 +123,9 @@
 							-
 							@endif
 						</td>
+						@if(currentUser() == 'superadmin')
 						<td>{{$batch->course_price}}</td>
+						@endif
 						<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
 						<td>
 							@if($batch->status == 2) Enroll @endif

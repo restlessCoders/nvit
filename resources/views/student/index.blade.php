@@ -168,21 +168,49 @@
 							</td>
 							<td>
 								@if($student->notes->count() > 0)
-								@php $note = $student->notes->last(); @endphp
-								@if($note->re_call_date)
-								<p class="text-center m-0"><strong>Recall :</strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}</p>
-								@endif
+									@php $note = $student->notes->last(); @endphp
+									@if(!empty($note->re_call_date))
+										@php 
+										$today = \Carbon\Carbon::today();
+										$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
+										// Calculate the difference in days between the two dates
+										$diffInDays = $re_call_date->diffInDays($today, false);
+										$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->count();
+										$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
+										$enroll = ($b_enroll+$c_enroll)
+										@endphp
+										@if($diffInDays > 0 || $enroll == 0 )
+											<p class="text-center m-0 text-danger">
+										@else
+											<p class="text-center m-0">
+										@endif	
+											<strong>Recall :</strong>
+											{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}
+										</p>
+									@endif
 								@if($note->note)
 								<p class="text-center m-0"><strong>Note :</strong>{{$note->note}}</p>
 								@else
 								<p class="text-center m-0">No Notes</p>
 								@endif
 								@if($note->created_at)
-								<p class="text-center m-0"><strong>Posted On :</strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($note->created_at))->format('j M, Y')}}</p>
+								{{--<p class="text-center m-0"><strong>Posted On :</strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($note->created_at))->format('j M, Y')}}</p>--}}
 								@endif
 								@else
-								<p class="text-center m-0">{{$student->executiveNote}}</p>
-								<p class="text-center my-0"><strong class="mr-1"></strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}</p>
+									@php 
+									$executiveReminder = \Carbon\Carbon::parse($student->executiveReminder); 
+									// Calculate the difference in days between the two dates
+									$diffInDays = $executiveReminder->diffInDays($today, false);
+									@endphp
+									<p class="text-center m-0"><strong>Note :</strong>{{$student->executiveNote}}</p>
+									@if($diffInDays > 0 || $enroll == 0)
+									<p class="text-center my-0 text-danger">
+									@else	
+									<p class="text-center my-0">
+									@endif	
+										<strong>Recall :</strong>
+										<strong class="mr-1"></strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}
+									</p>
 								@endif
 							</td>
 							<td>
@@ -223,7 +251,6 @@
 						<div class="modal-content">
 							<form action="{{ route(currentUser().'.notes.store') }}" method="POST">
 								@csrf
-								<input type="hidden" id="student_id" name="student_id" value="">
 								<input type="hidden" value="{{ Session::get('user') }}" name="userId">
 								<div class="modal-header">
 									<h5 class="modal-title" id="addNoteModalLabel">Add Note For <span id="student_name"></span></h5>
@@ -233,8 +260,12 @@
 								</div>
 								<div class="modal-body">
 									<div class="form-group">
+										<label for="note">Student Id:</label>
+										<input type="text" id="student_id" name="student_id" class="form-control" readonly>
+									</div>
+									<div class="form-group">
 										<label for="note">Re Call Date:</label>
-										<input type="date" id="re_call_date" name="re_call_date" class="form-control">
+										<input type="text" id="re_call_date" name="re_call_date" class="form-control" placeholder="dd/mm/yyyy">
 									</div>
 									<div class="form-group">
 										<label for="note">Note:</label>
@@ -258,8 +289,7 @@
 											<th>Created On</th>
 										</tr>
 									</thead>
-									<tbody>
-										
+									<tbody id="note-history">
 									</tbody>
 								</table>
 							</div>
@@ -402,6 +432,7 @@
 
 
 	$('#addNoteModal').on('show.bs.modal', function(event) {
+		$('#note-history').empty();
 		var button = $(event.relatedTarget);
 		var studentId = button.data('student-id');
 		var studentName = button.data('student-name');
@@ -409,12 +440,39 @@
 		var modal = $(this);
 		modal.find('#student_id').val(studentId);
 		modal.find('#student_name').text(studentName);
+		$.ajax({
+			url: "{{route(currentUser().'.noteHistoryByStId')}}",
+			method: 'GET',
+			dataType: 'json',
+			data: {
+				student_id: studentId,
+			},
+			success: function(res) {
+				console.log(res.data);
+				$('#note-history').append(res.data);
+			},
+			error: function(e) {
+				console.log(e);
+			}
+		});
 	});
 
 	function disableButton(btn) {
 		btn.disabled = true;
 		btn.form.submit();
 	}
+	$("input[name='re_call_date']").daterangepicker({
+		singleDatePicker: true,
+		minDate: moment().startOf('day'),
+		maxDate: moment().add(30, 'days').startOf('day'),
+		startDate: new Date(),
+		showDropdowns: true,
+		autoUpdateInput: true,
+		format: 'dd/mm/yyyy',
+	}).on('changeDate', function(e) {
+		var date = moment(e.date).format('YYYY/MM/DD');
+		$(this).val(date);
+	});
 </script>
 
 @if(old('tab'))

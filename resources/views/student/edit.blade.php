@@ -678,7 +678,7 @@
 								<th>Created On</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="note-data">
 							@forelse($notes as $note)
 							<tr>
 								<td>{{ $loop->iteration }}</td>

@@ -155,6 +155,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('superadmin.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('superadmin.coursewiseStudent');
+
+        /*Note History */
+        Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('superadmin.noteHistoryByStId');
     });
 });
 

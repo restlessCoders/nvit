@@ -262,7 +262,7 @@
         placeholder: 'Select Option',
         allowClear: true
     });
-    $("input[name='executiveReminder']").daterangepicker({
+    $("input[name='executiveReminder'],").daterangepicker({
         singleDatePicker: true,
         minDate: moment().startOf('day'),
         maxDate: moment().add(30, 'days').startOf('day'),

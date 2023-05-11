@@ -89,4 +89,24 @@ class NoteController extends Controller
     {
         //
     }
+    public function note_by_student_id(Request $request){
+        $notes = Note::where('student_id',$request->student_id)->orderBy('id','desc')->get();
+        $index = 1;
+        $data = '';
+        if(count($notes) > 0){
+            foreach($notes as $note){
+                $data .= '<tr>';
+                $data .= '<td>'.$index++.'</td>';
+                $data .= '<td width="120px">'.\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y').'</td>';
+				$data .= '<td>'.$note->note.'</td>';
+				$data .= '<td>'.$note->noteCreated->name.'</td>';
+				$data .= '<td>'.$note->created_at.'</td>';
+                $data .= '</tr>';
+            }
+
+        }else{
+            $data .= '<tr><td colspan="5">No Note Found</td></tr>';
+        }
+        return response()->json(array('data' => $data));
+    }
 }
