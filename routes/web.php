@@ -266,6 +266,9 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         /*Attendance Report */
         Route::get('/batch/wise/attendance', [ReportController::class, 'batchwiseAttendance'])->name('salesmanager.batchwiseAttendance');
         Route::get('/batch/wise/attendance/report', [ReportController::class, 'batchwiseAttendanceReport'])->name('salesmanager.batchwiseAttendanceReport');
+
+        /*Note History */
+        Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('salesmanager.noteHistoryByStId');
     });
 });
 
@@ -318,6 +321,9 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('salesexecutive.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('salesexecutive.coursewiseStudent');
+
+        /*Note History */
+        Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('salesexecutive.noteHistoryByStId');
     });
 });
 

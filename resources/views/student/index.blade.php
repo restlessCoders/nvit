@@ -167,11 +167,11 @@
 								@endif
 							</td>
 							<td>
+								@php $today = \Carbon\Carbon::today(); @endphp
 								@if($student->notes->count() > 0)
 									@php $note = $student->notes->last(); @endphp
 									@if(!empty($note->re_call_date))
 										@php 
-										$today = \Carbon\Carbon::today();
 										$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
 										// Calculate the difference in days between the two dates
 										$diffInDays = $re_call_date->diffInDays($today, false);
@@ -474,7 +474,26 @@
 		$(this).val(date);
 	});
 </script>
-
+@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
+	<script>
+	function disableButton(btn) {
+		btn.disabled = true;
+		btn.form.submit();
+	}
+	$("input[name='re_call_date']").daterangepicker({
+		singleDatePicker: true,
+		minDate: moment().startOf('day'),
+		maxDate: moment().add(30, 'days').startOf('day'),
+		startDate: new Date(),
+		showDropdowns: true,
+		autoUpdateInput: true,
+		format: 'dd/mm/yyyy',
+	}).on('changeDate', function(e) {
+		var date = moment(e.date).format('YYYY/MM/DD');
+		$(this).val(date);
+	});
+	</script>
+@endif
 @if(old('tab'))
 <script>
 	$(function() {
