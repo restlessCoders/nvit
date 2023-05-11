@@ -173,16 +173,14 @@
 									@if(!empty($note->re_call_date))
 										@php 
 										$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
-										// Calculate the difference in days between the two dates
-										$diffInDays = $re_call_date->diffInDays($today, false);
 										$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->count();
 										$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
 										$enroll = ($b_enroll+$c_enroll)
 										@endphp
-										@if($diffInDays > 0 || $enroll == 0 )
-											<p class="text-center m-0 text-danger">
+										@if($today->lessThanOrEqualTo($re_call_date) )
+										<p class="text-center m-0">
 										@else
-											<p class="text-center m-0">
+										<p class="text-center m-0 text-danger">
 										@endif	
 											<strong>Recall :</strong>
 											{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}
@@ -199,14 +197,12 @@
 								@else
 									@php 
 									$executiveReminder = \Carbon\Carbon::parse($student->executiveReminder); 
-									// Calculate the difference in days between the two dates
-									$diffInDays = $executiveReminder->diffInDays($today, false);
 									@endphp
 									<p class="text-center m-0"><strong>Note :</strong>{{$student->executiveNote}}</p>
-									@if($diffInDays > 0 || $enroll == 0)
-									<p class="text-center my-0 text-danger">
-									@else	
+									@if($today->lessThanOrEqualTo($executiveReminder))
 									<p class="text-center my-0">
+									@else	
+									<p class="text-center my-0 text-danger">
 									@endif	
 										<strong>Recall :</strong>
 										<strong class="mr-1"></strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}
