@@ -45,7 +45,11 @@ class StudentController extends Controller
             if($request->has('executiveId') || $request->has('sdata')){
                 $allactiveStudent = Student::with('notes')->where('status', '=', 1)->orderBy('id', 'DESC');
             }else{
-                $allactiveStudent = Student::with('notes')->where('executiveId', '=', currentUserId())->where('status', '=', 1)->orderBy('id', 'DESC');
+                $allactiveStudent = Student::with('notes');
+                if(strtolower(currentUser()) != 'frontdesk'){
+                    $allactiveStudent = $allactiveStudent->where('executiveId', '=', currentUserId());
+                }
+                $allactiveStudent = $allactiveStudent->where('status', '=', 1)->orderBy('id', 'DESC');
             }
             if($request->executiveId && $request->executiveId !='all') {
                 $allactiveStudent = $allactiveStudent->where('executiveId', $request->executiveId);

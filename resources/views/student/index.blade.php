@@ -436,7 +436,9 @@
 			});
 	});
 
-
+	</script>
+	@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
+	<script>
 	$('#addNoteModal').on('show.bs.modal', function(event) {
 		$('#note-history').empty();
 		var button = $(event.relatedTarget);
@@ -462,7 +464,9 @@
 			}
 		});
 	});
-
+	</script>
+	@endif
+	<script>
 	function disableButton(btn) {
 		btn.disabled = true;
 		btn.form.submit();
