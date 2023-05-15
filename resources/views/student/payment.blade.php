@@ -60,6 +60,13 @@
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
 <script>
+	var systemId = "{{request()->get('systemId')}}";
+	var sId = "{{request()->get('sId')}}";
+	if(sId){
+		return_row_with_data(sId);
+		databySystemId(systemId);
+
+	}
 	function databySystemId(systemId) {
 		$.ajax({
 			url: "{{route(currentUser().'.databySystemId')}}",
@@ -301,6 +308,7 @@
 					$('#details_data').append(res.data);
 					$('#student_detl_data').append(res.sdata);
 					$('#showData').show();
+					$('#systmVal option[value="'+systemId+'"]').prop('selected', true);
 				}
 				$("#item_search").val('');
 				$("#item_search").removeClass('ui-autocomplete-loader-center');

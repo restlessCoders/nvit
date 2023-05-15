@@ -77,6 +77,9 @@
 						<th>Executive</th>
 						<th>Reference</th>
 						<th>Course</th>
+						<th>Batch Slot</th>
+						<th>Batch Time</th>
+						
 					</tr>
 				</thead>
 				<tbody>
@@ -88,6 +91,8 @@
 						<td>{{$course->exName}}</td>
 						<td>{{\DB::table('references')->where('id',$course->refId)->first()->refName}}</td>
 						<td>{{\DB::table('courses')->where('id',$course->course_id)->first()->courseName}}</td>
+						<td>{{\DB::table('batchslots')->where('id',$course->batch_slot_id)->first()->slotName}}</td>
+						<td>{{\DB::table('batchtimes')->where('id',$course->batch_time_id)->first()->time}}</td>
 						<!--<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($course->created_at))->format('j M, Y')--}}</td>-->
 					</tr>
 					@endforeach

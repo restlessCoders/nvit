@@ -30,7 +30,7 @@
 				<div class="row">
 					<div class="col-sm-3">
 						<label for="batch_id" class="col-form-label">Select Batch</label>
-						<select name="batch_id" class="js-example-basic-single form-control" required>
+						<select name="batch_id" class="js-example-basic-single form-control">
 							<option></option>
 							@forelse($batches as $batch)
 							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
@@ -38,6 +38,7 @@
 							@endforelse
 						</select>
 					</div>
+					@if(strtolower(currentUser()) != 'frontdesk')
 					<div class="col-sm-3">
 						<label for="executiveId" class="col-form-label">Select Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control">
@@ -48,6 +49,8 @@
 							@endforelse
 						</select>
 					</div>
+					@endif
+					@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
 					<div class="col-sm-3">
 						<label for="refId" class="col-form-label">Select Reference</label>
 						<select name="refId" class="js-example-basic-single form-control">
@@ -67,9 +70,10 @@
 							<option value="4">Evloulation</option>
 						</select>
 					</div>
+					@endif
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary mr-1"><i class="fa fa-search fa-sm"></i></button>
-						<button type="button" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></button>
+						<a href="{{route(currentUser().'.batchwiseEnrollStudent')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
 			</form>
@@ -85,14 +89,15 @@
 				<thead>
 					<tr>
 						<th>SL.</th>
+						<th>Stu. Id</th>
 						<th>Student Name</th>
 						<th>Executive</th>
 						<th>Reference</th>
 						<th>Batch</th>
 						<th>Enroll Date</th>
 						<th>Inv</th>
-						<th>Course Price</th>
 						@if(currentUser() == 'superadmin')
+						<th>Course Price</th>
 						<th>Paid Amount</th>
 						@endif
 						<th>Type</th>
@@ -107,6 +112,7 @@
 					<form action="" method="POST" enctype="multipart/form-data">
 					<tr>
 						<td>{{$loop->iteration}}</td>
+						<td>{{$batch->sId}}</td>
 						<td>{{$batch->sName}}</td>
 						<td>{{$batch->exName}}</td>
 						<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
@@ -125,8 +131,8 @@
 						</td>
 						@if(currentUser() == 'superadmin')
 						<td>{{$batch->course_price}}</td>
-						@endif
 						<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
+						@endif
 						<td>
 							@if($batch->status == 2) Enroll @endif
 							@if($batch->status == 3) Knocking @endif
@@ -139,8 +145,16 @@
 							Installment
 							@endif
 						</td>
-						<td>
-						<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
+						<td width="200px">
+						<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
+							@php $sum = \DB::table('paymentdetails')
+							->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
+							->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
+							->first()
+							->total; @endphp
+							@if($batch->course_price > $sum && $batch->status == 2)
+							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-success btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+							@endif
 						</td>
 					</tr>
 </form>

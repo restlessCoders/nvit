@@ -174,7 +174,9 @@ class StudentController extends Controller
                 $student->otherInfo        = $request->otherInfo;
                 //$student->operationNote    = $request->operationNote;
                 $student->executiveNote    = $request->executiveNote;
-                $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
+                if(strtolower(currentUser()) != 'frontdesk'){
+                $student->executiveReminder = $request->executiveReminder?date('Y-m-d', strtotime($request->executiveReminder)):null;
+                }
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
                 $student->status           = 1;
@@ -191,7 +193,9 @@ class StudentController extends Controller
                 $student->otherInfo        = $request->otherInfo;
                 //$student->operationNote    = $request->operationNote;
                 $student->executiveNote    = $request->executiveNote;
+                if(strtolower(currentUser()) != 'frontdesk'){
                 $student->executiveReminder = date('Y-m-d', strtotime($request->executiveReminder));
+                }
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
                 $student->status           = 1;

@@ -14,14 +14,14 @@ class ReportController extends Controller
 {
     //To Show Batchwise Student Enroll Data
     public function batchwiseEnrollStudent(Request $request){
-        $batches = Batch::all();
+        $batches = Batch::where('status',1)->get();
         $batchInfo = Batch::find($request->batch_id);
         $references = Reference::all();
         $executives = User::whereIn('roleId',[1,3,9])->get();
         $batch_seat_count = DB::table('student_batches')->where('batch_id',$request->batch_id)->count('student_id');
       
         $allBatches = DB::table('student_batches')
-            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id','student_batches.type','student_batches.course_price','student_batches.pstatus')
+            ->select('student_batches.systemId','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id','student_batches.type','student_batches.course_price','student_batches.pstatus')
             ->join('students','students.id','=','student_batches.student_id')
             ->join('users','users.id','=','students.executiveId');
             
@@ -36,21 +36,22 @@ class ReportController extends Controller
         if($request->executiveId){
             $allBatches->where('students.executiveId',$request->executiveId);
         }    
-        if($request->status){
+        if(strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk'){
+            $allBatches->where('student_batches.status',2);
+        }else{
             $allBatches->where('student_batches.status',$request->status);
-            
         }
         $allBatches = $allBatches->get();
         return view('report.batch.batch_wise_student_enroll',['executives'=>$executives,'batch_seat_count'=>$batch_seat_count,'references' => $references,'allBatches'=>$allBatches,'batches' => $batches,'batchInfo' => $batchInfo]);
     }
     public function coursewiseStudent(Request $request){
-        $courses = Course::all();
+        $courses = Course::where('status',1)->get();
         $courseInfo = Course::find($request->course_id);
         $references = Reference::all();
         $executives = User::whereIn('roleId',[1,3,9])->get();
       
         $courses_pre = DB::table('course_preferences')
-            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','course_preferences.course_id','courses.courseName')
+            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','course_preferences.course_id','courses.courseName','course_preferences.batch_slot_id','course_preferences.batch_time_id')
             ->join('courses','course_preferences.course_id','=','courses.id')
             ->join('students','students.id','=','course_preferences.student_id')
             ->join('users','users.id','=','students.executiveId');

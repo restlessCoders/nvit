@@ -857,7 +857,7 @@ $('.enrol').on('click', '.delete', function(event) {
     $("input[name='executiveReminder']").daterangepicker({
         singleDatePicker: true,
 		minDate: moment().startOf('day'),
-        maxDate: moment().add(30, 'days').startOf('day'),
+        /*maxDate: moment().add(30, 'days').startOf('day'),*/
         startDate: new Date(),
         showDropdowns: true,
         autoUpdateInput: true,

@@ -262,14 +262,15 @@
         placeholder: 'Select Option',
         allowClear: true
     });
-    $("input[name='executiveReminder'],").daterangepicker({
+    $("input[name='executiveReminder']").daterangepicker({
         singleDatePicker: true,
         minDate: moment().startOf('day'),
-        maxDate: moment().add(30, 'days').startOf('day'),
+        /*maxDate: moment().add(30, 'days').startOf('day'),*/
         startDate: new Date(),
         showDropdowns: true,
         autoUpdateInput: true,
         format: 'dd/mm/yyyy',
+        drops: 'up'
     }).on('changeDate', function(e) {
         var date = moment(e.date).format('YYYY/MM/DD');
         $(this).val(date);

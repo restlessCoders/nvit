@@ -169,7 +169,7 @@
 							<td>
 								@php 
 								$today = \Carbon\Carbon::today(); 
-								$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->count();
+								$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->where('status',2)->count();
 								$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
 								$enroll = ($b_enroll+$c_enroll)
 								@endphp
@@ -210,9 +210,15 @@
 									<p class="text-center my-0">
 									@else	
 									<p class="text-center my-0 text-danger">
-									@endif	
+									@endif
 										<strong>Recall :</strong>
-										<strong class="mr-1"></strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}
+										<strong class="mr-1">
+										@if($student->executiveReminder)
+										{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}
+										@else
+										No Recall Date
+										@endif
+										</strong>
 									</p>
 									@else
 									<p class="text-primary"><strong>Closed</strong></p>
