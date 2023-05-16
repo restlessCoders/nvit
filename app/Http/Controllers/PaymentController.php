@@ -117,6 +117,7 @@ class PaymentController extends Controller
     }
     public function paymentData(Request $request)
     {
+        return response()->json(array('sdata' => $request->toArray()));
         $stData = DB::table('student_batches')
             ->join('students', 'student_batches.student_id', '=', 'students.id')
             ->join('batches', 'student_batches.batch_id', '=', 'batches.id')
@@ -136,8 +137,8 @@ class PaymentController extends Controller
             ->get();
         //return response()->json(array('sdata' => $stData));
 
-        $data = '<h5 style="font-size:18px;line-height:70px;">Recipt Details</h5>';
-        $data .= '<table class="table table-sm table-bordered mb-5 text-center" style="font-size: small;">
+        $data = '<h5 style="font-size:18px;line-height:20px;">Recipt Details</h5>';
+        $data .= '<table class="table table-sm table-bordered mb-3 text-center" style="font-size: small;">
                 <thead>
                     <tr>
                         <th><strong>Money Receipt No: </strong></th>
@@ -167,8 +168,8 @@ class PaymentController extends Controller
                     </tr>
                 </tbody>   
             </table>';
-        $data .= '<h5 style="font-size:18px;line-height:70px;">Payment details</h5>';
-        $data .= '<table class="table table-sm table-bordered mb-5 text-center" style="font-size: small;">
+        $data .= '<h5 style="font-size:18px;line-height:20px;">Payment details</h5>';
+        $data .= '<table class="table table-sm table-bordered mb-3 text-center" style="font-size: small;">
             <thead>
                 <tr>
                     <th>Batch|Enroll Date</th>
@@ -192,7 +193,7 @@ class PaymentController extends Controller
                                 <p class="my-0">' . $s->batchId . '</p>
                                 <p class="my-0">' . $s->entryDate . '</p>
                             </td>';
-                //$inv = DB::table('paymentdetails')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
+                $inv = DB::table('payments')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
                 //return response()->json(array('data' =>$inv));
                 /*if(is_null($inv)){
                         $data .='<td><input type="text" id="invoiceId" class="form-control" name="invoiceId[]"></td>'; 

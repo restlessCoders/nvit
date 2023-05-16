@@ -68,7 +68,7 @@ class PaymentReportController extends Controller
     {
 
         $payments = DB::table('paymentdetails')
-            ->select('batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate')
+            ->select('batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
             ->join('student_batches', 'paymentdetails.batchId', '=', 'student_batches.batch_id')
             ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
@@ -81,26 +81,28 @@ class PaymentReportController extends Controller
             $payments->where('student_batches.batch_id', $request->batchId);
             $payments->where('paymentdetails.batchId', $request->batchId);
         }
-        if ($request->feeType) {
+        //if ($request->feeType) {
             /*Registration Fee Or Course Fee*/
-            $payments->where('paymentdetails.feeType', $request->feeType);
-        }
+            //$payments->where('paymentdetails.feeType', $request->feeType);
+        //}
 
         $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         //return response()->json(array('data' =>$payments));
-        $data = '<h5 style="font-size:18px;line-height:70px;">All Payment List</h5>';
-        $data .= '<table class="table table-bordered mb-5 text-center">
+        $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
+        $data .= '<table class="table table-bordered mb-3 text-center">
                 <thead>
                     <tr>
                         <th>SL.</th>
-                        <th>Payment ID|Date</th>
-                        <th>Invoice|MR</th>
+                        <th>Invoice|Date</th>
+                        <th>MR|Date</th>
+                        <th>Note</th>
                         <th>Batch</th>
-                        <th>Course</th>
+                        <th>Payable</th>
                         <th>Paid</th>
                         <th>Dis</th>
                         <th>Due</th>
-                        <th>Type</th>
+                        <th>Fee Type</th>
+                        <th>Due Date</th>
                         <!--<th>Others</th>
                         <th>Action</th>-->
                     </tr>
@@ -109,9 +111,11 @@ class PaymentReportController extends Controller
         foreach ($payments as $key => $p) {
             $data .= '<tr>';
             $data .= '<td>' . $sl . '</td>';
-            $data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
-                        <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
-            $data .= '<td>Inv:-' . $p->invoiceId . '<p class="p-0 m-1">Mr No:-' . $p->mrNo . '</p></td>';
+            /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
+                        <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
+            $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            $data .= '<td>' . $p->accountNote . '</td>';
             $data .= '<td>' . $p->batchName . '</td>';
             $data .= '<td>' . $p->cPayable . '</td>';
             $data .= '<td>' . $p->cpaidAmount . '</td>';
@@ -120,8 +124,9 @@ class PaymentReportController extends Controller
             if ($p->feeType == 1)
                 $text = "Registration";
             else
-                $text = "Invoiced";
+                $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
+            $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
             /*$data .= '<td width="150px">
                                     <p class="text-left m-0 p-0">Paid By:-</p>
                                     <p class="text-left m-0 p-0">Paid:' . \Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')  . '</p>

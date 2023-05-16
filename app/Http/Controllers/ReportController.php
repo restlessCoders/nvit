@@ -38,7 +38,8 @@ class ReportController extends Controller
         }    
         if(strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk'){
             $allBatches->where('student_batches.status',2);
-        }else{
+        }
+        if($request->status){
             $allBatches->where('student_batches.status',$request->status);
         }
         $allBatches = $allBatches->get();

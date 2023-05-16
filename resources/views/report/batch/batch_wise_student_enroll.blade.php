@@ -166,7 +166,7 @@
 							->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
 							->first()
 							->total; @endphp
-							@if($batch->course_price > $sum && $batch->status == 2)
+							@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
 							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-success btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
 							@else
 							<p class="text-primary" style="font-weight:700;">Full Paid</p>

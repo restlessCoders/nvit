@@ -46,6 +46,9 @@
 				{{ csrf_field() }}
 				<div class="row" id="student_detl_data">
 				</div>
+				<div class="table-responsive" id="paymenthisTblData">
+
+				</div>
 				<div class="table-responsive" id="paymentTblData">
 
 				</div>
@@ -150,7 +153,7 @@
 		var opt = $('#opt option:selected').val();
 		var systmVal = $('#systmVal option:selected').val();
 		var sId = $('#sId').val();
-		if (opt == 1) {
+		//if (opt == 1) {
 			var feeType = $('#pType option:selected').val();
 			var batchId = $('#batch_id option:selected').val();
 
@@ -166,15 +169,15 @@
 				},
 				success: function(res) {
 					console.log(res.data);
-					$('#paymentTblData').empty();
-					$('#paymentTblData').append(res.data);
+					$('#paymenthisTblData').empty();
+					$('#paymenthisTblData').append(res.data);
 				},
 				error: function(e) {
 					console.log(e);
 				}
 			});
 
-		} else if (opt == 2) {
+		//} else if (opt == 2) {
 			$.ajax({
 				url: "{{route(currentUser().'.paymentData')}}",
 				method: 'GET',
@@ -192,7 +195,7 @@
 					console.log(e);
 				}
 			});
-		}
+		//}
 	});
 
 	/*=== Check Input Price== */
