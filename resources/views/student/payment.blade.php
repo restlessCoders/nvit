@@ -184,7 +184,8 @@
 				dataType: 'json',
 				data: {
 					systmVal: systmVal,
-					sId: sId
+					sId: sId,
+					batchId: batchId
 				},
 				success: function(res) {
 					console.log(res.data);

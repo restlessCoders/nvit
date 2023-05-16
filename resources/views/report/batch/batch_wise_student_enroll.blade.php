@@ -167,10 +167,11 @@
 							->first()
 							->total; @endphp
 							@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-success btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-warning btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
 							@else
-							<p class="text-primary" style="font-weight:700;">Full Paid</p>
+							<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 							@endif
+							<button type="button" class="btn btn-primary btn-sm"><i class="fas fa-search mr-2"></i>View</button>
 						</td>
 					</tr>
 </form>
