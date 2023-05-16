@@ -92,9 +92,11 @@
 						<th>Stu. Id</th>
 						<th>Student Name</th>
 						<th>Executive</th>
+						@if(currentUser() == 'superadmin')
 						<th>Reference</th>
+						@endif
 						<th>Batch</th>
-						<th>Enroll Date</th>
+						<th width="150px">Invoice Date</th>
 						<th>Inv</th>
 						@if(currentUser() == 'superadmin')
 						<th>Course Price</th>
@@ -115,9 +117,21 @@
 						<td>{{$batch->sId}}</td>
 						<td>{{$batch->sName}}</td>
 						<td>{{$batch->exName}}</td>
+						@if(currentUser() == 'superadmin')
 						<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
+						@endif
 						<td>{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}</td>
-						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')}}</td>
+						<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
+							@if(\DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
+							{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')}}
+							@else
+							-
+							@endif
+						</td>
 						<td>
 							@if(\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
@@ -146,7 +160,7 @@
 							@endif
 						</td>
 						<td width="200px">
-						<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
+						{{--<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>--}}
 							@php $sum = \DB::table('paymentdetails')
 							->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
 							->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
@@ -154,6 +168,8 @@
 							->total; @endphp
 							@if($batch->course_price > $sum && $batch->status == 2)
 							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-success btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+							@else
+							<p class="text-primary" style="font-weight:700;">Full Paid</p>
 							@endif
 						</td>
 					</tr>

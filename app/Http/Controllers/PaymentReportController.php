@@ -68,7 +68,7 @@ class PaymentReportController extends Controller
     {
 
         $payments = DB::table('paymentdetails')
-            ->select('batches.batchId as batchName', 'paymentdetails.*', 'payments.paymentDate')
+            ->select('batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate')
             ->join('student_batches', 'paymentdetails.batchId', '=', 'student_batches.batch_id')
             ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
@@ -100,9 +100,9 @@ class PaymentReportController extends Controller
                         <th>Paid</th>
                         <th>Dis</th>
                         <th>Due</th>
-                        <th>Fee</th>
-                        <th>Others</th>
-                        <th>Action</th>
+                        <th>Type</th>
+                        <!--<th>Others</th>
+                        <th>Action</th>-->
                     </tr>
                 </thead>';
         $sl = 1;
@@ -120,9 +120,9 @@ class PaymentReportController extends Controller
             if ($p->feeType == 1)
                 $text = "Registration";
             else
-                $text = "Course";
+                $text = "Invoiced";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
-            $data .= '<td width="150px">
+            /*$data .= '<td width="150px">
                                     <p class="text-left m-0 p-0">Paid By:-</p>
                                     <p class="text-left m-0 p-0">Paid:' . \Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')  . '</p>
                                     <p class="text-left m-0 p-0">Updated By:-</p>
@@ -134,7 +134,7 @@ class PaymentReportController extends Controller
                                     <a href="" class="text-danger" title="delete"><i class="far fa-trash-alt mr-1"></i></a>
                                     <a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
                                     <a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>
-                                </td>';
+                                </td>';*/
             $data .= '</tr>';
             $sl++;
         }
