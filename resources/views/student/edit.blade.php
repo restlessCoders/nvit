@@ -32,18 +32,18 @@
 				</li>
 				@if($sdata->executiveId == currentUserId() || currentUser() == 'superadmin')
 				<li class="nav-item">
-					<a class="nav-link" id="course-pre" data-toggle="tab" href="#course_pre" role="tab" aria-controls="course_pre">Course Preference</a>
+					<a class="nav-link" id="course-pre" data-toggle="tab" href="#course_pre" role="tab" aria-controls="course_pre">Course Interest</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" id="batch-student-tab" data-toggle="tab" href="#batch_student" role="tab" aria-controls="batch_student">Batch Enroll | Register | Evaluation</a>
+					<a class="nav-link" id="batch-student-tab" data-toggle="tab" href="#batch_student" role="tab" aria-controls="batch_student">Batch Enroll | Knocking | Evaluation</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Course Enroll</a>
+					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Course Enroll Only</a>
 				</li>
 				@endif
-				<li class="nav-item">
+				{{--<li class="nav-item">
 					<a class="nav-link" id="notes-student-tab" data-toggle="tab" href="#note_student" role="tab" aria-controls="note_student">Note History</a>
-				</li>
+				</li>--}}
 			</ul>
 			<div class="tab-content text-muted" id="myTabContent">
 				<div role="tabpanel" class="tab-pane fade in active show" id="edit_student" aria-labelledby="edit-student-tab">

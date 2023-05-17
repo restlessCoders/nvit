@@ -134,10 +134,10 @@ class PaymentReportController extends Controller
             else
                 $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
-            if(!empty($p->dueDate)){
-                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+            if($p->feeType ==2){
+                $data .= '<td>-</td>';  
             }else{
-                $data .= '<td>-</td>';
+                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
             }
             
             /*$data .= '<td width="150px">

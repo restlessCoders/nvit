@@ -28,8 +28,8 @@ class NewStudentRequest extends FormRequest
         }
         return [
             'name' 		    => 'required|string',
-            'contact'       => 'required|regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students',
-            'altContact'    => 'nullable|regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students',
+            'contact'       => 'required|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students',
+            'altContact'    => 'nullable|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students',
             'email'         => 'nullable|string|unique:students,email',
             'refId' 	    => 'required',
         ];
