@@ -27,11 +27,16 @@
 			<form action="" method="post" role="search">
 				@csrf
 				<div class="row">
-
-					<div class="col-sm-4">
+				<div class="col-sm-6">
+						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
+						<input type="text" class="form-control" name="studentId">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-1">
 						<label for="name" class="col-form-label">Year</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
-							<option value="">Select Year</option>
+						<select name="month" class="js-example-basic-single form-control me-3">
+							<option value="">Year</option>
 							@php
 							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
 								@php
@@ -39,18 +44,19 @@
 								@endphp
 						</select>
 					</div>
-					<div class="col-sm-4">
+					<div class="col-sm-1">
 						<label for="name" class="col-form-label">Month</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
-							<option value="">Select Month</option>
+						<select name="month" class="js-example-basic-single form-control me-3">
+							<option value="">Month</option>
 							@php
-							for($i=1;$i<=12;$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
+							$months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
+							for($i=0;$i<count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
 								@php
 								}
 								@endphp
 						</select>
 					</div>
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Date</label>
 						<div class="input-group">
 							<input type="text" name="paymentDate" class="form-control" placeholder="dd/mm/yyyy">
@@ -59,23 +65,19 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-3">
-						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
-						<input type="text" class="form-control" name="studentId">
-					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Executive</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
-							<option value="">Select Month</option>
+						<select name="month" class="js-example-basic-single form-control me-3">
+							<option value="">Select Executive</option>
 							@forelse($users as $user)
 							<option value="{{$user->id}}">{{$user->username}}</option>
 							@empty
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Batch</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
+						<select name="month" class="js-example-basic-single form-control me-3">
 							<option value="">Select Batch</option>
 							@forelse($batches as $batch)
 							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
@@ -85,15 +87,16 @@
 					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Fee Type</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
-						<option selected value="1">Full</option>
-						<option value="2">Partial</option>
+						<select name="month" class="js-example-basic-single form-control me-3">
+							<option selected value="1">Registration</option>
+							<option value="2">Invoice</option>
 						</select>
 					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Payment Mode</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
-							<option selected value="1">Cash</option>
+						<select name="month" class="js-example-basic-single form-control me-3">
+							<option value="">Mode</option>
+							<option value="1">Cash</option>
 							<option value="2">Bkash</option>
 							<option value="3">Bank</option>
 						</select>
@@ -107,22 +110,23 @@
 			<table class="table table-sm table-bordered mb-5 text-center" style="font-size: small;">
 				<thead>
 					<tr>
-						<th>Date</th>
+						<th width="100px">Date</th>
 						<th>AE</th>
-						<th>Inv</th>
+						<th colspan="2">Stu ID|Name</th>
+						{{--<th>Contact</th>--}}
+						<th>Batch</th>
 						<th>MR</th>
-						<th>Stu.Name</th>
-						<th>Contact</th>
-						<th>Course</th>
-						<th>Next Date</th>
+						<th>Inv</th>
+						<th>Type</th>
+						<th>Due Date</th>
 						<th>Payable</th>
 						<th>Paid</th>
 						<th>Dis</th>
 						<th>Due</th>
-						<th>Type</th>
+						
 						<th>Mode</th>
-						<th>Partial|Full</th>
-						<th>Info</th>
+						{{--<th>Partial|Full</th>
+						<th>Info</th>--}}
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -143,39 +147,53 @@
 					@foreach($p->paymentDetail as $p)
 					@php $total_paid_amount += $p->cpaidAmount; @endphp
 					<tr>
-						<td class="align-middle">{{$p->payment->invoiceId}}</td>
-						<td class="align-middle">{{$p->payment->mrNo}}</td>
+						<td class="align-middle">{{$p->student->id}}</td>
 						<td class="align-middle">{{$p->student->name}}</td>
-						<td class="align-middle">{{$p->student->contact}}</td>
+						{{--<td class="align-middle">{{$p->student->contact}}</td>--}}
 						<td class="align-middle">{{$p->batch->batchId}}</td>
+						<td class="align-middle">{{$p->payment->mrNo}}</td>
+						<td class="align-middle">{{$p->payment->invoiceId}}</td>
+						@php
+						if($p->feeType==1)
+						$text = "Registration";
+						else
+						$text = "Invoice";
+						@endphp
+						<td class="align-middle">{{$text}}</td>
+						@if($p->feeType==1)
+						<td>-</td>
+						<td>-</td>
+						<td>{{$p->cpaidAmount}}</td>
+						<td>-</td>
+						<td>-</td>
+						@else
 						<td class="align-middle"><strong class="text-danger" style="font-size:12px;">@if($p->dueDate){{date('d M Y',strtotime($p->dueDate))}} @else - @endif</strong></td>
 						<td class="align-middle">{{$p->cPayable}}</td>
 						<td class="align-middle">{{$p->cpaidAmount}}</td>
 						<td class="align-middle">{{$p->discount?$p->discount:0}}</td>
 						<td class="align-middle">{{($p->cPayable-($p->cpaidAmount+$p->discount))}}</td>
-						@php
-						if($p->feeType==1)
-						$text = "Registration";
-						else
-						$text = "Course";
-						@endphp
-						<td class="align-middle">{{$text}}</td>
+						@endif
+						
+						
+						
+						
+
 						<td class="align-middle">@if($p->payment_mode == 1) Cash @elseif($p->payment_mode == 2) Bkash @else Bank @endif</td>
-						<td class="align-middle">@if($p->feeType == 1) Partial @else Full @endif</td>
+						{{--<td class="align-middle">@if($p->feeType == 1) Partial @else Full @endif</td>
 						<td width="150px" class="align-middle">
 							<p class="text-left m-0 p-0">Paid By:-</p>
 							<p class="text-left m-0 p-0">Paid:{{\Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')}}</p>
 							<p class="text-left m-0 p-0">Updated By:-</p>
 							<p class="text-left m-0 p-0">Update:@if($p->updated_at){{\Carbon\Carbon::createFromTimestamp(strtotime($p->updated_at))->format('j M, Y')}}@endif</p>
-						</td>
+						</td>--}}
 
 						<td width="130px" class="align-middle">
 							<a href="" class="text-success" title="print"><i class="fas fa-print mr-1"></i></a>
-							@if(currentUser() == 'account' || currentUser() == 'superadmin')
+							@if(currentUser() == 'accountmanager' || currentUser() == 'superadmin')
 							<a href="{{route(currentUser().'.payment.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
-							<a href="" class="text-danger" title="delete"><i class="far fa-trash-alt mr-1"></i></a>
+							{{--<a href="" class="text-danger" title="delete"><i class="far fa-trash-alt mr-1"></i></a>
 							<a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
-							<a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>
+							<a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>--}}
 							@endif
 						</td>
 					</tr>
@@ -201,6 +219,16 @@
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
 	$('.js-example-basic-single').select2();
+	$("input[name='paymentDate']").daterangepicker({
+		singleDatePicker: true,
+		startDate: new Date(),
+		showDropdowns: true,
+		autoUpdateInput: true,
+		format: 'dd/mm/yyyy',
+	}).on('changeDate', function(e) {
+		var date = moment(e.date).format('YYYY/MM/DD');
+		$(this).val(date);
+	});
 </script>
 @if(Session::has('response'))
 <script>

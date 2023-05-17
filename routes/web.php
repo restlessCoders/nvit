@@ -158,6 +158,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*Note History */
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('superadmin.noteHistoryByStId');
+
+        /*Payment Report */
+        Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('superadmin.allPaymentReportBySid');
     });
 });
 
@@ -269,6 +272,8 @@ Route::group(['middleware' => 'isSalesManager'], function () {
 
         /*Note History */
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('salesmanager.noteHistoryByStId');
+        /*Payment Report */
+        Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('salesmanager.allPaymentReportBySid');
     });
 });
 
@@ -324,6 +329,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         /*Note History */
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('salesexecutive.noteHistoryByStId');
+        /*Payment Report */
+        Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('salesexecutive.allPaymentReportBySid');
     });
 });
 
@@ -424,6 +431,8 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*Note History */
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('operationmanager.noteHistoryByStId');
+        /*Payment Report */
+        Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('operationmanager.allPaymentReportBySid');
     });
 });
 
