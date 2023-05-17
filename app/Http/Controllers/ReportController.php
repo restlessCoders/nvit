@@ -42,7 +42,7 @@ class ReportController extends Controller
         if($request->status){
             $allBatches->where('student_batches.status',$request->status);
         }
-        $allBatches = $allBatches->get();
+        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate(20);
         return view('report.batch.batch_wise_student_enroll',['executives'=>$executives,'batch_seat_count'=>$batch_seat_count,'references' => $references,'allBatches'=>$allBatches,'batches' => $batches,'batchInfo' => $batchInfo]);
     }
     public function coursewiseStudent(Request $request){

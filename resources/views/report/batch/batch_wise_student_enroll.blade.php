@@ -89,14 +89,14 @@
 				<thead>
 					<tr>
 						<th>SL.</th>
-						<th>Stu. Id</th>
+						<th>S.Id</th>
 						<th>Student Name</th>
 						<th>Executive</th>
 						@if(currentUser() == 'superadmin')
 						<th>Reference</th>
 						@endif
 						<th>Batch</th>
-						<th width="150px">Invoice Date</th>
+						<th width="120px">Invoice Date</th>
 						<th>Inv</th>
 						@if(currentUser() == 'superadmin')
 						<th>Course Price</th>
@@ -112,69 +112,71 @@
 					@foreach($allBatches as $batch)
 					{{--<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">--}}
 					<form action="" method="POST" enctype="multipart/form-data">
-					<tr>
-						<td>{{$loop->iteration}}</td>
-						<td>{{$batch->sId}}</td>
-						<td>{{$batch->sName}}</td>
-						<td>{{$batch->exName}}</td>
-						@if(currentUser() == 'superadmin')
-						<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
-						@endif
-						<td>{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}</td>
-						<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
-							@if(\DB::table('payments')
-							->join('paymentdetails','paymentdetails.paymentId','payments.id')
-							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
-							{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
+						<tr>
+							<td>{{$loop->iteration}}</td>
+							<td>{{$batch->sId}}</td>
+							<td>{{$batch->sName}}</td>
+							<td>{{$batch->exName}}</td>
+							@if(currentUser() == 'superadmin')
+							<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
+							@endif
+							<td>{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}</td>
+							<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
+								@if(\DB::table('payments')
+								->join('paymentdetails','paymentdetails.paymentId','payments.id')
+								->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
+								{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')}}
-							@else
-							-
-							@endif
-						</td>
-						<td>
-							@if(\DB::table('payments')
-							->join('paymentdetails','paymentdetails.paymentId','payments.id')
-							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
-							{{\DB::table('payments')
+								@else
+								-
+								@endif
+							</td>
+							<td>
+								@if(\DB::table('payments')
+								->join('paymentdetails','paymentdetails.paymentId','payments.id')
+								->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
+								{{\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
-							@else
-							-
+								@else
+								-
+								@endif
+							</td>
+							@if(currentUser() == 'superadmin')
+							<td>{{$batch->course_price}}</td>
+							<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
 							@endif
-						</td>
-						@if(currentUser() == 'superadmin')
-						<td>{{$batch->course_price}}</td>
-						<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
-						@endif
-						<td>
-							@if($batch->status == 2) Enroll @endif
-							@if($batch->status == 3) Knocking @endif
-							@if($batch->status == 4)Evloulation @endif
-						</td>
-						<td>
-							@if($batch->type == 1)
-							At a Time
-							@else
-							Installment
-							@endif
-						</td>
-						<td width="200px">
-						{{--<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>--}}
-							@php $sum = \DB::table('paymentdetails')
-							->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
-							->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
-							->first()
-							->total; @endphp
-							@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-warning btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
-							@else
-							<button type="button" class="btn btn-success btn-sm">Full Paid</button>
-							@endif
-							<button type="button" class="btn btn-primary btn-sm"><i class="fas fa-search mr-2"></i>View</button>
-						</td>
-					</tr>
-</form>
+							<td>
+								@if($batch->status == 2) Enroll @endif
+								@if($batch->status == 3) Knocking @endif
+								@if($batch->status == 4)Evloulation @endif
+							</td>
+							<td>
+								@if($batch->type == 1)
+								At a Time
+								@else
+								Installment
+								@endif
+							</td>
+							<td width="200px">
+								{{--<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>--}}
+								@php $sum = \DB::table('paymentdetails')
+								->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
+								->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
+								->first()
+								->total; @endphp
+								@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
+								<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+								@elseif($batch->course_price == $sum && $batch->status == 2)
+								<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+								<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History"><i class="far fa-eye mr-1"></i>Paid History</a>
+								@else
+								<button class="btn btn-danger btn-sm" style="font-weight:bold;">Due</button>
+								@endif
+							</td>
+						</tr>
+					</form>
 					@endforeach
 					@else
 					<tr>
@@ -183,14 +185,28 @@
 					@endif
 				</tbody>
 			</table>
+			{{$allBatches->links()}}
 		</div>
 	</div>
 </div> <!-- end row -->
+<div class="modal fade" id="payHisModal" tabindex="-1" role="dialog" aria-labelledby="payHisModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addNoteModalLabel">Student Name:-<span id="student_name"></span>|ID:-<span id="student_id"></span></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive" id="paymenthisTblData">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 @endsection
 @push('scripts')
-<script>
-	$('.responsive-datatable').DataTable();
-</script>
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
@@ -198,10 +214,40 @@
 		placeholder: 'Select Option',
 		allowClear: true
 	});
-	$('.reset-btn').on('click',function(){
+	$('.reset-btn').on('click', function() {
 		$('.js-example-basic-single').val(null).trigger('change');
 	});
+	$('#payHisModal').on('show.bs.modal', function(event) {
+		$('#paymenthisTblData').empty();
+		var button = $(event.relatedTarget);
+		var sId = button.data('student-id');
+		var batch_id = button.data('batch_id');
+		var systmVal = button.data('systemid');
+		var studentName = button.data('student-name');
+		var modal = $(this);
+		modal.find('#student_id').text(sId);
+		modal.find('#student_name').text(studentName);
 
+		$.ajax({
+			url: "{{route(currentUser().'.allPaymentReportBySid')}}",
+			method: 'GET',
+			dataType: 'json',
+			data: {
+				systmVal: systmVal,
+				sId: sId,
+				batchId: batch_id
+			},
+			success: function(res) {
+				console.log(res.data);
+
+				$('#paymenthisTblData').append(res.data);
+			},
+			error: function(e) {
+				console.log(e);
+			}
+		});
+
+	});
 </script>
 @if(Session::has('response'))
 <script>

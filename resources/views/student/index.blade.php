@@ -130,6 +130,15 @@
 						</select>
 					</div>
 					@endif
+					<div class="col-sm-4">
+						<label for="name" class="col-form-label">Status</label>
+						<select name="status" class="js-example-basic-single form-control me-3">
+							<option value="">Select</option>
+							<option value="all">All</option>
+							<option value="2">Closed</option>
+							<option value="4">Awiting</option>
+						</select>
+					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
 						<a href="{{ route(currentUser().'.allStudent') }}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
@@ -297,8 +306,8 @@
 											<th>Sl.</th>
 											<th>Recall Date</th>
 											<th>Note</th>
-											<th>Created By</th>
-											<th>Created On</th>
+											<th>Notes By</th>
+											<th>Posted On</th>
 										</tr>
 									</thead>
 									<tbody id="note-history">

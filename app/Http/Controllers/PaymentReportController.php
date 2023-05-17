@@ -66,7 +66,7 @@ class PaymentReportController extends Controller
     }
     public function allPaymentReportBySid(Request $request)
     {
-
+        DB::connection()->enableQueryLog();
         $payments = DB::table('paymentdetails')
             ->select('batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
             ->join('student_batches', 'paymentdetails.batchId', '=', 'student_batches.batch_id')
@@ -87,6 +87,9 @@ class PaymentReportController extends Controller
         //}
 
         $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
+        $queries = \DB::getQueryLog();
+
+    //dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
@@ -113,7 +116,12 @@ class PaymentReportController extends Controller
             $data .= '<td>' . $sl . '</td>';
             /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
                         <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
-            $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            if(!empty($p->invoiceId)){
+                $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            }else{
+                $data .= '<td>-</td>';
+            }
+                        
             $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
             $data .= '<td>' . $p->accountNote . '</td>';
             $data .= '<td>' . $p->batchName . '</td>';
@@ -126,7 +134,12 @@ class PaymentReportController extends Controller
             else
                 $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
-            $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+            if(!empty($p->dueDate)){
+                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+            }else{
+                $data .= '<td>-</td>';
+            }
+            
             /*$data .= '<td width="150px">
                                     <p class="text-left m-0 p-0">Paid By:-</p>
                                     <p class="text-left m-0 p-0">Paid:' . \Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')  . '</p>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Note;
+use App\Models\Student;
 use Illuminate\Http\Request;
 
 class NoteController extends Controller
@@ -91,9 +92,10 @@ class NoteController extends Controller
     }
     public function note_by_student_id(Request $request){
         $notes = Note::where('student_id',$request->student_id)->orderBy('id','desc')->get();
-        $index = 1;
+        $exe_note = Student::where('id',$request->student_id)->first();
+        $index = 2;
         $data = '';
-        if(count($notes) > 0){
+        if(count($notes) > 0 || !empty($exe_note)){
             foreach($notes as $note){
                 $data .= '<tr>';
                 $data .= '<td>'.$index++.'</td>';
@@ -103,6 +105,13 @@ class NoteController extends Controller
 				$data .= '<td>'.$note->created_at.'</td>';
                 $data .= '</tr>';
             }
+            $data .= '<tr>';
+            $data .= '<td>1</td>';
+            $data .= '<td width="120px">'.\Carbon\Carbon::createFromTimestamp(strtotime($exe_note->executiveReminder))->format('j M, Y').'</td>';
+            $data .= '<td>'.$exe_note->executiveNote.'</td>';
+            $data .= '<td>'.currentUser().'</td>';
+            $data .= '<td>'.$exe_note->created_at.'</td>';
+            $data .= '</tr>';
 
         }else{
             $data .= '<tr><td colspan="5">No Note Found</td></tr>';
