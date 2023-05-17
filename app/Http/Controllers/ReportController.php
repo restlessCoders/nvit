@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use DB;
 
 use App\Models\Batch;
+use App\Models\Batchslot;
+use App\Models\Batchtime;
 use App\Models\Course;
 use App\Models\User;
 use App\Models\Reference;
@@ -49,12 +51,16 @@ class ReportController extends Controller
         $courses = Course::where('status',1)->get();
         $courseInfo = Course::find($request->course_id);
         $references = Reference::all();
+        $batch_slots = Batchslot::all();
+        $batch_times = Batchtime::all();
         $executives = User::whereIn('roleId',[1,3,9])->get();
       
         $courses_pre = DB::table('course_preferences')
-            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','course_preferences.course_id','courses.courseName','course_preferences.batch_slot_id','course_preferences.batch_time_id')
+            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.username as exName','course_preferences.course_id','courses.courseName','course_preferences.batch_slot_id','course_preferences.batch_time_id')
             ->join('courses','course_preferences.course_id','=','courses.id')
             ->join('students','students.id','=','course_preferences.student_id')
+            ->join('batchslots','course_preferences.batch_slot_id','=','batchslots.id')
+            ->join('batchtimes','course_preferences.batch_time_id','=','batchtimes.id')
             ->join('users','users.id','=','students.executiveId');
 
         if($request->course_id){
@@ -65,9 +71,18 @@ class ReportController extends Controller
         }
         if($request->executiveId){
             $courses_pre->where('students.executiveId',$request->executiveId);
-        }    
-        $courses_pre = $courses_pre->get();
-        return view('report.course.course_wise_student',['executives'=>$executives,'references' => $references,'courses_pre'=>$courses_pre,'courses' => $courses,'courseInfo' => $courseInfo]);
+        }  
+        if($request->executiveId){
+            $courses_pre->where('students.executiveId',$request->executiveId);
+        }
+        if($request->slotId){
+            $courses_pre->where('course_preferences.batch_slot_id',$request->slotId);
+        }  
+        if($request->timeId){
+            $courses_pre->where('course_preferences.batch_time_id',$request->timeId);
+        } 
+        $courses_pre = $courses_pre->orderBy('course_preferences.created_at', 'desc')->paginate(20);
+        return view('report.course.course_wise_student',['batch_times' => $batch_times,'batch_slots' => $batch_slots,'executives'=>$executives,'references' => $references,'courses_pre'=>$courses_pre,'courses' => $courses,'courseInfo' => $courseInfo]);
     }
     public function batchwiseAttendance(){
         $batches = Batch::all();

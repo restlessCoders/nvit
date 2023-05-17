@@ -28,9 +28,9 @@
 			<form action="{{route(currentUser().'.coursewiseStudent')}}" method="post" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="course_id" class="col-form-label">Select Course</label>
-						<select name="course_id" class="js-example-basic-single form-control" required>
+						<select name="course_id" class="js-example-basic-single form-control">
 							<option value="">Select Course</option>
 							@forelse($courses as $course)
 							<option value="{{$course->id}}">{{$course->courseName}}</option>
@@ -38,7 +38,7 @@
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="executiveId" class="col-form-label">Select Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control">
 							<option value="">Select Executive</option>
@@ -48,7 +48,7 @@
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="refId" class="col-form-label">Select Reference</label>
 						<select name="refId" class="js-example-basic-single form-control">
 							<option value="">Select Reference</option>
@@ -58,8 +58,29 @@
 							@endforelse
 						</select>
 					</div>
+					<div class="col-sm-3">
+						<label for="refId" class="col-form-label">Select Slot</label>
+						<select name="slotId" class="js-example-basic-single form-control">
+							<option value="">Select Batch Slot</option>
+							@forelse($batch_slots as $bs)
+							<option value="{{$bs->id}}">{{$bs->slotName}}</option>
+							@empty
+							@endforelse
+						</select>
+					</div>
+					<div class="col-sm-3">
+						<label for="refId" class="col-form-label">Select Time</label>
+						<select name="timeId" class="js-example-basic-single form-control">
+							<option value="">Select Batch Time</option>
+							@forelse($batch_times as $bt)
+							<option value="{{$bt->id}}">{{$bt->time}}</option>
+							@empty
+							@endforelse
+						</select>
+					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+						<button type="submit" class="btn btn-primary mr-1"><i class="fa fa-search fa-sm"></i></button>
+						<a href="{{route(currentUser().'.coursewiseStudent')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
 			</form>
@@ -77,8 +98,8 @@
 						<th>Executive</th>
 						<th>Reference</th>
 						<th>Course</th>
-						<th>Batch Slot</th>
-						<th>Batch Time</th>
+						<th width="200px">Batch Slot</th>
+						<th width="200px">Batch Time</th>
 						
 					</tr>
 				</thead>
@@ -103,6 +124,7 @@
 					@endif
 				</tbody>
 			</table>
+			{{$courses_pre->links()}}
 		</div>
 	</div>
 </div> <!-- end row -->

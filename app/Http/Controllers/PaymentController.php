@@ -116,11 +116,11 @@ class PaymentController extends Controller
         return response()->json(array('data' => $data, 'sdata' => $stData));
     }
     public function paymentData(Request $request)
-    {
+    {\DB::connection()->enableQueryLog();
         $stData = DB::table('student_batches')
             ->join('students', 'student_batches.student_id', '=', 'students.id')
             ->join('batches', 'student_batches.batch_id', '=', 'batches.id')
-            ->leftjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
+            ->rightjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
             ->groupBy('student_batches.batch_id', 'student_batches.systemId')
@@ -130,10 +130,13 @@ class PaymentController extends Controller
                 'student_batches.course_price',
                 'student_batches.entryDate',
                 'student_batches.batch_id',
-                'paymentdetails.discount',
-                DB::raw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid')
+                'student_batches.student_id',
+                //DB::raw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid')
             )
             ->get();
+            $queries = \DB::getQueryLog();
+
+   // dd($queries);
         //return response()->json(array('sdata' => $stData));
 
         $data = '<h5 style="font-size:18px;line-height:20px;">Recipt Details</h5>';
@@ -184,8 +187,12 @@ class PaymentController extends Controller
             </thead>';
         $tPayable = 0;
         foreach ($stData as $key => $s) {
-            $tPayable += ($s->course_price - ($s->cpaid + $s->discount));
-            if ($s->course_price - ($s->cpaid + $s->discount) > 0) {
+            $pay_detl = DB::table('paymentdetails')
+            ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
+            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
+            ->get();
+            $tPayable += ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
+            if ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
                 $data .= '<td>
                                 <input type="hidden" value="' . $s->batch_id . '">
@@ -216,7 +223,7 @@ class PaymentController extends Controller
                 $data .= '<option selected value="1">Registration</option><option value="2" required>Course</option></select></td>';
                 $data .= '<td><input type="text" name="discount[]" class="paidpricebyRow form-control" id="discountbyRow_' . $key . '"  onkeyup="checkPrice(' . $key . ')"></td>';
                 $data .= '<td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" required id="paidpricebyRow_' . $key . '" onkeyup="checkPrice(' . $key . ')"></td>';
-                $data .= '<td><input name="cPayable[]" type="text" class="form-control" readonly value="' . ($s->course_price - ($s->cpaid + $s->discount)) . '" id="coursepricebyRow_' . $key . '"></td>';
+                $data .= '<td><input name="cPayable[]" type="text" class="form-control" readonly value="' . ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount)) . '" id="coursepricebyRow_' . $key . '"></td>';
                 $data .= '</tr>';
                 $data .= '<script>$("input[name=\'paymentDate\'],#dueDate_' . $key . '").daterangepicker({
                     singleDatePicker: true,
@@ -330,6 +337,7 @@ class PaymentController extends Controller
 
             //$m_price	    = $request->post('m_price');
             foreach ($request->cpaidAmount as $key => $cdata) {
+                if($cpaidAmount[$key] <>0){
                 /*if($cPayable[$key] == $cpaidAmount[$key]){
                     $payment_detail['type']             = 0;
                 }*/
@@ -343,7 +351,7 @@ class PaymentController extends Controller
                 //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
                 $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
                 
-                if ($cpaidAmount[$key] < $cPayable[$key]+$discount[$key]) {
+                if ($cpaidAmount[$key] < $cPayable[$key]+$discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] ==2) {
                     //$payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
                     $date = new Carbon($dueDate[$key]);
                     $date->addMonth();
@@ -387,6 +395,7 @@ class PaymentController extends Controller
                 }
                 DB::commit();
             }
+        }
             return response()->json(['success' => 'Payment Complete successfully.']);
             //return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));
 

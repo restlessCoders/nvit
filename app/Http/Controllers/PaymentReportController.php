@@ -68,7 +68,7 @@ class PaymentReportController extends Controller
     {
         DB::connection()->enableQueryLog();
         $payments = DB::table('paymentdetails')
-            ->select('batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
+            ->select('student_batches.course_price','batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
             ->join('student_batches', 'paymentdetails.batchId', '=', 'student_batches.batch_id')
             ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
@@ -96,11 +96,11 @@ class PaymentReportController extends Controller
                 <thead>
                     <tr>
                         <th>SL.</th>
-                        <th>Invoice|Date</th>
-                        <th>MR|Date</th>
+                        <th width="120px">Invoice & Date</th>
+                        <th width="120px">MR & Date</th>
                         <th>Note</th>
                         <th>Batch</th>
-                        <th>Payable</th>
+                        <th>Invoice Amt.</th>
                         <th>Paid</th>
                         <th>Dis</th>
                         <th>Due</th>
@@ -125,7 +125,7 @@ class PaymentReportController extends Controller
             $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
             $data .= '<td>' . $p->accountNote . '</td>';
             $data .= '<td>' . $p->batchName . '</td>';
-            $data .= '<td>' . $p->cPayable . '</td>';
+            $data .= '<td>' . /*$p->cPayable*/$p->course_price . '</td>';
             $data .= '<td>' . $p->cpaidAmount . '</td>';
             $data .= '<td>' . $p->discount . '</td>';
             $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
@@ -134,10 +134,10 @@ class PaymentReportController extends Controller
             else
                 $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
-            if($p->feeType ==2){
-                $data .= '<td>-</td>';  
-            }else{
+            if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
                 $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+            }else{
+                $data .= '<td>-</td>';  
             }
             
             /*$data .= '<td width="150px">

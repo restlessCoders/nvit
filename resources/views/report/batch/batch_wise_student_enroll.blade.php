@@ -170,7 +170,7 @@
 								<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
 								@elseif($batch->course_price == $sum && $batch->status == 2)
 								<button type="button" class="btn btn-success btn-sm">Full Paid</button>
-								<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History"><i class="far fa-eye mr-1"></i>Paid History</a>
+								<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History"><i class="far fa-eye mr-1"></i>History</a>
 								@else
 								<button class="btn btn-danger btn-sm" style="font-weight:bold;">Due</button>
 								@endif

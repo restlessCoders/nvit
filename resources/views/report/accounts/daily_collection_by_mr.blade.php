@@ -119,7 +119,7 @@
 						<th>Inv</th>
 						<th>Type</th>
 						<th>Due Date</th>
-						<th>Payable</th>
+						<th>Invoice Amt.</th>
 						<th>Paid</th>
 						<th>Dis</th>
 						<th>Due</th>
@@ -167,7 +167,11 @@
 						<td>-</td>
 						<td>-</td>
 						@else
+						@if($p->cpaidAmount+$p->discount == $p->cPayable)
+						<td class="align-middle">-</td>
+						@else
 						<td class="align-middle"><strong class="text-danger" style="font-size:12px;">@if($p->dueDate){{date('d M Y',strtotime($p->dueDate))}} @else - @endif</strong></td>
+						@endif
 						<td class="align-middle">{{$p->cPayable}}</td>
 						<td class="align-middle">{{$p->cpaidAmount}}</td>
 						<td class="align-middle">{{$p->discount?$p->discount:0}}</td>
