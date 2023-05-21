@@ -33,7 +33,7 @@
     <div class="col-xl-8">
         <div class="row">
             <div class="col-md-6 d-none d-md-block">
-                <img src="../backend/images/dashboard_bg_image.jpg" class="img-fluid">
+                <img src="{{asset('backend/images/dashboard_bg_image.jpg')}}" class="img-fluid">
             </div>
             <div class="col-md-3">
                 <div class="card-box tilebox-one">
@@ -168,65 +168,10 @@
 <!-- end row -->
 
 
-<div class="row">
-    <div class="col-xl-6">
-        <div class="card-box">
-            <h4 class="header-title mb-3">Today Stucent Recall List</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered mb-0">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Last Recall</th>
-                            <th>Last Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recall_students as $rs)
-                        <tr>
-                            <td>{{$rs->student_id}}</td>
-                            <td>{{$rs->name}}</td>
-                            <td>{{$rs->re_call_date}}</td>
-                            <td>
-                                <p>{{$rs->note}}</p>
-                            </td>
-                        </tr>
-                        @empty
-                        @endforelse
-                    </tbody>
-                </table>
-                <div class="my-3">{{$recall_students->links()}}</div>
-            </div>
-        </div>
-    </div><!-- end col-->
-    <div class="col-xl-6">
-        <div class="card-box">
-            <h4 class="header-title mb-3">Today Due Collection List</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered mb-0">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>BatchId</th>
-                            <th>Due</th>
-                            <th>Due Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div><!-- end col-->
-</div>
-<!-- end row -->
 @endsection
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-       
-    </script>
+
+</script>
 @endpush

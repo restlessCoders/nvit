@@ -33,7 +33,7 @@
     <div class="col-xl-8">
         <div class="row">
             <div class="col-md-6 d-none d-md-block">
-                <img src="../backend/images/dashboard_bg_image.jpg" class="img-fluid">
+                <img src="{{asset('backend/images/dashboard_bg_image.jpg')}}" class="img-fluid">
             </div>
             <div class="col-md-3">
                 <div class="card-box tilebox-one">
@@ -173,6 +173,6 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-       
-    </script>
+
+</script>
 @endpush
