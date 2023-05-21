@@ -23,7 +23,7 @@ class ReportController extends Controller
         $batch_seat_count = DB::table('student_batches')->where('batch_id',$request->batch_id)->count('student_id');
       
         $allBatches = DB::table('student_batches')
-            ->select('student_batches.systemId','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id','student_batches.type','student_batches.course_price','student_batches.pstatus')
+            ->select('student_batches.id as sb_id','student_batches.systemId','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id','student_batches.type','student_batches.course_price','student_batches.pstatus')
             ->join('students','students.id','=','student_batches.student_id')
             ->join('users','users.id','=','students.executiveId');
             
@@ -85,8 +85,8 @@ class ReportController extends Controller
         return view('report.course.course_wise_student',['batch_times' => $batch_times,'batch_slots' => $batch_slots,'executives'=>$executives,'references' => $references,'courses_pre'=>$courses_pre,'courses' => $courses,'courseInfo' => $courseInfo]);
     }
     public function batchwiseAttendance(){
-        $batches = Batch::all();
-        return view('report.attendance.batch_wise_attendance',compact('batches'));
+        $batches = Batch::where('status',1)->get();
+        return view('report.complete.batch_wise_complete',compact('batches'));
     }
     public function batchwiseAttendanceReport(Request $request){
         $batch_data = Batch::find($request->batch_id);
@@ -180,5 +180,106 @@ class ReportController extends Controller
 
        return response()->json(array('data' =>$data));
   
+    }
+    public function batchwiseCompletion(){
+        $batches = Batch::all();
+        return view('report.complete.batch_wise_complete',compact('batches'));
+    }
+    public function batchwiseCompletionReport(Request $request){
+        $batch_data = Batch::find($request->batch_id);
+        $image_path = asset('backend/images/logo.webp');
+       $data = '<div class="col-md-12 text-center">';
+       $data .= '<div class="row">';
+       $data .= '<div class="col-md-2"><img src='.$image_path.' alt="" height="80"></div>';
+       $data .= '<div class="col-md-10">';
+       $data .=     '<h4 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
+       $data .=     '<p class="m-0" style="font-size:10px"><strong>Trainer\'s Attendance Roster</strong></p>';
+       $data .=     '<p class="m-0 d-flex justify-content-end">
+                        <strong>Started On : '.\Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y').'</strong>
+                        <strong>'.\DB::table('batchslots')->where('id',$batch_data->bslot)->first()->slotName.'</strong>
+                        <strong>'.\DB::table('batchtimes')->where('id',$batch_data->btime)->first()->time.'</strong>
+                        <strong>Trainer : '.\DB::table('users')->where('id',$batch_data->trainerId)->first()->name.'</strong>
+                        <strong>Course : '.\DB::table('courses')->where('id',$batch_data->courseId)->first()->courseName.'</strong>
+                        <strong>Batch : '.$batch_data->batchId.'</strong></p>';
+       $data .= '</div>';
+       $data .= '</div>';
+       $data .= '</div>';
+
+
+       $startDate = new DateTime($batch_data->startDate);
+       $endDate = new DateTime($batch_data->endDate);
+
+       // Create a DateInterval of 1 day
+       $interval = new DateInterval('P1D');
+ 
+        $data .='<table class="table table-sm" style="border:1px solid #000;color:#000;">
+                    <tbody>
+                        <tr>
+                            <th width="120px" rowspan="3" class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Student Name</strong></th>
+                            <th width="40px" rowspan="3" class="align-middle" style="border:1px solid #000;;color:#000;"><strong>INV</strong></th>
+                            <th width="140px" style="border:1px solid #000;;color:#000;"><strong>Class Date</strong></th>';
+                            // Loop through the date range
+                            //$count = $request->count_class;
+                            $count = 0;
+                            $date = $startDate;
+                            while ( $date <= $endDate) {
+                            
+                            // Check if the current date is a Saturday, Monday or Wednesday
+                            if ($date->format('l') == 'Saturday' || $date->format('l') == 'Monday' || $date->format('l') == 'Wednesday') {
+                            // Display the date in a column
+                                if($count < 17){  
+                                    /*Carbon\Carbon::createFromTimestamp(strtotime($date->format('Y-m-d')))->format('j/m/y')*/
+                                    $data .='<td style="border:1px solid #000;;color:#000;"></td>';
+                                }
+                                $count ++;    
+                                }
+                                $date->add($interval);
+                            }
+                            if($count > 17) $count = 17;
+        $data .=    '</tr>
+                        <tr>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Trainer Sign:</strong></th>';
+                            for($i=0;$i< $count;$i++){
+                                $data .= '<td class="cell" rowspan="2" style="border:1px solid #000;color:#000;"></td>';   
+                            }
+        $data .=    '</tr>';
+        $data .=    '<tr>
+                            <th style="border:1px solid #000;color:#000;"><strong>AE:</strong></th>';
+        $data .=    '</tr>';
+                    if($request->batch_id){
+                        $batch_students = DB::table('student_batches')->where('batch_id',$request->batch_id)->where('status',2)->get();
+                    }
+                    foreach($batch_students as $batch_student){
+                        $s_data = \DB::table('students')->where('id',$batch_student->student_id)->first();
+                        $data .= '<tr>';
+                        $data .= '<td style="border:1px solid #000;color:#000;">'.$s_data->name.'</td>';
+                        $data .= '<td style="border:1px solid #000;color:#000;">';
+                        if(\DB::table('payments')
+                        ->join('paymentdetails','paymentdetails.paymentId','payments.id')
+                        ->where(['paymentdetails.batchId'=> $request->batch_id,'paymentdetails.studentId'=>$batch_student->student_id])->whereNotNull('payments.invoiceId')->exists()){
+                        $data .=\DB::table('payments')->join('paymentdetails','paymentdetails.paymentId','payments.id')->where(['paymentdetails.batchId'=> $request->batch_id,'paymentdetails.studentId'=>$batch_student->student_id])->whereNotNull('payments.invoiceId')->first()->invoiceId;
+                        }else{
+                            $data .= '-';
+                        }
+                        '</td>';
+                        $data .= '<td style="border:1px solid #000;color:#000;">'.\DB::table('users')->where('id',$s_data->executiveId)->first()->name.'</td>';
+                        for($i=0;$i< $count;$i++){
+                            $data .= '<td style="border:1px solid #000;color:#000;"></td>';   
+                        }
+                        $data .= '</tr>';
+                    }
+        $data .=    '</tbody>
+                </table>';
+   
+
+               
+     
+
+       return response()->json(array('data' =>$data));
+  
+    }
+    public function editEnrollStudent($id){
+        $enroll_data = DB::table('student_batches')->where('id',encryptor('decrypt', $id))->first();
+        print_r($enroll_data);die;
     }
 }

@@ -44,6 +44,20 @@
             text-align: center;
             max-height: 70px;
         }
+
+
+        .navbar-custom {
+            background-color: #fff;
+            border-bottom: 2px solid #ddd;
+        }
+
+        #topnav .topbar-menu {
+            margin-top: 0px;
+        }
+
+        #topnav .navbar-toggle span {
+            background-color: #6c757d;
+        }
     </style>
     <!--begin::Page Scripts(used by this page)-->
     @stack('styles')
@@ -54,10 +68,93 @@
     <div id="app">
         <!-- Navigation Bar-->
         <header id="topnav">
-            <div class="topbar-menu" style="margin-top:0px">
+            <!-- Topbar Start -->
+            <div class="navbar-custom d-md-none">
+                <div class="container-fluid">
+                    <ul class="list-unstyled topnav-menu float-right mb-0">
+
+                        <li class="dropdown notification-list">
+                            <!-- Mobile menu toggle-->
+                            <a class="navbar-toggle nav-link">
+                                <div class="lines">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </a>
+                            <!-- End mobile menu toggle-->
+                        </li>
+
+
+
+                        <li class="dropdown notification-list">
+                            <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                <img src="{{asset('backend/images/users/avatar-1.jpg')}}" alt="user-image" class="rounded-circle">
+                                <i class="mdi mdi-chevron-down d-none d-sm-inline-block"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
+                                <!-- item-->
+                                <div class="dropdown-header noti-title">
+                                    <h6 class="text-overflow text-white m-0">Welcome ! {{ encryptor('decrypt', Session::get('username')) }}</h6>
+                                </div>
+
+                                <!-- item-->
+                                <a href="{{route(currentUser().'.userProfile')}}" class="dropdown-item notify-item">
+                                    <i class="mdi mdi-account-outline"></i>
+                                    <span>Profile</span>
+                                </a>
+
+                                <!-- item-->
+                                {{--<a href="javascript:void(0);" class="dropdown-item notify-item">
+                                            <i class="mdi mdi-settings-outline"></i>
+                                            <span>Settings</span>
+                                        </a>--}}
+
+
+                                <div class="dropdown-divider"></div>
+
+                                <!-- item-->
+                                <a class="dropdown-item notify-item" href="{{route('logOut')}}">
+                                    <i class="mdi mdi-logout-variant"></i>
+                                    <span>Logout</span>
+                                </a>
+
+                            </div>
+                        </li>
+
+                    </ul>
+
+                    <!-- LOGO -->
+                    <div class="logo-box">
+                        <a href="index.html" class="logo text-center">
+                            <span class="logo-lg">
+                                <img src="{{asset('backend/images/logo.webp')}}" alt="" height="22">
+                                <!-- <span class="logo-lg-text-dark">Uplon</span> -->
+                            </span>
+                            <span class="logo-sm">
+                                <!-- <span class="logo-lg-text-dark">U</span> -->
+                                <img src="{{asset('backend/images/logo.webp')}}" alt="" width="70px" height="45px">
+                            </span>
+                        </a>
+
+                    </div>
+
+                </div> <!-- end container-fluid-->
+            </div>
+            <!-- end Topbar -->
+            <div class="topbar-menu">
                 <div class="container-fluid">
                     <div id="navigation">
                         <!-- Navigation Menu-->
+                        <!-- LOGO -->
+                        <div class="logo-box">
+                            <a href="index.html" class="logo text-center">
+                                <span class="logo-lg">
+                                    <img src="{{asset('backend/images/logo.webp')}}" alt="" width="70px" height="45px">
+                                    <!-- <span class="logo-lg-text-dark">Uplon</span> -->
+                                </span>
+                            </a>
+                        </div>
                         <ul class="navigation-menu">
                             <li class="has-submenu @if(Request::segment(2) == 'dashboard') active @endif">
                                 <a href="{{route(currentUser().'Dashboard')}}">
@@ -217,6 +314,12 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Batch Completion Report<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </li>
 
@@ -236,7 +339,8 @@
 
                         </ul>
 
-                        <div class="navbar-right">
+
+                        <div class="navbar-right d-none d-md-block">
                             <ul class="list-unstyled topnav-menu float-right mb-0">
                                 <li class="dropdown notification-list">
                                     <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
@@ -257,10 +361,10 @@
                                         </a>
 
                                         <!-- item-->
-                                        <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                        {{--<a href="javascript:void(0);" class="dropdown-item notify-item">
                                             <i class="mdi mdi-settings-outline"></i>
                                             <span>Settings</span>
-                                        </a>
+                                        </a>--}}
 
 
                                         <div class="dropdown-divider"></div>
@@ -372,7 +476,7 @@
 
     <!--Morris Chart-->
     <script src="{{asset('backend/libs/morris-js/morris.min.js')}}"></script>
-    <!-- <script src="{{asset('backend/libs/raphael/raphael.min.js')}}"></script> -->
+    <script src="{{asset('backend/libs/raphael/raphael.min.js')}}"></script>
 
     <!-- Dashboard init js-->
     <script src="{{asset('backend/js/pages/dashboard.init.js')}}"></script>

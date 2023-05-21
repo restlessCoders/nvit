@@ -372,7 +372,7 @@ class OtherPaymentController extends Controller
                     'paymentDate'       =>  date('Y-m-d',strtotime($request->paymentDate)),
                     'studentId'         =>  $request->studentId,
                     'executiveId'       =>  $request->executiveId,
-                    'createdBy'         =>  encryptor('decrypt', $request->userId),
+                    'created_by'         =>  encryptor('decrypt', $request->userId),
                     'invoiceId'         =>  $request->invoiceId?$request->invoiceId:null,
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,

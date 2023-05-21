@@ -161,6 +161,8 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('superadmin.allPaymentReportBySid');
+        /*Chart Data */
+        //Route::get('/chart-data', [DashboardController::class, 'chartData'])->name('superadmin.chartData');
     });
 });
 
@@ -410,6 +412,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
+        Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('operationmanager.editEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
 
         /*==Batch Transfer==*/
@@ -433,6 +436,10 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('operationmanager.noteHistoryByStId');
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('operationmanager.allPaymentReportBySid');
+
+        /*Batch Completion Report */
+        Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('operationmanager.batchwiseCompletion');
+        Route::get('/batch/wise/completion/report', [ReportController::class, 'batchwiseCompletionReport'])->name('operationmanager.batchwiseCompletionReport');
     });
 });
 
@@ -532,3 +539,4 @@ Route::group(['middleware' => 'isTrainer'], function () {
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('trainer.batchwiseEnrollStudent');
     });
 });
+

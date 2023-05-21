@@ -120,7 +120,7 @@ class PaymentController extends Controller
         $stData = DB::table('student_batches')
             ->join('students', 'student_batches.student_id', '=', 'students.id')
             ->join('batches', 'student_batches.batch_id', '=', 'batches.id')
-            ->rightjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
+            ->leftjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
             ->groupBy('student_batches.batch_id', 'student_batches.systemId')
@@ -136,7 +136,7 @@ class PaymentController extends Controller
             ->get();
             $queries = \DB::getQueryLog();
 
-   // dd($queries);
+    //dd($queries);
         //return response()->json(array('sdata' => $stData));
 
         $data = '<h5 style="font-size:18px;line-height:20px;">Recipt Details</h5>';

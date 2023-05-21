@@ -67,7 +67,7 @@ class BatchController extends Controller
     }
     public function index(Request $request)
     {
-        $allBatch = Batch::orderBy('id', 'DESC')->paginate(25);
+        $allBatch = Batch::where('status',1)->orderBy('id', 'DESC')->paginate(25);
         /*$allBatch = DB::table('batches')
         ->join('student_batches','batches.id','=','student_batches.batch_id','left')
         ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,batches.created_by,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')

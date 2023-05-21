@@ -530,8 +530,9 @@ class StudentController extends Controller
         $allStudent = DB::table('students')
             ->selectRaw("students.name,students.id,student_batches.batch_id")
             ->join('student_batches', 'student_batches.student_id', '=', 'students.id', 'left')
+            ->join('batch_transfers', 'student_batches.student_id', '=', 'batch_transfers.student_id', 'left')
             ->where(['student_batches.status' => 2])
-            ->groupBy('student_batches.batch_id', 'students.id', 'students.name')
+            ->groupBy('student_batches.student_id')
             ->get();
         return view('student.batchTransfer', compact('allStudent'));
     }
@@ -555,7 +556,8 @@ class StudentController extends Controller
                 'batch_id' => $request->newbatchId,
                 'updated_at' => Carbon::now()
             );
-            DB::table('student_batches')->where(['id' => $request->student_id, 'batch_id' => $request->curbatchId])->update($data);
+            DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->curbatchId])->update($data);
+
             /*=== Here Need To update Payment Details Batch Id If Batch Id Has Changed=== */
             $data2 = array(
                 'student_id' => $request->student_id,
@@ -586,10 +588,17 @@ class StudentController extends Controller
     }
     public function studentEnrollBatch(Request $request)
     {
+        //\DB::connection()->enableQueryLog();
+        $curbatchId = DB::table('batch_transfers')->where(['student_id' => $request->id])->pluck('curbatchId')->toArray();
+        $queries = \DB::getQueryLog();
+
+        //dd($queries);
+ 
         $e_data = DB::table('student_batches')
             ->selectRaw("student_batches.batch_id,batches.batchId")
             ->join('batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
             ->where(['student_id' => $request->id, 'student_batches.status' => 2])
+            ->whereNotIn('student_batches.batch_id', $curbatchId)
             ->groupBy('student_batches.batch_id', 'batches.batchId')
             ->get();
         $data = '<label for="curbatchId" class="col-sm-3 col-form-label">From Batch</label>
@@ -601,9 +610,11 @@ class StudentController extends Controller
         }
         $data .= '</select></div>';
 
+        $newbatchId = DB::table('batch_transfers')->where(['student_id' => $request->id])->pluck('newbatchId')->toArray();
         $allBatch = DB::table('batches')
             ->join('student_batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
             ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
+            ->whereNotIn('student_batches.batch_id', $newbatchId)
             ->groupBy('student_batches.batch_id')
             ->get();
 

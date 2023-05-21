@@ -159,8 +159,10 @@
 								Installment
 								@endif
 							</td>
-							<td width="200px">
-								{{--<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>--}}
+							<td width="250px">
+								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
+								<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>
+								@endif
 								@php $sum = \DB::table('paymentdetails')
 								->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
 								->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
@@ -170,9 +172,11 @@
 								<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
 								@elseif($batch->course_price == $sum && $batch->status == 2)
 								<button type="button" class="btn btn-success btn-sm">Full Paid</button>
-								<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History"><i class="far fa-eye mr-1"></i>History</a>
 								@else
 								<button class="btn btn-danger btn-sm" style="font-weight:bold;">Due</button>
+								@endif
+								@if($sum > 0)
+								<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
 								@endif
 							</td>
 						</tr>

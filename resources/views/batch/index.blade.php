@@ -18,7 +18,7 @@
 		<div class="card-box">
 	
 				
-					<table class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table id="responsive-datatable" class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
 							<tr>
 								<th>SL.</th>
@@ -81,7 +81,7 @@
 							@endif
 						</tbody>
 					</table>
-					{{$allBatch->links()}}
+					{{--$allBatch->links()--}}
 				
 
 			
@@ -91,7 +91,7 @@
 @endsection
 @push('scripts')
 <script>
-	$('.responsive-datatable').DataTable();
+	$('#responsive-datatable').DataTable();
 </script>
 @if(Session::has('response'))
 <script>
