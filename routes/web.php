@@ -412,7 +412,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
-        Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('operationmanager.editEnrollStudent');
+        //Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('operationmanager.editEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
 
         /*==Batch Transfer==*/

@@ -107,7 +107,7 @@
 				</div>
 			</form>
 
-			<table class="table table-sm table-bordered mb-5 text-center" style="font-size: small;">
+			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;">
 				<thead>
 					<tr>
 						<th width="100px">Date</th>
@@ -195,7 +195,12 @@
 							<a href="" class="text-success" title="print"><i class="fas fa-print mr-1"></i></a>
 							@if(currentUser() == 'accountmanager' || currentUser() == 'superadmin')
 							<a href="{{route(currentUser().'.payment.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
-							{{--<a href="" class="text-danger" title="delete"><i class="far fa-trash-alt mr-1"></i></a>
+							{{--<form method="POST" action="{{route(currentUser().'.payment.destroy',[encryptor('encrypt', $p->paymentId)])}}" style="display: inline;">
+								@csrf
+								@method('DELETE')
+								<input name="_method" type="hidden" value="DELETE">
+								<a href="javascript:void(0)"  type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
+							</form>
 							<a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
 							<a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>--}}
 							@endif
@@ -221,7 +226,23 @@
 </script>
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
+		$('.payment').on('click', '.delete', function(event) {
+		event.preventDefault();
+		swal({
+				title: "Are you sure you want to Delete this",
+				text: "If you Delete this, it will be Deleted.",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$(this).parent().submit();
+				}
+			});
+	});
 	$('.js-example-basic-single').select2();
 	$("input[name='paymentDate']").daterangepicker({
 		singleDatePicker: true,

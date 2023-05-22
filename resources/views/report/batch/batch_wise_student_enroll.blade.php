@@ -161,7 +161,7 @@
 							</td>
 							<td width="250px">
 								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
-								<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>
+								{{--<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>--}}
 								@endif
 								@php $sum = \DB::table('paymentdetails')
 								->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')

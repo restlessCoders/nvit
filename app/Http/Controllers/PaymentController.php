@@ -582,5 +582,13 @@ class PaymentController extends Controller
      */
     public function destroy($id)
     {
+        
+        $paymentdetl = Payment::with('paymentDetail')->find(encryptor('decrypt', $id));
+        if ($paymentdetl) {
+            $paymentdetl->paymentDetail()->delete(); // Delete the associated payment details
+            $paymentdetl->delete(); // Delete the payment record itself
+            return redirect(route(currentUser() . '.daily_collection_report_by_mr'))->with($this->responseMessage(false, 'error', 'Payment Deleted'));
+        }
+        
     }
 }
