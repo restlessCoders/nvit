@@ -216,6 +216,7 @@
 					</tr>
 				</tfoot>
 			</table>
+			{{$payments->links()}}
 		</div>
 	</div>
 </div> <!-- end row -->

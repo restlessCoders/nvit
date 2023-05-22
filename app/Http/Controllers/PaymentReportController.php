@@ -17,7 +17,7 @@ class PaymentReportController extends Controller
     {
         $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
         $batches = Batch::where('status',1)->get();
-        $payments = Payment::with('paymentDetail')->orderby('id','desc')->paginate(20);
+        $payments = Payment::with('paymentDetail')->orderby('mrNo','asc')->paginate(20);
         /* echo '<pre>';
         print_r($payments->toArray());die;*/
         return view('report.accounts.daily_collection_by_mr', compact('payments', 'users', 'batches'));

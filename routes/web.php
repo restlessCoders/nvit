@@ -123,6 +123,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('superadmin.coursePreference');
+        Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('superadmin.coursePreferencEdit');
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('superadmin.courseSearch');
@@ -155,6 +156,10 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('superadmin.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('superadmin.coursewiseStudent');
+        /*Course Enroll Report */
+        Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('superadmin.coursewiseEnrollStudent');
+        Route::post('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('superadmin.coursewiseEnrollStudent');
+
 
         /*Note History */
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('superadmin.noteHistoryByStId');
@@ -267,6 +272,9 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('salesmanager.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('salesmanager.coursewiseStudent');
+        /*Course Enroll Report */
+        Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('salesmanager.coursewiseEnrollStudent');
+        Route::post('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('salesmanager.coursewiseEnrollStudent');
 
         /*Attendance Report */
         Route::get('/batch/wise/attendance', [ReportController::class, 'batchwiseAttendance'])->name('salesmanager.batchwiseAttendance');
@@ -328,6 +336,9 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('salesexecutive.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('salesexecutive.coursewiseStudent');
+        /*Course Enroll Report */
+        Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('salesexecutive.coursewiseEnrollStudent');
+        Route::post('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('salesexecutive.coursewiseEnrollStudent');
 
         /*Note History */
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('salesexecutive.noteHistoryByStId');
@@ -431,6 +442,9 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
         Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('operationmanager.coursewiseStudent');
+        /*Course Enroll Report */
+        Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('operationmanager.coursewiseEnrollStudent');
+        Route::post('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('operationmanager.coursewiseEnrollStudent');
 
         /*Note History */
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('operationmanager.noteHistoryByStId');
@@ -503,6 +517,10 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
+
+         /*Course Enroll Report */
+         Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('accountmanager.coursewiseEnrollStudent');
+         Route::post('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('accountmanager.coursewiseEnrollStudent');
     });
 });
 

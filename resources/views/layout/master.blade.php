@@ -283,9 +283,15 @@
                                 <ul class="submenu">
 
                                     <li class="has-submenu">
-                                        <a href="#">Batch <div class="arrow-down"></div></a>
+                                        <a href="#">Batch Enroll<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">Batch Wise Report</a></li>
+                                            <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">List</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu">
+                                        <a href="#">Course Enroll<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li><a href="{{route(currentUser().'.coursewiseEnrollStudent')}}">List</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif">
@@ -296,9 +302,9 @@
                                         </ul>
                                     </li>
                                     <li class="has-submenu">
-                                        <a href="#">Course <div class="arrow-down"></div></a>
+                                        <a href="#">Course Interest<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">Course Wise Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">List</a></li>
                                         </ul>
                                     </li>
                                 </ul>

@@ -14,6 +14,36 @@ use DateTime;
 use DateInterval;
 class ReportController extends Controller
 {
+    //To Show Course Wise Student Enroll Data
+    public function coursewiseEnrollStudent(Request $request){
+        $courses = Course::where('status',1)->get();
+        $courseInfo = Course::find($request->course_id);
+        $references = Reference::all();
+        $executives = User::whereIn('roleId',[1,3,9])->get();
+
+        $allCourses = DB::table('student_courses')
+            ->select('student_courses.id as sc_id','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_courses.created_at','student_courses.status','student_courses.course_id','student_courses.price')
+            ->join('students','students.id','=','student_courses.student_id')
+            ->join('users','users.id','=','students.executiveId');
+            
+  
+        if($request->course_id){
+            $allCourses->where('student_courses.course_id',$request->course_id);
+        }
+        if($request->refId){
+            $allCourses->where('students.refId',$request->refId);
+            
+        }
+        if($request->executiveId){
+            $allCourses->where('students.executiveId',$request->executiveId);
+        }    
+        if($request->status){
+            $allCourses->where('student_courses.status',$request->status);
+        }
+        $allCourses = $allCourses->orderBy('student_courses.created_at', 'desc')->paginate(20);
+
+        return view('report.course.course_wise_student_enroll',['executives'=>$executives,'references' => $references,'allCourses'=>$allCourses,'courses' => $courses,'courseInfo' => $courseInfo]);
+    }
     //To Show Batchwise Student Enroll Data
     public function batchwiseEnrollStudent(Request $request){
         $batches = Batch::where('status',1)->get();
@@ -56,7 +86,7 @@ class ReportController extends Controller
         $executives = User::whereIn('roleId',[1,3,9])->get();
       
         $courses_pre = DB::table('course_preferences')
-            ->select('students.id as sId','students.name as sName','students.contact','students.refId','users.username as exName','course_preferences.course_id','courses.courseName','course_preferences.batch_slot_id','course_preferences.batch_time_id')
+            ->select('course_preferences.created_at','course_preferences.updated_at','students.id as sId','students.name as sName','students.contact','students.refId','users.username as exName','course_preferences.course_id','courses.courseName','course_preferences.batch_slot_id','course_preferences.batch_time_id')
             ->join('courses','course_preferences.course_id','=','courses.id')
             ->join('students','students.id','=','course_preferences.student_id')
             ->join('batchslots','course_preferences.batch_slot_id','=','batchslots.id')

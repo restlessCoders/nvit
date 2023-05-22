@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Course Wise Studnet List')
+@section('title', 'Course Wise Studnet Enroll List')
 @push('styles')
 <link href="{{asset('backend/libs/multiselect/multi-select.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
@@ -15,43 +15,44 @@
 					<li class="breadcrumb-item active">List</li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Course Students</h4>
+			<h4 class="page-title">All Enrolled Students</h4>
 		</div>
 	</div>
 	<div class="col-12">
 		<div class="card-box">
 			<div class="col-md-12 text-center">
 				<h5>NEW VISION INFORMATION TECHNOLOGY LTD.</h5>
-				<p class="p-0" style="font-size:16px"><strong>Course Wise Report</strong></p>
+				<p class="p-0" style="font-size:16px"><strong>Course Enroll Report</strong></p>
 			</div>
 
-			<form action="{{route(currentUser().'.coursewiseStudent')}}" method="post" role="search">
+			<form action="{{route(currentUser().'.coursewiseEnrollStudent')}}" method="post" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-2">
-						<label for="course_id" class="col-form-label">Select Course</label>
+					<div class="col-sm-3">
+						<label for="batch_id" class="col-form-label">Select Course</label>
 						<select name="course_id" class="js-example-basic-single form-control">
-							<option value="">Select Course</option>
-							@forelse($courses as $course)
-							<option value="{{$course->id}}">{{$course->courseName}}</option>
+							<option></option>
+							@forelse($courses as $c)
+							<option value="{{$c->id}}">{{$c->courseName}}</option>
 							@empty
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-3">
 						<label for="executiveId" class="col-form-label">Select Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control">
-							<option value="">Select Executive</option>
+							<option></option>
 							@forelse($executives as $e)
 							<option value="{{$e->id}}">{{$e->name}}</option>
 							@empty
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-2">
+					@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
+					<div class="col-sm-3">
 						<label for="refId" class="col-form-label">Select Reference</label>
 						<select name="refId" class="js-example-basic-single form-control">
-							<option value="">Select Reference</option>
+							<option></option>
 							@forelse($references as $ref)
 							<option value="{{$ref->id}}">{{$ref->refName}}</option>
 							@empty
@@ -59,28 +60,17 @@
 						</select>
 					</div>
 					<div class="col-sm-3">
-						<label for="refId" class="col-form-label">Select Slot</label>
-						<select name="slotId" class="js-example-basic-single form-control">
-							<option value="">Select Batch Slot</option>
-							@forelse($batch_slots as $bs)
-							<option value="{{$bs->id}}">{{$bs->slotName}}</option>
-							@empty
-							@endforelse
+						<label for="status" class="col-form-label">Select Status</label>
+						<select class="js-example-basic-single form-control" id="status" name="status">
+							<option value=""></option>
+							<option value="1">Paid</option>
+							<option value="2">Due</option>
 						</select>
 					</div>
-					<div class="col-sm-3">
-						<label for="refId" class="col-form-label">Select Time</label>
-						<select name="timeId" class="js-example-basic-single form-control">
-							<option value="">Select Batch Time</option>
-							@forelse($batch_times as $bt)
-							<option value="{{$bt->id}}">{{$bt->time}}</option>
-							@empty
-							@endforelse
-						</select>
-					</div>
+					@endif
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary mr-1"><i class="fa fa-search fa-sm"></i></button>
-						<a href="{{route(currentUser().'.coursewiseStudent')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
+						<a href="{{route(currentUser().'.coursewiseEnrollStudent')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
 			</form>
@@ -94,36 +84,40 @@
 				<thead>
 					<tr>
 						<th>SL.</th>
-						<th>ID</th>
-						<th>Stu Name</th>
+						<th>S.Id</th>
+						<th>Student Name</th>
 						<th>Executive</th>
+						@if(currentUser() == 'superadmin')
 						<th>Reference</th>
+						@endif
 						<th>Course</th>
-						<th width="200px">Batch Slot</th>
-						<th width="200px">Batch Time</th>
-						<th>Created At</th>
-						<th>Updated At</th>
+						<th width="120px">Date</th>
+						<th>Price</th>
+						<th>Status</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
-					@if(count($courses_pre))
-					@foreach($courses_pre as $course)
-					<tr>
-						<td>{{$loop->iteration}}</td>
-						<td>{{$course->sId}}</td>
-						<td>{{$course->sName}}</td>
-						<td>{{$course->exName}}</td>
-						<td>{{\DB::table('references')->where('id',$course->refId)->first()->refName}}</td>
-						<td>{{\DB::table('courses')->where('id',$course->course_id)->first()->courseName}}</td>
-						<td>{{\DB::table('batchslots')->where('id',$course->batch_slot_id)->first()->slotName}}</td>
-						<td>{{\DB::table('batchtimes')->where('id',$course->batch_time_id)->first()->time}}</td>
-						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($course->created_at))->format('j M, Y')}}</td>
-						<td>
-							@if($course->updated_at)
-							{{\Carbon\Carbon::createFromTimestamp(strtotime($course->updated_at))->format('j M, Y')}}
+					@if(count($allCourses))
+					@foreach($allCourses as $course)
+					<form action="" method="POST" enctype="multipart/form-data">
+						<tr>
+							<td>{{$loop->iteration}}</td>
+							<td>{{$course->sId}}</td>
+							<td>{{$course->sName}}</td>
+							<td>{{$course->exName}}</td>
+							@if(currentUser() == 'superadmin')
+							<td>{{\DB::table('references')->where('id',$course->refId)->first()->refName}}</td>
 							@endif
-						</td>
-					</tr>
+							<td>{{\DB::table('courses')->where('id',$course->course_id)->first()->courseName}}</td>
+							<td></td>
+							<td>{{$course->price}}</td>
+							<td>
+								@if($course->status == 1) Paid @endif
+								@if($course->status == 2) Due @endif
+							</td>
+						</tr>
+					</form>
 					@endforeach
 					@else
 					<tr>
@@ -132,19 +126,22 @@
 					@endif
 				</tbody>
 			</table>
-			{{$courses_pre->links()}}
+			{{$allCourses->links()}}
 		</div>
 	</div>
 </div> <!-- end row -->
 @endsection
 @push('scripts')
-<script>
-	$('.responsive-datatable').DataTable();
-</script>
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
-	$('.js-example-basic-single').select2();
+	$('.js-example-basic-single').select2({
+		placeholder: 'Select Option',
+		allowClear: true
+	});
+	$('.reset-btn').on('click', function() {
+		$('.js-example-basic-single').val(null).trigger('change');
+	});
 </script>
 @if(Session::has('response'))
 <script>

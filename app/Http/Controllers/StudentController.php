@@ -645,6 +645,10 @@ class StudentController extends Controller
         }
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Preference Added Successfully'));
     }
+    public function coursePreferencEdit(Request $request, $id){
+        DB::table('course_preferences')->where('id',$id)->update(['course_id' => $request->course_id,'batch_time_id' => $request->batch_time_id,'batch_slot_id' => $request->batch_slot_id,'updated_at' => Carbon::now()]);
+        return redirect()->back()->with($this->responseMessage(true, null, 'Course Preference Updated Successfully'));
+    }
     /*=========Course Wise Enrollment==== */
     public function courseEnroll(Request $request)
     {

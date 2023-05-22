@@ -624,6 +624,9 @@
 						<tbody>
 							@if(count($allPreference))
 							@foreach($allPreference as $p)
+							<!-- Edit Course Preference-->
+							<form action="{{ route(currentUser().'.coursePreferencEdit',$p->id) }}" method="POST" enctype="multipart/form-data">
+							@csrf
 							<tr>
 								<td>{{ $loop->iteration }}</td>
 								<td>
@@ -657,10 +660,12 @@
 										@endif
 									</select>
 								</td>
+								
 								<td>
 									<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
 								</td>
 							</tr>
+							</form>
 							@endforeach
 							@endif
 						</tbody>
