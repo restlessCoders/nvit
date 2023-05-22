@@ -30,7 +30,10 @@ class PaymentReportController extends Controller
             $payments->whereHas('paymentDetail', function ($query) use ($request) {
                 $query->where('feeType', $request->feeType);
             });
-        }    
+        }
+        if(strtolower(currentUser()) == 'salesexecutive'){
+            $payments->where('executiveId', '=', currentUserId());
+        }     
         $payments = $payments->paginate(20);
         /* echo '<pre>';
         print_r($payments->toArray());die;*/

@@ -65,6 +65,7 @@
 							</div>
 						</div>
 					</div>
+					@if(currentUser() != 'salesexecutive')
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control me-3">
@@ -75,6 +76,7 @@
 							@endforelse
 						</select>
 					</div>
+					@endif
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Batch</label>
 						<select name="batch_id" class="js-example-basic-single form-control me-3">
