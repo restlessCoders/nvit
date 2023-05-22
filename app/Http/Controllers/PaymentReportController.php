@@ -13,11 +13,25 @@ use Carbon\Carbon;
 
 class PaymentReportController extends Controller
 {
-    public function daily_collection_report_by_mr()
+    public function daily_collection_report_by_mr(Request $request)
     {
         $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
         $batches = Batch::where('status',1)->get();
-        $payments = Payment::with('paymentDetail')->orderby('mrNo','asc')->paginate(20);
+        $payments = Payment::with('paymentDetail')->orderby('mrNo','asc');
+        if($request->executiveId){
+            $payments->where('payments.executiveId',$request->executiveId);
+        }
+        if($request->batch_id){
+            $payments->whereHas('paymentDetail', function ($query) use ($request) {
+                $query->where('batchId', $request->batch_id);
+            });
+        }
+        if($request->feeType){
+            $payments->whereHas('paymentDetail', function ($query) use ($request) {
+                $query->where('feeType', $request->feeType);
+            });
+        }    
+        $payments = $payments->paginate(20);
         /* echo '<pre>';
         print_r($payments->toArray());die;*/
         return view('report.accounts.daily_collection_by_mr', compact('payments', 'users', 'batches'));

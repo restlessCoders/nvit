@@ -19,7 +19,7 @@ class ReportController extends Controller
         $courses = Course::where('status',1)->get();
         $courseInfo = Course::find($request->course_id);
         $references = Reference::all();
-        $executives = User::whereIn('roleId',[1,3,9])->get();
+        $executives = User::whereIn('roleId',[1,3,5,9])->get();
 
         $allCourses = DB::table('student_courses')
             ->select('student_courses.id as sc_id','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_courses.created_at','student_courses.status','student_courses.course_id','student_courses.price')
@@ -49,7 +49,7 @@ class ReportController extends Controller
         $batches = Batch::where('status',1)->get();
         $batchInfo = Batch::find($request->batch_id);
         $references = Reference::all();
-        $executives = User::whereIn('roleId',[1,3,9])->get();
+        $executives = User::whereIn('roleId',[1,3,5,9])->get();
         $batch_seat_count = DB::table('student_batches')->where('batch_id',$request->batch_id)->count('student_id');
       
         $allBatches = DB::table('student_batches')

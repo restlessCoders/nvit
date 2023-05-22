@@ -24,7 +24,7 @@
 				<h5>NEW VISION INFORMATION TECHNOLOGY LTD.</h5>
 				<p class="p-0" style="font-size:16px"><strong>Collection Report (Money Receipt)</strong></p>
 			</div>
-			<form action="" method="post" role="search">
+			<form action="{{route(currentUser().'.daily_collection_report_by_mr')}}" role="search">
 				@csrf
 				<div class="row">
 				<div class="col-sm-6">
@@ -67,7 +67,7 @@
 					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Executive</label>
-						<select name="month" class="js-example-basic-single form-control me-3">
+						<select name="executiveId" class="js-example-basic-single form-control me-3">
 							<option value="">Select Executive</option>
 							@forelse($users as $user)
 							<option value="{{$user->id}}">{{$user->username}}</option>
@@ -77,7 +77,7 @@
 					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Batch</label>
-						<select name="month" class="js-example-basic-single form-control me-3">
+						<select name="batch_id" class="js-example-basic-single form-control me-3">
 							<option value="">Select Batch</option>
 							@forelse($batches as $batch)
 							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
@@ -87,8 +87,9 @@
 					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Fee Type</label>
-						<select name="month" class="js-example-basic-single form-control me-3">
-							<option selected value="1">Registration</option>
+						<select name="feeType" class="js-example-basic-single form-control me-3">
+							<option value="">Select Type</option>
+							<option value="1">Registration</option>
 							<option value="2">Invoice</option>
 						</select>
 					</div>
@@ -103,6 +104,7 @@
 					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+						<a href="{{route(currentUser().'.daily_collection_report_by_mr')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
 			</form>

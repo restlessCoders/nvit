@@ -148,6 +148,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*===Payment report==*/
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('superadmin.daily_collection_report');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('superadmin.daily_collection_report_by_mr');
+        
 
         /*Attendance Report */
         Route::get('/batch/wise/attendance', [ReportController::class, 'batchwiseAttendance'])->name('superadmin.batchwiseAttendance');

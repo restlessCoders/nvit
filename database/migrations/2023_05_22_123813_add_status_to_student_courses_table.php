@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('student_courses', function (Blueprint $table) {
-            //
+            $table->integer('course_id')->after('batch_id')->nullable();
         });
     }
 
