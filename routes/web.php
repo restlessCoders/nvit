@@ -258,6 +258,7 @@ Route::group(['middleware' => 'isSalesManager'], function () {
 
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesmanager.coursePreference');
+        Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesmanager.coursePreferencEdit');
 
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('salesmanager.courseEnroll');
@@ -326,6 +327,7 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesexecutive.coursePreference');
+        Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesexecutive.coursePreferencEdit');
 
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('salesexecutive.courseEnroll');
@@ -397,6 +399,8 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::resource('/course', CourseController::class, ["as" => "operationmanager"]);
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('operationmanager.coursePreference');
+        Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('operationmanager.coursePreferencEdit');
+        
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('operationmanager.courseSearch');
 
