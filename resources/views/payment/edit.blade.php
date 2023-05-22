@@ -94,20 +94,22 @@
                 @php $tPayable =0; $paidAmt =0; $coursPayable = 0; @endphp
                 @foreach($paymentdetl->paymentDetail as $key=> $p)   
                 @php 
+                    $studentsBatches = DB::table('student_batches')->where('student_id', '=', $p->studentId)->where('batch_id', '=', $p->batchId)->first();
+                    
                     $total = DB::table('paymentdetails')->where('studentId', '=', $p->studentId)->where('batchId', '=', $p->batchId)->sum('cpaidAmount');
                     $total += DB::table('paymentdetails')->where('studentId', '=', $p->studentId)->where('batchId', '=', $p->batchId)->sum('discount');
-                    $tPayable += ($p->batch->studentsBatches[0]->course_price-$total);
+                    $tPayable += ($studentsBatches->course_price-$total);
                     $paidAmt += $total;
-                    $coursPayable +=$p->batch->studentsBatches[0]->course_price;
+                    $coursPayable +=$studentsBatches->course_price;
                 @endphp
                 <tr>
                     <td>
                         <p class="my-0">{{$p->batch->batchId}}</p>
-                        <p class="my-0">{{$p->batch->studentsBatches[0]->entryDate}}</p>
+                        <p class="my-0">{{$studentsBatches->entryDate}}</p>
                     </td>
                     <input type="hidden" name="id[]" value="{{$p->id}}">
                     <input type="hidden" name="batch_id[]" value="{{$p->batchId}}">
-                    <td><input type="text" class="form-control" readonly value="{{$p->batch->studentsBatches[0]->course_price}}"></td>
+                    <td><input type="text" class="form-control" readonly value="{{$studentsBatches->course_price}}"></td>
                     <td><select class="form-control" name="payment_type[]">
                             <option value=""></option>
                             <option value="1" @if($p->payment_type == 1) selected @endif>Full</option>
@@ -134,7 +136,8 @@
                         </select></td>
                     <td><input type="text" name="discount[]" class="paidpricebyRow form-control" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice({{$key}},{{$p->cpaidAmount}})"></td>
                     <td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
-                    <input type="hidden" class="form-control" readonly value="{{($p->batch->studentsBatches[0]->course_price-$total)}}" id="coursepricebyRow_{{$key}}">
+                    <!--<input type="hidden" class="form-control" readonly value="{{($studentsBatches->course_price-$total)}}" id="coursepricebyRow_{{$key}}"> Here Total Coure price - Total paybale --> 
+                    <input type="hidden" class="form-control" readonly value="{{($studentsBatches->course_price)}}" id="coursepricebyRow_{{$key}}">
                 </tr>
                 @endforeach
                 <tfoot>
@@ -202,6 +205,8 @@ function checkPrice(index,cPaidAmount){
     var paidpricebyRow 		= parseFloat($('#paidpricebyRow_'+index).val());
     console.log(index)
     var coursepricebyRow 	= parseFloat($('#coursepricebyRow_'+index).val());
+    console.log(paidpricebyRow)
+    console.log(coursepricebyRow)
     /*To Calculate discount With Paid Price */
     paidpricebyRow 	+= parseFloat($('#discountbyRow_'+index).val())?parseFloat($('#discountbyRow_'+index).val()):0;
     /*console.log(paidpricebyRow);
@@ -210,8 +215,8 @@ function checkPrice(index,cPaidAmount){
     if(paidpricebyRow > coursepricebyRow){
         toastr["warning"]("Paid Amount Cannot be Greater Than Course Price!!");
         $('#paidpricebyRow_'+index).val(cPaidAmount);
-        window.location.reload();
-        return false;
+        /*window.location.reload();
+        return false;*/
     }else{
         var total = 0;
         $('.paidpricebyRow').each(function(index, element){
