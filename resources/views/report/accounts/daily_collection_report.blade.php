@@ -21,14 +21,14 @@
 	<div class="col-12">
 		<div class="card-box">
 
-			<form action="{{route(currentUser().'.daily_collection_report')}}" method="post" role="search">
+			<form action="{{route(currentUser().'.daily_collection_report')}}" role="search">
 				@csrf
 
 				<div class="row">
 
-					<div class="col-sm-2">
+					<div class="col-sm-3">
 						<label for="name" class="col-form-label">Year</label>
-						<select name="year" class="js-example-basic-single form-control me-3" required>
+						<select name="year" class="js-example-basic-single form-control me-3">
 							<option value="">Select Year</option>
 							@php
 							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
@@ -37,12 +37,13 @@
 								@endphp
 						</select>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-3">
 						<label for="name" class="col-form-label">Month</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
-							<option value="">Select Month</option>
+						<select name="month" class="js-example-basic-single form-control me-3">
+							<option value="">Month</option>
 							@php
-							for($i=1;$i<=12;$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
+							$months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
+							for($i=0;$i<count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
 								@php
 								}
 								@endphp
@@ -57,9 +58,9 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-3">
 						<label for="name" class="col-form-label">Executive</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
+						<select name="executiveId" class="js-example-basic-single form-control me-3">
 							<option value="">Select Executive</option>
 							@forelse($users as $user)
 							<option value="{{$user->id}}">{{$user->username}}</option>
@@ -67,38 +68,33 @@
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-3">
-						<label for="name" class="col-form-label">Batch</label>
-						<select name="month" class="js-example-basic-single form-control me-3" required>
-							<option value="">Select Batch</option>
-							@forelse($batches as $batch)
-							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
-							@empty
-							@endforelse
-						</select>
-					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+						<button type="submit" class="btn btn-primary mr-2"><i class="fa fa-search fa-sm"></i></button>
+						<a href="{{route(currentUser().'.daily_collection_report')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
 			</form>
 
 			<div class="col-md-12 text-center">
-				<h5>NEW VISION INFORMATION TECHNOLOGY LTD.</h5>
-				<p class="p-0" style="font-size:16px"><strong>Collection Report</strong></p>
-				<p class="p-0" style="font-size:14px"><strong>For the Month of -2023</strong></p>
+				<h5 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h5>
+				<p class="m-0 p-0" style="font-size:16px"><strong>Collection Report</strong></p>
+				<p class="m-0 p-0" style="font-size:14px"><strong>For the Month of -
+				{{\Carbon\Carbon::create()->month($currentMonth)->format('F')}}
+				{{$currentYear}}</strong>
+				</p>
 			</div>
-			<table class="table table-bordered dt-responsive nowrap text-center" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+			<table class="table table-sm table-bordered mb-5 text-center" style="font-size: small;">
 				<thead>
 					<tr>
 						<th rowspan="2">Date</th>
 						<th colspan="{{$salespersons->count()}}">Executives</th>
+						@if(strtolower(currentUser()) != 'salesexecutive')
 						<th rowspan="2">Total Course Fees</th>
-						<th rowspan="2">Action</th>
+						@endif
 					</tr>
 					<tr>
 						@foreach ($salespersons as $salesperson)
-						<td>{{$salesperson->name}}</td>
+						<td>{{$salesperson->username}}</td>
 						@endforeach
 					</tr>
 				</thead>
@@ -106,7 +102,7 @@
 					@php $total_course_fee = 0; @endphp
 					@foreach ($payments as $payment)
 					<tr>
-						<td>{{ $payment->paymentDate }}</td>
+						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($payment->paymentDate))->format('j M, Y')}}</td>
 						@foreach ($salespersons as $salesperson)
 						<td>
 							{{ 
@@ -123,10 +119,51 @@
 							}}
 						</td>
 						@endforeach
-						<td></td>
-						<td></td>
+						@if(strtolower(currentUser()) != 'salesexecutive')
+						<td>
+						@php $total_course_fee += DB::table('payments')							
+								->where('paymentDate', $payment->paymentDate)
+								->sum('paidAmount')- 
+								DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->sum('discount'); @endphp
+							{{
+								DB::table('payments')							
+								->where('paymentDate', $payment->paymentDate)
+								->sum('paidAmount')- 
+								DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->sum('discount')
+							}}
+						</td>
+						@endif
 					</tr>
 					@endforeach
+					<tr>
+						<th>Total</th>
+						@foreach ($salespersons as $salesperson)
+						@php $date = \Carbon\Carbon::create($currentYear, $currentMonth, 1)->startOfMonth(); @endphp
+						<td>
+							{{ 
+								DB::table('payments')	
+								->whereMonth('paymentDate', '=', $date->month)
+    							->whereYear('paymentDate', '=', $date->year)
+								->where('executiveId', $salesperson->executiveId)
+								->sum('paidAmount')- 
+								DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->whereMonth('paymentDate', '=', $date->month)
+    							->whereYear('paymentDate', '=', $date->year)
+								->where('payments.executiveId', $salesperson->executiveId)
+								->sum('discount')
+								
+							}}
+						</td>
+						@endforeach
+						<td>{{$total_course_fee}}</td>
+					</tr>
 			</table>
 			{{--<thead>
 					<tr>
@@ -134,7 +171,6 @@
 						<th colspan="{{$payments->count()}}">Executives</th>
 						<th rowspan="2">Discount</th>
 						<th rowspan="2">Total Course Fees</th>
-						<th rowspan="2">Action</th>
 					</tr>
 					<tr>
 						@foreach ($payments as $payment)

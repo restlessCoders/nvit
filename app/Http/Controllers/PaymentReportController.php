@@ -33,7 +33,16 @@ class PaymentReportController extends Controller
         }
         if(strtolower(currentUser()) == 'salesexecutive'){
             $payments->where('executiveId', '=', currentUserId());
+        }
+        if ($request->year) {
+            $payments = $payments->whereYear('paymentDate', $request->year);
+        }
+        if ($request->month) {
+            $payments = $payments->whereMonth('paymentDate', $request->month);
         }     
+        if ($request->payment_type) {
+            $payments = $payments->whereMonth('payment_type', $request->payment_type);
+        }  
         $payments = $payments->paginate(20);
         /* echo '<pre>';
         print_r($payments->toArray());die;*/
@@ -64,22 +73,46 @@ class PaymentReportController extends Controller
         return view('report.accounts.daily_collection_report', compact('payments', 'users', 'batches'));*/
 
         $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
-        $batches = Batch::all();
 
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
 
 
         $payments = DB::table('payments')
+            ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
             ->select('paymentDate', DB::raw('SUM(paidAmount) as paidAmount,SUM(tPayable) as tPayable'))
             ->select('payments.id','payments.paymentDate', 'payments.executiveId', DB::raw('SUM(payments.paidAmount) as paidAmount,SUM(payments.tPayable) as tPayable'), DB::raw('SUM(discount) as discount'))
-            ->groupBy('paymentDate')->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
-            ->get();
-
-        $salespersons = DB::table('payments')
-            ->select('payments.executiveId', 'users.name')
-            ->join('users', 'payments.executiveId', '=', 'users.id')
-            ->groupBy('payments.executiveId')
-            ->get();
-        return view('report.accounts.daily_collection_report', compact('payments', 'salespersons', 'users', 'batches'));
+            ->groupBy('payments.paymentDate');
+            
+            if ($request->year) {
+                $currentYear = $request->year;
+                $payments = $payments->whereYear('paymentDate', $request->year);
+            }
+            if ($request->month) {
+                $currentMonth = $request->month;
+                $payments = $payments->whereMonth('paymentDate', $request->month);
+            }
+            if($request->executiveId){
+                $payments->where('payments.executiveId',$request->executiveId);
+            }
+            if(strtolower(currentUser()) == 'salesexecutive'){
+                $payments->where('executiveId', '=', currentUserId());
+            }
+            if(empty($request->year) && empty($request->month)){
+                $payments->whereMonth('payments.paymentDate', '=', $currentMonth);
+                $payments->whereYear('payments.paymentDate', '=', $currentYear);
+            }  
+            $payments = $payments->get();
+            $salespersons = DB::table('payments')
+            ->select('payments.executiveId', 'users.username')
+            ->join('users', 'payments.executiveId', '=', 'users.id');
+            if(strtolower(currentUser()) == 'salesexecutive'){
+                $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId())->groupBy('payments.executiveId')->get();
+            }else{
+                $salespersons = $salespersons->groupBy('payments.executiveId')->get();
+            }
+            //print_r($salespersons);die;
+        return view('report.accounts.daily_collection_report', compact('payments', 'salespersons', 'users','currentMonth','currentYear'));
     }
     public function allPaymentReportBySid(Request $request)
     {
