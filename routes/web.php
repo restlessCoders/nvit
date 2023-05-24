@@ -9,6 +9,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\BundelCourseController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\BatchtimeController;
@@ -133,6 +134,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         Route::resource('/reference', ReferenceController::class, ["as" => "superadmin"]);
 
         Route::resource('/course', CourseController::class, ["as" => "superadmin"]);
+        Route::resource('/bundelcourse', BundelCourseController::class, ["as" => "superadmin"]);
         Route::resource('/classroom', ClassRoomController::class, ["as" => "superadmin"]);
         Route::resource('/batchtime', BatchtimeController::class, ["as" => "superadmin"]);
         Route::resource('/batchslot', BatchslotController::class, ["as" => "superadmin"]);
@@ -400,7 +402,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('operationmanager.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('operationmanager.coursePreferencEdit');
-        
+
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('operationmanager.courseSearch');
 

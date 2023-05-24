@@ -90,7 +90,7 @@
                 @endif
             </div>
         </div>
-        @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
+        @if(currentUser() == 'frontdesk' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
         <div class="col-lg-6 row">
             <label for="altContact" class="col-sm-2 col-form-label">Alternative Number</label>
             <div class="col-sm-10">

@@ -17,7 +17,12 @@ class PaymentReportController extends Controller
     {
         $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
         $batches = Batch::where('status',1)->get();
-        $payments = Payment::with('paymentDetail')->orderby('mrNo','asc');
+        
+        $payments = 
+       
+        
+        Payment::with('paymentDetail')->orderby('mrNo','asc');
+       // ->join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId');
         if($request->executiveId){
             $payments->where('payments.executiveId',$request->executiveId);
         }
@@ -43,6 +48,8 @@ class PaymentReportController extends Controller
         if ($request->payment_type) {
             $payments = $payments->whereMonth('payment_type', $request->payment_type);
         }  
+        //$payments = $payments->whereRaw("(paymentdetails.cPayable) - (paymentdetails.discount+paymentdetails.cpaidAmount) > ?", array(0));
+       
         $payments = $payments->paginate(20);
         /* echo '<pre>';
         print_r($payments->toArray());die;*/

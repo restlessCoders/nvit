@@ -97,7 +97,7 @@
 					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Payment Mode</label>
-						<select name="payment_type" class="js-example-basic-single form-control me-3">
+						<select name="type" class="js-example-basic-single form-control me-3">
 							<option value="">Mode</option>
 							<option value="1">Cash</option>
 							<option value="2">Bkash</option>
