@@ -246,6 +246,7 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         Route::resource('/reference', ReferenceController::class, ["as" => "salesmanager"]);
 
         Route::resource('/course', CourseController::class, ["as" => "salesmanager"]);
+        Route::resource('/bundelcourse', BundelCourseController::class, ["as" => "salesmanager"]);
         Route::resource('/classroom', ClassRoomController::class, ["as" => "salesmanager"]);
         Route::resource('/batchtime', BatchtimeController::class, ["as" => "salesmanager"]);
         Route::resource('/batchslot', BatchslotController::class, ["as" => "salesmanager"]);
