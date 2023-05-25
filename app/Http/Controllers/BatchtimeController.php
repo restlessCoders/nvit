@@ -42,6 +42,7 @@ class BatchtimeController extends Controller
         try {
             $batchtime = New BatchTime();
             $batchtime->time = $request->time;
+            $batchtime->status = 1;
             $batchtime->created_by = encryptor('decrypt', $request->userId);
             if(!!$batchtime->save()) return redirect(route(currentUser().'.batchtime.index'))->with($this->responseMessage(true, null, 'Batch time created'));
             } catch (Exception $e) {

@@ -43,6 +43,7 @@ class BatchslotController extends Controller
             $batchslot = New Batchslot();
             $batchslot->slotName = $request->slotName;
             $batchslot->created_by = encryptor('decrypt', $request->userId);
+            $batchslot->status = 1;
             $batchslot->save();
             if(!!$batchslot->save()) return redirect(route(currentUser().'.batchslot.index'))->with($this->responseMessage(true, null, 'Batch slot created'));
             } catch (Exception $e) {
