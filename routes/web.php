@@ -408,6 +408,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('operationmanager.courseSearch');
 
         Route::resource('/classroom', ClassRoomController::class, ["as" => "operationmanager"]);
+        Route::resource('/bundelcourse', BundelCourseController::class, ["as" => "operationmanager"]);
         Route::resource('/batchtime', BatchtimeController::class, ["as" => "operationmanager"]);
         Route::resource('/batchslot', BatchslotController::class, ["as" => "operationmanager"]);
         Route::resource('/division', DivisionController::class, ["as" => "operationmanager"]);
