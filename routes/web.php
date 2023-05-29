@@ -121,6 +121,8 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('superadmin.courseEnroll');
+        Route::post('/course/wise/enroll/update', [StudentController::class, 'courseEnrollUpdate'])->name('superadmin.courseEnrollUpdate');
+        Route::delete('/course/wise/enroll/delete/{id}', [StudentController::class, 'courseEnrollDelete'])->name('superadmin.courseEnrollDelete');
 
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('superadmin.coursePreference');
@@ -255,16 +257,14 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         Route::resource('/upazila', UpazilaController::class, ["as" => "salesmanager"]);
 
 
-        /*Course Wise Enroll */
-        Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('salesmanager.courseEnroll');
-
-
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesmanager.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesmanager.coursePreferencEdit');
 
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('salesmanager.courseEnroll');
+        Route::post('/course/wise/enroll/update', [StudentController::class, 'courseEnrollUpdate'])->name('salesmanager.courseEnrollUpdate');
+        Route::delete('/course/wise/enroll/delete/{id}', [StudentController::class, 'courseEnrollDelete'])->name('salesmanager.courseEnrollDelete');
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
@@ -334,6 +334,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('salesexecutive.courseEnroll');
+        Route::post('/course/wise/enroll/update', [StudentController::class, 'courseEnrollUpdate'])->name('salesexecutive.courseEnrollUpdate');
+        Route::delete('/course/wise/enroll/delete/{id}', [StudentController::class, 'courseEnrollDelete'])->name('salesexecutive.courseEnrollDelete');
 
         /*===Payment report==*/
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('salesexecutive.daily_collection_report');
@@ -423,6 +425,8 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('operationmanager.courseEnroll');
+        Route::post('/course/wise/enroll/update', [StudentController::class, 'courseEnrollUpdate'])->name('operationmanager.courseEnrollUpdate');
+        Route::delete('/course/wise/enroll/delete/{id}', [StudentController::class, 'courseEnrollDelete'])->name('operationmanager.courseEnrollDelete');
 
         /*==Batch Transfer==*/
         Route::get('/student/batch/transfer/list', [StudentController::class, 'batchTransferList'])->name('operationmanager.batchTransferList');

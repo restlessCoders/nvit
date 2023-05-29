@@ -21,8 +21,13 @@ class PaymentReportController extends Controller
         $payments = 
        
         
-        Payment::with('paymentDetail')->orderby('mrNo','asc');
-       // ->join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId');
+        //Payment::with('paymentDetail')->orderby('mrNo','desc');
+        Payment::join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
+        ->join('students', 'paymentdetails.studentId', '=', 'students.id')
+        ->join('users', 'payments.executiveId', '=', 'users.id')
+        ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
+        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.batchId','students.name','students.contact','users.username')
+        ->orderby('payments.mrNo','desc');
         if($request->executiveId){
             $payments->where('payments.executiveId',$request->executiveId);
         }
@@ -32,9 +37,14 @@ class PaymentReportController extends Controller
             });
         }
         if($request->feeType){
-            $payments->whereHas('paymentDetail', function ($query) use ($request) {
-                $query->where('feeType', $request->feeType);
-            });
+            if($request->feeType == 3){
+                $payments = $payments->whereRaw("(paymentdetails.cPayable) - (paymentdetails.discount+paymentdetails.cpaidAmount) > ?", array(0));
+            }else{
+                $payments->whereHas('paymentDetail', function ($query) use ($request) {
+                    $query->where('feeType', $request->feeType);
+                });
+            }
+
         }
         if(strtolower(currentUser()) == 'salesexecutive'){
             $payments->where('executiveId', '=', currentUserId());
@@ -48,7 +58,7 @@ class PaymentReportController extends Controller
         if ($request->payment_type) {
             $payments = $payments->whereMonth('payment_type', $request->payment_type);
         }  
-        //$payments = $payments->whereRaw("(paymentdetails.cPayable) - (paymentdetails.discount+paymentdetails.cpaidAmount) > ?", array(0));
+        
        
         $payments = $payments->paginate(20);
         /* echo '<pre>';

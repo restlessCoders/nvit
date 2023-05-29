@@ -22,7 +22,7 @@ class ReportController extends Controller
         $executives = User::whereIn('roleId',[1,3,5,9])->get();
 
         $allCourses = DB::table('student_courses')
-            ->select('student_courses.id as sc_id','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_courses.created_at','student_courses.status','student_courses.course_id','student_courses.price')
+            ->select('student_courses.id as sc_id','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_courses.created_at','student_courses.status','student_courses.course_id','student_courses.price','student_courses.p_status')
             ->join('students','students.id','=','student_courses.student_id')
             ->join('users','users.id','=','students.executiveId');
             

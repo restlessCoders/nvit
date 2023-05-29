@@ -360,7 +360,7 @@
 								<th>Status</th>
 								<th>Payment Type</th>
 								<th>Price</th>
-								<th>Action</th>
+								<th colspan="2">Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -419,8 +419,10 @@
 									<td>
 										@if($allassignBatch->acc_approve != 2)
 										<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
-										</form>
 										@endif
+									</td>
+									</form>
+									<td>
 										@if($allassignBatch->acc_approve == 0)
 										<form id="active-form" method="POST" action="{{route(currentUser().'.enrollment.destroy',[encryptor('encrypt', $allassignBatch->id)])}}" style="display: inline;">
 											@csrf
@@ -442,7 +444,7 @@
 						@csrf
 						<input type="hidden" class="form-control" value="{{ $sdata->id }}" name="student_id">
 						<div class="form-group row">
-							<div class="col-lg-4 row">
+							<div class="col-lg-3 row">
 								<label for="name" class="col-sm-3 col-form-label">Time Slot</label>
 								<div class="col-sm-9">
 									<select required name="batch_time_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Time Slot...">
@@ -455,7 +457,7 @@
 									</select>
 								</div>
 							</div>
-							<div class="col-lg-4 row">
+							<div class="col-lg-3 row">
 								<label for="name" class="col-sm-3 col-form-label">Batch Slot</label>
 								<div class="col-sm-9">
 									<select required name="batch_slot_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Batch Slot...">
@@ -483,6 +485,16 @@
 									</select>
 								</div>
 							</div>
+							<div class="col-lg-2 row">
+								<label for="name" class="col-sm-3 col-form-label">Status</label>
+								<div class="col-sm-9">
+								<select class="js-example-basic-single form-control" id="status" name="status">
+									<option value="">Select</option>
+									<option value="1">Full</option>
+									<option value="2">Intallment(Partial)</option>
+								</select>
+								</div>
+							</div>
 						</div>
 						<div class="form-group text-right mb-0">
 							<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
@@ -493,8 +505,9 @@
 							</button>
 						</div>
 					</form>
+
 					<h5 class="page-title">Course Wise Enroll History</h5>
-					<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table class="course mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 						<thead>
 							<tr>
 								<th>SL.</th>
@@ -507,9 +520,13 @@
 							</tr>
 						</thead>
 						<tbody>
+
 						@if(count($allcourseEnroll))
 							@foreach($allcourseEnroll as $cw)
 							<tr>
+								<form action="{{ route(currentUser().'.courseEnrollUpdate') }}" method="POST" enctype="multipart/form-data">
+								@csrf
+								<input type="hidden" class="form-control" value="{{ $cw->id }}" name="cid">
 								<td>{{ $loop->iteration }}</td>
 								<td>
 									<select name="course_id" class="form-control js-example-basic-single" data-toggle="select2" data-placeholder="Choose Course...">
@@ -543,10 +560,23 @@
 									</select>
 								</td>
 								<td>{{$cw->price}}</td>
-								<td>@if($cw->status==1) Batch Assigned @else Batch Pending @endif</td>
 								<td>
-								@if($cw->status==0)
-									<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
+								<select class="js-example-basic-single form-control" id="status" name="status" @if($cw->p_status == 1) disabled @endif >
+									<option value="">Select</option>
+									<option value="1" @if($cw->status == 1) selected @endif>Full</option>
+									<option value="2" @if($cw->status == 2) selected @endif>Intallment(Partial)</option>
+								</select>
+								</td>
+								<td>
+								@if($cw->p_status==0)
+									<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
+									</form>
+									<form id="active-form-course" method="POST" action="{{route(currentUser().'.courseEnrollDelete',[encryptor('encrypt', $cw->id)])}}" style="display: inline;">
+											@csrf
+											@method('DELETE')
+											<input name="_method" type="hidden" value="DELETE">
+											<a href="javascript:void(0)" type="submit" class="delete mr-2 btn btn-danger btn-sm" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i>Delete</a>
+									</form>
 								@endif	
 								</td>
 							</tr>
@@ -722,6 +752,21 @@ $('.enrol').on('click', '.delete', function(event) {
 			.then((willDelete) => {
 				if (willDelete) {
 					$('#active-form').submit();
+				}
+			});
+	});
+	$('.course').on('click', '.delete', function(event) {
+		event.preventDefault();
+		swal({
+				title: `Are you sure you want to Delete this ?`,
+				text: "If you Delete this, it will be Deleted.",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$('#active-form-course').submit();
 				}
 			});
 	});

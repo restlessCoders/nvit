@@ -303,10 +303,11 @@ class PaymentController extends Controller
         }
         // Code to store data in database
         //return response()->json($request->all(),200);
+        
         DB::beginTransaction();
 
         try {
-
+           
             DB::table('payments')->insert(
                 [
                     'paymentDate'       =>  date('Y-m-d', strtotime($request->paymentDate)),
@@ -512,17 +513,26 @@ class PaymentController extends Controller
                         ->where('id', '<', $p->id)
                         ->where('studentId', '=', $request->studentId)->where('batchId', '=', $batch_id[$key])
                         ->sum('cpaidAmount');
+
+                    $sum_cpayable = DB::table('paymentdetails')
+                    ->where('paymentId', $p->paymentId)
+                    ->sum('cPayable');
+                    $sum_cpaidAmount = DB::table('paymentdetails')
+                    ->where('paymentId', $p->paymentId)
+                    ->sum('cpaidAmount');
+
+             
                     DB::table('paymentdetails')->where('id', $p->id)
                         ->update(['cPayable' => $s_batch_data->course_price - $sum]);
                     DB::table('payments')->where('id', $p->paymentId)
-                            ->update(['tPayable' => $s_batch_data->course_price - $sum]);
+                            ->update(['tPayable' => $sum_cpayable,'paidAmount' => $sum_cpaidAmount]);
                     //$payment_detail['cPayable']         = $cPayable[$key];
                     $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
 
                     //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
                     $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
                     //if ($cpaidAmount[$key] < $cPayable[$key]) {
-                    $payment_detail['dueDate']      = date('Y-m-d', strtotime($dueDate[$key]));
+                    $payment_detail['dueDate']      = $dueDate[$key]?Carbon::createFromFormat('d/m/Y', $dueDate[$key])->format('Y-m-d'):null;
                     //$date = new Carbon($dueDate[$key]);
                     //$date->addMonth();
                     //$payment_detail['dueDate']      = $date->toDateString();

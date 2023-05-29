@@ -11,7 +11,7 @@
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
 					<li class="breadcrumb-item"><a href="javascript: void(0);">Bundel Course</a></li>
-					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.course.index') }}">List</a></li>
+					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.bundelcourse.index') }}">List</a></li>
 				</ol>
 			</div>
 			<h4 class="page-title">Add New Bundel Course</h4>
@@ -19,29 +19,47 @@
 	</div>
 	<div class="col-12">
 		<div class="card-box">
-			<form action="{{ route(currentUser().'.course.store') }}" method="POST" enctype="multipart/form-data">
+			<form action="{{ route(currentUser().'.bundelcourse.store') }}" method="POST" enctype="multipart/form-data">
 				@csrf
 				<input type="hidden" value="{{ Session::get('user') }}" name="userId">
 
 
 				<div class="form-group row">
-				<div class="col-lg-4">
-						<label>Select Bundel Course: <span class="text-danger sup">*</span></label>
-						<select name="courseId" class="js-example-basic-single form-control select2 @if($errors->has('courseId')) {{ 'is-invalid' }} @endif">
+					<div class="col-lg-4">
+						<label>Select Main Course: <span class="text-danger sup">*</span></label>
+						<select name="main_course_id" class="js-example-basic-single form-control select2 @if($errors->has('main_course_id')) {{ 'is-invalid' }} @endif">
 							<option></option>
 							@if(count($allCourses) > 0)
 							@foreach($allCourses as $course)
-							<option value="{{ $course->id }}" {{ old('courseId') == $course->id ? "selected" : "" }}>{{ $course->courseName }}</option>
+							<option value="{{ $course->id }}" {{ old('main_course_id') == $course->id ? "selected" : "" }}>{{ $course->courseName }}</option>
 							@endforeach
 							@endif
 						</select>
-						@if($errors->has('courseId'))
+						@if($errors->has('main_course_id'))
 						<small class="d-block text-danger mb-3">
-							{{ $errors->first('courseId') }}
+							{{ $errors->first('main_course_id') }}
 						</small>
 						@endif
 					</div>
+				</div>
+				<div class="form-group row">
 					<div class="col-lg-4">
+						<label>Select Boundel Course: <span class="text-danger sup">*</span></label>
+						<select name="sub_course_id" class="js-example-basic-single form-control select2 @if($errors->has('sub_course_id')) {{ 'is-invalid' }} @endif">
+							<option></option>
+							@if(count($allCourses) > 0)
+							@foreach($allCourses as $course)
+							<option value="{{ $course->id }}" {{ old('sub_course_id') == $course->id ? "selected" : "" }}>{{ $course->courseName }}</option>
+							@endforeach
+							@endif
+						</select>
+						@if($errors->has('sub_course_id'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('sub_course_id') }}
+						</small>
+						@endif
+					</div>
+					<div class="col-lg-2">
 						<label>Regular Price: <span class="text-danger sup">*</span></label>
 						<input type="text" name="rPrice" value="{{ old('rPrice') }}" class="form-control @if($errors->has('rPrice')) {{ 'is-invalid' }} @endif" placeholder="Regular Price" />
 						@if($errors->has('rPrice'))
@@ -50,16 +68,16 @@
 						</small>
 						@endif
 					</div>
-					<div class="col-lg-4">
+					<div class="col-lg-2">
 						<label>Installment Price: <span class="text-danger sup">*</span></label>
-						<input type="text" name="iPrice" value="{{ old('iPrice') }}" class="form-control @if($errors->has('iPrice')) {{ 'is-invalid' }} @endif" placeholder="Regular Price" />
+						<input type="text" name="iPrice" value="{{ old('iPrice') }}" class="form-control @if($errors->has('iPrice')) {{ 'is-invalid' }} @endif" placeholder="Installment Price" />
 						@if($errors->has('iPrice'))
 						<small class="d-block text-danger mb-3">
 							{{ $errors->first('iPrice') }}
 						</small>
 						@endif
 					</div>
-					<div class="col-lg-4">
+					<div class="col-lg-2">
 						<label>Material Price: <span class="text-danger sup">*</span></label>
 						<div class="input-group">
 							<div class="input-group-prepend">
@@ -87,10 +105,6 @@
 						</small>
 						@endif
 					</div> -->
-					<div class="col-lg-8">
-						<label class="control-label">Course Description: </label>
-						<textarea name="courseDescription" class="form-control" rows="5">{{ old('courseDescription') }}</textarea>
-					</div>
 				</div>
 				<div class="form-group text-right mb-0">
 					<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">

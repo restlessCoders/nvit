@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('paymentdetails', function (Blueprint $table) {
-            //
+            $table->integer('course_id')->after('studentId')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('paymentdetails', function (Blueprint $table) {
-            //
+            $table->dropColumn('course_id');
         });
     }
 };

@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BundelCourse extends Model
 {
     use HasFactory;
+    public function course(){
+        return $this->belongsTo(Course::class,'main_course_id','id');
+    }
 }

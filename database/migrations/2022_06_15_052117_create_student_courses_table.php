@@ -20,7 +20,7 @@ class CreateStudentCoursesTable extends Migration
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->text("executiveNote")->nullable();
-            $table->integer("status")->default(1)->comment('0 => inactive, 1 => active, 2 => waiting' );
+            $table->integer("status")->default(1)->comment('1 => Full, 1 => active, 2 => Installment' );
             $table->integer('batch_time_id')->nullable();
             $table->integer('batch_slot_id')->nullable();
             $table->decimal('price',10,2)->default(0.00);

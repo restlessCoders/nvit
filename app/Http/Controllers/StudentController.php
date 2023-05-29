@@ -313,24 +313,34 @@ class StudentController extends Controller
                 echo 'ok';die;*/
                 DB::table('student_batches')->where('id',$s_batch_data->id)->update($data);
 
-                $row = DB::table('paymentdetails')->where('studentId', '=', $request->s_id)->where('batchId', '=', $s_batch_data->batch_id)->first(); // Get the first row
-                if ($row) {
-                    DB::table('paymentdetails')
-                        ->where('id', $row->id) // Assuming your table has an 'id' column
-                        ->update(['cPayable' => $s_batch_data->course_price]); // Replace 'column_name' and 'new_value' with the actual column and value you want to update
+                /*Course Price change in not invoice paymnet and paymentdetails table update */
+                $pay_detl = DB::table('paymentdetails')->where('studentId', '=', $request->s_id)->where('batchId', '=', $s_batch_data->batch_id)
+                ->first();
+                if ($pay_detl) {
+                    DB::table('paymentdetails')->where('id', '=', $pay_detl->id)->update(['cPayable' => $course_price]);
+                    DB::table('payments')->where('id',$pay_detl->paymentId)->update(['tPayable' => $course_price]);
                 }
-
                 $payable = DB::table('paymentdetails')->where('studentId', '=', $request->s_id)->where('batchId', '=', $s_batch_data->batch_id)->get();
-                
                 foreach ($payable as $p) {
                     $sum = DB::table('paymentdetails')
-                        ->where('id', '<', $p->id)
-                        ->where('studentId', '=', $request->s_id)->where('batchId', '=', $s_batch_data->batch_id)
-                        ->sum('cpaidAmount');
-                    DB::table('paymentdetails')->where('id', $p->id)
-                        ->update(['cPayable' => $s_batch_data->course_price - $sum]);
+                    ->where('id', '<', $p->id)
+                    ->where('studentId', '=', $request->studentId)->where('batchId', '=', $s_batch_data->batch_id)
+                    ->sum('cpaidAmount');
+
+                $sum_cpayable = DB::table('paymentdetails')
+                ->where('paymentId', $p->paymentId)
+                ->sum('cPayable');
+                $sum_cpaidAmount = DB::table('paymentdetails')
+                ->where('paymentId', $p->paymentId)
+                ->sum('cpaidAmount');
+         
+                DB::table('paymentdetails')->where('id', $p->id)
+                    ->update(['cPayable' =>  $course_price - $sum]);
+                DB::table('payments')->where('id', $p->paymentId)
+                        ->update(['tPayable' => $sum_cpayable,'paidAmount' => $sum_cpaidAmount]);
 
                 }
+         
             }
             //return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'));
             return redirect()->back()->with($this->responseMessage(true, null, 'Update Successful'))->withInput(['tab' => 'batch_student']);
@@ -652,17 +662,49 @@ class StudentController extends Controller
     /*=========Course Wise Enrollment==== */
     public function courseEnroll(Request $request)
     {
-        $course = DB::table('courses')->select('rPrice')->where('id',$request->course_id)->first();
+        $course_type = DB::table('courses')->where('id',$request->course_id)->first()->course_type;
+        /* Regular Course */
+        if($course_type == 1){
+            if($request->status == 1){
+                $course = DB::table('courses')->select('rPrice as price')->where('id',$request->course_id)->first();
+            }else{
+                $course = DB::table('courses')->select('iPrice as price')->where('id',$request->course_id)->first();
+            }
+        }else{
+            if($request->status == 1){
+                $course = DB::table('bundel_courses')->select(DB::raw('SUM(rPrice) as price'))
+                          ->where('main_course_id', $request->course_id)->where('status', 1)->first();
+            }else{
+                $course = DB::table('bundel_courses')->select(DB::raw('SUM(iPrice) as price'))
+                          ->where('main_course_id', $request->course_id)->where('status', 1)->first();
+            }
+        }
+        
         $data = array(
             'course_id' => $request->course_id,
             'student_id' =>  $request->student_id,
             'batch_time_id' => $request->batch_time_id,
             'batch_slot_id' => $request->batch_slot_id,
-            'price' => $course->rPrice,
+            'price' => $course->price,
             'created_at' => Carbon::now()
         );
         DB::table('student_courses')->insert($data);
+
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Enroll Successful'));
+    }
+    public function courseEnrollUpdate(Request $request){
+        if($request->status == 1){
+            $course = DB::table('courses')->select('rPrice as price')->where('id',$request->course_id)->first();
+        }else{
+            $course = DB::table('courses')->select('iPrice as price')->where('id',$request->course_id)->first();
+        }
+        
+        DB::table('student_courses')->where('id',$request->cid)->update(['course_id' => $request->course_id, 'price' => $course->price,'batch_time_id' => $request->batch_time_id,'batch_slot_id' => $request->batch_slot_id,'status' => $request->status,'updated_at' => Carbon::now()]);
+        return redirect()->back()->with($this->responseMessage(true, null, 'Course Enroll Updated Successfully'));
+    }
+    public function courseEnrollDelete(Request $request,$id){
+        if(DB::table('student_courses')->where('id',encryptor('decrypt', $id))->delete());
+        return redirect()->back()->with($this->responseMessage(true, null, 'Course Enrollment Delete Successful'));
     }
 
     /*Student Transfer */

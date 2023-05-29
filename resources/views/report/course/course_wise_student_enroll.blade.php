@@ -15,7 +15,7 @@
 					<li class="breadcrumb-item active">List</li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Enrolled Students</h4>
+			<h4 class="page-title">All Course Enrolled Students</h4>
 		</div>
 	</div>
 	<div class="col-12">
@@ -110,11 +110,16 @@
 							<td>{{\DB::table('references')->where('id',$course->refId)->first()->refName}}</td>
 							@endif
 							<td>{{\DB::table('courses')->where('id',$course->course_id)->first()->courseName}}</td>
-							<td></td>
+							<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($course->created_at))->format('j M, Y')}}</td>
 							<td>{{$course->price}}</td>
 							<td>
-								@if($course->status == 1) Paid @endif
-								@if($course->status == 2) Due @endif
+								@if($course->p_status == 1) Paid @endif
+								@if($course->p_status == 2) Due @endif
+							</td>
+							<td>
+								@if(strtolower(currentUser()) == 'accountmanager')
+									<a href="{{route(currentUser().'.payments.index')}}?sId={{$course->sId}}&course_id={{$course->course_id}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+								@endif
 							</td>
 						</tr>
 					</form>

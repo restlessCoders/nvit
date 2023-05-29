@@ -93,6 +93,7 @@
 							<option value="">Select Type</option>
 							<option value="1">Registration</option>
 							<option value="2">Invoice</option>
+							<option value="3">Due</option>
 						</select>
 					</div>
 					<div class="col-sm-2">
@@ -137,26 +138,31 @@
 				<tbody>
 					@php
 					$total_paid_amount = 0;
+					$total_dis = 0;
+					$total_cpyable = 0;
 					@endphp
 					@foreach($payments as $p)
 					@php
 					//echo $p->paymentDetail->count();die;
+					$rowCount = \DB::table('paymentdetails')->where('paymentId', $p->paymentId)->count();
+					//echo $rowCount;
+					@endphp
+					@php 
+					$total_paid_amount += $p->cpaidAmount;
+					$total_dis += $p->discount;  
+					$total_cpyable += $p->cPayable;  
 					@endphp
 					<tr>
-						<td rowspan="{{$p->paymentDetail->count()+ 1}}" class="align-middle">
+						<td rowspan="" class="align-middle">
 							<p class="p-0 m-1">{{date('d M Y',strtotime($p->paymentDate))}}</p>
 						</td>
-						<td rowspan="{{$p->paymentDetail->count()+ 1}}" class="align-middle">{{$p->user->username}}</td>
-					</tr>
-					@foreach($p->paymentDetail as $p)
-					@php $total_paid_amount += $p->cpaidAmount; @endphp
-					<tr>
-						<td class="align-middle">{{$p->student->id}}</td>
-						<td class="align-middle">{{$p->student->name}}</td>
-						{{--<td class="align-middle">{{$p->student->contact}}</td>--}}
-						<td class="align-middle">{{$p->batch->batchId}}</td>
-						<td class="align-middle">{{$p->payment->mrNo}}</td>
-						<td class="align-middle">{{$p->payment->invoiceId}}</td>
+						<td rowspan="" class="align-middle">{{$p->username}}</td>
+						<td class="align-middle">{{$p->studentId}}</td>
+						<td class="align-middle">{{$p->name}}</td>
+						{{--<td class="align-middle">{{$p->contact}}</td>--}}
+						<td class="align-middle">{{$p->batchId}}</td>
+						<td class="align-middle">{{$p->mrNo}}</td>
+						<td class="align-middle">{{$p->invoiceId}}</td>
 						@php
 						if($p->feeType==1)
 						$text = "Registration";
@@ -210,13 +216,15 @@
 							@endif
 						</td>
 					</tr>
-					@endforeach
+				
 					@endforeach
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="9"></td>
+						<td colspan="10"></td>
 						<td>{{$total_paid_amount}}</td>
+						<td>{{$total_dis}}</td>
+						<td>{{$total_cpyable-($total_paid_amount+$total_dis)}}</td>
 					</tr>
 				</tfoot>
 			</table>

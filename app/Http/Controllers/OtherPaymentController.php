@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
-
+use Illuminate\Support\Str;
 class OtherPaymentController extends Controller
 {
     /**
@@ -23,15 +23,17 @@ class OtherPaymentController extends Controller
     {
         $keyword = $request->sdata;
         $allStudent = DB::table('students')
+        ->join('student_courses', 'students.id', '=', 'student_courses.student_id')
         ->join('users', 'students.executiveId', '=', 'users.id')
-        ->where(function ($query) use ($keyword) {
+        ->select('students.id as sId','students.name as sName', 'users.name as exName')
+        /*->where(function ($query) use ($keyword) {
             $query->where('students.id', 'like', '%'.$keyword.'%')
                 ->orWhere('students.name', 'like', '%'.$keyword.'%')
                 ->orWhere('students.contact', 'like', '%'.$keyword.'%')
                 ->orWhere('students.altContact', 'like', '%'.$keyword.'%')
                 ->orWhere('users.name', 'like', '%'.$keyword.'%');
-        })
-        ->select('students.id as sId','students.name as sName', 'users.name as exName')
+        })*/
+        ->where('student_courses.student_id', $request->sdata)
         ->get();
         return response()->json($allStudent);
     }
@@ -39,8 +41,7 @@ class OtherPaymentController extends Controller
     {
         $data ='<div class="col-sm-3" id="type"><select class="form-control" id="optType" onchange="optType(this.value)">';
         $data.='<option value="">Select</option>'; 
-            $data .='<option value="1">Course (No Batch)</option>';
-            $data .='<option value="2">Others Payment</option>';    
+            $data .='<option value="1" selected>Course (No Batch)</option>';  
         $data .= '</select></div>';
         /*==Student Data==*/
         $studentbyId =  DB::table('students')
@@ -76,6 +77,7 @@ class OtherPaymentController extends Controller
             ->join('courses', 'courses.id', '=', 'student_courses.course_id')
             ->select('student_courses.course_id','courses.courseName as cName')
             ->where('student_courses.student_id',$request->sId)
+            ->where('student_courses.course_id',$request->course_id)
             ->get();
             
             $data ='<div class="col-sm-3"><select class="js-example-basic-single form-control" id="course_id" name="course_id[]">';
@@ -88,7 +90,7 @@ class OtherPaymentController extends Controller
             $data .='<div class="col-sm-3" id="type"><select class="form-control" id="opt" name="type">';
             $data.='<option value="">Select</option>';
                 $data .='<option value="1">Report</option>';  
-                $data .='<option value="4">Payment</option>';    
+                $data .='<option value="4" selected>Payment</option>';    
             $data .= '</select></div>';
         }else{
             $data ='<div class="col-sm-3" id="type"><select class="form-control" id="opt" name="type">';
@@ -158,7 +160,7 @@ class OtherPaymentController extends Controller
             ->join('courses', 'courses.id', '=', 'student_courses.course_id')
             ->leftJoin('paymentdetails', 'student_courses.course_id', '=', 'paymentdetails.course_id')
             ->where('student_courses.student_id', '=', $request->sId)
-            ->orWhere('student_courses.course_id', '=', $request->course_id)
+            ->Where('student_courses.course_id', '=', $request->course_id)
             ->groupBy('student_courses.student_id')
             ->select(
                 'courses.courseName',
@@ -229,11 +231,11 @@ class OtherPaymentController extends Controller
                         $data .='<input type="hidden" name="course_id[]" value="'.$s->course_id.'">';        
                         $data .='<td><input type="text" class="form-control" readonly value="'.$s->price.'"></td>';
                         $data .='<td><input name="cPayable[]" type="text" class="form-control" readonly value="'.($s->price-($s->cpaid+$s->discount)).'" id="coursepricebyRow_'.$key.'"></td>';
-                        $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option value="2">Partial</option></select></td>';
+                        $data .='<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option value="2" selected>Partial</option></select></td>';
 
-                    $data .='<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option value="1">Cash</option><option value="2">Bkash</option><option value="3">Card</option></select></td>';
+                    $data .='<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option value="1" selected>Cash</option><option value="2">Bkash</option><option value="3">Card</option></select></td>';
                     $data .='<td><select class="form-control" id="feeType" name="feeType[]" required><option value="">Select</option>';
-                    $data .='<option value="1">Registration</option><option value="2" required>Course</option></select></td>';
+                    $data .='<option value="1" selected>Registration</option><option value="2" required>Course</option></select></td>';
                     $data .='<td><input type="text" name="discount[]" class="paidpricebyRow form-control" id="discountbyRow_'.$key.'"  onkeyup="checkPrice('.$key.')"></td>';
                     $data .='<td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" required id="paidpricebyRow_'.$key.'" onkeyup="checkPrice('.$key.')"></td>';
                     $data .='</tr>';
@@ -374,10 +376,11 @@ class OtherPaymentController extends Controller
                     'executiveId'       =>  $request->executiveId,
                     'created_by'         =>  encryptor('decrypt', $request->userId),
                     'invoiceId'         =>  $request->invoiceId?$request->invoiceId:null,
+                    'mrNo'              =>  $request->mrNo?$request->mrNo:null,
                     'tPayable'          =>  $request->tPayable,
                     'paidAmount'        =>  $request->paidAmount,
                     'accountNote'       =>  $request->accountNote,
-                    'status'            =>  ($request->tPayable == ($request->paidAmount+$request->disocunt))?0:1,
+                    /*'status'            =>  ($request->tPayable == ($request->paidAmount+$request->disocunt))?0:1,*/
                     'created_at'        => date("Y-m-d h:i:s"),
                     // 'updated_at'        => date("Y-m-d h:i:s"),
                 ]
@@ -399,7 +402,7 @@ class OtherPaymentController extends Controller
                     $payment_detail['type']             = 0;
                 }*/
                 $payment_detail['paymentId']        = $paymentId;
-                $payment_detail['mrNo']             = $request->mrNo;
+                /*$payment_detail['mrNo']             = $request->mrNo;*/
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['course_id']          = $course_id[$key];
                 $payment_detail['batchId']          = 0;
@@ -418,11 +421,52 @@ class OtherPaymentController extends Controller
                 /*To Update Account Approve */
                 $s_course_data = DB::table('student_courses')->where(['student_id'=>$request->studentId,'course_id'=>$course_id[$key]])->first();
                 $data = array(
-                    'acc_approve' => 1,
+                    'p_status' => 1,
                     'updated_at' => Carbon::now()
                 );
                 DB::table('student_courses')->where('id',$s_course_data->id)->update($data);
+
+                /*Insert Data in Batch Wise Enroll */
+                $course_type = DB::table('courses')->where('id',$request->course_id)->first()->course_type;
+                $systemId = substr(uniqid(Str::random(6), true), 0, 6);
+                if($course_type == 2){
+                    $bundel_courses = DB::table('bundel_courses')->where('main_course_id',$course_id[$key])->where('status',1)->get();
+                    foreach($bundel_courses as $bc){
+                        $data = array(
+                            'course_id' => $bc->main_course_id,
+                            'batch_id' => 42,
+                            'student_id' =>  $request->studentId,
+                            'package_id' =>  0,
+                            'entryDate' => date('Y-m-d'),
+                            'status' => 2,
+                            'systemId' => 'bundel',
+                            'course_price' => $bc->main_course_id,
+                            'type' => 0,
+                            'created_at' => Carbon::now(),
+                            'created_by' => currentUserId(),
+                        );
+                    }
+                }
+                $course = DB::table('student_courses')
+                ->where('student_courses.student_id',$request->studentId)->where('student_courses.course_id',$course_id[$key])->get();
+                $data = array(
+                    'course_id' => $course_id[$key],
+                    'batch_id' => 42,
+                    'student_id' =>  $request->studentId,
+                    'package_id' =>  0,
+                    'entryDate' => date('Y-m-d'),
+                    'status' => 2,
+                    'systemId' => $systemId,
+                    'course_price' => $course->price,
+                    'type' => $course->status,
+                    'created_at' => Carbon::now(),
+                    'created_by' => currentUserId(),
+                );
+                DB::table('student_batches')->insert($data);
                 DB::commit();
+
+                
+
             }
             return response()->json(['success' => 'Payment Complete successfully.']);
             //return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));

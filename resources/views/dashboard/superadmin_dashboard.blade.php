@@ -91,7 +91,7 @@
     <div class="col-xl-2">
         <div class="card-box tilebox-one">
             <i class="icon-rocket float-right m-0 h2 text-muted"></i>
-            <h6 class="text-muted text-uppercase mt-0">Collection</h6>
+            <h6 class="text-muted text-uppercase mt-0">Due</h6>
             <h3 class="my-3" data-plugin="counterup">1,890</h3>
         </div>
         <div class="card-box tilebox-one">

@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('student_batches', function (Blueprint $table) {
-            $table->integer('course_id')->after('batch_id')->nullable();
+        Schema::table('courses', function (Blueprint $table) {
+            $table->integer('course_type')->default(1)->comment('1 => Regular, 2=> Bundel')->after('mPrice');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('student_batches', function (Blueprint $table) {
-            $table->dropColumn('course_id')->nullable();
+        Schema::table('courses', function (Blueprint $table) {
+            $table->dropColumn('course_type');
         });
     }
 };

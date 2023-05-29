@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Courses List')
+@section('title', 'Bundel Course List')
 @section('content')
 <div class="row">
 	<div class="col-12">
@@ -8,17 +8,17 @@
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
 					<li class="breadcrumb-item"><a href="javascript: void(0);">Courses</a></li>
-					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.course.create') }}">Add</a></li>
+					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.bundelcourse.create') }}">Add</a></li>
 				</ol>
 			</div>
-			<h4 class="page-title">All Courses</h4>
+			<h4 class="page-title">All Bundel Courses</h4>
 		</div>
 	</div>
 	<div class="col-12">
 		<div class="card-box">
-			<ul class="pagination justify-content-end" >
-			<form action="{{route(currentUser().'.courseSearch')}}" method="post" role="search" class="d-flex">
-				@csrf
+			<ul class="pagination justify-content-end">
+				<form action="{{route(currentUser().'.courseSearch')}}" method="post" role="search" class="d-flex">
+					@csrf
 					<input type="text" placeholder="Search.." name="search" class="form-control">
 					<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
 				</form>
@@ -29,42 +29,59 @@
 				<thead>
 					<tr>
 						<th>SL.</th>
-						<th>Course Name</th>
-						<th>Course Description</th>
-						<th>Regular Price</th>
-						<th>Installment Price</th>
-						<th>Material Price</th>
-						<th>Status</th>
-						<th>Action</th>
+						<th>Bundel Name</th>
+						<th>Bundel Detl</th>
 					</tr>
 				</thead>
 				<tbody>
-					@if(count($allCourses))
-					@foreach($allCourses as $course)
+					@if(count($allBundelCourses))
+					@foreach($allBundelCourses as $bc)
 					<tr>
+						@php $rowCount = \DB::table('bundel_courses')->where('main_course_id', $bc->main_course_id)->count(); @endphp
 						<td>{{ $loop->iteration }}</td>
-						<td>{{$course->courseName}}</td>
-						<td>{{$course->courseDescription}}</td>
-						<td>{{$course->rPrice}}</td>
-						<td>{{$course->iPrice}}</td>
-						<td>{{$course->mPrice}}</td>
+						<td>{{$bc->course->courseName}}</td>
 						<td>
-							@if($course->status == 1)
-							<span>Active</span>
-							@else
-							<span>Inactive</span>
-							@endif
+							<table class="table">
+								<tr>
+									<th>Course Name</th>
+									<th>Regular Price</th>
+									<th>Installment Price</th>
+									<th>Material Price</th>
+									<th>Status</th>
+									<th>Action</th>
+								</tr>
+								@php $sub_courses = \DB::table('bundel_courses')->where('main_course_id', $bc->main_course_id)->get(); @endphp
+								@forelse($sub_courses as $sc)
+								<tr>
+									<td>{{$courseName = \DB::table('courses')->where('id', $sc->sub_course_id)->first()->courseName;}}</td>
+									<td>{{$sc->rPrice}}</td>
+									<td>{{$sc->iPrice}}</td>
+									<td>{{$sc->mPrice}}</td>
+									<td>
+										@if($sc->status == 1)
+										<span>Active</span>
+										@else
+										<span>Inactive</span>
+										@endif
+									</td>
+									<td>
+										<a href="{{route(currentUser().'.bundelcourse.edit',[encryptor('encrypt', $sc->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
+										<form method="POST" action="{{route(currentUser().'.bundelcourse.destroy',[encryptor('encrypt', $sc->id)])}}" style="display: inline;">
+											@csrf
+											@method('DELETE')
+											<input name="_method" type="hidden" value="DELETE">
+											<a href="javascript:void(0)" data-status="{{$sc->status}}" data-name="{{$courseName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
+										</form>
+									</td>
+								</tr>
+								@empty
+								@endforelse
+							</table>
 						</td>
-						<td>
-							<a href="{{route(currentUser().'.course.edit',[encryptor('encrypt', $course->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
-							<form method="POST" action="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" style="display: inline;">
-								@csrf
-								@method('DELETE')
-								<input name="_method" type="hidden" value="DELETE">
-								<a href="javascript:void(0)" data-status="{{$course->status}}" data-name="{{$course->courseName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
-							</form>
-						</td>
+
+
 					</tr>
+
 					@endforeach
 					@else
 					<tr>
@@ -73,7 +90,7 @@
 					@endif
 				</tbody>
 			</table>
-			{{ $allCourses->appends(request()->all())->links() }}
+			{{-- $allCourses->appends(request()->all())->links() --}}
 		</div>
 	</div>
 </div> <!-- end row -->
@@ -85,10 +102,10 @@
 	$('.course').on('click', '.delete', function(event) {
 		var name = $(this).data("name");
 		var status = $(this).data("status");
-		if(status){
+		if (status) {
 			var title = `Are you sure you want to Inactive this ${name}?`
 			var mode = true;
-		}else{
+		} else {
 			var title = `Are you sure you want to Active this ${name}?`
 			var mode = false;
 		}

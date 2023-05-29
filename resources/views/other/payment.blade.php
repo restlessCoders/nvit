@@ -56,7 +56,12 @@
 <script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
 <script>
 
-	
+var course_id = "{{request()->get('course_id')}}";
+	var sId = "{{request()->get('sId')}}";
+	if(sId){
+		return_row_with_data(sId);
+
+	}
  
 $(document).on('submit', '#my-form', function(event) {
 		event.preventDefault();
@@ -108,13 +113,13 @@ $(document).on('submit', '#my-form', function(event) {
 
 	function optType(type){
 		if(type==1){
-			var sId = $('#sId').val();
 			$.ajax({
 				url: "{{route(currentUser().'.databyStudentId')}}",
 				method: 'GET',
 				dataType: 'json',
 				data: {
 					sId: sId,
+					course_id,course_id,
 					type:1
 				},
 				success: function(res) {
@@ -148,6 +153,7 @@ $(document).on('submit', '#my-form', function(event) {
 		}
 	}
 
+
 		$(document).on('click', '#showData', function() {
 		
 			var optType = $('#optType option:selected').val();
@@ -179,6 +185,7 @@ $(document).on('submit', '#my-form', function(event) {
 						dataType: 'json',
 						data: {
 							sId:sId,
+							course_id,course_id,
 						},
 						success: function(res) {
 							console.log(res.data);
@@ -297,6 +304,7 @@ function checkPrice(index){
 			success: function(res) {
 				//console.log(res.data);
 				if(res.data){
+					optType(1);
 					$('#details_data').append(res.data);
 					$('#student_detl_data').append(res.sdata);
 					$('#showData').show();

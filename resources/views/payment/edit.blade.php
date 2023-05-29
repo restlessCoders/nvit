@@ -117,7 +117,7 @@
                         </select></td>
                     <td>
                         <div class="input-group">
-                            <input type="text" name="dueDate[]" onfocus="dueDate({{$key}},'{{ $p->dueDate }}')" class="dueDate_{{$key}} form-control" placeholder="dd/mm/yyyy" value="{{ date('d-m-Y',strtotime($p->dueDate)) }}">
+                            <input type="text" name="dueDate[]" onfocus="dueDate({{$key}},'{{ $p->dueDate }}')" class="dueDate_{{$key}} form-control" placeholder="dd/mm/yyyy">
                             <div class="input-group-append">
                                 <span class="input-group-text"><i class="icon-calender"></i></span>
                             </div>
@@ -189,12 +189,18 @@
         $(this).val(date);
     });
     function dueDate(index,due_date) {
+        if (due_date)
+            date = due_date;
+        else
+            date = new Date();
         $('.dueDate_'+index).daterangepicker({
         singleDatePicker: true,
-        startDate: due_date,
+        startDate: moment(date).format('DD/MM/YYYY'),
         showDropdowns: true,
         autoUpdateInput: true,
-        format: 'dd/mm/yyyy',
+        locale: {
+                format: 'DD/MM/YYYY'
+            }
         }).on('changeDate', function(e) {
             var date = moment(e.date).format('YYYY/MM/DD');
             $(this).val(date);
