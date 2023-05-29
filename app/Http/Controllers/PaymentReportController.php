@@ -33,7 +33,7 @@ class PaymentReportController extends Controller
         }
         if($request->batch_id){
             $payments->whereHas('paymentDetail', function ($query) use ($request) {
-                $query->where('batchId', $request->batch_id);
+                $query->where('paymentdetails.batchId', $request->batch_id);
             });
         }
         if($request->feeType){
@@ -41,22 +41,22 @@ class PaymentReportController extends Controller
                 $payments = $payments->whereRaw("(paymentdetails.cPayable) - (paymentdetails.discount+paymentdetails.cpaidAmount) > ?", array(0));
             }else{
                 $payments->whereHas('paymentDetail', function ($query) use ($request) {
-                    $query->where('feeType', $request->feeType);
+                    $query->where('paymentdetails.feeType', $request->feeType);
                 });
             }
 
         }
         if(strtolower(currentUser()) == 'salesexecutive'){
-            $payments->where('executiveId', '=', currentUserId());
+            $payments->where('payments.executiveId', '=', currentUserId());
         }
         if ($request->year) {
-            $payments = $payments->whereYear('paymentDate', $request->year);
+            $payments = $payments->whereYear('payments.paymentDate', $request->year);
         }
         if ($request->month) {
-            $payments = $payments->whereMonth('paymentDate', $request->month);
+            $payments = $payments->whereMonth('payments.paymentDate', $request->month);
         }     
         if ($request->payment_type) {
-            $payments = $payments->whereMonth('payment_type', $request->payment_type);
+            $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
         }  
         
        
