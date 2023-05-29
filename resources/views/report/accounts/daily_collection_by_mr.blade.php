@@ -182,7 +182,7 @@
 						@else
 						<td class="align-middle"><strong class="text-danger" style="font-size:12px;">@if($p->dueDate){{date('d M Y',strtotime($p->dueDate))}} @else - @endif</strong></td>
 						@endif
-						<td class="align-middle">{{$p->cPayable}}</td>
+						<td class="align-middle">{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}</td>
 						<td class="align-middle">{{$p->cpaidAmount}}</td>
 						<td class="align-middle">{{$p->discount?$p->discount:0}}</td>
 						<td class="align-middle">{{($p->cPayable-($p->cpaidAmount+$p->discount))}}</td>

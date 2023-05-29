@@ -26,7 +26,7 @@ class PaymentReportController extends Controller
         ->join('students', 'paymentdetails.studentId', '=', 'students.id')
         ->join('users', 'payments.executiveId', '=', 'users.id')
         ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
-        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.batchId','students.name','students.contact','users.username')
+        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','students.name','students.contact','users.username')
         ->orderby('payments.mrNo','desc');
         if($request->executiveId){
             $payments->where('payments.executiveId',$request->executiveId);
