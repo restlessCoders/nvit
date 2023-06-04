@@ -32,6 +32,7 @@ class NewStudentRequest extends FormRequest
             'altContact'    => 'nullable|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students',
             'email'         => 'nullable|string|unique:students,email',
             'refId' 	    => 'required',
+            'executiveId' 	    => 'required',
         ];
     }
 
