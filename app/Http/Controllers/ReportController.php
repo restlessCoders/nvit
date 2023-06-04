@@ -22,7 +22,7 @@ class ReportController extends Controller
         $executives = User::whereIn('roleId',[1,3,5,9])->get();
 
         $allCourses = DB::table('student_courses')
-            ->select('student_courses.id as sc_id','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_courses.created_at','student_courses.status','student_courses.course_id','student_courses.price','student_courses.p_status')
+            ->select('student_courses.id as sc_id','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_courses.created_at','student_courses.status','student_courses.course_id','student_courses.price','student_courses.p_status','student_courses.systemId')
             ->join('students','students.id','=','student_courses.student_id')
             ->join('users','users.id','=','students.executiveId');
             
@@ -53,7 +53,7 @@ class ReportController extends Controller
         $batch_seat_count = DB::table('student_batches')->where('batch_id',$request->batch_id)->count('student_id');
       
         $allBatches = DB::table('student_batches')
-            ->select('student_batches.id as sb_id','student_batches.systemId','students.id as sId','students.name as sName','students.contact','students.refId','users.name as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id','student_batches.type','student_batches.course_price','student_batches.pstatus')
+            ->select('student_batches.id as sb_id','student_batches.systemId','students.id as sId','students.name as sName','students.contact','students.refId','users.username as exName','student_batches.entryDate','student_batches.status','student_batches.batch_id','student_batches.type','student_batches.course_price','student_batches.pstatus')
             ->join('students','students.id','=','student_batches.student_id')
             ->join('users','users.id','=','students.executiveId');
             

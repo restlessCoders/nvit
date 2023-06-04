@@ -56,7 +56,7 @@
 <script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
 <script>
 
-var course_id = "{{request()->get('course_id')}}";
+var systemId = "{{request()->get('systemId')}}";
 	var sId = "{{request()->get('sId')}}";
 	if(sId){
 		return_row_with_data(sId);
@@ -119,7 +119,7 @@ $(document).on('submit', '#my-form', function(event) {
 				dataType: 'json',
 				data: {
 					sId: sId,
-					course_id,course_id,
+					systemId,systemId,
 					type:1
 				},
 				success: function(res) {
@@ -169,7 +169,7 @@ $(document).on('submit', '#my-form', function(event) {
 							sId:sId,
 						},
 						success: function(res) {
-							console.log(res.data);
+							//console.log(res.data);
 							$('#paymentTblData').empty();
 							$('#paymentTblData').append(res.data);
 						},
@@ -185,7 +185,7 @@ $(document).on('submit', '#my-form', function(event) {
 						dataType: 'json',
 						data: {
 							sId:sId,
-							course_id,course_id,
+							systemId,systemId,
 						},
 						success: function(res) {
 							console.log(res.data);

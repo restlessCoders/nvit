@@ -77,7 +77,8 @@ class OtherPaymentController extends Controller
             ->join('courses', 'courses.id', '=', 'student_courses.course_id')
             ->select('student_courses.course_id','courses.courseName as cName')
             ->where('student_courses.student_id',$request->sId)
-            ->where('student_courses.course_id',$request->course_id)
+            /*->where('student_courses.course_id',$request->course_id)*/
+            ->where('student_courses.systemId', $request->systemId)
             ->get();
             
             $data ='<div class="col-sm-3"><select class="js-example-basic-single form-control" id="course_id" name="course_id[]">';
@@ -155,13 +156,14 @@ class OtherPaymentController extends Controller
         return response()->json(array('data' =>$data));
     }
     public function coursePaymentByStudentId(Request $request){
+        \DB::connection()->enableQueryLog();
             $stData = DB::table('student_courses')
             ->join('students', 'student_courses.student_id', '=', 'students.id')
             ->join('courses', 'courses.id', '=', 'student_courses.course_id')
             ->leftJoin('paymentdetails', 'student_courses.course_id', '=', 'paymentdetails.course_id')
             ->where('student_courses.student_id', '=', $request->sId)
-            ->Where('student_courses.course_id', '=', $request->course_id)
-            ->groupBy('student_courses.student_id')
+            ->Where('student_courses.systemId', '=', $request->systemId)
+            ->groupBy('student_courses.course_id', 'student_courses.systemId')
             ->select(
                 'courses.courseName',
                 'student_courses.price',
@@ -171,6 +173,9 @@ class OtherPaymentController extends Controller
                 DB::raw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid')
             )
             ->get();
+            $queries = \DB::getQueryLog();
+
+    //dd($queries);
 //return response()->json(array('sdata' => $stData));
  
             $data ='<h5 style="font-size:18px;line-height:70px;">Recipt Details</h5>';
@@ -434,7 +439,7 @@ class OtherPaymentController extends Controller
                     foreach($bundel_courses as $bc){
                         $data = array(
                             'course_id' => $bc->main_course_id,
-                            'batch_id' => 42,
+                            'batch_id' => 0,
                             'student_id' =>  $request->studentId,
                             'package_id' =>  0,
                             'entryDate' => date('Y-m-d'),
@@ -451,7 +456,7 @@ class OtherPaymentController extends Controller
                 ->where('student_courses.student_id',$request->studentId)->where('student_courses.course_id',$course_id[$key])->get();
                 $data = array(
                     'course_id' => $course_id[$key],
-                    'batch_id' => 42,
+                    'batch_id' => 0,
                     'student_id' =>  $request->studentId,
                     'package_id' =>  0,
                     'entryDate' => date('Y-m-d'),

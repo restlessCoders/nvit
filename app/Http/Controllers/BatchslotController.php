@@ -15,6 +15,20 @@ class BatchslotController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    /*For Course Enrollment */
+    public function get_batchslot()
+    {
+        $batchslot = Batchslot::where('status',1)->get();
+
+        // Prepare the batch options in the required format
+        $options = [];
+        foreach ($batchslot as $b) {
+            $options[$b->id] = $b->slotName;
+        }
+
+        return response()->json($options);
+    }
     public function index()
     {
         $allBatchslots = Batchslot::orderBy('id', 'DESC')->paginate(25);

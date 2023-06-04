@@ -15,6 +15,19 @@ class BatchtimeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function get_batchtime()
+    {
+        $batchtime = Batchtime::where('status',1)->get();
+
+        // Prepare the batch options in the required format
+        $options = [];
+        foreach ($batchtime as $b) {
+            $options[$b->id] = $b->time;
+        }
+
+        return response()->json($options);
+    }
     public function index()
     {
         $allBatchtimes = Batchtime::where('status',1)->orderBy('id', 'DESC')->paginate(25);

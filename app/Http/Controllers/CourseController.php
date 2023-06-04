@@ -17,6 +17,20 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    /*For Course Enrollment */
+    public function get_courses()
+    {
+        $courses = Course::where('status',1)->get();
+
+        // Prepare the batch options in the required format
+        $options = [];
+        foreach ($courses as $c) {
+            $options[$c->id] = $c->courseName;
+        }
+
+       return response()->json($options);
+    }
     Public function courseSearch(Request $request){
         $search = $request->get('search');
         if($search != ''){

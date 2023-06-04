@@ -21,6 +21,17 @@ class PackageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    Public function packageSearch(Request $request){
+        $search = $request->get('search');
+        if($search != ''){
+            $allPackage = Package::where('courseName','like', '%' .$search. '%')->paginate(25);
+            $allPackage->appends(array('search'=> $search,));
+            if(count($allPackage )>0){
+            return view('package.index',['allCourses'=>$allPackage]);
+            }
+            return back()->with('error','No results Found');
+        }   
+    }
     public function index()
     {
         $allPackage = Package::paginate();

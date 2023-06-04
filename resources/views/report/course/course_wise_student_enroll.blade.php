@@ -43,7 +43,7 @@
 						<select name="executiveId" class="js-example-basic-single form-control">
 							<option></option>
 							@forelse($executives as $e)
-							<option value="{{$e->id}}">{{$e->name}}</option>
+							<option value="{{$e->id}}">{{$e->username}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -118,7 +118,7 @@
 							</td>
 							<td>
 								@if(strtolower(currentUser()) == 'accountmanager')
-									<a href="{{route(currentUser().'.payments.index')}}?sId={{$course->sId}}&course_id={{$course->course_id}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+									<a href="{{route(currentUser().'.payments.index')}}?sId={{$course->sId}}&systemId={{$course->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
 								@endif
 							</td>
 						</tr>

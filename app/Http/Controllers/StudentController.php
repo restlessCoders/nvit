@@ -660,35 +660,42 @@ class StudentController extends Controller
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Preference Updated Successfully'));
     }
     /*=========Course Wise Enrollment==== */
+    
     public function courseEnroll(Request $request)
     {
-        $course_type = DB::table('courses')->where('id',$request->course_id)->first()->course_type;
-        /* Regular Course */
-        if($course_type == 1){
-            if($request->status == 1){
-                $course = DB::table('courses')->select('rPrice as price')->where('id',$request->course_id)->first();
+        $systemId = substr(uniqid(Str::random(6), true), 0, 6);
+        $courses = $request->post('course_id');
+        foreach($request->course_id as $key => $c){
+            $course_type = DB::table('courses')->where('id',$courses[$key])->first()->course_type;
+            /* Regular Course */
+            if($course_type == 1){
+                if($request->status == 1){
+                    $course = DB::table('courses')->select('rPrice as price')->where('id',$courses[$key])->first();
+                }else{
+                    $course = DB::table('courses')->select('iPrice as price')->where('id',$courses[$key])->first();
+                }
             }else{
-                $course = DB::table('courses')->select('iPrice as price')->where('id',$request->course_id)->first();
+                if($request->status == 1){
+                    $course = DB::table('bundel_courses')->select(DB::raw('SUM(rPrice) as price'))
+                              ->where('main_course_id', $courses[$key])->where('status', 1)->first();
+                }else{
+                    $course = DB::table('bundel_courses')->select(DB::raw('SUM(iPrice) as price'))
+                              ->where('main_course_id', $courses[$key])->where('status', 1)->first();
+                }
             }
-        }else{
-            if($request->status == 1){
-                $course = DB::table('bundel_courses')->select(DB::raw('SUM(rPrice) as price'))
-                          ->where('main_course_id', $request->course_id)->where('status', 1)->first();
-            }else{
-                $course = DB::table('bundel_courses')->select(DB::raw('SUM(iPrice) as price'))
-                          ->where('main_course_id', $request->course_id)->where('status', 1)->first();
-            }
+            $data = array(
+                'course_id' => $courses[$key],
+                'student_id' =>  $request->student_id,
+                'batch_time_id' => $request->batch_time_id,
+                'batch_slot_id' => $request->batch_slot_id,
+                'price' => $course->price,
+                'systemId' => $systemId,
+                'status' => $request->status,
+                'created_at' => Carbon::now()
+            );
+            DB::table('student_courses')->insert($data);
         }
-        
-        $data = array(
-            'course_id' => $request->course_id,
-            'student_id' =>  $request->student_id,
-            'batch_time_id' => $request->batch_time_id,
-            'batch_slot_id' => $request->batch_slot_id,
-            'price' => $course->price,
-            'created_at' => Carbon::now()
-        );
-        DB::table('student_courses')->insert($data);
+
 
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Enroll Successful'));
     }
@@ -716,7 +723,7 @@ class StudentController extends Controller
     public function studentExecutive(Request $request)
     {
         $old_ex = Student::where('id',$request->id)->first();
-        $ex_list = User::whereIn('roleId',[1,3,9])->whereNot('id','=',$old_ex->executiveId)->get();
+        $ex_list = User::whereIn('roleId',[1,3,5,9])->whereNot('id','=',$old_ex->executiveId)->get();
         $old_ex_data = User::find($old_ex->executiveId);
         $data = '
         <label for="curexId" class="col-sm-3">Old Executive</label>

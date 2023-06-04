@@ -124,12 +124,18 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         Route::post('/course/wise/enroll/update', [StudentController::class, 'courseEnrollUpdate'])->name('superadmin.courseEnrollUpdate');
         Route::delete('/course/wise/enroll/delete/{id}', [StudentController::class, 'courseEnrollDelete'])->name('superadmin.courseEnrollDelete');
 
+        Route::get('/get-courses', [CourseController::class, 'get_courses'])->name('superadmin.get_courses');
+        Route::get('/get-slots', [BatchSlotController::class, 'get_batchslot'])->name('superadmin.get_batchslot');
+        Route::get('/get/batchtime', [BatchTimeController::class, 'get_batchtime'])->name('superadmin.get_batchtime');
+
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('superadmin.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('superadmin.coursePreferencEdit');
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('superadmin.courseSearch');
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('superadmin.batchSearch');
+        Route::post('/package/search', [PackageController::class, 'packageSearch'])->name('superadmin.packageSearch');
 
         Route::resource('/package', PackageController::class, ["as" => "superadmin"]);
         Route::resource('/batch', BatchController::class, ["as" => "superadmin"]);
@@ -261,6 +267,11 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesmanager.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesmanager.coursePreferencEdit');
 
+        /*==Course Search==*/
+        Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('salesmanager.courseSearch');
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('salesmanager.batchSearch');
+        Route::post('/package/search', [PackageController::class, 'packageSearch'])->name('salesmanager.packageSearch');
+
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('salesmanager.courseEnroll');
         Route::post('/course/wise/enroll/update', [StudentController::class, 'courseEnrollUpdate'])->name('salesmanager.courseEnrollUpdate');
@@ -332,6 +343,11 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesexecutive.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesexecutive.coursePreferencEdit');
 
+        /*==Course Search==*/
+        Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('salesexecutive.courseSearch');
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('salesexecutive.batchSearch');
+        Route::post('/package/search', [PackageController::class, 'packageSearch'])->name('salesexecutive.packageSearch');
+
         /*Course Wise Enroll */
         Route::post('/course/wise/enroll', [StudentController::class, 'courseEnroll'])->name('salesexecutive.courseEnroll');
         Route::post('/course/wise/enroll/update', [StudentController::class, 'courseEnrollUpdate'])->name('salesexecutive.courseEnrollUpdate');
@@ -402,12 +418,15 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::get('/batchById', [BatchController::class, 'batchById'])->name('operationmanager.batchById');
 
         Route::resource('/course', CourseController::class, ["as" => "operationmanager"]);
+
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('operationmanager.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('operationmanager.coursePreferencEdit');
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('operationmanager.courseSearch');
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('operationmanager.batchSearch');
+        Route::post('/package/search', [PackageController::class, 'packageSearch'])->name('operationmanager.packageSearch');
 
         Route::resource('/classroom', ClassRoomController::class, ["as" => "operationmanager"]);
         Route::resource('/bundelcourse', BundelCourseController::class, ["as" => "operationmanager"]);
@@ -488,7 +507,14 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
             Route::get('/student/enroll/details/{id}',  [StudentController::class, 'studentenrollById'])->name('accountmanager.studentenrollById');
             Route::get('/payment/{id}/{entryDate}',  [StudentController::class, 'paymentStudent'])->name('accountmanager.paymentStudent');
         });
+        Route::resource('/course', CourseController::class, ["as" => "accountmanager"])->only(['index']);
         Route::resource('/batch', BatchController::class, ["as" => "accountmanager"])->only(['index']);
+        Route::resource('/package', PackageController::class, ["as" => "accountmanager"])->only(['index']);
+
+        /*==Course Search==*/
+        Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('accountmanager.courseSearch');
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('accountmanager.batchSearch');
+        Route::post('/package/search', [PackageController::class, 'packageSearch'])->name('accountmanager.packageSearch');
 
         /*====Batch Payment====*/
         Route::get('/payment/invoice', [PaymentController::class, 'searchStData'])->name('accountmanager.searchStData');

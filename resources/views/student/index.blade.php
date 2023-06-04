@@ -29,7 +29,7 @@
 			</ul>
 			<div class="tab-content text-muted" id="myTabContent">
 				{{--<div role="tabpanel" class="tab-pane fade in active show" id="waiting_students" aria-labelledby="waiting-students-tab">
-					<table class="waiting-student table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table class="waiting-student table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;font-size:small;">
 						<thead>
 							<tr>
 								<th>SL.</th>

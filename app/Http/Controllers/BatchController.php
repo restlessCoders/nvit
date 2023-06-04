@@ -30,6 +30,7 @@ class BatchController extends Controller
         $batch = Batch::find($request->batchId);
         
     }*/
+    /*=================== */
     public function batchById(Request $request){
         $data_exists = DB::select("SELECT * FROM `student_batches` WHERE `batch_id`=$request->batchId and student_id=$request->student_id");
         //check student id with batch id exists in batch table
@@ -64,6 +65,17 @@ class BatchController extends Controller
         }
 
         return response()->json(array('data' =>$data));
+    }
+    public function batchSearch(Request $request){
+        $search = $request->get('search');
+        if($search != ''){
+            $allBatch = Batch::where('batchId','like', '%' .$search. '%')->paginate(25);
+            $allBatch->appends(array('search'=> $search,));
+            if(count($allBatch )>0){
+            return view('batch.index',compact('allBatch'));
+            }
+            return back()->with('error','No results Found');
+        } 
     }
     public function index(Request $request)
     {

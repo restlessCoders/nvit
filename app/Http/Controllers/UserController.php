@@ -131,6 +131,8 @@ class UserController extends Controller
 
     public function update(updateUserRequest $request){
         try {
+
+            echo $request->role;die;
             $user = User::find(encryptor('decrypt', $request->id));
             $user->roleId = $request->role;
             $user->name = $request->fullName;

@@ -44,7 +44,7 @@
 						<select name="executiveId" class="js-example-basic-single form-control">
 							<option></option>
 							@forelse($executives as $e)
-							<option value="{{$e->id}}">{{$e->name}}</option>
+							<option value="{{$e->id}}">{{$e->username}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -85,7 +85,7 @@
 				<p class="m-0 text-center text-danger"><strong>Seat Available: {{$batchInfo->seat-$batch_seat_count}}</strong></p>
 			</div>
 			@endif
-			<table class="table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+			<table class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 				<thead>
 					<tr>
 						<th>SL.</th>
@@ -173,7 +173,9 @@
 								@elseif($batch->course_price == $sum && $batch->status == 2)
 								<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 								@else
-								<button class="btn btn-danger btn-sm" style="font-weight:bold;">Due</button>
+								{{$batch->course_price}}
+								{{$sum}}
+								<p class="btn btn-danger btn-sm" style="font-weight:bold;">Due</p>
 								@endif
 								@if($sum > 0)
 								<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>

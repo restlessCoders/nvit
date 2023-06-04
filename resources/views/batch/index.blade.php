@@ -16,18 +16,24 @@
 	</div>
 	<div class="col-12">
 		<div class="card-box">
-	
+		<ul class="pagination justify-content-end" >
+			<form action="{{route(currentUser().'.batchSearch')}}" method="post" role="search" class="d-flex">
+				@csrf
+					<input type="text" placeholder="Search.." name="search" class="form-control">
+					<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+				</form>
+			</ul>
 				
-					<table id="" class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<table id="" class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;font-size:small;">
 						<thead>
 							<tr>
 								<th>SL.</th>
 								<th>Batch</th>
 								<th>Course</th>
-								<th>Op. Date</th>
-								<th>E.Date</th>
-								<th>W.Slot</th>
-								<th>T.Slot</th>
+								<th width="90px">Op. Date</th>
+								<th width="90px">E.Date</th>
+								<th width="100px">W.Slot</th>
+								<th width="140px">T.Slot</th>
 								<!-- <th>Exam Date</th>
 								<th>Exam Time</th> -->
 								<th>Room</th>
@@ -48,15 +54,15 @@
 									{{$batch->batchId}}<br>
 								</td>	
 								<td>{{$batch->course->courseName}}</td>
-								<td>{{$batch->startDate}}</td>
-								<td>{{$batch->endDate}}</td>
+								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->startDate))->format('j M, Y')}}</td>
+								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->endDate))->format('j M, Y')}}</td>
 								<td>{{$batch->batchslot->slotName}}</td>
 								<td>{{$batch->batchtime->time}}</td>
 								<!-- <td>{{$batch->examDate}}</td>
 								<td>{{$batch->examTime}}</td> -->
 								<td>{{$batch->examRoom}}</td>
 								<td>{{$batch->seat-$batch->tst}}</td>
-								<td>{{optional($batch->trainer)->name}}</td>
+								<td>{{optional($batch->trainer)->username}}</td>
 								<td>{{$batch->totalClass}}</td>
 								<td>
 									@if($batch->status == 1)
@@ -65,7 +71,7 @@
 									<span>Inactive</span>
 									@endif
 								</td>
-								<td>{{optional($batch->createdby)->name}}</td>
+								<td>{{optional($batch->createdby)->username}}</td>
 								<td width="80px">
 									@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
 									<a href="{{route(currentUser().'.batch.edit',[encryptor('encrypt', $batch->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>

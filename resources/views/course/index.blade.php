@@ -8,7 +8,9 @@
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
 					<li class="breadcrumb-item"><a href="javascript: void(0);">Courses</a></li>
+					@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager')
 					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.course.create') }}">Add</a></li>
+					@endif
 				</ol>
 			</div>
 			<h4 class="page-title">All Courses</h4>
@@ -25,7 +27,7 @@
 			</ul>
 			<!-- <table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;"> -->
 
-			<table class="course table table-bordered">
+			<table class="course table tabl-sm table-bordered" style="font-size:small">
 				<thead>
 					<tr>
 						<th>SL.</th>
@@ -55,6 +57,7 @@
 							<span>Inactive</span>
 							@endif
 						</td>
+						@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager')
 						<td>
 							<a href="{{route(currentUser().'.course.edit',[encryptor('encrypt', $course->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
 							<form method="POST" action="{{route(currentUser().'.course.destroy',[encryptor('encrypt', $course->id)])}}" style="display: inline;">
@@ -64,6 +67,7 @@
 								<a href="javascript:void(0)" data-status="{{$course->status}}" data-name="{{$course->courseName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
 							</form>
 						</td>
+						@endif
 					</tr>
 					@endforeach
 					@else
