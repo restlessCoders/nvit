@@ -173,8 +173,6 @@
 								@elseif($batch->course_price == $sum && $batch->status == 2)
 								<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 								@else
-								{{$batch->course_price}}
-								{{$sum}}
 								<p class="btn btn-danger btn-sm" style="font-weight:bold;">Due</p>
 								@endif
 								@if($sum > 0)

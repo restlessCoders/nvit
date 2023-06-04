@@ -162,7 +162,7 @@
                                 </a>
                             </li>
 
-                            <li class="has-submenu">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-package-variant-closed"></i>Settings<div class="arrow-down"></div>
                                 </a>
@@ -174,11 +174,11 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.reference.index')}} @endif">All Reference</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager'  || currentUser() == 'salesexecuutive' || currentUser() == 'accountmanager') @else d-none @endif">
+                                    <li class="has-submenu">
                                         <a href="#">Courses <div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.course.create')}} @endif">Add New</a></li>
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecuutive' || currentUser() == 'accountmanager') {{route(currentUser().'.course.index')}} @endif">All Courses</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.course.index')}} @endif">All Courses</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
@@ -188,11 +188,11 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.bundelcourse.index')}} @endif">All Bundle Courses</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecuutive' || currentUser() == 'accountmanager') @else d-none @endif">
+                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif">
                                         <a href="#">Course Package <div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.package.create')}} @endif">Add New</a></li>
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecuutive' || currentUser() == 'accountmanager') {{route(currentUser().'.package.index')}} @endif">All Package</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.package.index')}} @endif">All Package</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
@@ -258,8 +258,8 @@
                                 <ul class="submenu">
                                     <li class="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'frontdesk' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.addNewStudentForm')}} @endif">Add New</a></li>
                                     <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesexecutive' || currentUser() == 'salesmanager' ||currentUser() == 'frontdesk' ||currentUser() == 'operationmanager') {{route(currentUser().'.allStudent')}} @endif">All Students</a></li>
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.studentTransfer')}} @endif">Student Transfer</a></li>
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.studentTransferList')}} @endif">Student Transfer List</a></li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.studentTransfer')}} @endif">Student Transfer</a></li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.studentTransferList')}} @endif">Student Transfer List</a></li>
                                 </ul>
                             </li>
 
@@ -269,8 +269,10 @@
                                 <ul class="submenu">
                                     <li class="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin'  || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batch.create')}} @endif">Add New</a></li>
                                     <li><a href="{{route(currentUser().'.batch.index')}}">All Batch</a></li>
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchTransfer')}} @endif">Batch Transfer</a></li>
-                                    <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchTransferList')}} @endif">Batch Transfer List</a></li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif">
+                                        <a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchTransfer')}} @endif">Batch Transfer</a>
+                                    </li>
+                                    <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchTransferList')}} @endif">Batch Transfer List</a></li>
                                 </ul>
                             </li>
 
@@ -308,7 +310,7 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.daily_collection_report_by_mr')}} @endif">Daily Collection Report (Mr)</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu">
+                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"">
                                         <a href="#">Course Interest<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">List</a></li>

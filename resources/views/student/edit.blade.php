@@ -39,7 +39,7 @@
 					<a class="nav-link" id="batch-student-tab" data-toggle="tab" href="#batch_student" role="tab" aria-controls="batch_student">Batch Enroll | Knocking | Evaluation</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Course Enroll Only</a>
+					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Upcoming Batches</a>
 				</li>
 				@endif
 				{{--<li class="nav-item">

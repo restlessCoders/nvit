@@ -201,10 +201,14 @@ Route::group(['middleware' => 'isFrontdesk'], function () {
             Route::get('/all',  [StudentController::class, 'index'])->name('frontdesk.allStudent');
         });
         Route::resource('/batch', BatchController::class, ["as" => "frontdesk"])->only(['index']);
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('frontdesk.batchSearch');
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('frontdesk.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('frontdesk.batchwiseEnrollStudent');
+
+        /*Payment Report */
+        Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('frontdesk.allPaymentReportBySid');
     });
 });
 
@@ -330,6 +334,10 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         });
 
         Route::resource('/notes', NoteController::class, ["as" => "salesexecutive"]);
+
+        Route::resource('/course', CourseController::class, ["as" => "salesexecutive"])->only(['index']);
+        Route::resource('/batch', BatchController::class, ["as" => "salesexecutive"])->only(['index']);
+        Route::resource('/package', PackageController::class, ["as" => "salesexecutive"])->only(['index']);
 
         Route::get('/batch/all', [BatchController::class, 'all'])->name('salesexecutive.allBatches');
         Route::resource('/batch', BatchController::class, ["as" => "salesexecutive"])->only(['index']);
