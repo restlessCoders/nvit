@@ -418,9 +418,11 @@
 							</td>
 							<td>{{$allassignBatch->course_price}}</td>
 							<td>
+								{{--
 								@if($allassignBatch->acc_approve != 2)
 								<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
 								@endif
+								--}}
 							</td>
 						</form>
 						<td>
