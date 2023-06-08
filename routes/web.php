@@ -153,6 +153,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
+        Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('superadmin.editEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
 
         /*===Payment report==*/
@@ -463,7 +464,8 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
-        //Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('operationmanager.editEnrollStudent');
+        Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('operationmanager.editEnrollStudent');
+        Route::post('/batch/assign/{id}', [ReportController::class, 'assign_batch_toEnrollStudent'])->name('operationmanager.assign_batch_toEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
 
         /*==Batch Transfer==*/

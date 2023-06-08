@@ -79,7 +79,7 @@ $(document).on('submit', '#my-form', function(event) {
 					//console.log(response);
 					// Redirect with success message
 					toastr.success(response.success);
-					window.location.href = "{{route(currentUser().'.payments.index') }}";
+					window.location.href = "{{route(currentUser().'.batchwiseEnrollStudent') }}";
 				},
 				error: function (response) {
 					// handle errors

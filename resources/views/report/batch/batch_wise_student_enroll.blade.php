@@ -120,7 +120,13 @@
 							@if(currentUser() == 'superadmin')
 							<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
 							@endif
-							<td>{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}</td>
+							<td>
+							@if(\DB::table('batches')->where('id',$batch->batch_id)->first())
+							{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}
+							@else
+							No Batch
+							@endif
+							</td>
 							<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
 								@if(\DB::table('payments')
 								->join('paymentdetails','paymentdetails.paymentId','payments.id')
@@ -160,23 +166,44 @@
 								@endif
 							</td>
 							<td width="250px">
-								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
-								{{--<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>--}}
+								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && $batch->batch_id == 0)
+								<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>
 								@endif
-								@php $sum = \DB::table('paymentdetails')
-								->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
-								->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
-								->first()
-								->total; @endphp
-								@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-								<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
-								@elseif($batch->course_price == $sum && $batch->status == 2)
-								<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+
+								@if($batch->batch_id)
+
+									@php $sum = \DB::table('paymentdetails')
+									->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
+									->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
+									->first()
+									->total; @endphp
+									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
+									<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
+									@elseif($batch->course_price == $sum && $batch->status == 2)
+									<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+									@else
+									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
+									@endif
+									@if($sum > 0)
+									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
+									@endif
+
 								@else
-								<p class="btn btn-danger btn-sm" style="font-weight:bold;">Due</p>
-								@endif
-								@if($sum > 0)
-								<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
+									@php $sum = \DB::table('paymentdetails')
+									->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
+									->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])
+									->first()
+									->total; @endphp
+									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
+									<a href="{{route(currentUser().'.payments.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
+									@elseif($batch->course_price == $sum && $batch->status == 2)
+									<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+									@else
+									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
+									@endif
+									@if($sum > 0)
+									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
+									@endif
 								@endif
 							</td>
 						</tr>

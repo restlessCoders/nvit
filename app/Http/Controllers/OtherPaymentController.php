@@ -433,46 +433,58 @@ class OtherPaymentController extends Controller
 
                 /*Insert Data in Batch Wise Enroll */
                 $course_type = DB::table('courses')->where('id',$request->course_id)->first()->course_type;
-                $systemId = substr(uniqid(Str::random(6), true), 0, 6);
                 if($course_type == 2){
-                    $bundel_courses = DB::table('bundel_courses')->where('main_course_id',$course_id[$key])->where('status',1)->get();
-                    foreach($bundel_courses as $bc){
+                    $course = DB::table('student_courses')
+                    ->where('student_id',$request->studentId)->where('student_courses.course_id',$course_id[$key])->first();
                         $data = array(
-                            'course_id' => $bc->main_course_id,
+                            'course_id' => $course_id[$key],
                             'batch_id' => 0,
                             'student_id' =>  $request->studentId,
                             'package_id' =>  0,
                             'entryDate' => date('Y-m-d'),
                             'status' => 2,
-                            'systemId' => 'bundel',
-                            'course_price' => $bc->main_course_id,
-                            'type' => 0,
+                            'systemId' => $course->systemId,
+                            'course_price' => $course->price,
+                            'type' => $course->status,
                             'created_at' => Carbon::now(),
                             'created_by' => currentUserId(),
                         );
-                    }
+                        $bundel_course_id = DB::table('student_batches')->insert($data);
+                        /*== Insert Data Into Bundel Courses==*/
+                        $bundel_courses = DB::table('bundel_courses')->where('main_course_id',$course_id[$key])->where('status',1)->get();
+                        foreach($bundel_courses as $bc){
+                            $data = array(
+                                'main_course_id' => $bundel_course_id,
+                                'sub_course_id' => $bc->sub_course_id,
+                                'student_id' =>  $request->studentId,
+                                'status' => 2,
+                                'created_at' => Carbon::now(),
+                                'created_by' => currentUserId(),
+                            );
+                            DB::table('bundel_course_enroll')->insert($data);
+                        }
+                    
+                }else{
+                    $course = DB::table('student_courses')
+                    ->where('student_id',$request->studentId)->where('student_courses.course_id',$course_id[$key])->first();
+                    $data = array(
+                        'course_id' => $course_id[$key],
+                        'batch_id' => 0,
+                        'student_id' =>  $request->studentId,
+                        'package_id' =>  0,
+                        'entryDate' => date('Y-m-d'),
+                        'status' => 2,
+                        'systemId' => $course->systemId,
+                        'course_price' => $course->price,
+                        'type' => $course->status,
+                        'created_at' => Carbon::now(),
+                        'created_by' => currentUserId(),
+                    );
+                    DB::table('student_batches')->insert($data);
                 }
-                $course = DB::table('student_courses')
-                ->where('student_courses.student_id',$request->studentId)->where('student_courses.course_id',$course_id[$key])->get();
-                $data = array(
-                    'course_id' => $course_id[$key],
-                    'batch_id' => 0,
-                    'student_id' =>  $request->studentId,
-                    'package_id' =>  0,
-                    'entryDate' => date('Y-m-d'),
-                    'status' => 2,
-                    'systemId' => $systemId,
-                    'course_price' => $course->price,
-                    'type' => $course->status,
-                    'created_at' => Carbon::now(),
-                    'created_by' => currentUserId(),
-                );
-                DB::table('student_batches')->insert($data);
-                DB::commit();
-
                 
-
             }
+            DB::commit();
             return response()->json(['success' => 'Payment Complete successfully.']);
             //return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));
         

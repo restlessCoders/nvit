@@ -109,12 +109,12 @@
 								 DB::table('payments')							
 								->where('paymentDate', $payment->paymentDate)
 								->where('executiveId', $salesperson->executiveId)
-								->sum('paidAmount')- 
+								->sum('paidAmount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
 								->where('payments.executiveId', $salesperson->executiveId)
-								->sum('discount')
+								->sum('discount')*/
 								
 							}}
 						</td>
@@ -123,19 +123,19 @@
 						<td>
 						@php $total_course_fee += DB::table('payments')							
 								->where('paymentDate', $payment->paymentDate)
-								->sum('paidAmount')- 
+								->sum('paidAmount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
-								->sum('discount'); @endphp
+								->sum('discount');*/ @endphp
 							{{
 								DB::table('payments')							
 								->where('paymentDate', $payment->paymentDate)
-								->sum('paidAmount')- 
+								->sum('paidAmount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
-								->sum('discount')
+								->sum('discount')*/
 							}}
 						</td>
 						@endif
@@ -151,13 +151,13 @@
 								->whereMonth('paymentDate', '=', $date->month)
     							->whereYear('paymentDate', '=', $date->year)
 								->where('executiveId', $salesperson->executiveId)
-								->sum('paidAmount')- 
+								->sum('paidAmount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->whereMonth('paymentDate', '=', $date->month)
     							->whereYear('paymentDate', '=', $date->year)
 								->where('payments.executiveId', $salesperson->executiveId)
-								->sum('discount')
+								->sum('discount')*/
 								
 							}}
 						</td>
@@ -182,7 +182,7 @@
 					@foreach ($payments as $payment)
 					<tr>
 						<td>{{ $payment->paymentDate }}</td>
-						<td>{{ $payment->paidAmount -$payment->discount}}</td>
+						<td>{{ $payment->paidAmount /*-$payment->discount*/}}</td>
 						<td>{{ $payment->discount}}</td>
 						<td>{{ $payment->tPayable}}</td>
 					</tr>
