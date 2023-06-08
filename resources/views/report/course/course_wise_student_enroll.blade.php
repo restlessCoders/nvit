@@ -117,7 +117,7 @@
 								@if($course->p_status == 2) Due @endif
 							</td>
 							<td>
-								@if(strtolower(currentUser()) == 'accountmanager')
+								@if(strtolower(currentUser()) == 'accountmanager' && $course->p_status == 0)
 									<a href="{{route(currentUser().'.payments.index')}}?sId={{$course->sId}}&systemId={{$course->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
 								@endif
 							</td>

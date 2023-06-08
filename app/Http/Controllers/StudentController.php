@@ -700,12 +700,22 @@ class StudentController extends Controller
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Enroll Successful'));
     }
     public function courseEnrollUpdate(Request $request){
-        if($request->status == 1){
-            $course = DB::table('courses')->select('rPrice as price')->where('id',$request->course_id)->first();
+        $course_type = DB::table('courses')->where('id',$request->course_id)->first()->course_type;
+        if($course_type == 1){
+            if($request->status == 1){
+                $course = DB::table('courses')->select('rPrice as price')->where('id',$request->course_id)->first();
+            }else{
+                $course = DB::table('courses')->select('iPrice as price')->where('id',$request->course_id)->first();
+            }
         }else{
-            $course = DB::table('courses')->select('iPrice as price')->where('id',$request->course_id)->first();
+            if($request->status == 1){
+                $course = DB::table('bundel_courses')->select(DB::raw('SUM(rPrice) as price'))
+                          ->where('main_course_id', $request->course_id)->where('status', 1)->first();
+            }else{
+                $course = DB::table('bundel_courses')->select(DB::raw('SUM(iPrice) as price'))
+                          ->where('main_course_id', $request->course_id)->where('status', 1)->first();
+            }
         }
-        
         DB::table('student_courses')->where('id',$request->cid)->update(['course_id' => $request->course_id, 'price' => $course->price,'batch_time_id' => $request->batch_time_id,'batch_slot_id' => $request->batch_slot_id,'status' => $request->status,'updated_at' => Carbon::now()]);
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Enroll Updated Successfully'));
     }

@@ -449,14 +449,16 @@ class OtherPaymentController extends Controller
                             'created_at' => Carbon::now(),
                             'created_by' => currentUserId(),
                         );
-                        $bundel_course_id = DB::table('student_batches')->insert($data);
+                        $bundel_course_id = DB::table('student_batches')->insertGetId($data);
                         /*== Insert Data Into Bundel Courses==*/
                         $bundel_courses = DB::table('bundel_courses')->where('main_course_id',$course_id[$key])->where('status',1)->get();
                         foreach($bundel_courses as $bc){
+                            $systemId = substr(uniqid(Str::random(6), true), 0, 6);
                             $data = array(
                                 'main_course_id' => $bundel_course_id,
                                 'sub_course_id' => $bc->sub_course_id,
                                 'student_id' =>  $request->studentId,
+                                'systemId' =>   $systemId,
                                 'status' => 2,
                                 'created_at' => Carbon::now(),
                                 'created_by' => currentUserId(),

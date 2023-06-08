@@ -31,6 +31,7 @@ class ReportController extends Controller
             ->select('student_courses.id as sc_id', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'users.username as exName', 'student_courses.created_at', 'student_courses.status', 'student_courses.course_id', 'student_courses.price', 'student_courses.p_status', 'student_courses.systemId')
             ->join('students', 'students.id', '=', 'student_courses.student_id')
             ->join('users', 'users.id', '=', 'students.executiveId');
+     
 
 
         if ($request->course_id) {
@@ -59,7 +60,7 @@ class ReportController extends Controller
         $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->count('student_id');
 
         $allBatches = DB::table('student_batches')
-            ->select('student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus')
+            ->select('student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus','student_batches.isBundel')
             ->join('students', 'students.id', '=', 'student_batches.student_id')
             ->join('users', 'users.id', '=', 'students.executiveId');
 
@@ -322,6 +323,8 @@ class ReportController extends Controller
     {
         $batches = Batch::where('status', 1)->get();
         $enroll_data = DB::table('student_batches')->where('id', encryptor('decrypt', $id))->first();
+        /*echo '<pre>';
+        print_r($enroll_data);die;*/
         $course_type = DB::table('courses')->where('id', $enroll_data->course_id)->first()->course_type;
         /*Course Type 1 For Regualr and 2 For Bundel */
         if ($course_type == 1) {
@@ -352,7 +355,7 @@ class ReportController extends Controller
                     'package_id' =>  0,
                     'entryDate' => date('Y-m-d'),
                     'status' => 2,
-                    'systemId' => 'bundel',
+                    'systemId' =>  $request->systemId,
                     'course_price' => 0.00,
                     'type' => 0,
                     'isBundel' => 1,

@@ -41,9 +41,10 @@
 							@forelse($bundel_courses as $bc)
 							<form action="{{route(currentUser().'.assign_batch_toEnrollStudent',[encryptor('encrypt', $bc->id)])}}" method="POST" enctype="multipart/form-data">
 								@csrf
-								<input type="text" value="{{$bc->sub_course_id}}" name="course_id">
-								<input type="text" value="{{$bc->student_id}}" name="student_id">
-								<input type="text" value="{{$bc->id}}" name="bundel_id">
+								<input type="hidden" value="{{$bc->sub_course_id}}" name="course_id">
+								<input type="hidden" value="{{$bc->student_id}}" name="student_id">
+								<input type="hidden" value="{{$bc->id}}" name="bundel_id">
+								<input type="hidden" value="{{$bc->systemId}}" name="systemId">
 								<tr>
 									<td>{{\DB::table('courses')->where('id',$bc->sub_course_id)->first()->courseName}}</td>
 									<td width="350px">
@@ -51,7 +52,8 @@
 											<option></option>
 											@if(count($batches) > 0)
 											@foreach($batches as $b)
-											<option value="{{ $b->id }}" {{ old('batch_id',$b->id) == $enroll_data->batch_id ? "selected" : "" }}>{{ $b->batchId }}</option>
+											@php $bundel = \DB::table('student_batches')->where(['student_id'=> $bc->student_id,'course_id'=> $bc->sub_course_id,'systemId'=> $bc->systemId])->first();@endphp
+											<option value="{{ $b->id }}" @if(!empty($bundel->batch_id)) {{ old('batch_id',$b->id) == $bundel->batch_id ? "selected" : "" }} @endif>{{ $b->batchId }}</option>
 											@endforeach
 											@endif
 										</select>
@@ -61,11 +63,13 @@
 										</small>
 										@endif
 									</td>
+									@if($bc->status == 2)
 									<td>
 										<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
 											Assign Batch
 										</button>
 									</td>
+									@endif
 								</tr>
 							</form>
 							@empty
