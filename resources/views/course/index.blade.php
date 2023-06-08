@@ -18,9 +18,9 @@
 	</div>
 	<div class="col-12">
 		<div class="card-box">
-			<ul class="pagination justify-content-end" >
-			<form action="{{route(currentUser().'.courseSearch')}}" method="post" role="search" class="d-flex">
-				@csrf
+			<ul class="pagination justify-content-end">
+				<form action="{{route(currentUser().'.courseSearch')}}" method="post" role="search" class="d-flex">
+					@csrf
 					<input type="text" placeholder="Search.." name="search" class="form-control">
 					<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
 				</form>
@@ -36,6 +36,7 @@
 						<th>Regular Price</th>
 						<th>Installment Price</th>
 						<th>Material Price</th>
+						<th>Course Type</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
@@ -50,6 +51,13 @@
 						<td>{{$course->rPrice}}</td>
 						<td>{{$course->iPrice}}</td>
 						<td>{{$course->mPrice}}</td>
+						<td>
+							@if($course->course_type == 1)
+							<span>Regular</span>
+							@else
+							<span>Bundel</span>
+							@endif
+						</td>
 						<td>
 							@if($course->status == 1)
 							<span>Active</span>
@@ -89,10 +97,10 @@
 	$('.course').on('click', '.delete', function(event) {
 		var name = $(this).data("name");
 		var status = $(this).data("status");
-		if(status){
+		if (status) {
 			var title = `Are you sure you want to Inactive this ${name}?`
 			var mode = true;
-		}else{
+		} else {
 			var title = `Are you sure you want to Active this ${name}?`
 			var mode = false;
 		}

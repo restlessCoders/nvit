@@ -47,7 +47,6 @@
 									<th>Regular Price</th>
 									<th>Installment Price</th>
 									<th>Material Price</th>
-									<th>Course Type</th>
 									<th>Status</th>
 									<th>Action</th>
 								</tr>
@@ -58,13 +57,6 @@
 									<td>{{$sc->rPrice}}</td>
 									<td>{{$sc->iPrice}}</td>
 									<td>{{$sc->mPrice}}</td>
-									<td>
-										@if($sc->course_type == 1)
-										<span>Regular</span>
-										@else
-										<span>Bundel</span>
-										@endif
-									</td>
 									<td>
 										@if($sc->status == 1)
 										<span>Active</span>

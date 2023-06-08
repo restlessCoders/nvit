@@ -64,6 +64,18 @@
 						</small>
 						@endif
 					</div>
+					<div class="col-lg-4">
+						<label class="control-label">Course Type: </label>
+						<select name="course_type" class="form-control @if($errors->has('status')) {{ 'is-invalid' }} @endif">
+							<option value="1" @if($cdata->course_type == 1) selected @endif>Regular</option>
+							<option value="2" @if($cdata->course_type == 2) selected @endif>Bundel</option>
+						</select>
+						@if($errors->has('course_type'))
+						<small class="d-block text-danger mb-3">
+							{{ $errors->first('course_type') }}
+						</small>
+						@endif
+					</div>
 					<!-- <div class="col-lg-4">
 						<label class="control-label">Status: </label>
 						<select name="status" class="form-control @if($errors->has('status')) {{ 'is-invalid' }} @endif">
