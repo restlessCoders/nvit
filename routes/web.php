@@ -178,6 +178,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('superadmin.allPaymentReportBySid');
+        Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('superadmin.allPaymentCourseReportBySid');
         /*Chart Data */
         //Route::get('/chart-data', [DashboardController::class, 'chartData'])->name('superadmin.chartData');
     });
@@ -210,6 +211,7 @@ Route::group(['middleware' => 'isFrontdesk'], function () {
 
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('frontdesk.allPaymentReportBySid');
+        Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('frontdesk.allPaymentCourseReportBySid');
     });
 });
 
@@ -305,6 +307,7 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('salesmanager.noteHistoryByStId');
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('salesmanager.allPaymentReportBySid');
+        Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('salesmanager.allPaymentCourseReportBySid');
     });
 });
 
@@ -377,6 +380,7 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('salesexecutive.noteHistoryByStId');
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('salesexecutive.allPaymentReportBySid');
+        Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('salesexecutive.allPaymentCourseReportBySid');
     });
 });
 
@@ -492,6 +496,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::get('/note/history', [NoteController::class, 'note_by_student_id'])->name('operationmanager.noteHistoryByStId');
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('operationmanager.allPaymentReportBySid');
+        Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('operationmanager.allPaymentCourseReportBySid');
 
         /*Batch Completion Report */
         Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('operationmanager.batchwiseCompletion');
@@ -538,6 +543,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         Route::get('/payment/report/{id}/{sId}', [PaymentController::class, 'edit'])->name('accountmanager.payment.edit');
         /*===Payment report==*/
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('accountmanager.allPaymentReportBySid');
+        Route::get('/payment/report/bundel', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('accountmanager.allPaymentCourseReportBySid');
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('accountmanager.daily_collection_report');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('accountmanager.daily_collection_report_by_mr');
 

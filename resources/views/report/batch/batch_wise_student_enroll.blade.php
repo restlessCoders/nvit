@@ -206,7 +206,7 @@
 									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
 									@endif
 									@if($sum > 0)
-									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
+									<a data-systemid="{{ $batch->systemId }}" data-course_id="{{ $batch->course_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payCourseHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
 									@endif
 								@endif
 							</td>
@@ -235,6 +235,23 @@
 			</div>
 			<div class="col-md-12">
 				<div class="table-responsive" id="paymenthisTblData">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Course History Modal -->
+<div class="modal fade" id="payCourseHisModal" tabindex="-1" role="dialog" aria-labelledby="payHisModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addNoteModalLabel">Student Name:-<span id="student_name"></span>|ID:-<span id="student_id"></span></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive" id="paymentCoursehisTblData">
 				</div>
 			</div>
 		</div>
@@ -276,6 +293,38 @@
 				console.log(res.data);
 
 				$('#paymenthisTblData').append(res.data);
+			},
+			error: function(e) {
+				console.log(e);
+			}
+		});
+
+	});
+	/*==Course Payment History Modal==*/
+	$('#payCourseHisModal').on('show.bs.modal', function(event) {
+		$('#paymentCoursehisTblData').empty();
+		var button = $(event.relatedTarget);
+		var sId = button.data('student-id');
+		var course_id = button.data('course_id');
+		var systmVal = button.data('systemid');
+		var studentName = button.data('student-name');
+		var modal = $(this);
+		modal.find('#student_id').text(sId);
+		modal.find('#student_name').text(studentName);
+
+		$.ajax({
+			url: "{{route(currentUser().'.allPaymentCourseReportBySid')}}",
+			method: 'GET',
+			dataType: 'json',
+			data: {
+				systmVal: systmVal,
+				sId: sId,
+				course_id: course_id
+			},
+			success: function(res) {
+				console.log(res.data);
+
+				$('#paymentCoursehisTblData').append(res.data);
 			},
 			error: function(e) {
 				console.log(e);

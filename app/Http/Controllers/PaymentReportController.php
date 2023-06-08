@@ -23,11 +23,13 @@ class PaymentReportController extends Controller
         
         //Payment::with('paymentDetail')->orderby('mrNo','desc');
         Payment::join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
-        ->join('students', 'paymentdetails.studentId', '=', 'students.id')
-        ->join('users', 'payments.executiveId', '=', 'users.id')
-        ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
-        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','students.name','students.contact','users.username')
+        ->leftjoin('students', 'paymentdetails.studentId', '=', 'students.id')
+        ->leftjoin('users', 'payments.executiveId', '=', 'users.id')
+        ->leftjoin('batches', 'paymentdetails.batchId', '=', 'batches.id')
+        ->leftjoin('courses', 'paymentdetails.course_id', '=', 'courses.id')
+        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','courses.courseName','students.name','students.contact','users.username')
         ->orderby('payments.mrNo','desc');
+        //print_r($payments);die;
         if($request->executiveId){
             $payments->where('payments.executiveId',$request->executiveId);
         }
@@ -220,6 +222,90 @@ class PaymentReportController extends Controller
                                     <a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
                                     <a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>
                                 </td>';*/
+            $data .= '</tr>';
+            $sl++;
+        }
+        $data .= '</table>';
+        return response()->json(array('data' => $data));
+    }
+
+    public function allPaymentCourseReportBySid(Request $request)
+    {
+        DB::connection()->enableQueryLog();
+        $payments = DB::table('paymentdetails')
+            ->select('student_batches.course_price','courses.courseName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
+            ->join('student_batches', 'paymentdetails.course_id', '=', 'student_batches.course_id')
+            ->join('courses', 'paymentdetails.course_id', '=', 'courses.id')
+            ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
+            ->where('paymentdetails.studentId', $request->sId);
+
+        if ($request->systmVal) {
+            $payments->where('student_batches.systemId', $request->systmVal);
+        }
+        if ($request->batchId) {
+            $payments->where('student_batches.batch_id', $request->batchId);
+            $payments->where('paymentdetails.batchId', $request->batchId);
+        }
+        //if ($request->feeType) {
+            /*Registration Fee Or Course Fee*/
+            //$payments->where('paymentdetails.feeType', $request->feeType);
+        //}
+
+        $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
+        $queries = \DB::getQueryLog();
+
+    //dd($queries);
+        //return response()->json(array('data' =>$payments));
+        $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
+        $data .= '<table class="table table-bordered mb-3 text-center">
+                <thead>
+                    <tr>
+                        <th>SL.</th>
+                        <th width="120px">Invoice & Date</th>
+                        <th width="120px">MR & Date</th>
+                        <th>Note</th>
+                        <th>Course</th>
+                        <th>Invoice Amt.</th>
+                        <th>Paid</th>
+                        <th>Dis</th>
+                        <th>Due</th>
+                        <th>Fee Type</th>
+                        <th>Due Date</th>
+                        <!--<th>Others</th>
+                        <th>Action</th>-->
+                    </tr>
+                </thead>';
+        $sl = 1;
+        foreach ($payments as $key => $p) {
+            $data .= '<tr>';
+            $data .= '<td>' . $sl . '</td>';
+            /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
+                        <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
+            if(!empty($p->invoiceId)){
+                $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            }else{
+                $data .= '<td>-</td>';
+            }
+                        
+            $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            $data .= '<td>' . $p->accountNote . '</td>';
+            $data .= '<td>' . $p->courseName . '</td>';
+            $data .= '<td>' . /*$p->cPayable*/$p->course_price . '</td>';
+            $data .= '<td>' . $p->cpaidAmount . '</td>';
+            $data .= '<td>' . $p->discount . '</td>';
+            $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
+            if ($p->feeType == 1)
+                $text = "Registration";
+            else
+                $text = "Invoice";
+            $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
+            if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
+                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+            }else{
+                $data .= '<td>-</td>';  
+            }
+            
+
             $data .= '</tr>';
             $sl++;
         }

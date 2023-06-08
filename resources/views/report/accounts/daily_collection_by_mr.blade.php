@@ -160,7 +160,13 @@
 						<td class="align-middle">{{$p->studentId}}</td>
 						<td class="align-middle">{{$p->name}}</td>
 						{{--<td class="align-middle">{{$p->contact}}</td>--}}
-						<td class="align-middle">{{$p->batchId}}</td>
+						<td class="align-middle">
+							@if($p->batchId)
+							{{$p->batchId}}
+							@else
+							{{$p->courseName}}
+							@endif
+						</td>
 						<td class="align-middle">{{$p->mrNo}}</td>
 						<td class="align-middle">{{$p->invoiceId}}</td>
 						@php
@@ -182,7 +188,14 @@
 						@else
 						<td class="align-middle"><strong class="text-danger" style="font-size:12px;">@if($p->dueDate){{date('d M Y',strtotime($p->dueDate))}} @else - @endif</strong></td>
 						@endif
-						<td class="align-middle">{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}</td>
+						<td class="align-middle">
+							@if($p->batchId)
+							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}
+							@else
+							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price}}{{--$p->cPayable--}}
+							@endif
+
+						</td>
 						<td class="align-middle">{{$p->cpaidAmount}}</td>
 						<td class="align-middle">{{$p->discount?$p->discount:0}}</td>
 						<td class="align-middle">{{($p->cPayable-($p->cpaidAmount+$p->discount))}}</td>
