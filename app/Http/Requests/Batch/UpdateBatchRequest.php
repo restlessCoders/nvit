@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Student;
+namespace App\Http\Requests\Batch;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateStudentRequest extends FormRequest
+class UpdateBatchRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,9 +21,11 @@ class UpdateStudentRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $r)
     {
+        $id=encryptor('decrypt',$r->uptoken);
         return [
+            'batchId'  =>'required|unique:batches,batchId,'.$id,
             'courseId' 		    => 'required',
             /*'price'             => 'required',
             'discount'          => 'required',*/
@@ -35,6 +37,7 @@ class UpdateStudentRequest extends FormRequest
     {
         return [
             'required' => 'The :attribute field is required.',
+            'unique' => "The :attribute already used. Please try another",
         ];
     }
 }

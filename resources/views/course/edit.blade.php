@@ -20,6 +20,7 @@
 				@csrf
 				@method('PUT')
 				<input type="hidden" value="{{ Session::get('user') }}" name="userId">
+				<input type="hidden" name="uptoken" value="{{encryptor('encrypt',$cdata->id)}}">
 				<div class="form-group row">
 					<div class="col-lg-4">
 						<label>Coure Name: <span class="text-danger sup">*</span></label>

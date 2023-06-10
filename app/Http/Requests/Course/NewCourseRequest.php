@@ -24,7 +24,7 @@ class NewCourseRequest extends FormRequest
     public function rules()
     {
         return [
-            'courseName'         => 'required',
+            'courseName'        =>'required|unique:courses,courseName',
             'rPrice'             => 'required',
         ];
     }
@@ -32,7 +32,8 @@ class NewCourseRequest extends FormRequest
     public function messages()
     {
         return [
-            'required' => 'This field is required.'
+            'required' => 'This field is required.',
+            'unique' => "The :attribute already used. Please try another",
         ];
     }
 }

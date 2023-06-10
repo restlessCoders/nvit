@@ -22,6 +22,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\OtherPaymentController;
 use App\Http\Controllers\PaymentTransferController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\RefundController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -179,8 +181,12 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('superadmin.allPaymentReportBySid');
         Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('superadmin.allPaymentCourseReportBySid');
+        
+        /* Refund*/
+        Route::resource('/refund', RefundController::class, ["as" => "superadmin"]);
         /*Chart Data */
         //Route::get('/chart-data', [DashboardController::class, 'chartData'])->name('superadmin.chartData');
+        
     });
 });
 
@@ -501,6 +507,9 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         /*Batch Completion Report */
         Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('operationmanager.batchwiseCompletion');
         Route::get('/batch/wise/completion/report', [ReportController::class, 'batchwiseCompletionReport'])->name('operationmanager.batchwiseCompletionReport');
+
+        /* Refund*/
+        Route::resource('/refund', RefundController::class, ["as" => "operationmanager"]);
     });
 });
 
@@ -576,6 +585,9 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
          /*Course Enroll Report */
          Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('accountmanager.coursewiseEnrollStudent');
          Route::post('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('accountmanager.coursewiseEnrollStudent');
+
+         /* Refund*/
+        Route::resource('/refund', RefundController::class, ["as" => "accountmanager"]);
     });
 });
 

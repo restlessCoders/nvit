@@ -77,6 +77,9 @@ class ReportController extends Controller
         if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
             $allBatches->where('student_batches.status', 2);
         }
+        if (strtolower(currentUser()) == 'accountmanager'){
+            $allBatches->where('student_batches.isBundel', 0);
+        }
         if ($request->status) {
             $allBatches->where('student_batches.status', $request->status);
         }
@@ -205,7 +208,7 @@ class ReportController extends Controller
                 $data .= '-';
             }
             '</td>';
-            $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->name . '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
             for ($i = 0; $i < $count; $i++) {
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
             }
@@ -304,7 +307,7 @@ class ReportController extends Controller
                 $data .= '-';
             }
             '</td>';
-            $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->name . '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
             for ($i = 0; $i < $count; $i++) {
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
             }

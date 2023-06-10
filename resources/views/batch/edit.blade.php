@@ -23,6 +23,7 @@
 				@csrf
 				@method('PUT')
 				<input type="hidden" value="{{ Session::get('user') }}" name="userId">
+				<input type="hidden" name="uptoken" value="{{encryptor('encrypt',$bdata->id)}}">
 				<div class="form-group row">
 					<div class="col-lg-4">
 						<label>Courses: <span class="text-danger sup">*</span></label>
@@ -43,6 +44,9 @@
 					<div class="col-lg-4">
 						<label>Batch Name<span class="text-danger sup">*</span></label>
 						<input id="batchId" type="text" class="form-control" name="batchId" value="{{ old('batchId',$bdata->batchId) }}" required>
+						@if($errors->has('batchId'))
+							<span class="text-danger"> {{ $errors->first('batchId') }}</span>
+						@endif
 					</div>
 					<div class="col-lg-4">
 						<label>Batch Time: <span class="text-danger sup">*</span></label>

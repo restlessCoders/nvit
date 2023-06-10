@@ -42,6 +42,9 @@
 					<div class="col-lg-4">
 						<label>Batch Name<span class="text-danger sup">*</span></label>
 						<input id="batchId" type="text" class="form-control" name="batchId" value="{{ old('batchId') }}" required>
+						@if($errors->has('batchId'))
+							<span class="text-danger"> {{ $errors->first('batchId') }}</span>
+						@endif
 					</div>
 					<div class="col-lg-4">
 						<label>Batch Time: <span class="text-danger sup">*</span></label>

@@ -204,7 +204,10 @@ class PaymentReportController extends Controller
                 $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
             if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
+                if(!empty($p->dueDate))
                 $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+                else
+                $data .= '<td><strong class="">-</strong></td>';
             }else{
                 $data .= '<td>-</td>';  
             }
@@ -300,7 +303,10 @@ class PaymentReportController extends Controller
                 $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
             if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
+                if(!empty($p->dueDate))
                 $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+                else
+                $data .= '<td><strong class="">-</strong></td>';
             }else{
                 $data .= '<td>-</td>';  
             }

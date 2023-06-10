@@ -24,6 +24,7 @@ class NewBatchRequest extends FormRequest
     public function rules()
     {
         return [
+            'batchId'  =>'required|unique:batches,batchId',
             'courseId' 		    => 'required',
             /*'price'             => 'required',
             'discount'          => 'required',*/
@@ -34,7 +35,8 @@ class NewBatchRequest extends FormRequest
     public function messages()
     {
         return [
-            'required' => 'This field is required.'
+            'required' => 'This field is required.',
+            'unique' => "The :attribute already used. Please try another",
         ];
     }
 }

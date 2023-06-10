@@ -21,10 +21,11 @@ class UpdateCourseRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $r)
     {
+        $id=encryptor('decrypt',$r->uptoken);
         return [
-            'courseName'         => 'required',
+            'courseName'        =>'required|unique:courses,courseName,'.$id,
             'rPrice'             => 'required',
         ];
     }
@@ -33,6 +34,7 @@ class UpdateCourseRequest extends FormRequest
     {
         return [
             'required' => 'The :attribute field is required.',
+            'unique' => "The :attribute already used. Please try another",
         ];
     }
 }

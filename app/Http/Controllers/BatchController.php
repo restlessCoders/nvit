@@ -69,7 +69,7 @@ class BatchController extends Controller
     public function batchSearch(Request $request){
         $search = $request->get('search');
         if($search != ''){
-            $allBatch = Batch::where('batchId','like', '%' .$search. '%')->paginate(25);
+            $allBatch = Batch::where('batchId','like', '%' .$search. '%')->orderBy('id', 'DESC')->paginate(25);
             $allBatch->appends(array('search'=> $search,));
             if(count($allBatch )>0){
             return view('batch.index',compact('allBatch'));
@@ -210,7 +210,7 @@ class BatchController extends Controller
      * @param  \App\Models\Division  $division
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBatchRequest $request, $id)
     {
         try {
         $batch = Batch::find(encryptor('decrypt', $id));

@@ -111,7 +111,7 @@
 					@if(count($allBatches))
 					@foreach($allBatches as $batch)
 					{{--<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">--}}
-					<form action="" method="POST" enctype="multipart/form-data">
+					<!--<form action="" method="POST" enctype="multipart/form-data">-->
 						<tr>
 							<td>{{$loop->iteration}}</td>
 							<td>{{$batch->sId}}</td>
@@ -124,7 +124,7 @@
 							@if(\DB::table('batches')->where('id',$batch->batch_id)->first())
 							{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}
 							@else
-							No Batch
+							{{\DB::table('courses')->where('id',$batch->course_id)->first()->courseName}}
 							@endif
 							</td>
 							<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
@@ -181,7 +181,7 @@
 									<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
 									@elseif($batch->course_price == $sum && $batch->status == 2)
 										@if($batch->isBundel == 1)
-											Bundel
+											Bundel Course
 										@else
 										<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 										@endif
@@ -190,6 +190,12 @@
 									@endif
 									@if($sum > 0)
 									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
+									<form method="post" action="{{route(currentUser().'.refund.store')}}">
+									@csrf
+									<input type="text" name="sb_id" value="{{$batch->sb_id}}">
+									<button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Refund</button>
+									</form>
+									
 									@endif
 
 								@else
@@ -211,7 +217,7 @@
 								@endif
 							</td>
 						</tr>
-					</form>
+					<!--</form>-->
 					@endforeach
 					@else
 					<tr>
