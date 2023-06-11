@@ -124,7 +124,9 @@
 							@if(\DB::table('batches')->where('id',$batch->batch_id)->first())
 							{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}
 							@else
-							{{\DB::table('courses')->where('id',$batch->course_id)->first()->courseName}}
+								@if(\DB::table('courses')->where('id',$batch->course_id)->first()->courseName)
+								{{\DB::table('courses')->where('id',$batch->course_id)->first()->courseName}}
+								@endif
 							@endif
 							</td>
 							<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
