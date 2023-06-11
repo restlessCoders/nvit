@@ -191,9 +191,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*Transaction  */
         Route::resource('/transaction', TransactionController::class, ["as" => "superadmin"]);
 
-                /*Batch Completion Report */
-                Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('superadmin.batchwiseCompletion');
-                Route::get('/batch/wise/completion/report', [ReportController::class, 'batchwiseCompletionReport'])->name('superadmin.batchwiseCompletionReport');
+        /*Batch Completion Report */
+        Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('superadmin.batchwiseCompletion');
+        Route::get('/batch/wise/completion/report', [ReportController::class, 'batchwiseCompletionReport'])->name('superadmin.batchwiseCompletionReport');
     });
 });
 

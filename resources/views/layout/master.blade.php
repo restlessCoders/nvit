@@ -333,7 +333,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Batch Completion Report<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainer') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainer') {{route(currentUser().'.batchwiseCompletion')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>

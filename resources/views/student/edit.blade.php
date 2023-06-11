@@ -36,7 +36,7 @@
 					<a class="nav-link" id="course-pre" data-toggle="tab" href="#course_pre" role="tab" aria-controls="course_pre">Course Interest</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" id="batch-student-tab" data-toggle="tab" href="#batch_student" role="tab" aria-controls="batch_student">Batch Enroll | Knocking | Evaluation</a>
+					<a class="nav-link" id="batch-student-tab" data-toggle="tab" href="#batch_student" role="tab" aria-controls="batch_student">Batch Enroll | Knocking | Evolution</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" id="course-student-tab" data-toggle="tab" href="#course_student" role="tab" aria-controls="course_student">Upcoming Batches</a>
@@ -399,9 +399,9 @@
 							<td>
 								<select class="js-example-basic-single form-control" id="status" name="status" @if($allassignBatch->acc_approve) disabled @endif>
 									<option value="">Select</option>
-									<option value="2" @if($allassignBatch->status == 2) selected @endif>Enroll</option>
+									<option value="2" @if($allassignBatch->status == 2) selected @endif>Enrolled</option>
 									<option value="3" @if($allassignBatch->status == 3) selected @endif>Knocking</option>
-									<option value="4" @if($allassignBatch->status == 4) selected @endif>Evloulation</option>
+									<option value="4" @if($allassignBatch->status == 4) selected @endif>Evolution</option>
 								</select>
 								@if($errors->has('status'))
 								<small class="d-block text-danger mb-3">

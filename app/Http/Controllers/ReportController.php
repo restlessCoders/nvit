@@ -127,7 +127,7 @@ class ReportController extends Controller
     public function batchwiseAttendance()
     {
         $batches = Batch::where('status', 1)->get();
-        return view('report.complete.batch_wise_complete', compact('batches'));
+        return view('report.attendance.batch_wise_attendance', compact('batches'));
     }
     public function batchwiseAttendanceReport(Request $request)
     {
@@ -138,11 +138,14 @@ class ReportController extends Controller
         $data .= '<div class="col-md-2"><img src=' . $image_path . ' alt="" height="80"></div>';
         $data .= '<div class="col-md-10">';
         $data .=     '<h4 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
-        $data .=     '<p class="m-0" style="font-size:10px"><strong>Trainer\'s Attendance Roster</strong></p>';
-        $data .=     '<p class="m-0 d-flex justify-content-end">
+        $data .=     '<p class="m-0" style="font-size:10px"><strong>Batch Completion Report</strong></p>';
+        $data .=     '<p class="m-0 d-flex justify-content-center">
                         <strong>Started On : ' . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y') . '</strong>
                         <strong>' . \DB::table('batchslots')->where('id', $batch_data->bslot)->first()->slotName . '</strong>
-                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>
+                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>';
+        $data .= '</div>';
+        $data .= '<div class="col-md-12">';
+        $data .=     '<p class="m-0 d-flex justify-content-between">
                         <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>
                         <strong>Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong>
                         <strong>Batch : ' . $batch_data->batchId . '</strong></p>';
