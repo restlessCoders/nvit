@@ -35,7 +35,7 @@ class CertificateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        print_r($request->toArray());die;
     }
 
     /**

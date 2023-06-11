@@ -308,6 +308,7 @@
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.daily_collection_report')}} @endif">Daily Collection Report (Executive)</a></li>
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.daily_collection_report_by_mr')}} @endif">Daily Collection Report (Mr)</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.transaction.create')}} @endif">Adjustment</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"">
@@ -319,26 +320,27 @@
                                 </ul>
                             </li>
 
-                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainer') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-hand"></i>Batch<div class="arrow-down"></div></a>
                                 <ul class="submenu">
                                     <li class="has-submenu">
                                         <a href="#">Attendance<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainer') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu">
                                         <a href="#">Batch Completion Report<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainer') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
+                            
 
-                            <li class="has-submenu">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer') @else d-none @endif"">
                                 <a href="#">
                                     <i class="mdi mdi-certificate"></i>Certification<div class="arrow-down"></div></a>
                                 <ul class="submenu">

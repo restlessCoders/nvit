@@ -237,11 +237,14 @@ class ReportController extends Controller
         $data .= '<div class="col-md-2"><img src=' . $image_path . ' alt="" height="80"></div>';
         $data .= '<div class="col-md-10">';
         $data .=     '<h4 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
-        $data .=     '<p class="m-0" style="font-size:10px"><strong>Trainer\'s Attendance Roster</strong></p>';
-        $data .=     '<p class="m-0 d-flex justify-content-end">
+        $data .=     '<p class="m-0" style="font-size:10px"><strong>Batch Completion Report</strong></p>';
+        $data .=     '<p class="m-0 d-flex justify-content-center">
                         <strong>Started On : ' . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y') . '</strong>
                         <strong>' . \DB::table('batchslots')->where('id', $batch_data->bslot)->first()->slotName . '</strong>
-                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>
+                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>';
+        $data .= '</div>';
+        $data .= '<div class="col-md-12">';
+        $data .=     '<p class="m-0 d-flex justify-content-between">
                         <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>
                         <strong>Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong>
                         <strong>Batch : ' . $batch_data->batchId . '</strong></p>';
@@ -255,41 +258,28 @@ class ReportController extends Controller
 
         // Create a DateInterval of 1 day
         $interval = new DateInterval('P1D');
-
+        if(currentUser() == 'trainer'){
+            $data .= '<form action="'.route(currentUser().'.certificate.store').'" method="post"> ' . csrf_field() . '';
+        }
+       
         $data .= '<table class="table table-sm" style="border:1px solid #000;color:#000;">
                     <tbody>
                         <tr>
-                            <th width="120px" rowspan="3" class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Student Name</strong></th>
-                            <th width="40px" rowspan="3" class="align-middle" style="border:1px solid #000;;color:#000;"><strong>INV</strong></th>
-                            <th width="140px" style="border:1px solid #000;;color:#000;"><strong>Class Date</strong></th>';
-        // Loop through the date range
-        //$count = $request->count_class;
-        $count = 0;
-        $date = $startDate;
-        while ($date <= $endDate) {
-
-            // Check if the current date is a Saturday, Monday or Wednesday
-            if ($date->format('l') == 'Saturday' || $date->format('l') == 'Monday' || $date->format('l') == 'Wednesday') {
-                // Display the date in a column
-                if ($count < 17) {
-                    /*Carbon\Carbon::createFromTimestamp(strtotime($date->format('Y-m-d')))->format('j/m/y')*/
-                    $data .= '<td style="border:1px solid #000;;color:#000;"></td>';
-                }
-                $count++;
-            }
-            $date->add($interval);
-        }
-        if ($count > 17) $count = 17;
-        $data .=    '</tr>
-                        <tr>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Trainer Sign:</strong></th>';
-        for ($i = 0; $i < $count; $i++) {
-            $data .= '<td class="cell" rowspan="2" style="border:1px solid #000;color:#000;"></td>';
-        }
-        $data .=    '</tr>';
-        $data .=    '<tr>
-                            <th style="border:1px solid #000;color:#000;"><strong>AE:</strong></th>';
-        $data .=    '</tr>';
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Student Name</strong></th>
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Invoice</strong></th>
+                            <th style="border:1px solid #000;color:#000;"><strong>Executive</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Attn.</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Perf.</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Pass</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Drop</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Ins. Note</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Acc. Note</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Op. Note</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>GM. Note</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Ex. Note</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Issued</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Delivered</strong></th>
+                        </tr>';
         if ($request->batch_id) {
             $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->get();
         }
@@ -308,14 +298,28 @@ class ReportController extends Controller
             }
             '</td>';
             $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
-            for ($i = 0; $i < $count; $i++) {
+            
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
-            }
+                $data .= '<td style="border:1px solid #000;color:#000;"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="issue_status[]"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="delivery_status[]"></td>';
+            
             $data .= '</tr>';
         }
         $data .=    '</tbody>
                 </table>';
-
+       
+        if(currentUser() == 'trainer'){   
+            $data .= '<div class="col-md-12 d-flex justify-content-end"><button class="btn btn-primary" type="submit">Save</button></div>';  
+            $data .= '</form>';
+        }
 
 
 

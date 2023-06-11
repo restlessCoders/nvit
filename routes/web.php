@@ -24,6 +24,7 @@ use App\Http\Controllers\OtherPaymentController;
 use App\Http\Controllers\PaymentTransferController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RefundController;
+use App\Http\Controllers\CertificateController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -186,7 +187,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         Route::resource('/refund', RefundController::class, ["as" => "superadmin"]);
         /*Chart Data */
         //Route::get('/chart-data', [DashboardController::class, 'chartData'])->name('superadmin.chartData');
-        
+
+        /*Transaction  */
+        Route::resource('/transaction', TransactionController::class, ["as" => "superadmin"]);
     });
 });
 
@@ -588,6 +591,9 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
          /* Refund*/
         Route::resource('/refund', RefundController::class, ["as" => "accountmanager"]);
+
+        /*Transaction  */
+        Route::resource('/transaction', TransactionController::class, ["as" => "accountmanager"]);
     });
 });
 
@@ -618,10 +624,26 @@ Route::group(['middleware' => 'isTrainer'], function () {
         Route::post('/changeAcc', [UserController::class, 'changeAcc'])->name('trainer.changeAcc');
 
         Route::resource('/batch', BatchController::class, ["as" => "trainer"])->only(['index']);
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('trainer.batchSearch');
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('trainer.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('trainer.batchwiseEnrollStudent');
+
+        /*Payment Report */
+        Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('trainer.allPaymentReportBySid');
+        Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('trainer.allPaymentCourseReportBySid');
+
+        /*Attendance Report */
+        Route::get('/batch/wise/attendance', [ReportController::class, 'batchwiseAttendance'])->name('trainer.batchwiseAttendance');
+        Route::get('/batch/wise/attendance/report', [ReportController::class, 'batchwiseAttendanceReport'])->name('trainer.batchwiseAttendanceReport');
+
+        /*Batch Completion Report */
+        Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('trainer.batchwiseCompletion');
+        Route::get('/batch/wise/completion/report', [ReportController::class, 'batchwiseCompletionReport'])->name('trainer.batchwiseCompletionReport');
+
+        /*Certificate Controller */
+        Route::resource('/certificate', CertificateController::class, ["as" => "trainer"]);
     });
 });
 
