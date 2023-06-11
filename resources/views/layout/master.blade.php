@@ -308,7 +308,7 @@
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.daily_collection_report')}} @endif">Daily Collection Report (Executive)</a></li>
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.daily_collection_report_by_mr')}} @endif">Daily Collection Report (Mr)</a></li>
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.transaction.create')}} @endif">Adjustment</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager') {{route(currentUser().'.transaction.create')}} @endif">Adjustment</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"">
