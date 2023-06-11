@@ -195,7 +195,7 @@
 										@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && currentUser() == 'accountmanager')
 										<form method="post" action="{{route(currentUser().'.refund.store')}}">
 										@csrf
-										<input type="text" name="sb_id" value="{{$batch->sb_id}}">
+										<input type="hidden" name="sb_id" value="{{$batch->sb_id}}">
 										<button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Refund</button>
 										</form>
 										@endif
