@@ -124,7 +124,7 @@
 							@if(\DB::table('batches')->where('id',$batch->batch_id)->first())
 							{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}
 							@else
-								@if(\DB::table('courses')->where('id',$batch->course_id)->first()->exixts())
+								@if(\DB::table('courses')->where('id',$batch->course_id)->exixts())
 								{{\DB::table('courses')->where('id',$batch->course_id)->first()->courseName}}
 								@endif
 							@endif
