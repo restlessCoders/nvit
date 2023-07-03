@@ -57,7 +57,7 @@
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
 						</div>
-					</div> -->
+					</div> 
 					<div class="col-sm-3">
 						<label for="name" class="col-form-label">Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control me-3">
@@ -67,7 +67,7 @@
 							@empty
 							@endforelse
 						</select>
-					</div>
+					</div>-->
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary mr-2"><i class="fa fa-search fa-sm"></i></button>
 						<a href="{{route(currentUser().'.daily_collection_report')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
