@@ -49,7 +49,7 @@
 								@endphp
 						</select>
 					</div>
-					<div class="col-sm-3">
+					<!-- <div class="col-sm-3">
 						<label for="name" class="col-form-label">Date</label>
 						<div class="input-group">
 							<input type="text" name="paymentDate" class="form-control" placeholder="dd/mm/yyyy">
@@ -57,7 +57,7 @@
 								<span class="input-group-text"><i class="icon-calender"></i></span>
 							</div>
 						</div>
-					</div>
+					</div> -->
 					<div class="col-sm-3">
 						<label for="name" class="col-form-label">Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control me-3">
@@ -105,37 +105,47 @@
 						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($payment->paymentDate))->format('j M, Y')}}</td>
 						@foreach ($salespersons as $salesperson)
 						<td>
-							{{ 
-								 DB::table('payments')							
-								->where('paymentDate', $payment->paymentDate)
-								->where('executiveId', $salesperson->executiveId)
-								->sum('paidAmount')/*- 
+							{{ 	
+								/* Old Query */
+								/*DB::table('payments')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
+								->where('payments.paymentDate', $payment->paymentDate)
+								->where('payments.executiveId', $salesperson->executiveId)
+								->sum('cpaidAmount')*/
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
 								->where('payments.executiveId', $salesperson->executiveId)
-								->sum('discount')*/
+								->sum('cpaidAmount')
+								/*
+								DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->where('payments.executiveId', $salesperson->executiveId)
+								->sum('cpaidAmount')*/
 								
 							}}
 						</td>
 						@endforeach
 						@if(strtolower(currentUser()) != 'salesexecutive')
 						<td>
-						@php $total_course_fee += DB::table('payments')							
-								->where('paymentDate', $payment->paymentDate)
-								->sum('paidAmount')/*- 
+						@php $total_course_fee += DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->sum('cpaidAmount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
 								->sum('discount');*/ @endphp
 							{{
-								DB::table('payments')							
-								->where('paymentDate', $payment->paymentDate)
-								->sum('paidAmount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
-								->sum('discount')*/
+								->sum('cpaidAmount')/*- 
+								DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->sum('discount');*/
 							}}
 						</td>
 						@endif
@@ -147,11 +157,12 @@
 						@php $date = \Carbon\Carbon::create($currentYear, $currentMonth, 1)->startOfMonth(); @endphp
 						<td>
 							{{ 
-								DB::table('payments')	
-								->whereMonth('paymentDate', '=', $date->month)
-    							->whereYear('paymentDate', '=', $date->year)
-								->where('executiveId', $salesperson->executiveId)
-								->sum('paidAmount')/*- 
+								DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->whereMonth('payments.paymentDate', '=', $date->month)
+    							->whereYear('payments.paymentDate', '=', $date->year)
+								->where('payments.executiveId', $salesperson->executiveId)
+								->sum('paymentdetails.cpaidAmount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->whereMonth('paymentDate', '=', $date->month)

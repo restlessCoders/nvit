@@ -150,7 +150,7 @@
 					@php 
 					$total_paid_amount += $p->cpaidAmount;
 					$total_dis += $p->discount;  
-					$total_cpyable += $p->cPayable;  
+					
 					@endphp
 					<tr>
 						<td rowspan="" class="align-middle">
@@ -199,6 +199,7 @@
 						<td class="align-middle">{{$p->cpaidAmount}}</td>
 						<td class="align-middle">{{$p->discount?$p->discount:0}}</td>
 						<td class="align-middle">{{($p->cPayable-($p->cpaidAmount+$p->discount))}}</td>
+						@php $total_cpyable += ($p->cPayable-($p->cpaidAmount+$p->discount)); @endphp
 						@endif
 						
 						
@@ -237,7 +238,7 @@
 						<td colspan="10"></td>
 						<td>{{$total_paid_amount}}</td>
 						<td>{{$total_dis}}</td>
-						<td>{{$total_cpyable-($total_paid_amount+$total_dis)}}</td>
+						<td>{{$total_cpyable}}</td>
 					</tr>
 				</tfoot>
 			</table>
@@ -274,7 +275,7 @@
 		singleDatePicker: true,
 		startDate: new Date(),
 		showDropdowns: true,
-		autoUpdateInput: true,
+		autoUpdateInput: false,
 		format: 'dd/mm/yyyy',
 	}).on('changeDate', function(e) {
 		var date = moment(e.date).format('YYYY/MM/DD');

@@ -30,6 +30,15 @@ class PaymentReportController extends Controller
         ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','courses.courseName','students.name','students.contact','users.username')
         ->orderby('payments.mrNo','desc');
         //print_r($payments);die;
+        if($request->studentId){
+            $payments->where('students.name', 'like', '%'.$request->sdata.'%')
+            ->where('students.id', $request->studentId)
+            ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
+            ->orWhere('students.contact', 'like', '%'.$request->studentId.'%');
+        }
+        if($request->paymentDate){
+            $payments->where('payments.paymentDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($request->paymentDate))->format('Y-m-d'));
+        }
         if($request->executiveId){
             $payments->where('payments.executiveId',$request->executiveId);
         }
