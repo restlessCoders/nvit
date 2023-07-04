@@ -24,6 +24,15 @@
 				<input type="hidden" value="{{ Session::get('user') }}" name="userId">
 				<div class="row">
 					<div class="col-lg-3">
+						<label>Posting Date: <span class="text-danger sup">*</span></label>
+						<div class="input-group">
+							<input type="text" name="postingDate" class="form-control" placeholder="dd/mm/yyyy">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="icon-calender"></i></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3">
 						<label>Select Student: <span class="text-danger sup">*</span></label>
 						<select name="studentId" class="js-example-basic-single form-control select2 @if($errors->has('studentId')) {{ 'is-invalid' }} @endif">
 							<option></option>
@@ -45,7 +54,7 @@
 							<option></option>
 							@if(count($executives) > 0)
 							@foreach($executives as $e)
-							<option value="{{ $e->id }}" {{ old('from_exe_id') == $e->id ? "selected" : "" }}>{{ $e->id }}</option>
+							<option value="{{ $e->id }}" {{ old('from_exe_id') == $e->id ? "selected" : "" }}>{{ $e->username }}</option>
 							@endforeach
 							@endif
 						</select>
@@ -61,7 +70,7 @@
 							<option></option>
 							@if(count($executives) > 0)
 							@foreach($executives as $pt)
-							<option value="{{ $pt->id }}" {{ old('to_exe_id') == $pt->id ? "selected" : "" }}>{{ $pt->id }}</option>
+							<option value="{{ $pt->id }}" {{ old('to_exe_id') == $pt->id ? "selected" : "" }}>{{ $pt->username }}</option>
 							@endforeach
 							@endif
 						</select>
@@ -94,21 +103,15 @@
 				placeholder: 'Select Option',
 				allowClear: true
 			});
-			$('input[name="startDate"],input[name="endDate"],input[name="examDate"]').daterangepicker({
+			$('input[name="postingDate"]').daterangepicker({
 				singleDatePicker: true,
 				startDate: new Date(),
 				showDropdowns: true,
 				autoUpdateInput: true,
-				locale: {
-					format: 'DD/MM/YYYY'
-				}
-			});
-			$("#timepicker").timepicker({
-				defaultTIme: !1,
-				icons: {
-					up: "mdi mdi-chevron-up",
-					down: "mdi mdi-chevron-down"
-				}
+				format: 'dd/mm/yyyy',
+			}).on('changeDate', function(e) {
+				var date = moment(e.date).format('YYYY/MM/DD');
+				$(this).val(date);
 			});
 		</script>
 		@endpush

@@ -48,13 +48,17 @@ class PaymentTransferController extends Controller
     public function store(Request $request)
     {
         try {
+            $to_exe_id = User::where('id',$request->to_exe_id)->first();
+            $from_exe_id = User::where('id',$request->from_exe_id)->first();
+
             $transaction = new Transaction();
             $transaction->studentId = $request->studentId;
             $transaction->exe_id = $request->from_exe_id;
             $transaction->amount = -$request->amount;
             $transaction->type = 'amount_transfer';
             $transaction->trx_type = '-';
-            $transaction->details = $request->amount.' Amount transfer to executive '.$request->to_exe_id;
+            $transaction->details = $request->amount.' Amount transfer to '.$to_exe_id->username;
+            $transaction->postingDate = $request->postingDate?date('Y-m-d', strtotime($request->postingDate)):null;
             $transaction->save();
 
             $transaction = new Transaction();
@@ -63,7 +67,8 @@ class PaymentTransferController extends Controller
             $transaction->amount = $request->amount;
             $transaction->type = 'amount_transfer';
             $transaction->trx_type = '+';
-            $transaction->details = $request->amount.' Amount Receive From executive '.$request->from_exe_id;
+            $transaction->details = $request->amount.' Amount Receive From '.$from_exe_id->username;
+            $transaction->postingDate = $request->postingDate?date('Y-m-d', strtotime($request->postingDate)):null;
             $transaction->save();
 
             return redirect(route(currentUser().'.payment-transfer.index'))->with($this->responseMessage(true, null, 'Payment Transfer Successful'));

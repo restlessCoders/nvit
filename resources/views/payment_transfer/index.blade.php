@@ -35,7 +35,7 @@
 					<tr>
 						<td>{{ $loop->iteration }}</td>
 						<td>{{$p->studentId}}</td>
-						<td>{{$p->exe_id}}</td>
+						<td>{{optional($p->user)->username}}</td>
 						<td>{{$p->amount}}</td>
 						<td>{{$p->details}}</td>
 						<td>
