@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Superadmin | Dashboard')
+@section('title', 'Frontdesk | Dashboard')
 @section('content')
 <!-- start page title -->
 <div class="row">

@@ -168,8 +168,10 @@
 								@endif
 							</td>
 							<td width="250px">
-								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && $batch->batch_id == 0)
-								<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>
+								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
+									@if($batch->batch_id == 0)
+									<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>
+									@endif
 								@endif
 
 								@if($batch->batch_id)
@@ -193,11 +195,11 @@
 									@if($sum > 0)
 									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
 										@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && currentUser() == 'accountmanager')
-										<form method="post" action="{{route(currentUser().'.refund.store')}}">
+										<!-- <form method="post" action="{{route(currentUser().'.refund.store')}}" class="d-inline">
 										@csrf
 										<input type="hidden" name="sb_id" value="{{$batch->sb_id}}">
 										<button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Refund</button>
-										</form>
+										</form> -->
 										@endif
 									
 									@endif

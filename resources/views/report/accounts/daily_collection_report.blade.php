@@ -116,7 +116,10 @@
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
 								->where('payments.executiveId', $salesperson->executiveId)
-								->sum('cpaidAmount')
+								->sum('cpaidAmount')+DB::table('transactions')		
+								->where('postingDate', $payment->paymentDate)
+								->where('exe_id', $salesperson->executiveId)
+								->sum('amount')
 								/*
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
@@ -132,7 +135,9 @@
 						@php $total_course_fee += DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
-								->sum('cpaidAmount')/*- 
+								->sum('cpaidAmount')+DB::table('transactions')		
+								->where('postingDate', $payment->paymentDate)
+								->sum('amount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
@@ -141,7 +146,9 @@
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
-								->sum('cpaidAmount')/*- 
+								->sum('cpaidAmount')+DB::table('transactions')		
+								->where('postingDate', $payment->paymentDate)
+								->sum('amount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
@@ -162,7 +169,11 @@
 								->whereMonth('payments.paymentDate', '=', $date->month)
     							->whereYear('payments.paymentDate', '=', $date->year)
 								->where('payments.executiveId', $salesperson->executiveId)
-								->sum('paymentdetails.cpaidAmount')/*- 
+								->sum('paymentdetails.cpaidAmount')+DB::table('transactions')		
+								->whereMonth('postingDate', '=', $date->month)
+    							->whereYear('postingDate', '=', $date->year)
+								->where('exe_id', $salesperson->executiveId)
+								->sum('amount')/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->whereMonth('paymentDate', '=', $date->month)

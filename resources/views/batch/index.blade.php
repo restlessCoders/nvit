@@ -30,6 +30,8 @@
 								<th>SL.</th>
 								<th>Batch</th>
 								<th>Course</th>
+								<th>Regular</th>
+								<th>Offer</th>
 								<th width="90px">Op. Date</th>
 								<th width="90px">E.Date</th>
 								<th width="100px">W.Slot</th>
@@ -37,7 +39,7 @@
 								<!-- <th>Exam Date</th>
 								<th>Exam Time</th> -->
 								<th>Room</th>
-								<th>Available</th>
+								<th>T.Seat</th>
 								<th>Trainer</th>
 								<th>T.Class</th>
 								<th>Status</th>
@@ -54,6 +56,35 @@
 									{{$batch->batchId}}<br>
 								</td>	
 								<td>{{$batch->course->courseName}}</td>
+								<td>
+									<table>
+										<tr>
+											<th>Full</th>
+											<th>Installment</th>
+										</tr>
+										<tr>
+											<td>{{$batch->course->rPrice}}</td>
+											<td>{{$batch->course->iPrice}}</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									@php $package = DB::table('packages')->where('batchId',$batch->id)->first(); @endphp
+									@if($package)
+									<table>
+										<tr>
+											<th>Full</th>
+											<th>Installment</th>
+										</tr>
+										<tr>
+											<td>{{$package->price}}</td>
+											<td>{{$package->iPrice}}</td>
+										</tr>
+									</table>
+									@else
+									No Offer
+									@endif
+								</td>
 								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->startDate))->format('j M, Y')}}</td>
 								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->endDate))->format('j M, Y')}}</td>
 								<td>{{$batch->batchslot->slotName}}</td>

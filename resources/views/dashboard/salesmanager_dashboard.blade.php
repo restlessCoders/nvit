@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Superadmin | Dashboard')
+@section('title', 'Sales Manager | Dashboard')
 @section('content')
 <!-- start page title -->
 <div class="row">
@@ -39,34 +39,34 @@
                 <div class="card-box tilebox-one">
                     <i class="icon-layers float-right m-0 h2 text-muted"></i>
                     <h6 class="text-muted text-uppercase mt-0">Clients</h6>
-                    <h3 class="my-3" data-plugin="counterup">1,587</h3>
+                    <h3 class="my-3" data-plugin="counterup">{{$clients}}</h3>
                 </div>
                 <div class="card-box tilebox-one">
                     <i class="icon-paypal float-right m-0 h2 text-muted"></i>
                     <h6 class="text-muted text-uppercase mt-0">Enrollment</h6>
-                    <h3 class="my-3">$<span data-plugin="counterup">46,782</span></h3>
+                    <h3 class="my-3"><span data-plugin="counterup"></span></h3>
                 </div>
                 <div class="card-box tilebox-one">
                     <i class="icon-rocket float-right m-0 h2 text-muted"></i>
                     <h6 class="text-muted text-uppercase mt-0">Total Batch</h6>
-                    <h3 class="my-3" data-plugin="counterup">1,890</h3>
+                    <h3 class="my-3" data-plugin="counterup"></h3>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card-box tilebox-one">
                     <i class="icon-layers float-right m-0 h2 text-muted"></i>
                     <h6 class="text-muted text-uppercase mt-0">Revenue</h6>
-                    <h3 class="my-3">$<span data-plugin="counterup">46,782</span></h3>
+                    <h3 class="my-3">Tk <span data-plugin="counterup">{{$revenue}}</span></h3>
                 </div>
                 <div class="card-box tilebox-one">
                     <i class="icon-paypal float-right m-0 h2 text-muted"></i>
                     <h6 class="text-muted text-uppercase mt-0">Knocking</h6>
-                    <h3 class="my-3">$<span data-plugin="counterup">46,782</span></h3>
+                    <h3 class="my-3"><span data-plugin="counterup"></span></h3>
                 </div>
                 <div class="card-box tilebox-one">
                     <i class="icon-rocket float-right m-0 h2 text-muted"></i>
                     <h6 class="text-muted text-uppercase mt-0">New Batch</h6>
-                    <h3 class="my-3" data-plugin="counterup">1,890</h3>
+                    <h3 class="my-3" data-plugin="counterup"></h3>
                 </div>
             </div>
         </div>
@@ -74,35 +74,30 @@
     <div class="col-xl-2">
         <div class="card-box tilebox-one">
             <i class="icon-rocket float-right m-0 h2 text-muted"></i>
-            <h6 class="text-muted text-uppercase mt-0">IDB</h6>
-            <h3 class="my-3" data-plugin="counterup">1,890</h3>
-        </div>
-        <div class="card-box tilebox-one">
-            <i class="icon-rocket float-right m-0 h2 text-muted"></i>
             <h6 class="text-muted text-uppercase mt-0">Evaluation</h6>
-            <h3 class="my-3" data-plugin="counterup">1,890</h3>
+            <h3 class="my-3" data-plugin="counterup"></h3>
         </div>
         <div class="card-box tilebox-one">
             <i class="icon-rocket float-right m-0 h2 text-muted"></i>
             <h6 class="text-muted text-uppercase mt-0">B.Complete</h6>
-            <h3 class="my-3" data-plugin="counterup">1,890</h3>
+            <h3 class="my-3" data-plugin="counterup"></h3>
+        </div>
+        <div class="card-box tilebox-one">
+            <i class="icon-rocket float-right m-0 h2 text-muted"></i>
+            <h6 class="text-muted text-uppercase mt-0">Certificate</h6>
+            <h3 class="my-3" data-plugin="counterup"></h3>
         </div>
     </div><!-- end col-->
     <div class="col-xl-2">
         <div class="card-box tilebox-one">
             <i class="icon-rocket float-right m-0 h2 text-muted"></i>
-            <h6 class="text-muted text-uppercase mt-0">Collection</h6>
-            <h3 class="my-3" data-plugin="counterup">1,890</h3>
+            <h6 class="text-muted text-uppercase mt-0">Due</h6>
+            <h3 class="my-3">Tk <span data-plugin="counterup">{{$due->total}}</span></h3>
         </div>
         <div class="card-box tilebox-one">
             <i class="icon-rocket float-right m-0 h2 text-muted"></i>
             <h6 class="text-muted text-uppercase mt-0">Uncomplete</h6>
-            <h3 class="my-3" data-plugin="counterup">1,890</h3>
-        </div>
-        <div class="card-box tilebox-one">
-            <i class="icon-rocket float-right m-0 h2 text-muted"></i>
-            <h6 class="text-muted text-uppercase mt-0">Certificate</h6>
-            <h3 class="my-3" data-plugin="counterup">1,890</h3>
+            <h3 class="my-3" data-plugin="counterup"></h3>
         </div>
     </div><!-- end col-->
 </div>

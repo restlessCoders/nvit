@@ -26,9 +26,19 @@ class UserController extends Controller
 {
     use ResponseTrait, ImageHandleTraits;
     
-    public function index(){
+    public function index(Request $request){
         if(currentUser() == 'superadmin' || currentUser() == 'operationmanager'){
-            $allUser = User::with('role')->orderBy('id', 'DESC')->paginate(25);
+            $search = $request->get('search');
+            if($search != ''){
+                $allUser = User::where('name','like', '%' .$search. '%')->paginate(25);
+                $allUser->appends(array('search'=> $search,));
+                if(count($allUser )>0){
+                return view('user.index',['allUser'=>$allUser]);
+                }
+                return back()->with('error','No results Found');
+            }else{
+                $allUser = User::with('role')->orderBy('id', 'DESC')->paginate(25);
+            } 
         }elseif(currentUser() == 'salesmanager' || currentUser() == 'accountmanager'  || currentUser() == 'trainingmanager' || currentUser() == 'admin'){
             $allUser = User::whereIn('roleId',[9,11])->with('role')->orderBy('id', 'DESC')->paginate(25);
         }elseif(currentUser() == 'accountmanager' || currentUser() == 'trainingmanager'){

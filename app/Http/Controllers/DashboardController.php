@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Bill;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Paymentdetail;
 use App\Models\Student;
 use Session;
 use Carbon\Carbon;
@@ -79,13 +80,18 @@ return response()->json([
   }
   public function index()
   {
-
+    $clients = Student::where('status', 1)->count();
+    $revenue = Paymentdetail::sum('cpaidAmount');
+    $due = DB::table('paymentdetails')
+    ->selectRaw('SUM(cPayable) - (SUM(cpaidAmount) + SUM(discount)) as total')
+    ->whereRaw('(cPayable - (discount + cpaidAmount)) > 0')
+    ->first();
 
     $recall_students = Student::join('notes', 'students.id', 'notes.student_id')
       ->select('students.name', 'notes.student_id', 'notes.re_call_date', 'notes.note')
       ->whereDate('re_call_date', '=', now()->toDateString())
       ->paginate(8);
-    return view('dashboard.superadmin_dashboard', compact('recall_students'));
+    return view('dashboard.superadmin_dashboard', compact('recall_students','clients','revenue','due'));
   }
 
   public function admin()
@@ -105,7 +111,14 @@ return response()->json([
 
   public function accountmanager()
   {
-    return view('dashboard.accountmanager_dashboard');
+    $clients = Student::where('status', 1)->count();
+    $revenue = Paymentdetail::sum('cpaidAmount');
+    $due = DB::table('paymentdetails')
+    ->selectRaw('SUM(cPayable) - (SUM(cpaidAmount) + SUM(discount)) as total')
+    ->whereRaw('(cPayable - (discount + cpaidAmount)) > 0')
+    ->first();
+
+    return view('dashboard.accountmanager_dashboard', compact('clients','revenue','due'));
   }
 
   public function trainingmanager()
@@ -120,7 +133,16 @@ return response()->json([
 
   public function operationmanager()
   {
-    return view('dashboard.operation_dashboard');
+    $clients = Student::where('status', 1)->where('executiveId', currentUserId())->count();
+    $revenue =  DB::table('paymentdetails')->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+    ->where('payments.executiveId', currentUserId())->sum('paymentdetails.cpaidAmount');
+    $due = DB::table('paymentdetails')->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+    ->selectRaw('SUM(paymentdetails.cPayable) - (SUM(paymentdetails.cpaidAmount) + SUM(paymentdetails.discount)) as total')
+    ->whereRaw('(paymentdetails.cPayable - (paymentdetails.discount + paymentdetails.cpaidAmount)) > 0')
+    ->where('payments.executiveId', currentUserId())
+    ->first();
+
+    return view('dashboard.operation_dashboard',compact('clients','revenue','due'));
   }
 
   public function owner()
@@ -166,7 +188,16 @@ return response()->json([
         $billToday=DB::select(DB::raw("SELECT sum(total_amount) as am, count(id) as cid FROM bills WHERE companyId=$company_id and bill_date = date(now()) "));
         
 		return view('dashboard.salesmanager_dashboard',compact('todaySellSummary','profit','rev_date','company','customer','suppliers','billToday','billWeek','billMonth'));*/
-    return view('dashboard.salesmanager_dashboard');
+    $clients = Student::where('status', 1)->where('executiveId', currentUserId())->count();
+    $revenue =  DB::table('paymentdetails')->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+    ->where('payments.executiveId', currentUserId())->sum('paymentdetails.cpaidAmount');
+    $due = DB::table('paymentdetails')->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+    ->selectRaw('SUM(paymentdetails.cPayable) - (SUM(paymentdetails.cpaidAmount) + SUM(paymentdetails.discount)) as total')
+    ->whereRaw('(paymentdetails.cPayable - (paymentdetails.discount + paymentdetails.cpaidAmount)) > 0')
+    ->where('payments.executiveId', currentUserId())
+    ->first();
+
+    return view('dashboard.salesmanager_dashboard',compact('clients','revenue','due'));
   }
 
   public function salesExecutive()
@@ -189,11 +220,20 @@ return response()->json([
         $billToday=DB::select(DB::raw("SELECT sum(total_amount) as am, count(id) as cid FROM bills WHERE companyId=$company_id and bill_date = date(now()) "));
         
 		return view('dashboard.salesman_dashboard',compact('todaySellSummary','profit','rev_date','company','customer','suppliers','billToday','billWeek','billMonth'));*/
+    $clients = Student::where('status', 1)->where('executiveId', currentUserId())->count();
+    $revenue =  DB::table('paymentdetails')->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+    ->where('payments.executiveId', currentUserId())->sum('paymentdetails.cpaidAmount');
+    $due = DB::table('paymentdetails')->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+    ->selectRaw('SUM(paymentdetails.cPayable) - (SUM(paymentdetails.cpaidAmount) + SUM(paymentdetails.discount)) as total')
+    ->whereRaw('(paymentdetails.cPayable - (paymentdetails.discount + paymentdetails.cpaidAmount)) > 0')
+    ->where('payments.executiveId', currentUserId())
+    ->first();
+
     $recall_students = Student::join('notes', 'students.id', 'notes.student_id')
       ->select('students.name', 'notes.student_id', 'notes.re_call_date', 'notes.note')
       ->whereDate('re_call_date', '=', now()->toDateString())
       ->where('executiveId', currentUserId())
       ->paginate(8);
-    return view('dashboard.salesexecutive_dashboard', compact('recall_students'));
+    return view('dashboard.salesexecutive_dashboard', compact('recall_students','clients','revenue','due'));
   }
 }

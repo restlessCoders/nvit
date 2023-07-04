@@ -1,5 +1,5 @@
 @extends('layout.admin.admin_master')
-@section('title', 'Admin | Dashboard')
+@section('title', 'Executive | Dashboard')
 @section('content')
 
 <div class="content flex-column-fluid" id="kt_content">
