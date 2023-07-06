@@ -418,15 +418,15 @@
 							</td>
 							<td>{{$allassignBatch->course_price}}</td>
 							<td>
-								{{--
-								@if($allassignBatch->acc_approve != 2)
+								
+								@if($allassignBatch->acc_approve != 2 && currentUser() == 'superadmin')
 								<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
 								@endif
-								--}}
+								
 							</td>
 						</form>
 						<td>
-							@if($allassignBatch->acc_approve == 0)
+							@if($allassignBatch->acc_approve == 0 && currentUser() == 'superadmin')
 							<form id="active-form" method="POST" action="{{route(currentUser().'.enrollment.destroy',[encryptor('encrypt', $allassignBatch->id)])}}" style="display: inline;">
 								@csrf
 								@method('DELETE')
