@@ -52,9 +52,9 @@ class RefundController extends Controller
             DB::table('paymentdetails')->where('id',$payment->id)->update(['deduction' => -$payment->cpaidAmount]);
             $payment_data = DB::table('payments')->where('id',$payment->paymentId)->first();
             DB::table('payments')->where('id',$payment->paymentId)->update(['deduction' => -$payment_data->paidAmount]);
-            /* */
+
         }
-       
+       return redirect()->back();
     }
 
     /**
