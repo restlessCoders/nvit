@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentTransfer extends Model
 {
     use HasFactory;
+   
 }

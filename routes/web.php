@@ -534,7 +534,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
         Route::prefix('student')->group(function () {
             //Student Controller
-            //Route::get('/all',  [StudentController::class,'confirmStudents'])->name('accountmanager.allStudent');
+            Route::get('/all',  [StudentController::class,'index'])->name('accountmanager.allStudent');
             Route::get('/student/enroll/details/{id}',  [StudentController::class, 'studentenrollById'])->name('accountmanager.studentenrollById');
             Route::get('/payment/{id}/{entryDate}',  [StudentController::class, 'paymentStudent'])->name('accountmanager.paymentStudent');
         });
@@ -584,6 +584,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         });
 
         Route::resource('/payment-transfer', PaymentTransferController::class, ["as" => "accountmanager"]);
+        Route::get('/payment-transfer-data', [PaymentTransferController::class,'payment_transfer_data'])->name('accountmanager.payment_transfer_data');
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');

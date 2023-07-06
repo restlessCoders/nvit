@@ -6,6 +6,8 @@ use App\Models\PaymentTransfer;
 use App\Models\Transaction;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Course;
+use App\Models\Batch;
 use Illuminate\Http\Request;
 
 use App\Http\Traits\ResponseTrait;
@@ -53,7 +55,10 @@ class PaymentTransferController extends Controller
 
             $transaction = new Transaction();
             $transaction->studentId = $request->studentId;
+            $transaction->course_id = $request->course_id;
+            $transaction->batchId = $request->batchId;
             $transaction->exe_id = $request->from_exe_id;
+            $transaction->mrNo = $request->mrNo;
             $transaction->amount = -$request->amount;
             $transaction->type = 'amount_transfer';
             $transaction->trx_type = '-';
@@ -63,7 +68,10 @@ class PaymentTransferController extends Controller
 
             $transaction = new Transaction();
             $transaction->studentId = $request->studentId;
+            $transaction->course_id = $request->course_id;
+            $transaction->batchId = $request->batchId;
             $transaction->exe_id = $request->to_exe_id;
+            $transaction->mrNo = $request->mrNo;
             $transaction->amount = $request->amount;
             $transaction->type = 'amount_transfer';
             $transaction->trx_type = '+';
@@ -124,5 +132,66 @@ class PaymentTransferController extends Controller
     public function destroy(PaymentTransfer $paymentTransfer)
     {
         //
+    }
+
+    public function payment_transfer_data(Request $request){
+        $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
+        $courses = Course::all();
+        $batches = Batch::all();
+        $stu_exe_id = Student::where('id',$request->student_id)->first();
+        
+        $data = '<div class="col-lg-3">
+        <label>Course: <span class="text-danger sup">*</span></label>
+        <select name="course_id" class="form-control"> <option></option>';
+            if(count($courses) > 0){
+                foreach($courses as $c){
+                    $data .= '<option value="'.$c->id.'">'.$c->courseName.'</option>';
+                }
+            }
+        $data .= '</select></div>';
+
+        $data .= '<div class="col-lg-3">
+        <label>Batch: <span class="text-danger sup">*</span></label>
+        <select name="batchId" class="form-control"> <option></option>';
+            if(count($batches) > 0){
+                foreach($batches as $b){
+                    $data .= '<option value="'.$b->id.'">'.$b->batchId.'</option>';
+                }
+            }
+        $data .= '</select></div>';
+
+        $data .= '<div class="col-lg-3">
+        <label>From Executive: <span class="text-danger sup">*</span></label>
+        <select name="from_exe_id" class="form-control disabled">';
+            if(count($executives) > 0){
+                foreach($executives as $e){
+                    if($e->id == $stu_exe_id->executiveId){
+                        $data .= '<option value="'.$e->id.'">'.$e->username.'</option>';
+                    }
+                }
+            }
+        $data .= '</select></div>';
+        $data .= '<div class="col-lg-3">
+        <label>To Executive: <span class="text-danger sup">*</span></label>
+        <select name="to_exe_id" class="form-control">
+            <option></option>';
+            if(count($executives) > 0){
+                foreach($executives as $e){
+                    $data .= '<option value="'.$e->id.'">'.$e->username.'</option>';
+                }
+            }
+        $data .= '</select></div>';
+
+        $data .= '<div class="col-lg-3">
+                <label>Mr No<span class="text-danger sup">*</span></label>
+                <input id="mrNo" type="text" class="form-control" name="mrNo">
+            </div>';
+
+        $data .= '<div class="col-lg-3">
+                     <label>Amount<span class="text-danger sup">*</span></label>
+                    <input id="amount" type="text" class="form-control" name="amount">
+                </div>';
+
+        return response()->json(array('data' => $data));
     }
 }

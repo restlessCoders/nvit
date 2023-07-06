@@ -32,7 +32,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-3">
+					<div class="col-lg-3" id="payment-transfer-data">
 						<label>Select Student: <span class="text-danger sup">*</span></label>
 						<select name="studentId" class="js-example-basic-single form-control select2 @if($errors->has('studentId')) {{ 'is-invalid' }} @endif">
 							<option></option>
@@ -48,43 +48,8 @@
 						</small>
 						@endif
 					</div>
-					<div class="col-lg-3">
-						<label>From Executive: <span class="text-danger sup">*</span></label>
-						<select name="from_exe_id" class="js-example-basic-single form-control select2 @if($errors->has('from_exe_id')) {{ 'is-invalid' }} @endif">
-							<option></option>
-							@if(count($executives) > 0)
-							@foreach($executives as $e)
-							<option value="{{ $e->id }}" {{ old('from_exe_id') == $e->id ? "selected" : "" }}>{{ $e->username }}</option>
-							@endforeach
-							@endif
-						</select>
-						@if($errors->has('mrNo'))
-						<small class="d-block text-danger mb-3">
-							{{ $errors->first('mrNo') }}
-						</small>
-						@endif
-					</div>
-					<div class="col-lg-3">
-						<label>To Executive: <span class="text-danger sup">*</span></label>
-						<select name="to_exe_id" class="js-example-basic-single form-control select2 @if($errors->has('to_exe_id')) {{ 'is-invalid' }} @endif">
-							<option></option>
-							@if(count($executives) > 0)
-							@foreach($executives as $pt)
-							<option value="{{ $pt->id }}" {{ old('to_exe_id') == $pt->id ? "selected" : "" }}>{{ $pt->username }}</option>
-							@endforeach
-							@endif
-						</select>
-						@if($errors->has('to_exe_id'))
-						<small class="d-block text-danger mb-3">
-							{{ $errors->first('to_exe_id') }}
-						</small>
-						@endif
-					</div>
-					<div class="col-lg-3">
-						<label>Amount<span class="text-danger sup">*</span></label>
-						<input id="amount" type="text" class="form-control" name="amount" value="{{ old('amount') }}">
-					</div>
 				</div>
+
 				<div class="form-group text-right mt-1">
 					<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
 						Submit
@@ -113,5 +78,29 @@
 				var date = moment(e.date).format('YYYY/MM/DD');
 				$(this).val(date);
 			});
+
+			/*===Student Data On Change==*/
+			$(document).ready(function(){
+			$('select[name="studentId"]').on('change', function() {
+    			var student_id = $('select[name="studentId"] option:selected').val();
+				$.ajax({
+					url: "{{route(currentUser().'.payment_transfer_data')}}",
+					method: 'GET',
+					dataType: 'json',
+					data: {
+						student_id: student_id
+					},
+					success: function(res) {
+						console.log(res.data);
+						$('#payment-transfer-data').nextAll().remove(); // Remove previous data
+						$('#payment-transfer-data').after(res.data);
+					},
+					error: function(e) {
+						console.log(e);
+					}
+				});
+			});
+			})
+
 		</script>
 		@endpush

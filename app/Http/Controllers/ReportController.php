@@ -64,6 +64,12 @@ class ReportController extends Controller
             ->join('students', 'students.id', '=', 'student_batches.student_id')
             ->join('users', 'users.id', '=', 'students.executiveId');
 
+        if($request->studentId){
+            $allBatches->where('students.id', $request->studentId)
+            ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
+            ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
+            ->orWhere('students.contact', 'like', '%'.$request->studentId.'%');
+        }
 
         if ($request->batch_id) {
             $allBatches->where('student_batches.batch_id', $request->batch_id);

@@ -28,6 +28,10 @@
 			<form action="{{route(currentUser().'.batchwiseEnrollStudent')}}" method="post" role="search">
 				@csrf
 				<div class="row">
+					<div class="col-sm-6">
+						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
+						<input type="text" class="form-control" name="studentId">
+					</div>
 					<div class="col-sm-3">
 						<label for="batch_id" class="col-form-label">Select Batch</label>
 						<select name="batch_id" class="js-example-basic-single form-control">
@@ -176,11 +180,20 @@
 
 								@if($batch->batch_id)
 
-									@php $sum = \DB::table('paymentdetails')
+									@php 
+									$sum = \DB::table('paymentdetails')
 									->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
 									->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
 									->first()
-									->total; @endphp
+									->total; 
+
+									$deduct = \DB::table('paymentdetails')
+									->selectRaw('COALESCE(SUM(deduction), 0) as deduction')
+									->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
+									->first()
+									->deduction; 
+									
+									@endphp
 									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
 									<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
 									@elseif($batch->course_price == $sum && $batch->status == 2)
@@ -192,14 +205,14 @@
 									@else
 									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
 									@endif
-									@if($sum > 0)
+									@if($sum > 0 && $deduct == 0)
 									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
-										@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && currentUser() == 'accountmanager')
-										<!-- <form method="post" action="{{route(currentUser().'.refund.store')}}" class="d-inline">
+										@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager')
+										<form method="post" action="{{route(currentUser().'.refund.store')}}" class="d-inline">
 										@csrf
 										<input type="hidden" name="sb_id" value="{{$batch->sb_id}}">
 										<button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Refund</button>
-										</form> -->
+										</form>
 										@endif
 									
 									@endif

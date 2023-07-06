@@ -23,7 +23,10 @@
 					<tr>
 						<th>SL.</th>
 						<th>Student ID</th>
+						<th>Course</th>
+						<th>Batch</th>
 						<th>Executive Id</th>
+						<th>Mr No</th>
 						<th>Amount</th>
 						<th>Remarks</th>
 						<th>Action</th>
@@ -35,7 +38,10 @@
 					<tr>
 						<td>{{ $loop->iteration }}</td>
 						<td>{{$p->studentId}}</td>
+						<td>{{optional($p->course)->courseName}}</td>
+						<td>{{optional($p->batch)->batchId}}</td>
 						<td>{{optional($p->user)->username}}</td>
+						<td>{{$p->mrNo}}</td>
 						<td>{{$p->amount}}</td>
 						<td>{{$p->details}}</td>
 						<td>
