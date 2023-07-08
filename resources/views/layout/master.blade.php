@@ -252,7 +252,7 @@
 
 
 
-                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'frontdesk') @else d-none @endif">
                                 <a href="#">
                                     <i class="fas fa-users"></i>Students <div class="arrow-down"></div></a>
                                 <ul class="submenu">
