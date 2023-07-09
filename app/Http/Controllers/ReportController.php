@@ -91,14 +91,13 @@ class ReportController extends Controller
             $allBatches->where('student_batches.status', $request->status);
         }
         $perPage = 20;
-        $pageName = 'page'; // This is the name of the query string parameter for pagination, 
 
         $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'studentId' => $request->studentId,
             'batch_id' => $request->batch_id,
             'refId' => $request->refId,
-          
+            'status' => $request->status,
         ]);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo]);
     }

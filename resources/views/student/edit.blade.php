@@ -368,6 +368,7 @@
 					@if(count($allassignBatches))
 					@php
 					$admissionCount = 0;
+					$rowCount = 1;
 					$prevSystemId = '';
 					@endphp
 					@foreach($allassignBatches as $allassignBatch)
@@ -377,9 +378,10 @@
 							@if ($allassignBatch->systemId != $prevSystemId)
 							@php
 							$admissionCount++;
+							$rowCount++;
 							$prevSystemId = $allassignBatch->systemId;
 							@endphp
-							<td rowspan="{{$admissionCount}}">
+							<td rowspan="{{$rowCount}}">
 								<p class="m-0">Admission {{ $admissionCount }}</p>
 								<small>{{$allassignBatch->entryDate}} </small>
 							</td>

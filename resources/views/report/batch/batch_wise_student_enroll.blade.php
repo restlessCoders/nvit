@@ -117,7 +117,7 @@
 					{{--<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">--}}
 					<!--<form action="" method="POST" enctype="multipart/form-data">-->
 						<tr>
-							<td>{{$loop->iteration}}</td>
+							<td>{{ (($allBatches->currentPage() - 1) * $allBatches->perPage()) + $loop->iteration }}</td>
 							<td>{{$batch->sId}}</td>
 							<td>{{$batch->sName}}</td>
 							<td>{{$batch->exName}}</td>
@@ -195,7 +195,12 @@
 									
 									@endphp
 									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-									<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
+										@if($deduct < 0)
+										<button type="button" class="btn btn-info btn-sm">Void</button>
+										@else
+										<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
+										@endif
+									
 									@elseif($batch->course_price == $sum && $batch->status == 2)
 										@if($batch->isBundel == 1)
 											Bundel Course
@@ -203,6 +208,7 @@
 										<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 										@endif
 									@else
+									
 									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
 									@endif
 									@if($sum > 0 && $deduct == 0)

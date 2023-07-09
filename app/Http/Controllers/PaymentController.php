@@ -52,7 +52,8 @@ class PaymentController extends Controller
             ->join('student_batches', function ($join) {
                 $join->on('students.id', '=', 'student_batches.student_id')
                     ->where('student_batches.status', '=', '2')
-                    ->where('student_batches.pstatus', '=', '0');
+                    ->where('student_batches.pstatus', '=', '0')
+                    ->where('student_batches.acc_approve', '!=', '3');
             })
             ->join('batches', 'student_batches.batch_id', '=', 'batches.id')
             ->select('student_batches.batch_id', 'batches.batchId')
@@ -123,6 +124,7 @@ class PaymentController extends Controller
             ->leftjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
+            ->where('student_batches.acc_approve', '!=',3)
             ->groupBy('student_batches.batch_id', 'student_batches.systemId')
             ->select(
                 'batches.batchId',

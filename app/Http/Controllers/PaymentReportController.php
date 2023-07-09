@@ -70,8 +70,17 @@ class PaymentReportController extends Controller
             $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
         }  
         
-       
-        $payments = $payments->paginate(20);
+        $perPage = 20;
+        $payments = $payments->paginate($perPage)->appends([
+            'executiveId' => $request->executiveId,
+            'studentId' => $request->studentId,
+            'batch_id' => $request->batch_id,
+            'paymentDate' => $request->paymentDate,
+            'year' => $request->year,
+            'month' => $request->month,
+            'payment_type' => $request->payment_type,
+            'feeType' => $request->feeType,
+        ]);
         /* echo '<pre>';
         print_r($payments->toArray());die;*/
         return view('report.accounts.daily_collection_by_mr', compact('payments', 'users', 'batches'));
@@ -150,7 +159,8 @@ class PaymentReportController extends Controller
             ->join('student_batches', 'paymentdetails.batchId', '=', 'student_batches.batch_id')
             ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
-            ->where('paymentdetails.studentId', $request->sId);
+            ->where('paymentdetails.studentId', $request->sId)
+            ->where('paymentdetails.deduction','>=',0);
 
         if ($request->systmVal) {
             $payments->where('student_batches.systemId', $request->systmVal);
