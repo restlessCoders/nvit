@@ -85,7 +85,7 @@ class ReportController extends Controller
             $allBatches->where('student_batches.status', 2);
         }
         if (strtolower(currentUser()) == 'accountmanager'){
-            $allBatches->where('student_batches.isBundel', 0);
+            $allBatches->where('student_batches.isBundel', 0)->groupBy('student_batches.course_id');
         }
         if ($request->status) {
             $allBatches->where('student_batches.status', $request->status);
