@@ -25,7 +25,7 @@
 				<p class="p-0" style="font-size:16px"><strong>Batch Wise Report</strong></p>
 			</div>
 
-			<form action="{{route(currentUser().'.batchwiseEnrollStudent')}}" method="post" role="search">
+			<form action="{{route(currentUser().'.batchwiseEnrollStudent')}}" method="" role="search">
 				@csrf
 				<div class="row">
 					<div class="col-sm-6">

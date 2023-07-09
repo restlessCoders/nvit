@@ -46,6 +46,7 @@ class ReportController extends Controller
         if ($request->status) {
             $allCourses->where('student_courses.status', $request->status);
         }
+        
         $allCourses = $allCourses->orderBy('student_courses.created_at', 'desc')->paginate(20);
 
         return view('report.course.course_wise_student_enroll', ['executives' => $executives, 'references' => $references, 'allCourses' => $allCourses, 'courses' => $courses, 'courseInfo' => $courseInfo]);
@@ -89,7 +90,16 @@ class ReportController extends Controller
         if ($request->status) {
             $allBatches->where('student_batches.status', $request->status);
         }
-        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate(20);
+        $perPage = 20;
+        $pageName = 'page'; // This is the name of the query string parameter for pagination, 
+
+        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+            'executiveId' => $request->executiveId,
+            'studentId' => $request->studentId,
+            'batch_id' => $request->batch_id,
+            'refId' => $request->refId,
+          
+        ]);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo]);
     }
     public function coursewiseStudent(Request $request)

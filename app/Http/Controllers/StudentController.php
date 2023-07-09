@@ -431,6 +431,8 @@ class StudentController extends Controller
    
 
         $allCourse    = Course::where('status', 1)->orderBy('courseName', 'ASC')->get();
+        /*echo '<pre>';
+        print_r($allCourse->toArray());die;*/
         $allBatch       = Batch::orderBy('id', 'DESC')->get();
         $allBatchTime    = Batchtime::where('status', 1)->orderBy('id', 'ASC')->get();
         $allBatchSlot    = Batchslot::where('status', 1)->orderBy('id', 'ASC')->get();

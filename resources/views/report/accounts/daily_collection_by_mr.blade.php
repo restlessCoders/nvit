@@ -168,7 +168,18 @@
 							@endif
 						</td>
 						<td class="align-middle">{{$p->mrNo}}</td>
-						<td class="align-middle">{{$p->invoiceId}}</td>
+						<td class="align-middle">{{--$p->invoiceId--}}
+							@if(\DB::table('payments')
+								->join('paymentdetails','paymentdetails.paymentId','payments.id')
+								->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->exists())
+								{{
+								\DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
+								@else
+								-
+							@endif
+						</td>
 						@php
 						if($p->feeType==1)
 						$text = "Registration";
