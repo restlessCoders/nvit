@@ -374,12 +374,12 @@
 					<tr>
 						<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$allassignBatch->student_id)) }}" method="POST" enctype="multipart/form-data">
 							@csrf
-							@if ($allassignBatch->systemId == $prevSystemId)
+							@if ($allassignBatch->systemId != $prevSystemId)
 							@php
 							$admissionCount++;
 							$prevSystemId = $allassignBatch->systemId;
 							@endphp
-							<td rowspan="{{$admissionCount}}">
+							<td rowspan="{{DB::table('student_batches')->where('systemId',$allassignBatch->systemId)->count()}}">
 								<p class="m-0">Admission {{ $admissionCount }}</p>
 								<small>{{$allassignBatch->entryDate}} </small>
 							</td>
