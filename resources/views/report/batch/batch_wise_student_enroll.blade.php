@@ -208,8 +208,11 @@
 										<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 										@endif
 									@else
-									
-									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
+										@if($deduct < 0)
+										<button type="button" class="btn btn-info btn-sm">Void</button>
+										@else
+										<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
+										@endif
 									@endif
 									@if($sum > 0 && $deduct == 0)
 									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>

@@ -48,14 +48,22 @@ class PaymentReportController extends Controller
             });
         }
         if($request->feeType){
-            if($request->feeType == 3){
-                $payments = $payments->whereRaw("(paymentdetails.cPayable) - (paymentdetails.discount+paymentdetails.cpaidAmount) > ?", array(0));
-            }else{
+            if ($request->feeType == 3) {
+                $payments = $payments->where(function($query) {
+                    $query->where('paymentdetails.feeType', '!=', 1)
+                        ->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) > 0")
+                        ->whereIn('paymentdetails.id', function($subquery) {
+                            $subquery->select(DB::raw('MAX(id)'))
+                                ->from('paymentdetails as pd')
+                                ->whereRaw('pd.studentId = paymentdetails.studentId')
+                                ->whereRaw('pd.batchId = paymentdetails.batchId');
+                        });
+                });
+            } else {
                 $payments->whereHas('paymentDetail', function ($query) use ($request) {
                     $query->where('paymentdetails.feeType', $request->feeType);
                 });
-            }
-
+            }                       
         }
         if(strtolower(currentUser()) == 'salesexecutive'){
             $payments->where('payments.executiveId', '=', currentUserId());
