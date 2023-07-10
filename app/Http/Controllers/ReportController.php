@@ -58,7 +58,7 @@ class ReportController extends Controller
         $batchInfo = Batch::find($request->batch_id);
         $references = Reference::all();
         $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
-        $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->count('student_id');
+        $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status',2)->count('student_id');
 
         $allBatches = DB::table('student_batches')
             ->select('student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus','student_batches.isBundel')
