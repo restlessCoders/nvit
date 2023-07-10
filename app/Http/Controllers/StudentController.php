@@ -57,13 +57,15 @@ class StudentController extends Controller
             if($request->sdata){
                 $allactiveStudent->where(function ($query) use ($request) {
                     $query->where('students.id', '=', $request->sdata)
-                    //->where('students.executiveId', '=', currentUserId())
                           ->orWhere('students.contact', '=', $request->sdata)
                           ->orWhere('students.altContact', '=', $request->sdata);
                 });
                 $allactiveStudent = $allactiveStudent->orWhere('students.name', 'like', '%'.$request->sdata.'%');
             }
-            $allactiveStudent = $allactiveStudent->paginate(25);
+            $perPage = 20;
+            $allactiveStudent = $allactiveStudent->paginate($perPage)->appends([
+                'executiveId' => $request->executiveId,
+            ]);
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->orderBy('id', 'DESC')->paginate(25);
         } else {
@@ -73,13 +75,16 @@ class StudentController extends Controller
             $allactiveStudent = Student::with('notes')->where('status', '=', 1)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC');
             if($request->sdata){
                 $allactiveStudent->where(function ($query) use ($request) {
-                    $query->where('students.id', '=', $request->sdata)
-                          ->orWhere('students.contact', '=', $request->sdata)
-                          ->orWhere('students.altContact', '=', $request->sdata);
+                    $query->orWhere('students.name', 'like', '%'.$request->sdata.'%')
+                    ->orWhere('students.id', '=', $request->sdata)
+                    ->orWhere('students.contact', '=', $request->sdata)
+                    ->orWhere('students.altContact', '=', $request->sdata);
                 });
-                $allactiveStudent = $allactiveStudent->orWhere('students.name', 'like', '%'.$request->sdata.'%');
             }
-            $allactiveStudent = $allactiveStudent->paginate(25);
+            $perPage = 20;
+            $allactiveStudent = $allactiveStudent->paginate($perPage)->appends([
+                'executiveId' =>  currentUserId(),
+            ]);
             /*== Dump Students ==*/
             $alldumpStudent = Student::where('status', '=', 3)->where('executiveId', '=', currentUserId())->orderBy('id', 'DESC')->paginate(25);
         }
@@ -494,7 +499,7 @@ class StudentController extends Controller
                 $student->name             = $request->name;
                 if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' ||  strtolower(currentUser()) === 'operationmanager') {
                     $student->contact          = $request->contact;
-                    $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
+                    //$student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                     $student->refId            = $request->refId;
                 }
                 //$student->course_id        = (!empty($request->course_id)) ? implode(",", $request->course_id) : null;

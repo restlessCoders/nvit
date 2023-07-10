@@ -113,10 +113,10 @@
 			<form action="{{ route(currentUser().'.allStudent') }}" role="search">
 				@csrf
 				<div class="row">
-					<!-- <div class="col-sm-4">
+					<div class="col-sm-4">
 						<label for="sdata" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="sdata" value="{{request()->get('sdata')}}">
-					</div> -->
+					</div>
 					@if(currentUser() != 'salesexecutive')
 					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Executive</label>
@@ -164,7 +164,7 @@
 						@if(count($allactiveStudent))
 						@foreach($allactiveStudent as $student)
 						<tr class="text-center">
-							<td>{{ $loop->iteration }}</td>
+							<td>{{ (($allactiveStudent->currentPage() - 1) * $allactiveStudent->perPage()) + $loop->iteration }}</td>
 							<td>{{$student->id}}</td>
 							<td>{{$student->name}}</td>
 							<td>{{optional($student->executive)->name}}</td>
