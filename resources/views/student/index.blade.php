@@ -113,10 +113,10 @@
 			<form action="{{ route(currentUser().'.allStudent') }}" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-4">
+					<!-- <div class="col-sm-4">
 						<label for="sdata" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="sdata" value="{{request()->get('sdata')}}">
-					</div>
+					</div> -->
 					@if(currentUser() != 'salesexecutive')
 					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Executive</label>

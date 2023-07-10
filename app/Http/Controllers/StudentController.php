@@ -57,6 +57,7 @@ class StudentController extends Controller
             if($request->sdata){
                 $allactiveStudent->where(function ($query) use ($request) {
                     $query->where('students.id', '=', $request->sdata)
+                    //->where('students.executiveId', '=', currentUserId())
                           ->orWhere('students.contact', '=', $request->sdata)
                           ->orWhere('students.altContact', '=', $request->sdata);
                 });
