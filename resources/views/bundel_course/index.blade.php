@@ -52,8 +52,9 @@
 									<th>Status</th>
 									<th>Action</th>
 								</tr>
-								@php $sub_courses = \DB::table('bundel_courses')->where('main_course_id', $bc->main_course_id)->get(); @endphp
+								@php $sub_courses = \DB::table('bundel_courses')->where('main_course_id', $bc->main_course_id)->where('status', 1)->get(); $reg = 0; $inst = 0; @endphp
 								@forelse($sub_courses as $sc)
+								@php $reg += $sc->rPrice; $inst += $sc->iPrice; @endphp
 								<tr>
 									<td>{{$courseName = \DB::table('courses')->where('id', $sc->sub_course_id)->first()->courseName;}}</td>
 									<td>{{$sc->rPrice}}</td>
@@ -80,6 +81,7 @@
 								</tr>
 								@empty
 								@endforelse
+								<tr><td><strong>Total</strong></td><td>{{$reg}}</td><td>{{$inst}}</td></tr>
 							</table>
 						</td>
 
