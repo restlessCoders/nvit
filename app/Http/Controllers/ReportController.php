@@ -47,7 +47,7 @@ class ReportController extends Controller
             $allCourses->where('student_courses.status', $request->status);
         }
         
-        $allCourses = $allCourses->orderBy('student_courses.created_at', 'desc')->paginate(20);
+        $allCourses = $allCourses->orderBy('student_courses.created_at', 'desc')->where('student_courses.status','!=',3)->paginate(20);
 
         return view('report.course.course_wise_student_enroll', ['executives' => $executives, 'references' => $references, 'allCourses' => $allCourses, 'courses' => $courses, 'courseInfo' => $courseInfo]);
     }
@@ -400,5 +400,11 @@ class ReportController extends Controller
         }
         DB::rollback();
         return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+    }
+
+    /*Course Wise Student Enroll Data Delete */
+    public function course_wise_student_enroll_data_delete(Request $request){
+        DB::table('student_courses')->where('id',$request->id)->update(['status'=>3]);
+        return redirect()->back()->with($this->responseMessage(true, 'error', 'Data Deleted'));
     }
 }

@@ -602,6 +602,10 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
         /*Transaction  */
         Route::resource('/transaction', TransactionController::class, ["as" => "accountmanager"]);
+
+        /*Course Wise Student Enroll Data Delete */
+        Route::post('/course/wise/enroll/list/delete', [ReportController::class, 'course_wise_student_enroll_data_delete'])->name('accountmanager.course_wise_student_enroll_data_delete');
+        
     });
 });
 

@@ -100,7 +100,7 @@
 				<tbody>
 					@if(count($allCourses))
 					@foreach($allCourses as $course)
-					<form action="" method="POST" enctype="multipart/form-data">
+					<!-- <form action="" method="POST" enctype="multipart/form-data"> -->
 						<tr>
 							<td>{{$loop->iteration}}</td>
 							<td>{{$course->sId}}</td>
@@ -116,13 +116,18 @@
 								@if($course->p_status == 1) Paid @endif
 								@if($course->p_status == 2) Due @endif
 							</td>
-							<td>
+							<td width="180px">
 								@if(strtolower(currentUser()) == 'accountmanager' && $course->p_status == 0)
-									<a href="{{route(currentUser().'.payments.index')}}?sId={{$course->sId}}&systemId={{$course->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+									<a href="{{route(currentUser().'.payments.index')}}?sId={{$course->sId}}&systemId={{$course->systemId}}" class="btn btn-success btn-sm"><i class="fas fa-edit mr-2"></i>Payment</a>
+									<form method="post" action="{{route(currentUser().'.course_wise_student_enroll_data_delete')}}">
+										@csrf
+										<input type="hidden" name="id" value="{{$course->sc_id}}">
+										<button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+									</form>
 								@endif
 							</td>
 						</tr>
-					</form>
+					<!-- </form> -->
 					@endforeach
 					@else
 					<tr>
