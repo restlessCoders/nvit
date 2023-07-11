@@ -163,7 +163,7 @@ class OtherPaymentController extends Controller
         $stData = DB::table('student_courses')
             ->join('students', 'student_courses.student_id', '=', 'students.id')
             ->join('courses', 'courses.id', '=', 'student_courses.course_id')
-            ->leftJoin('paymentdetails', 'student_courses.course_id', '=', 'paymentdetails.course_id')
+            ->leftJoin('paymentdetails', 'student_courses.student_id', '=', 'paymentdetails.studentId')
             ->where('student_courses.student_id', '=', $request->sId)
             ->Where('student_courses.systemId', '=', $request->systemId)
             ->groupBy('student_courses.course_id', 'student_courses.systemId')
@@ -391,7 +391,7 @@ class OtherPaymentController extends Controller
                 ]
             );
 
-
+            $paymentId = DB::getPdo()->lastInsertId();
             // Payment Detail
             $course_id       = $request->post('course_id');
             $cPayable       = $request->post('cPayable');

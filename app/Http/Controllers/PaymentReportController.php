@@ -272,9 +272,9 @@ class PaymentReportController extends Controller
         if ($request->systmVal) {
             $payments->where('student_batches.systemId', $request->systmVal);
         }
-        if ($request->batchId) {
-            $payments->where('student_batches.batch_id', $request->batchId);
-            $payments->where('paymentdetails.batchId', $request->batchId);
+        if ($request->course_id) {
+            $payments->where('student_batches.course_id', $request->course_id);
+            $payments->where('paymentdetails.course_id', $request->course_id);
         }
         //if ($request->feeType) {
             /*Registration Fee Or Course Fee*/
