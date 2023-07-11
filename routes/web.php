@@ -352,6 +352,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         Route::resource('/notes', NoteController::class, ["as" => "salesexecutive"]);
 
+        Route::resource('/bundelcourse', BundelCourseController::class, ["as" => "salesexecutive"])->only(['index']);
+
         Route::resource('/course', CourseController::class, ["as" => "salesexecutive"])->only(['index']);
         Route::resource('/batch', BatchController::class, ["as" => "salesexecutive"])->only(['index']);
         Route::resource('/package', PackageController::class, ["as" => "salesexecutive"])->only(['index']);
@@ -538,6 +540,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
             Route::get('/student/enroll/details/{id}',  [StudentController::class, 'studentenrollById'])->name('accountmanager.studentenrollById');
             Route::get('/payment/{id}/{entryDate}',  [StudentController::class, 'paymentStudent'])->name('accountmanager.paymentStudent');
         });
+        Route::resource('/bundelcourse', BundelCourseController::class, ["as" => "accountmanager"])->only(['index']);
         Route::resource('/course', CourseController::class, ["as" => "accountmanager"])->only(['index']);
         Route::resource('/batch', BatchController::class, ["as" => "accountmanager"])->only(['index']);
         Route::resource('/package', PackageController::class, ["as" => "accountmanager"])->only(['index']);

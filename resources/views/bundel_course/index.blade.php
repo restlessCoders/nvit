@@ -8,7 +8,9 @@
 				<ol class="breadcrumb m-0">
 					<li class="breadcrumb-item"><a href="javascript: void(0);">NVIT</a></li>
 					<li class="breadcrumb-item"><a href="javascript: void(0);">Courses</a></li>
+					@if(currentUserId() == 'operationmanager' || currentUserId() == 'superadmin')
 					<li class="breadcrumb-item active"><a href="{{ route(currentUser().'.bundelcourse.create') }}">Add</a></li>
+					@endif
 				</ol>
 			</div>
 			<h4 class="page-title">All Bundel Courses</h4>
@@ -65,6 +67,7 @@
 										@endif
 									</td>
 									<td>
+										@if(currentUserId() == 'operationmanager' || currentUserId() == 'superadmin')
 										<a href="{{route(currentUser().'.bundelcourse.edit',[encryptor('encrypt', $sc->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
 										<form method="POST" action="{{route(currentUser().'.bundelcourse.destroy',[encryptor('encrypt', $sc->id)])}}" style="display: inline;">
 											@csrf
@@ -72,6 +75,7 @@
 											<input name="_method" type="hidden" value="DELETE">
 											<a href="javascript:void(0)" data-status="{{$sc->status}}" data-name="{{$courseName}}" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
 										</form>
+										@endif
 									</td>
 								</tr>
 								@empty
