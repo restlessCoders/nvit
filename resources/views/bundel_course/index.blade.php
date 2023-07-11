@@ -68,7 +68,7 @@
 										@endif
 									</td>
 									<td>
-										@if(currentUserId() == 'operationmanager' || currentUserId() == 'superadmin')
+										@if(currentUser() == 'operationmanager' || currentUserId() == 'superadmin')
 										<a href="{{route(currentUser().'.bundelcourse.edit',[encryptor('encrypt', $sc->id)])}}" class="text-info"><i class="fas fa-edit"></i></a>
 										<form method="POST" action="{{route(currentUser().'.bundelcourse.destroy',[encryptor('encrypt', $sc->id)])}}" style="display: inline;">
 											@csrf

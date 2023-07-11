@@ -74,9 +74,11 @@ class BundelCourseController extends Controller
      * @param  \App\Models\BundelCourse  $bundelCourse
      * @return \Illuminate\Http\Response
      */
-    public function edit(BundelCourse $bundelCourse)
+    public function edit($id)
     {
-        //
+        $bundel_course = BundelCourse::find(encryptor('decrypt', $id));
+        $allCourses = Course::where('status', 1)->orderBy('courseName', 'asc')->get();
+        return view('bundel_course.edit', compact('allCourses','bundel_course'));
     }
 
     /**
@@ -86,9 +88,20 @@ class BundelCourseController extends Controller
      * @param  \App\Models\BundelCourse  $bundelCourse
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, BundelCourse $bundelCourse)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $bc = BundelCourse::find(encryptor('decrypt', $id));
+            $bc->rPrice             = $request->rPrice;
+            $bc->iPrice             = $request->iPrice;
+            $bc->mPrice             = $request->mPrice;
+            $bc->save();
+        if (!!$bc->save()) return redirect(route(currentUser() . '.bundelcourse.index'))->with($this->responseMessage(true, null, 'Bundel Course Updated'));
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }
     }
 
     /**
