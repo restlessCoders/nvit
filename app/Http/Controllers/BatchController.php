@@ -96,6 +96,7 @@ class BatchController extends Controller
         ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.created_by','batches.created_at','batches.updated_at'])
         ->where('batches.batchId', 'like', '%'.$request->name.'%')
         ->where('batches.status',1)
+        ->where('student_batches.status',2)
         ->get();
         return response()->json($allBatch);
         //->paginate();
