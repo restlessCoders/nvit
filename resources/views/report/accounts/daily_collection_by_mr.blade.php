@@ -27,15 +27,16 @@
 			<form action="{{route(currentUser().'.daily_collection_report_by_mr')}}" role="search">
 				@csrf
 				<div class="row">
-				<div class="col-sm-6">
+					<div class="col-sm-6">
 						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
+					<div class="col-sm-6">
+						<label for="name" class="col-form-label">Invoice</label>
+						<input type="text" class="form-control" name="invoiceId">
+					</div>
 				</div>
-				<div class="col-sm-6">
-					<label for="name" class="col-form-label">Invoice</label>
-					<input type="text" class="form-control" name="inv">
-				</div>
+
 				<div class="row">
 					<div class="col-sm-1">
 						<label for="name" class="col-form-label">Year</label>
@@ -132,7 +133,7 @@
 						<th>Paid</th>
 						<th>Dis</th>
 						<th>Due</th>
-						
+
 						<th>Mode</th>
 						{{--<th>Partial|Full</th>
 						<th>Info</th>--}}
@@ -151,10 +152,10 @@
 					$rowCount = \DB::table('paymentdetails')->where('paymentId', $p->paymentId)->count();
 					//echo $rowCount;
 					@endphp
-					@php 
+					@php
 					$total_paid_amount += $p->cpaidAmount;
-					$total_dis += $p->discount;  
-					
+					$total_dis += $p->discount;
+
 					@endphp
 					<tr>
 						<td rowspan="" class="align-middle">
@@ -174,14 +175,14 @@
 						<td class="align-middle">{{$p->mrNo}}</td>
 						<td class="align-middle">{{--$p->invoiceId--}}
 							@if(\DB::table('payments')
-								->join('paymentdetails','paymentdetails.paymentId','payments.id')
-								->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->exists())
-								{{
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->exists())
+							{{
 								\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
-								@else
-								-
+							@else
+							-
 							@endif
 						</td>
 						@php
@@ -216,18 +217,18 @@
 						<td class="align-middle">{{($p->cPayable-($p->cpaidAmount+$p->discount))}}</td>
 						@php $total_cpyable += ($p->cPayable-($p->cpaidAmount+$p->discount)); @endphp
 						@endif
-						
-						
-						
-						
+
+
+
+
 
 						<td class="align-middle">@if($p->payment_mode == 1) Cash @elseif($p->payment_mode == 2) Bkash @else Bank @endif</td>
 						{{--<td class="align-middle">@if($p->feeType == 1) Partial @else Full @endif</td>
 						<td width="150px" class="align-middle">
 							<p class="text-left m-0 p-0">Paid By:-</p>
 							<p class="text-left m-0 p-0">Paid:{{\Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')}}</p>
-							<p class="text-left m-0 p-0">Updated By:-</p>
-							<p class="text-left m-0 p-0">Update:@if($p->updated_at){{\Carbon\Carbon::createFromTimestamp(strtotime($p->updated_at))->format('j M, Y')}}@endif</p>
+						<p class="text-left m-0 p-0">Updated By:-</p>
+						<p class="text-left m-0 p-0">Update:@if($p->updated_at){{\Carbon\Carbon::createFromTimestamp(strtotime($p->updated_at))->format('j M, Y')}}@endif</p>
 						</td>--}}
 
 						<td width="130px" class="align-middle">
@@ -235,17 +236,17 @@
 							@if(currentUser() == 'accountmanager' || currentUser() == 'superadmin')
 							<a href="{{route(currentUser().'.payment.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
 							{{--<form method="POST" action="{{route(currentUser().'.payment.destroy',[encryptor('encrypt', $p->paymentId)])}}" style="display: inline;">
-								@csrf
-								@method('DELETE')
-								<input name="_method" type="hidden" value="DELETE">
-								<a href="javascript:void(0)"  type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
+							@csrf
+							@method('DELETE')
+							<input name="_method" type="hidden" value="DELETE">
+							<a href="javascript:void(0)" type="submit" class="delete mr-2 text-danger" data-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt mr-1"></i></a>
 							</form>
 							<a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
 							<a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>--}}
 							@endif
 						</td>
 					</tr>
-				
+
 					@endforeach
 				</tbody>
 				<tfoot>
@@ -270,7 +271,7 @@
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
-		$('.payment').on('click', '.delete', function(event) {
+	$('.payment').on('click', '.delete', function(event) {
 		event.preventDefault();
 		swal({
 				title: "Are you sure you want to Delete this",
