@@ -71,6 +71,10 @@ class ReportController extends Controller
             ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
             ->orWhere('students.contact', 'like', '%'.$request->studentId.'%');
         }
+        if($request->inv_mr){
+            $allBatches->where('payments.mrNo', $request->inv_mr);
+        }
+        
 
         if ($request->batch_id) {
             $allBatches->where('student_batches.batch_id', $request->batch_id);
