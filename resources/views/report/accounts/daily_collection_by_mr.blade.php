@@ -31,9 +31,13 @@
 						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
-					<div class="col-sm-6">
+					<div class="col-sm-3">
 						<label for="name" class="col-form-label">Invoice</label>
 						<input type="text" class="form-control" name="invoiceId">
+					</div>
+					<div class="col-sm-3">
+						<label for="name" class="col-form-label">Mr No</label>
+						<input type="text" class="form-control" name="mrNo">
 					</div>
 				</div>
 

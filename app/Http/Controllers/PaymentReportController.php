@@ -50,6 +50,9 @@ class PaymentReportController extends Controller
         if($request->invoiceId){
             $payments->where('payments.invoiceId', $request->invoiceId);
         }
+        if($request->mrNo){
+            $payments->where('payments.mrNo', $request->mrNo);
+        }
         if($request->feeType){
             if ($request->feeType == 3) {
                 $payments = $payments->where(function($query) {
