@@ -32,10 +32,6 @@
 						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
-					<div class="col-sm-6">
-						<label for="name" class="col-form-label">Invoice</label>
-						<input type="text" class="form-control" name="inv">
-					</div>
 					<div class="col-sm-3">
 						<label for="batch_id" class="col-form-label">Select Batch</label>
 						<select name="batch_id" class="js-example-basic-single form-control">

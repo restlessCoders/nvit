@@ -47,6 +47,9 @@ class PaymentReportController extends Controller
                 $query->where('paymentdetails.batchId', $request->batch_id);
             });
         }
+        if($request->inv_mr){
+            $payments->where('payments.mrNo', $request->inv_mr);
+        }
         if($request->feeType){
             if ($request->feeType == 3) {
                 $payments = $payments->where(function($query) {

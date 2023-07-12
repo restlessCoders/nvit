@@ -32,6 +32,10 @@
 						<input type="text" class="form-control" name="studentId">
 					</div>
 				</div>
+				<div class="col-sm-6">
+					<label for="name" class="col-form-label">Invoice</label>
+					<input type="text" class="form-control" name="inv">
+				</div>
 				<div class="row">
 					<div class="col-sm-1">
 						<label for="name" class="col-form-label">Year</label>
