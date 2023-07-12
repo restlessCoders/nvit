@@ -426,7 +426,8 @@
 							</td>
 						</form>
 						<td>
-							@if($allassignBatch->acc_approve == 0 && currentUser() == 'superadmin')
+							{{--&& currentUser() == 'superadmin'--}}
+							@if($allassignBatch->acc_approve == 0)
 							<form id="active-form" method="POST" action="{{route(currentUser().'.enrollment.destroy',[encryptor('encrypt', $allassignBatch->id)])}}" style="display: inline;">
 								@csrf
 								@method('DELETE')
