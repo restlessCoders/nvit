@@ -531,6 +531,8 @@
     <script src="{{asset('backend/js/app.min.js')}}"></script>
     <!-- App js -->
     <script src="{{asset('backend/js/custom.js')}}"></script>
+    <!-- Export to Excel -->
+    <script src="{{asset('backend/js/tableToExcel.js')}}"></script>
     <!--begin::Page Scripts(used by this page)-->
     @stack('scripts')
     <!--end::Page Scripts-->
