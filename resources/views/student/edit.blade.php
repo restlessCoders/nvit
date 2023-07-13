@@ -826,7 +826,7 @@
 		},
 		response: function(e, ui) {
 			if (ui.content.length == 1 ) {
-				console.log(ui)
+				console.log(ui.content)
 				$(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
 				$(this).autocomplete("close");
 			}
