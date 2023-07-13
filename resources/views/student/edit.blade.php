@@ -419,7 +419,7 @@
 							<td>{{$allassignBatch->course_price}}</td>
 							<td>
 							{{--&& currentUser() == 'superadmin'--}}
-								@if($allassignBatch->acc_approve != 2)
+								@if($allassignBatch->acc_approve != 2 && $allassignBatch->isBundel == 0)
 								<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
 								@endif
 								
@@ -427,7 +427,7 @@
 						</form>
 						<td>
 							
-							@if($allassignBatch->acc_approve == 0)
+							@if($allassignBatch->acc_approve == 0 && $allassignBatch->isBundel == 0)
 							<form id="active-form" method="POST" action="{{route(currentUser().'.enrollment.destroy',[encryptor('encrypt', $allassignBatch->id)])}}" style="display: inline;">
 								@csrf
 								@method('DELETE')
