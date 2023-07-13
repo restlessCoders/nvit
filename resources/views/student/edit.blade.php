@@ -826,7 +826,6 @@
 		},
 		response: function(e, ui) {
 			if (ui.content.length == 1) {
-alert(ui.item.seat);
 				$(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
 				$(this).autocomplete("close");
 			}
