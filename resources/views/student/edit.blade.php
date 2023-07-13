@@ -826,7 +826,7 @@
 		},
 		response: function(e, ui) {
 			if (ui.content.length == 1) {
-				if(ui.content.seat >0){
+				if(ui.content[0].seat >0){
 					$(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
 					$(this).autocomplete("close");
 				}else{
