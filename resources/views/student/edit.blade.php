@@ -826,10 +826,7 @@
 		},
 		response: function(e, ui) {
 			if (ui.content.length == 1) {
-				if (ui.item.seat == 0) {
-					toastr['error']("No Seat Available!!");
-					return false;
-				}
+alert(ui.item.seat);
 				$(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
 				$(this).autocomplete("close");
 			}
