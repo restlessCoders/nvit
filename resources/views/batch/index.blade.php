@@ -68,7 +68,7 @@
 										</tr>
 									</table>
 								</td>
-								<td width="200px">
+								<td width="260px">
 									@php $package = DB::table('packages')->where('batchId',$batch->id)->first(); @endphp
 									@if($package)
 									<table>
