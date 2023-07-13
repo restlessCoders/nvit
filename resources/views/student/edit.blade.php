@@ -825,8 +825,7 @@
 			});
 		},
 		response: function(e, ui) {
-			if (ui.content.length == 1 ) {
-				console.log(ui.content)
+			if (ui.content.length == 1 && ui.content.seat >0) {
 				$(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
 				$(this).autocomplete("close");
 			}
