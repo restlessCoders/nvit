@@ -34,7 +34,7 @@ class PackageController extends Controller
     }
     public function index()
     {
-        $allPackage = Package::paginate();
+        $allPackage = Package::orderBy('id', 'DESC')->paginate(20);
         return view('package.index', compact('allPackage'));
     }
 
