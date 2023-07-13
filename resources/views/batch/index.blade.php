@@ -68,7 +68,7 @@
 										</tr>
 									</table>
 								</td>
-								<td>
+								<td width="200px">
 									@php $package = DB::table('packages')->where('batchId',$batch->id)->first(); @endphp
 									@if($package)
 									<table>
@@ -81,7 +81,7 @@
 											<td>{{$package->iPrice}}</td>
 										</tr>
 										<tr>
-											<td colspan="2" class="text-danger"><small>{{\Carbon\Carbon::createFromTimestamp(strtotime($package->startDate))->format('j M, Y')}} - {{\Carbon\Carbon::createFromTimestamp(strtotime($package->endDate))->format('j M, Y')}}</small> </td>
+											<td colspan="2" class="text-danger"><strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($package->startDate))->format('j M, Y')}} - {{\Carbon\Carbon::createFromTimestamp(strtotime($package->endDate))->format('j M, Y')}}</strong> </td>
 										</tr>
 									</table>
 									@else
