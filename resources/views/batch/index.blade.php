@@ -90,10 +90,10 @@
 								</td>
 								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->startDate))->format('j M, Y')}}</td>
 								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->endDate))->format('j M, Y')}}</td>
-								<td>{{$batch->batchslot->slotName}}</td>
-								<td>{{$batch->batchtime->time}}</td>
+								<td>{{$batch->batchslot?->slotName}}</td>
+								<td>{{$batch->batchtime?->time}}</td> 
 								<!-- <td>{{$batch->examDate}}</td>
-								<td>{{$batch->examTime}}</td> -->
+								<td>{{$batch->examTime}}</td>  -->
 								<td>{{$batch->examRoom}}</td>
 								<td>{{$batch->seat-$batch->tst}}</td>
 								<td>{{optional($batch->trainer)->username}}</td>
