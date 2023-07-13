@@ -81,7 +81,7 @@
 											<td>{{$package->iPrice}}</td>
 										</tr>
 										<tr>
-											<td colspan="3" class="text-danger">Validity {{\Carbon\Carbon::createFromTimestamp(strtotime($package->startDate))->format('j M, Y')}} - {{\Carbon\Carbon::createFromTimestamp(strtotime($package->endDate))->format('j M, Y')}}</td>
+											<td colspan="2" class="text-danger"><small>{{\Carbon\Carbon::createFromTimestamp(strtotime($package->startDate))->format('j M, Y')}} - {{\Carbon\Carbon::createFromTimestamp(strtotime($package->endDate))->format('j M, Y')}}</small> </td>
 										</tr>
 									</table>
 									@else
