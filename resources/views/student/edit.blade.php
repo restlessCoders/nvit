@@ -88,7 +88,7 @@
 							<div class="col-lg-6 row">
 								<label for="contact" class="col-sm-2 col-form-label">Contact Number</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="contact" name="contact" value="{{old('contact', $sdata->contact)}}" placeholder="Student Contact Number" @if(currentUser() !='superadmin' || currentUser() !='operationmanager' || currentUser() !='salesmanager' ) readonly @endif>
+									<input type="text" class="form-control" id="contact" name="contact" value="{{old('contact', $sdata->contact)}}" placeholder="Student Contact Number" @if(currentUser() !='superadmin' || currentUser() !='operationmanager' || currentUser() !='salesmanager' ) else readonly @endif>
 									@if($errors->has('contact'))
 									<small class="d-block text-danger mb-3">
 										{{ $errors->first('contact') }}
