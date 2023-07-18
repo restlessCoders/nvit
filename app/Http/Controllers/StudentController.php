@@ -247,7 +247,8 @@ class StudentController extends Controller
                     );
                     $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
                         join student_batches on student_batches.batch_id=batches.id
-                        WHERE batches.id=$s_batch_data->batch_id
+                        WHERE batches.id=$s_batch_data->batch_id and 
+                        student_batches.status=2
                         GROUP by student_batches.batch_id,batches.seat");
                     //print_r($seat_data);die;
                     if ($seat_data[0]->tst > $seat_data[0]->seat_available)

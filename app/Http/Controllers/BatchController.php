@@ -89,15 +89,22 @@ class BatchController extends Controller
     }
     public function all(Request $request)
     {
-        //$allBatch = Batch::paginate();
-        $allBatch = DB::table('batches')
+        /*$allBatch = DB::table('batches')
         ->join('student_batches','batches.id','=','student_batches.batch_id','left')
         ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,	batches.created_by,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
         ->groupBy(['student_batches.batch_id','batches.id','batches.batchId','batches.courseId','batches.startDate','batches.endDate','batches.bslot','batches.btime',	'batches.trainerId','batches.examDate','batches.examTime','batches.examRoom','batches.seat','batches.status','batches.created_by','batches.created_at','batches.updated_at'])
         ->where('batches.batchId', 'like', '%'.$request->name.'%')
         ->where('batches.status',1)
         ->where('student_batches.status',2)
-        ->get();
+        ->get();*/
+        $allBatch = DB::table('batches')
+    ->join('student_batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
+    ->selectRaw('batches.id, batches.batchId, batches.courseId, batches.startDate, batches.endDate, batches.bslot, batches.btime, batches.trainerId, batches.examDate, batches.examTime, batches.examRoom, batches.seat, batches.status, batches.created_by, batches.created_at, batches.updated_at, COUNT(CASE WHEN student_batches.status = 2 THEN student_batches.student_id END) as tst')
+    ->groupBy('student_batches.batch_id', 'batches.id', 'batches.batchId', 'batches.courseId', 'batches.startDate', 'batches.endDate', 'batches.bslot', 'batches.btime', 'batches.trainerId', 'batches.examDate', 'batches.examTime', 'batches.examRoom', 'batches.seat', 'batches.status', 'batches.created_by', 'batches.created_at', 'batches.updated_at')
+    ->where('batches.batchId', 'like', '%' . $request->name . '%')
+    ->where('batches.status', 1)
+    ->get();
+
         return response()->json($allBatch);
         //->paginate();
 
