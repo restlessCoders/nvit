@@ -287,7 +287,11 @@ class ReportController extends Controller
         if(currentUser() == 'trainer'){
             $data .= '<form action="'.route(currentUser().'.certificate.store').'" method="post"> ' . csrf_field() . '';
         }
-       
+        /*<th style="border:1px solid #000;;color:#000;"><strong>Ins. Note</strong></th>
+        <th style="border:1px solid #000;;color:#000;"><strong>Acc. Note</strong></th>
+        <th style="border:1px solid #000;;color:#000;"><strong>Op. Note</strong></th>
+        <th style="border:1px solid #000;;color:#000;"><strong>GM. Note</strong></th>
+        <th style="border:1px solid #000;;color:#000;"><strong>Ex. Note</strong></th>*/
         $data .= '<table class="table table-sm" style="border:1px solid #000;color:#000;">
                     <tbody>
                         <tr>
@@ -298,11 +302,6 @@ class ReportController extends Controller
                             <th style="border:1px solid #000;;color:#000;"><strong>Perf.</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Pass</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Drop</strong></th>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Ins. Note</strong></th>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Acc. Note</strong></th>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Op. Note</strong></th>
-                            <th style="border:1px solid #000;;color:#000;"><strong>GM. Note</strong></th>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Ex. Note</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Issued</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Delivered</strong></th>
                         </tr>';
@@ -329,11 +328,11 @@ class ReportController extends Controller
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]"></td>';
+                /*$data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"></td>';*/
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="issue_status[]"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="delivery_status[]"></td>';
             
