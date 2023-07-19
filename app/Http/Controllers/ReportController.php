@@ -148,25 +148,21 @@ class ReportController extends Controller
     {
         $batch_data = Batch::find($request->batch_id);
         $image_path = asset('backend/images/logo.webp');
-        $data = '<div class="col-md-12 text-center">';
-        $data .= '<div class="row">';
-        $data .= '<div class="col-md-2"><img src=' . $image_path . ' alt="" height="80"></div>';
-        $data .= '<div class="col-md-10">';
-        $data .=     '<h4 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
-        $data .=     '<p class="m-0" style="font-size:10px"><strong>Batch Completion Report</strong></p>';
-        $data .=     '<p class="m-0 d-flex justify-content-center">
+        //$data = '<div class="col-md-12 text-center">';
+        //$data .= '<div class="row">';
+        $data = '<div style="width:10%;display:inline-block;"><img src=' . $image_path . ' alt="" height="40"></div>';
+        $data .=     '<div style="width:90%;display:inline-block;text-align:center;"><h4 class="m-0 p-0 text-center" style="font-size:13px;font-weight:700;">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
+        $data .=     '<p class="m-0 p-0 text-center" style="font-size:10px"><strong>Trainer Attendance Roster</strong></p>';
+        $data .=     '<p class="m-0 p-0 text-center" style="font-size:11px;">
                         <strong>Started On : ' . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y') . '</strong>
                         <strong>' . \DB::table('batchslots')->where('id', $batch_data->bslot)->first()->slotName . '</strong>
-                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>';
-        $data .= '</div>';
-        $data .= '<div class="col-md-12">';
-        $data .=     '<p class="m-0 d-flex justify-content-between">
+                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong></p></div>';
+    
+       
+        $data .=     '<p class="m-0 p-0 d-flex justify-content-between" style="font-size:11px;">
                         <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>
-                        <strong>Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong>
+                        <strong class="text-center">Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong>
                         <strong>Batch : ' . $batch_data->batchId . '</strong></p>';
-        $data .= '</div>';
-        $data .= '</div>';
-        $data .= '</div>';
 
 
         $startDate = new DateTime($batch_data->startDate);
@@ -178,9 +174,10 @@ class ReportController extends Controller
         $data .= '<table class="table table-sm" style="border:1px solid #000;color:#000;">
                     <tbody>
                         <tr>
-                            <th width="120px" rowspan="3" class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Student Name</strong></th>
-                            <th width="40px" rowspan="3" class="align-middle" style="border:1px solid #000;;color:#000;"><strong>INV</strong></th>
-                            <th width="140px" style="border:1px solid #000;;color:#000;"><strong>Class Date</strong></th>';
+                            <th width="125px" rowspan="2" class="align-middle" style="border:1px solid #000;;color:#000;font-size:10px;"><strong>Student Name</strong></th>
+                            <th width="40px" rowspan="2" class="align-middle" style="border:1px solid #000;;color:#000;font-size:10px"><strong>INV</strong></th>
+                            <th width="40px" rowspan="2" class="align-middle" style="border:1px solid #000;color:#000;font-size:10px"><strong>AE:</strong></th>
+                            <th width="70px" style="border:1px solid #000;;color:#000;font-size:10px"><strong>Class Date</strong></th>';
         // Loop through the date range
         //$count = $request->count_class;
         $count = 0;
@@ -201,22 +198,24 @@ class ReportController extends Controller
         if ($count > 17) $count = 17;
         $data .=    '</tr>
                         <tr>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Trainer Sign:</strong></th>';
+                            <th style="border:1px solid #000;;color:#000;font-size:9px"><strong>Trainer Sign:</strong></th>';
         for ($i = 0; $i < $count; $i++) {
-            $data .= '<td class="cell" rowspan="2" style="border:1px solid #000;color:#000;"></td>';
+            $data .= '<td class="cell" style="border:1px solid #000;color:#000;font-size:9px"></td>';
         }
         $data .=    '</tr>';
-        $data .=    '<tr>
-                            <th style="border:1px solid #000;color:#000;"><strong>AE:</strong></th>';
-        $data .=    '</tr>';
+
         if ($request->batch_id) {
             $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->get();
         }
         foreach ($batch_students as $batch_student) {
             $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
+            $words = explode(" ", $s_data->name);
+            $firstThreeWords = array_slice($words, 0, 2);
+            $name = implode(" ", $firstThreeWords);
+
             $data .= '<tr>';
-            $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->name . '</td>';
-            $data .= '<td style="border:1px solid #000;color:#000;">';
+            $data .= '<td style="border:1px solid #000;color:#000;font-size:9px">' . strtoupper($name) . '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;font-size:9px">';
             if (\DB::table('payments')
                 ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
                 ->where(['paymentdetails.batchId' => $request->batch_id, 'paymentdetails.studentId' => $batch_student->student_id])->whereNotNull('payments.invoiceId')->exists()
@@ -226,9 +225,9 @@ class ReportController extends Controller
                 $data .= '-';
             }
             '</td>';
-            $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
-            for ($i = 0; $i < $count; $i++) {
-                $data .= '<td style="border:1px solid #000;color:#000;"></td>';
+            $data .= '<td style="border:1px solid #000;color:#000;font-size:9px">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
+            for ($i = 0; $i <= $count; $i++) {
+                $data .= '<td style="border:1px solid #000;color:#000;font-size:9px"></td>';
             }
             $data .= '</tr>';
         }
