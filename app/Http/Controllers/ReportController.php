@@ -151,18 +151,19 @@ class ReportController extends Controller
         //$data = '<div class="col-md-12 text-center">';
         //$data .= '<div class="row">';
         $data = '<div style="width:10%;display:inline-block;"><img src=' . $image_path . ' alt="" height="40"></div>';
-        $data .=     '<div style="width:90%;display:inline-block;text-align:center;"><h4 class="m-0 p-0 text-center" style="font-size:12px;font-weight:700;">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
+        $data .=     '<div style="width:90%;display:inline-block;text-align:center;"><h4 class="m-0 p-0 text-center" style="font-size:11px;font-weight:700;">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
         $data .= '<p class="m-0 p-0 text-center" style="font-size:9px"><strong class="text-center">Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong></p>';
         $data .=     '<p class="m-0 p-0 text-center" style="font-size:9px"><strong>Trainer Attendance Roster</strong></p></div>';
 
     
        
-        $data .=     '<p class="m-0 p-0" style="font-size:11px;display:flex;justify-content:space-between">
+        $data .=     '<p class="m-0 p-0" style="font-size:10px;display:flex;justify-content:space-between">
                         <strong>Started On :'  . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y').'</strong>
                         <strong>'.\DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time.'</strong>
                         <strong>' . \DB::table('batchslots')->where('id', $batch_data->bslot)->first()->slotName . '</strong>
+                        <strong>Batch : ' . $batch_data->batchId . '</strong>
                         <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>  
-                        <strong>Batch : ' . $batch_data->batchId . '</strong></p>';
+                        </p>';
 
 
         $startDate = new DateTime($batch_data->startDate);
@@ -174,24 +175,24 @@ class ReportController extends Controller
         $data .= '<table class="table table-sm" style="border:1px solid #000;color:#000;">
                     <tbody>';
         $data .=    '</tr>
-                    <tr>
+                    <tr height="20px">
                         <th colspan="3" style="border:1px solid #000;;color:#000;font-size:9px;text-align:right"><strong>Trainer Sign:</strong></th>';
-    for ($i = 0; $i < 18; $i++) {
+    for ($i = 0; $i < 17; $i++) {
         $data .= '<td class="cell" style="border:1px solid #000;color:#000;font-size:9px"></td>';
     }
     $data .=    '</tr>';
     $data .=    '</tr>
-                    <tr>
+                    <tr height="20px">
                         <th colspan="3" style="border:1px solid #000;;color:#000;font-size:9px;text-align:right"><strong>Class Date:</strong></th>';
-    for ($i = 0; $i < 18; $i++) {
+    for ($i = 0; $i < 17; $i++) {
         $data .= '<td class="cell" style="border:1px solid #000;color:#000;font-size:9px"></td>';
     }
     $data .=    '</tr>';
 
     $data .=    '   <tr>
-                            <th width="125px" class="align-middle" style="border:1px solid #000;;color:#000;font-size:10px;"><strong>Student Name</strong></th>
-                            <th width="40px" class="align-middle" style="border:1px solid #000;;color:#000;font-size:10px"><strong>INV</strong></th>
-                            <th width="40px" class="align-middle" style="border:1px solid #000;color:#000;font-size:10px"><strong>AE:</strong></th>
+                            <th width="135px" class="align-middle" style="border:1px solid #000;;color:#000;font-size:9px;"><strong>Student Name</strong></th>
+                            <th width="40px" class="align-middle" style="border:1px solid #000;;color:#000;font-size:9px"><strong>INV</strong></th>
+                            <th width="40px" class="align-middle" style="border:1px solid #000;color:#000;font-size:9px"><strong>AE:</strong></th>
                             ';
         // Loop through the date range
         //$count = $request->count_class;
@@ -221,9 +222,9 @@ class ReportController extends Controller
             $firstThreeWords = array_slice($words, 0, 2);
             $name = implode(" ", $firstThreeWords);
 
-            $data .= '<tr>';
-            $data .= '<td style="border:1px solid #000;color:#000;font-size:7px">' . strtoupper($name) . '</td>';
-            $data .= '<td style="border:1px solid #000;color:#000;font-size:7px">';
+            $data .= '<tr height="20px">';
+            $data .= '<td style="border:1px solid #000;color:#000;font-size:8px">' . strtoupper($name) . '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;font-size:8px">';
             if (\DB::table('payments')
                 ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
                 ->where(['paymentdetails.batchId' => $request->batch_id, 'paymentdetails.studentId' => $batch_student->student_id])->whereNotNull('payments.invoiceId')->exists()
@@ -233,9 +234,9 @@ class ReportController extends Controller
                 $data .= '-';
             }
             '</td>';
-            $data .= '<td style="border:1px solid #000;color:#000;font-size:7px">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
-            for ($i = 0; $i <= $count; $i++) {
-                $data .= '<td style="border:1px solid #000;color:#000;font-size:7px"></td>';
+            $data .= '<td style="border:1px solid #000;color:#000;font-size:8px">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
+            for ($i = 0; $i < $count; $i++) {
+                $data .= '<td style="border:1px solid #000;color:#000;font-size:8px"></td>';
             }
             $data .= '</tr>';
         }
