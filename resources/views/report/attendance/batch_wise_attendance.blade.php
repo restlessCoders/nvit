@@ -153,7 +153,7 @@
 			newWin.document.write('<html><style type="text/css" media="print"> p strong{font-size:14px;margin-right:8px;color:#000;} @page { font-size:14px; }.cell{width:100px;} table{font-size:12px;border-collapse: collapse;} table, td, th {border: 1px solid #000;} h4,p{text-align:center;padding:0;margin:0;color:#000}  table{margin-top:10px;}</style><body onload="window.print()">' + table + '</html>');
 			newWin.document.close();
 			setTimeout(function() {
-				newWin.close();
+				//newWin.close();
 			}, 10);
 		}
 	</script>
