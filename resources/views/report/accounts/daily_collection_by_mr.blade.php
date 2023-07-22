@@ -169,7 +169,7 @@
 						<td class="align-middle">{{$p->studentId}}</td>
 						<td class="align-middle">{{$p->name}}</td>
 						<td class="align-middle">
-						@if(currentUserId() == $p->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager')
+						@if(currentUserId() == $p->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager')
 						{{$p->contact}}
 						@else
 						-	
@@ -261,7 +261,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="10"></td>
+						<td colspan="11"></td>
 						<td>{{$total_paid_amount}}</td>
 						<td>{{$total_dis}}</td>
 						<td>{{$total_cpyable}}</td>
