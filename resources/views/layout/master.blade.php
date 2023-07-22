@@ -58,6 +58,15 @@
         #topnav .navbar-toggle span {
             background-color: #6c757d;
         }
+        @media (min-width: 1200px){
+            .container-fluid {
+                max-width: 95%;
+            }
+        }
+        .wrapper {
+            padding: 60px 0 12px;
+        }
+
     </style>
     <!--begin::Page Scripts(used by this page)-->
     @stack('styles')
@@ -216,7 +225,7 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.batchtime.index')}} @endif">All Batcch Time</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
+                                    <!--<li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
                                         <a href="#">Division<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.division.create')}} @endif">Add Division</a></li>
@@ -236,7 +245,7 @@
                                             <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.upazila.create')}} @endif">Add Upazila</a></li>
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {{route(currentUser().'.upazila.index')}} @endif">All Upazila</a></li>
                                         </ul>
-                                    </li>
+                                    </li>-->
                                     <li class="has-submenu @if(Request::segment(2) == 'user') active @endif @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager') @else d-none @endif">
                                         <a href="#">
                                             <i class="mdi mdi-account-multiple-outline"></i>User<div class="arrow-down"></div></a>

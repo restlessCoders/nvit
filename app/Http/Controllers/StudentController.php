@@ -800,4 +800,19 @@ class StudentController extends Controller
         ->get();
         return view('student.studentTransferList',compact('student_transfers'));
     }
+
+    /*=== Withdraw | Drop Student ==*/
+    public function withdraw(Request $request){
+        $withdraw_student = DB::table('student_batches')->where('id',$request->id)->update(['is_drop'=>1]);
+        if($withdraw_student){
+            $data = DB::table('student_batches')->where('id',$request->id)->first();
+            $batch = Batch::find($data->batch_id);
+        $note               =  new Note;
+        $note->student_id   =  $data->student_id;
+        $note->note         = 'Withdraw from Batch #'.$batch->batchId;
+        $note->created_by   = currentUserId();
+        $note->save();
+        return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Successful'));
+    }
+    }
 }

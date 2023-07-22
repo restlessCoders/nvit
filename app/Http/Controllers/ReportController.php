@@ -58,10 +58,10 @@ class ReportController extends Controller
         $batchInfo = Batch::find($request->batch_id);
         $references = Reference::all();
         $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
-        $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status',2)->count('student_id');
+        $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status',2)->where('is_drop',0)->count('student_id');
 
         $allBatches = DB::table('student_batches')
-            ->select('student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus','student_batches.isBundel')
+            ->select('student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus','student_batches.isBundel','student_batches.is_drop')
             ->join('students', 'students.id', '=', 'student_batches.student_id')
             ->join('users', 'users.id', '=', 'students.executiveId');
 
@@ -205,7 +205,7 @@ class ReportController extends Controller
                 // Display the date in a column
                 if ($count < 17) {
                     /*Carbon\Carbon::createFromTimestamp(strtotime($date->format('Y-m-d')))->format('j/m/y')*/
-                    $data .= '<td style="border:1px solid #000;;color:#000;"></td>';
+                    //$data .= '<td style="border:1px solid #000;;color:#000;"></td>';
                 }
                 $count++;
             }

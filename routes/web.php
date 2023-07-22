@@ -194,6 +194,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*Batch Completion Report */
         Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('superadmin.batchwiseCompletion');
         Route::get('/batch/wise/completion/report', [ReportController::class, 'batchwiseCompletionReport'])->name('superadmin.batchwiseCompletionReport');
+
+        /*=== Withdraw | Drop ===*/
+        Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('superadmin.withdraw');
     });
 });
 
@@ -321,6 +324,9 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('salesmanager.allPaymentReportBySid');
         Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('salesmanager.allPaymentCourseReportBySid');
+
+        /*=== Withdraw | Drop ===*/
+        Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('salesmanager.withdraw');
     });
 });
 
@@ -519,6 +525,8 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /* Refund*/
         Route::resource('/refund', RefundController::class, ["as" => "operationmanager"]);
+        /*=== Withdraw | Drop ===*/
+        Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('operationmanager.withdraw');
     });
 });
 
@@ -599,6 +607,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
          /* Refund*/
         Route::resource('/refund', RefundController::class, ["as" => "accountmanager"]);
+        Route::get('/student/enrolldata/', [RefundController::class, 'databySystemId'])->name('accountmanager.enrolldata');
 
         /*Transaction  */
         Route::resource('/transaction', TransactionController::class, ["as" => "accountmanager"]);

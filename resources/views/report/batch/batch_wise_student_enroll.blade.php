@@ -4,6 +4,20 @@
 <link href="{{asset('backend/libs/multiselect/multi-select.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
 @endpush
+@push('styles')
+<style>
+	th{
+		font-size:14px;
+	}
+	table,tr{
+		font-size:13px;
+	}
+	.btn{
+		font-size: 11px;
+		margin:1px;
+	}
+</style>
+@endpush
 @section('content')
 <div class="row">
 	<div class="col-12">
@@ -28,11 +42,11 @@
 			<form action="{{route(currentUser().'.batchwiseEnrollStudent')}}" method="" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-6">
+					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="batch_id" class="col-form-label">Select Batch</label>
 						<select name="batch_id" class="js-example-basic-single form-control">
 							<option></option>
@@ -43,7 +57,7 @@
 						</select>
 					</div>
 					@if(strtolower(currentUser()) != 'frontdesk')
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="executiveId" class="col-form-label">Select Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control">
 							<option></option>
@@ -55,7 +69,7 @@
 					</div>
 					@endif
 					@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="refId" class="col-form-label">Select Reference</label>
 						<select name="refId" class="js-example-basic-single form-control">
 							<option></option>
@@ -65,7 +79,7 @@
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="status" class="col-form-label">Select Status</label>
 						<select class="js-example-basic-single form-control" id="status" name="status">
 							<option value=""></option>
@@ -100,15 +114,16 @@
 						<th>Reference</th>
 						@endif
 						<th>Batch</th>
-						<th width="120px">Invoice Date</th>
+						<th width="120px">Inv Date</th>
 						<th>Inv</th>
-						@if(currentUser() == 'superadmin')
-						<th>Course Price</th>
-						<th>Paid Amount</th>
+						@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
+						<th>Inv Price</th>
+						<th>Paid</th>
 						@endif
+						<th>Contact</th>
 						<th>Type</th>
 						<th>Status</th>
-						<th>Action</th>
+						<th width="280px">Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -119,7 +134,9 @@
 						<tr>
 							<td>{{ (($allBatches->currentPage() - 1) * $allBatches->perPage()) + $loop->iteration }}</td>
 							<td>{{$batch->sId}}</td>
-							<td>{{$batch->sName}}</td>
+							<td>{{$batch->sName}}
+							@if($batch->is_drop == 1) <strong class="text-danger">(Withdrawn)</strong>@endif
+							</td>
 							<td>{{$batch->exName}}</td>
 							@if(currentUser() == 'superadmin')
 							<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
@@ -155,10 +172,17 @@
 								-
 								@endif
 							</td>
-							@if(currentUser() == 'superadmin')
+							@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
 							<td>{{$batch->course_price}}</td>
 							<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
 							@endif
+							<td>
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager')
+							{{$batch->contact}}
+							@else
+							-
+							@endif
+							</td>
 							<td>
 								@if($batch->status == 2) Enroll @endif
 								@if($batch->status == 3) Knocking @endif
@@ -171,10 +195,10 @@
 								Installment
 								@endif
 							</td>
-							<td width="250px">
+							<td class="d-flex">
 								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
 									@if($batch->batch_id == 0)
-									<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>Edit</a>
+									<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>B.Assign</a>
 									@endif
 								@endif
 
@@ -194,6 +218,17 @@
 									->deduction; 
 									
 									@endphp
+
+									<!-- Withdraw Student From Batch -->
+									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
+									
+									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
+									@csrf
+                      				<input name="id" type="hidden" value="{{$batch->sb_id}}">              
+                      				<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}" data-student="{{ $batch->sId }}" class="withdraw btn btn-secondary btn-sm" data-toggle="tooltip" title="Withdraw"><i class="fas fa-edit mr-2"></i>Drop</a>
+                  					</form>
+									@endif
+
 									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
 										@if($deduct < 0)
 										<button type="button" class="btn btn-info btn-sm">Void</button>
@@ -205,7 +240,11 @@
 										@if($batch->isBundel == 1)
 											Bundel Course
 										@else
-										<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+											@if($deduct < 0)
+											<button type="button" class="btn btn-danger btn-sm">Void</button>
+											@else
+											<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+											@endif
 										@endif
 									@else
 										@if($deduct < 0)
@@ -215,15 +254,10 @@
 										@endif
 									@endif
 									@if($sum > 0 && $deduct == 0)
-									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
-									{{--@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager')
-										<form method="post" action="{{route(currentUser().'.refund.store')}}" class="d-inline">
-										@csrf
-										<input type="hidden" name="sb_id" value="{{$batch->sb_id}}">
-										<button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Refund</button>
-										</form>
-										@endif --}}
-									
+									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>
+										@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' && $deduct ==0)
+										<a href="{{route(currentUser().'.refund.edit',$batch->sId)}}" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Adjustment</a>
+										@endif
 									@endif
 
 								@else
@@ -240,7 +274,7 @@
 									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
 									@endif
 									@if($sum > 0)
-									<a data-systemid="{{ $batch->systemId }}" data-course_id="{{ $batch->course_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payCourseHisModal" class="btn btn-primary btn-sm" title="Payment History">History</a>
+									<a data-systemid="{{ $batch->systemId }}" data-course_id="{{ $batch->course_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payCourseHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>
 									@endif
 								@endif
 							</td>
@@ -293,6 +327,7 @@
 </div>
 @endsection
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
@@ -366,6 +401,25 @@
 		});
 
 	});
+
+	/*Withdraw Code */
+	$('.withdraw').on('click', function(event) {
+    var name = $(this).data("name");
+	var batch = $(this).data("batch");
+	var student_id = $(this).data("student");
+    event.preventDefault();
+    swal({
+        title: `Are want to withdraw Student ID#${student_id}|Name ${name} From Batch ${batch}?`,
+        icon: "success",
+        buttons: true,
+        dangerMode: false,
+      })
+      .then((willDelete) => {
+        if (willDelete) {
+          $('#withdraw-active-form').submit();
+        }
+      });
+  });
 </script>
 @if(Session::has('response'))
 <script>
@@ -387,6 +441,7 @@
 		"showMethod": "fadeIn",
 		"hideMethod": "fadeOut"
 	}
+
 </script>
 @endif
 @endpush

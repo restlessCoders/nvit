@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Daily Collection Repor')
+@section('title', 'Invoice | Money Receipt Report')
 @push('styles')
 <link href="{{asset('backend/libs/multiselect/multi-select.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('backend/libs/select2/select2.min.css')}}" rel="stylesheet" type="text/css" />
@@ -127,7 +127,7 @@
 						<th width="100px">Date</th>
 						<th>AE</th>
 						<th colspan="2">Stu ID|Name</th>
-						{{--<th>Contact</th>--}}
+						<th>Contact</th>
 						<th>Batch</th>
 						<th>MR</th>
 						<th>Inv</th>
@@ -168,7 +168,13 @@
 						<td rowspan="" class="align-middle">{{$p->username}}</td>
 						<td class="align-middle">{{$p->studentId}}</td>
 						<td class="align-middle">{{$p->name}}</td>
-						{{--<td class="align-middle">{{$p->contact}}</td>--}}
+						<td class="align-middle">
+						@if(currentUserId() == $p->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager')
+						{{$p->contact}}
+						@else
+						-	
+						@endif
+						</td>
 						<td class="align-middle">
 							@if($p->batchId)
 							{{$p->batchId}}
