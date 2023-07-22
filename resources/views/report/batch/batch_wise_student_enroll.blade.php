@@ -116,8 +116,10 @@
 						<th>Batch</th>
 						<th width="120px">Inv Date</th>
 						<th>Inv</th>
+						@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
 						<th>Inv Price</th>
 						<th>Paid</th>
+						@endif
 						<th>Contact</th>
 						<th>Type</th>
 						<th>Status</th>
@@ -170,8 +172,10 @@
 								-
 								@endif
 							</td>
+							@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
 							<td>{{$batch->course_price}}</td>
 							<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
+							@endif
 							<td>
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' ) 
 							{{$batch->contact}}
