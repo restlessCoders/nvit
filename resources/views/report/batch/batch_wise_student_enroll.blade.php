@@ -255,7 +255,7 @@
 									@endif
 									@if($sum > 0 && $deduct == 0)
 									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>
-										@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' && $deduct ==0)
+										@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager' && $deduct ==0)
 										<a href="{{route(currentUser().'.refund.edit',$batch->sId)}}" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Adjustment</a>
 										@endif
 									@endif
