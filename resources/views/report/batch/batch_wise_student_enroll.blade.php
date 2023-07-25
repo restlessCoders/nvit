@@ -116,10 +116,8 @@
 						<th>Batch</th>
 						<th width="120px">Inv Date</th>
 						<th>Inv</th>
-						@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
 						<th>Inv Price</th>
 						<th>Paid</th>
-						@endif
 						<th>Contact</th>
 						<th>Type</th>
 						<th>Status</th>
@@ -151,9 +149,10 @@
 							@endif
 							</td>
 							<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
-								@if(\DB::table('payments')
+								@php $inv = \DB::table('payments')
 								->join('paymentdetails','paymentdetails.paymentId','payments.id')
-								->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
+								->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists(); @endphp
+								@if($inv)
 								{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')}}
@@ -172,10 +171,18 @@
 								-
 								@endif
 							</td>
-							@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
-							<td>{{$batch->course_price}}</td>
-							<td>{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}</td>
-							@endif
+							
+							<td>
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
+							{{$batch->course_price}}
+							@endif 
+							</td>
+							<td>
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' ) 
+								{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}
+							@endif	
+							</td>
+							
 							<td>
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' ) 
 							{{$batch->contact}}
@@ -250,7 +257,7 @@
 										@if($deduct < 0)
 										<button type="button" class="btn btn-info btn-sm">Void</button>
 										@else
-										<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
+										@if($inv && $batch->status == 2) <div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div> @elseif(empty($inv) && $batch->status == 2) <div class="btn btn-secondary btn-sm" style="font-weight:bold;">Registration</div> @else - @endif
 										@endif
 									@endif
 									@if($sum > 0 && $deduct == 0)

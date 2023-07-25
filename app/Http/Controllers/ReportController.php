@@ -14,6 +14,7 @@ use App\Models\Reference;
 use DateTime;
 use DateInterval;
 use App\Http\Traits\ResponseTrait;
+use App\Models\Certificate;
 use Illuminate\Support\Carbon;
 
 class ReportController extends Controller
@@ -251,7 +252,10 @@ class ReportController extends Controller
     }
     public function batchwiseCompletion()
     {
-        $batches = Batch::all();
+        $certificate_batches = Certificate::where('created_by',currentUserId())->pluck('batch_id')->unique()->toArray();
+        //print_r($cer_batches);die;
+        $batches = Batch::where('trainerId',currentUserId())->whereNotIn('id', $certificate_batches)->get();
+        //print_r($batches);die;
         return view('report.complete.batch_wise_complete', compact('batches'));
     }
     public function batchwiseCompletionReport(Request $request)
@@ -292,18 +296,17 @@ class ReportController extends Controller
         <th style="border:1px solid #000;;color:#000;"><strong>Op. Note</strong></th>
         <th style="border:1px solid #000;;color:#000;"><strong>GM. Note</strong></th>
         <th style="border:1px solid #000;;color:#000;"><strong>Ex. Note</strong></th>*/
-        $data .= '<table class="table table-sm" style="border:1px solid #000;color:#000;">
+        $data .= '<table class="table table-sm text-center" style="border:1px solid #000;color:#000;">
                     <tbody>
                         <tr>
-                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Student Name</strong></th>
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>ID</strong></th>
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Name</strong></th>
                             <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Invoice</strong></th>
                             <th style="border:1px solid #000;color:#000;"><strong>Executive</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Attn.</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Perf.</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Pass</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Drop</strong></th>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Issued</strong></th>
-                            <th style="border:1px solid #000;;color:#000;"><strong>Delivered</strong></th>
                         </tr>';
         if ($request->batch_id) {
             $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->get();
@@ -311,6 +314,9 @@ class ReportController extends Controller
         foreach ($batch_students as $batch_student) {
             $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
             $data .= '<tr>';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->id . '</td>';
+            $data .= '<input type="hidden" name="student_id[]" value="' . $s_data->id . '">';
+            $data .= '<input type="hidden" name="batch_id[]" value="' . $batch_data->id . '">';
             $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->name . '</td>';
             $data .= '<td style="border:1px solid #000;color:#000;">';
             if (\DB::table('payments')
@@ -333,9 +339,6 @@ class ReportController extends Controller
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';*/
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="issue_status[]"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="delivery_status[]"></td>';
-            
             $data .= '</tr>';
         }
         $data .=    '</tbody>
