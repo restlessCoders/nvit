@@ -42,7 +42,7 @@
 			<form action="{{route(currentUser().'.batchwiseEnrollStudent')}}" method="" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
@@ -89,6 +89,14 @@
 						</select>
 					</div>
 					@endif
+					<div class="col-sm-2">
+						<label for="status" class="col-form-label">Type</label>
+						<select class="js-example-basic-single form-control" id="type" name="type">
+							<option value=""></option>
+							<option value="1">Due</option>
+							<option value="2">Registration</option>
+						</select>
+					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary mr-1"><i class="fa fa-search fa-sm"></i></button>
 						<a href="{{route(currentUser().'.batchwiseEnrollStudent')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
@@ -240,7 +248,7 @@
 										@if($deduct < 0)
 										<button type="button" class="btn btn-info btn-sm">Void</button>
 										@else
-										<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
+										<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Registration @endif</a>
 										@endif
 									
 									@elseif($batch->course_price == $sum && $batch->status == 2)
@@ -274,7 +282,7 @@
 									->first()
 									->total; @endphp
 									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-									<a href="{{route(currentUser().'.payments.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>Due</a>
+									<a href="{{route(currentUser().'.payments.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Registration @endif</a>
 									@elseif($batch->course_price == $sum && $batch->status == 2)
 									<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 									@else
