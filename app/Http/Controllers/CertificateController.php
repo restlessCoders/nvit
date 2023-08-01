@@ -17,9 +17,9 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        $certificates_data = Certificate::where('created_by',currentUserId())->distinct('batch_id')->get();
+       /* $certificates_data = Certificate::where('created_by',currentUserId())->distinct('batch_id')->get();
         echo '<pre>';
-        print_r($certificates_data->toArray());
+        print_r($certificates_data->toArray());*/
     }
 
     /**
@@ -40,22 +40,29 @@ class CertificateController extends Controller
      */
     public function store(Request $request)
     {
+        //echo $request->post('batch_id')[0];die;
+        $certificates_data = Certificate::where('batch_id',$request->post('batch_id'))->first();
+        if($certificates_data){
+            DB::table('certificates')->where('batch_id', '=', $request->post('batch_id')[0])->delete();
+        }
         //print_r($request->toArray());die;
        
         $student_id       = $request->post('student_id');
+        $count = count($student_id);
         //print_r($student_id);die;
         $batch_id         = $request->post('batch_id');
         $attn             = $request->post('attn');
         $perf             = $request->post('perf');
-        $drop             = $request->post('drop');
         $pass             = $request->post('pass');
-        foreach ( $student_id as $key => $value) {
+        $drop             = $request->post('drop');
+
+        for ($key = 0; $key < $count; $key++) {
             $certificate['student_id'] = $student_id[$key];
             $certificate['batch_id']   = $batch_id[$key];
-            $certificate['attn']   = isset($attn[$key])?$attn[$key]:0;
-            $certificate['perf']   = isset($perf[$key])?$perf[$key]:0;
-            $certificate['drop']   = isset($drop[$key])?$drop[$key]:0;
-            $certificate['pass']   = isset($pass[$key])?$pass[$key]:0;
+            $certificate['attn']   = $attn[$key];
+            $certificate['perf']       = isset($perf[$key]) ? ($perf[$key] == 1 ? 1 : 0) : 0;
+            $certificate['pass']       = isset($pass[$key]) ? ($pass[$key] == 1 ? 1 : 0) : 0;
+            $certificate['drop']       = isset($drop[$key]) ? ($drop[$key] == 1 ? 1 : 0) : 0;
             $certificate['created_by'] = currentUserId();
             $certificate['created_at'] = Carbon::now();
             DB::table('certificates')->insert($certificate);

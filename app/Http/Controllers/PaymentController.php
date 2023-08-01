@@ -441,6 +441,19 @@ class PaymentController extends Controller
 
         return view('payment.edit', compact('sdata', 'paymentdetl'));
     }
+    public function courseEdit($id, $sId)
+    {
+        $sdata = DB::table('students')
+            ->select('students.name', 'students.id', 'users.name as exName')
+            ->join('users', 'students.executiveId', '=', 'users.id')
+            ->where('students.id', $sId)->first();
+
+        $paymentdetl = Payment::with('paymentDetail')->find(encryptor('decrypt', $id));
+
+
+
+        return view('payment.courseEdit', compact('sdata', 'paymentdetl'));
+    }
 
     /**
      * Update the specified resource in storage.

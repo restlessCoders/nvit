@@ -115,7 +115,7 @@
 						</select>
 					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+						<button type="submit" class="btn btn-primary"><i class="bi bi-search fa-sm"></i></button>
 						<a href="{{route(currentUser().'.daily_collection_report_by_mr')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
@@ -243,8 +243,13 @@
 
 						<td width="130px" class="align-middle">
 							<a href="" class="text-success" title="print"><i class="fas fa-print mr-1"></i></a>
-							@if(currentUser() == 'accountmanager' || currentUser() == 'superadmin')
+							{{--|| currentUser() == 'superadmin'--}}
+							@if(currentUser() == 'accountmanager')
+							@if($p->batchId)
 							<a href="{{route(currentUser().'.payment.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
+							@else
+							<a href="{{route(currentUser().'.payment.course.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
+							@endif
 							{{--<form method="POST" action="{{route(currentUser().'.payment.destroy',[encryptor('encrypt', $p->paymentId)])}}" style="display: inline;">
 							@csrf
 							@method('DELETE')

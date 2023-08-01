@@ -169,11 +169,11 @@ class OtherPaymentController extends Controller
             ->groupBy('student_courses.course_id', 'student_courses.systemId')
             ->select(
                 'courses.courseName',
+                'courses.id as cId',
                 'student_courses.price',
                 'student_courses.created_at',
                 'student_courses.course_id',
-                'paymentdetails.discount',
-                DB::raw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid')
+                'student_courses.student_id',
             )
             ->get();
         $queries = \DB::getQueryLog();
@@ -213,50 +213,63 @@ class OtherPaymentController extends Controller
                     </tbody>   
                 </table>';
         $data .= '<h5 style="font-size:18px;line-height:70px;">Payment details</h5>';
-        $data .= '<table class="table table-bordered mb-5 text-center">
+        $data .= '<table class="table table-sm table-bordered mb-5 text-center">
                 <thead>
                     <tr>
                         <th>Course</th>
                         <th width="110px">Price</th>
-                        <th width="110px">Due</th>
-                        <th>Type</th>
-                        <th>Mode</th>
-                        <th>Fee Type</th>
+                        <th width="108px">Type</th>
+                        <th width="160px">Due Date</th>
+                        <th width="95px">Mode</th>
+                        <th width="140">Fee Type</th>
                         <th width="110px">Discount</th>
                         <th width="110px">Amount</th>
+                        <th width="110px">Due</th>
                     </tr>
                 </thead>';
         $tPayable = 0;
         foreach ($stData as $key => $s) {
-            $tPayable += ($s->price - ($s->cpaid + $s->discount));
-            if ($s->price - ($s->cpaid + $s->discount) > 0) {
+            $pay_detl = DB::table('paymentdetails')
+            ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
+            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.course_id' => $s->course_id])
+            ->get();
+           
+            $tPayable += ($s->price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
+            if ($s->price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
                 $data .= '<td>
-                                    <input type="hidden" value="' . $s->course_id . '">
-                                    <p class="my-0">' . $s->courseName . '</p>
-                                </td>';
+                            <input type="hidden" value="' . $s->course_id . '">
+                            <p class="my-0">' . $s->courseName . '</p>
+                          </td>';
                 $data .= '<input type="hidden" name="tPayable" value="' . $tPayable . '">';
                 $data .= '<input type="hidden" name="course_id[]" value="' . $s->course_id . '">';
                 $data .= '<td><input type="text" class="form-control" readonly value="' . $s->price . '"></td>';
-                $data .= '<td><input name="cPayable[]" type="text" class="form-control" readonly value="' . ($s->price - ($s->cpaid + $s->discount)) . '" id="coursepricebyRow_' . $key . '"></td>';
                 $data .= '<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option value="2" selected>Partial</option></select></td>';
-
+                $data .= '<td>
+                                <div class="input-group">
+                                    <input type="text" name="dueDate[]" id="dueDate_' . $key . '" class="form-control">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="icon-calender"></i></span>
+                                    </div>
+                                </div>
+                            </td>';
                 $data .= '<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option value="1" selected>Cash</option><option value="2">Bkash</option><option value="3">Card</option></select></td>';
                 $data .= '<td><select class="form-control" id="feeType" name="feeType[]" required><option value="">Select</option>';
                 $data .= '<option value="1" selected>Registration</option><option value="2" required>Course</option></select></td>';
                 $data .= '<td><input type="text" name="discount[]" class="paidpricebyRow form-control" id="discountbyRow_' . $key . '"  onkeyup="checkPrice(' . $key . ')"></td>';
                 $data .= '<td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" required id="paidpricebyRow_' . $key . '" onkeyup="checkPrice(' . $key . ')"></td>';
+                $data .= '<td><input name="cPayable[]" type="text" class="form-control" readonly value="' . ($s->price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount)) . '" id="coursepricebyRow_' . $key . '"></td>';
                 $data .= '</tr>';
-                $data .= '<script>$("input[name=\'paymentDate\']").daterangepicker({
-                        singleDatePicker: true,
-                        startDate: new Date(),
-                        showDropdowns: true,
-                        autoUpdateInput: true,
-                        format: \'dd/mm/yyyy\',
-                    }).on(\'changeDate\', function(e) {
-                        var date = moment(e.date).format(\'YYYY/MM/DD\');
-                        $(this).val(date);
-                    });</script>';
+                $data .= '<script>$("input[name=\'paymentDate\'],#dueDate_' . $key . '").daterangepicker({
+                    singleDatePicker: true,
+                    startDate: new Date(),
+                    showDropdowns: true,
+                    autoUpdateInput: true,
+                    format: \'dd/mm/yyyy\',
+                }).on(\'changeDate\', function(e) {
+                    var date = moment(e.date).format(\'YYYY/MM/DD\');
+                    $(this).val(date);
+                });</script>';
             }
         }
         /*Footer Part */

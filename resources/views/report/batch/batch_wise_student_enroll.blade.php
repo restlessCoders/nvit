@@ -95,6 +95,7 @@
 							<option value=""></option>
 							<option value="1">Due</option>
 							<option value="2">Registration</option>
+							<option value="3">Full Paid</option>
 						</select>
 					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
@@ -248,7 +249,7 @@
 										@if($deduct < 0)
 										<button type="button" class="btn btn-info btn-sm">Void</button>
 										@else
-										<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Registration @endif</a>
+										<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
 										@endif
 									
 									@elseif($batch->course_price == $sum && $batch->status == 2)
@@ -265,7 +266,7 @@
 										@if($deduct < 0)
 										<button type="button" class="btn btn-info btn-sm">Void</button>
 										@else
-										@if($inv && $batch->status == 2) <div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div> @elseif(empty($inv) && $batch->status == 2) <div class="btn btn-secondary btn-sm" style="font-weight:bold;">Registration</div> @else - @endif
+										@if($inv && $batch->status == 2) <div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div> @elseif(empty($inv) && $batch->status == 2) <div class="btn btn-secondary btn-sm" style="font-weight:bold;">Reg.</div> @else - @endif
 										@endif
 									@endif
 									@if($sum > 0 && $deduct == 0)
@@ -282,7 +283,7 @@
 									->first()
 									->total; @endphp
 									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-									<a href="{{route(currentUser().'.payments.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Registration @endif</a>
+									<a href="{{route(currentUser().'.payments.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
 									@elseif($batch->course_price == $sum && $batch->status == 2)
 									<button type="button" class="btn btn-success btn-sm">Full Paid</button>
 									@else

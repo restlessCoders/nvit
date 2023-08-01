@@ -11,6 +11,7 @@ use App\Models\Batchtime;
 use App\Models\Course;
 use App\Models\User;
 use App\Models\Reference;
+use App\Models\Payment;
 use DateTime;
 use DateInterval;
 use App\Http\Traits\ResponseTrait;
@@ -61,11 +62,62 @@ class ReportController extends Controller
         $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
         $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status',2)->where('is_drop',0)->count('student_id');
 
-        $allBatches = DB::table('student_batches')
+        if($request->type){
+            $allBatches = DB::table('paymentdetails')
+            ->join('students', 'paymentdetails.studentId', '=', 'students.id')
+            ->leftJoin('student_batches', function ($join) {
+                $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
+                    ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
+                    /*->on('student_batches.course_id', '=', 'paymentdetails.course_id');*/
+            })
+            ->leftjoin('users', 'students.executiveId', '=', 'users.id')
+            ->select('student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus','student_batches.isBundel','student_batches.is_drop');
+            if ($request->type == 1) {
+                $allBatches = $allBatches->where(function($query) {
+                    $query->where('paymentdetails.feeType', '=', 2)
+                    /*->where('student_batches.batch_id', '!=',0)
+                    ->where('student_batches.isBundel', '=',0)*/
+                        ->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) > 0")
+                        ->whereIn('paymentdetails.id', function($subquery) {
+                            $subquery->select(DB::raw('MAX(id)'))
+                                ->from('paymentdetails as pd')
+                                ->whereRaw('pd.studentId = paymentdetails.studentId')
+                                ->whereRaw('pd.batchId = paymentdetails.batchId');
+                        });
+                });
+            }
+            if ($request->type == 2) {
+                $allBatches = DB::table('paymentdetails as pd')
+                ->join('students', 'pd.studentId', '=', 'students.id')
+                ->leftjoin('users', 'students.executiveId', '=', 'users.id')
+                ->join('student_batches', function ($join) {
+                    $join->on('student_batches.student_id', '=', 'pd.studentId')
+                        ->on('student_batches.batch_id', '=', 'pd.batchId');
+                })
+                ->select(
+                    DB::raw('student_batches.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price'),
+                    'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus','student_batches.isBundel','student_batches.is_drop'
+                )
+                ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
+                ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.6)');
+            }
+            if ($request->type == 3) {
+                $allBatches = $allBatches->where(function($query) {
+                    $query->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) = 0")
+                        ->whereIn('paymentdetails.id', function($subquery) {
+                            $subquery->select(DB::raw('MAX(id)'))
+                                ->from('paymentdetails as pd')
+                                ->whereRaw('pd.studentId = paymentdetails.studentId')
+                                ->whereRaw('pd.batchId = paymentdetails.batchId');
+                        });
+                });
+            }
+        }else{
+            $allBatches = DB::table('student_batches')
             ->select('student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus','student_batches.isBundel','student_batches.is_drop')
             ->join('students', 'students.id', '=', 'student_batches.student_id')
             ->join('users', 'users.id', '=', 'students.executiveId');
-
+        }
         if($request->studentId){
             $allBatches->where('students.id', $request->studentId)
             ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
@@ -91,6 +143,7 @@ class ReportController extends Controller
         if ($request->status) {
             $allBatches->where('student_batches.status', $request->status);
         }
+
         $perPage = 20;
 
         $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
@@ -99,6 +152,7 @@ class ReportController extends Controller
             'batch_id' => $request->batch_id,
             'refId' => $request->refId,
             'status' => $request->status,
+            'type' => $request->type,
         ]);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo]);
     }
@@ -252,10 +306,11 @@ class ReportController extends Controller
     }
     public function batchwiseCompletion()
     {
-        $certificate_batches = Certificate::where('created_by',currentUserId())->pluck('batch_id')->unique()->toArray();
-        //print_r($cer_batches);die;
+        $batches = Batch::where('trainerId',currentUserId())->get();
+        /*$certificate_batches = Certificate::where('created_by',currentUserId())->pluck('batch_id')->unique()->toArray();
+        print_r($certificate_batches);die;
         $batches = Batch::where('trainerId',currentUserId())->whereNotIn('id', $certificate_batches)->get();
-        //print_r($batches);die;
+        print_r($batches);die;*/
         return view('report.complete.batch_wise_complete', compact('batches'));
     }
     public function batchwiseCompletionReport(Request $request)
@@ -313,6 +368,7 @@ class ReportController extends Controller
         }
         foreach ($batch_students as $batch_student) {
             $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
+            $cer_data = Certificate::where('student_id',$batch_student->student_id)->where('batch_id',$batch_data->id)->first();
             $data .= '<tr>';
             $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->id . '</td>';
             $data .= '<input type="hidden" name="student_id[]" value="' . $s_data->id . '">';
@@ -329,11 +385,24 @@ class ReportController extends Controller
             }
             '</td>';
             $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
-            
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]"></td>';
+                if($cer_data){
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]" value="'.$cer_data->attn.'"></td>';
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]" '.($cer_data->perf == 1 ? 'checked="checked"' : '').'></td>';
+
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]" '.($cer_data->pass == 1 ? 'checked="checked"' : '').'></td>';
+                    
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]" '.($cer_data->drop == 1 ? 'checked="checked"' : '').'></td>';
+                    
+
+                }else{
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]"></td>';
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]"></td>';
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]"></td>';
+                    $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]"></td>';
+                }
+                $data .= '<input type="hidden" name="perf[]" value="0">';
+$data .= '<input type="hidden" name="pass[]" value="0">';
+$data .= '<input type="hidden" name="drop[]" value="0">';
                 /*$data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
@@ -349,7 +418,18 @@ class ReportController extends Controller
             $data .= '</form>';
         }
 
-
+        $data .= '<script>  
+        $("input[type=\'checkbox\']").on("click", function() {
+            // Check if the checkbox is currently checked
+            if ($(this).prop("checked")) {
+              console.log("pl");
+              $(this).val(1);
+            } else {
+              console.log("unchecked");
+              $(this).val(1);
+            }
+        });
+      </script>';
 
 
         return response()->json(array('data' => $data));

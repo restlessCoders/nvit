@@ -270,17 +270,17 @@ class PaymentReportController extends Controller
     {
         DB::connection()->enableQueryLog();
         $payments = DB::table('paymentdetails')
-            ->select('student_batches.course_price','courses.courseName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
-            ->join('student_batches', 'paymentdetails.course_id', '=', 'student_batches.course_id')
+            ->select('student_courses.price','courses.courseName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
+            ->join('student_courses', 'paymentdetails.course_id', '=', 'student_courses.course_id')
             ->join('courses', 'paymentdetails.course_id', '=', 'courses.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
             ->where('paymentdetails.studentId', $request->sId);
 
         if ($request->systmVal) {
-            $payments->where('student_batches.systemId', $request->systmVal);
+            $payments->where('student_courses.systemId', $request->systmVal);
         }
         if ($request->course_id) {
-            $payments->where('student_batches.course_id', $request->course_id);
+            $payments->where('student_courses.course_id', $request->course_id);
             $payments->where('paymentdetails.course_id', $request->course_id);
         }
         //if ($request->feeType) {
@@ -327,7 +327,7 @@ class PaymentReportController extends Controller
             $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
             $data .= '<td>' . $p->accountNote . '</td>';
             $data .= '<td>' . $p->courseName . '</td>';
-            $data .= '<td>' . /*$p->cPayable*/$p->course_price . '</td>';
+            $data .= '<td>' . /*$p->cPayable*/$p->price . '</td>';
             $data .= '<td>' . $p->cpaidAmount . '</td>';
             $data .= '<td>' . $p->discount . '</td>';
             $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';

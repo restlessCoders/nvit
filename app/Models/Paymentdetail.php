@@ -16,6 +16,10 @@ class Paymentdetail extends Model
     {
         return $this->hasOne(Batch::class,'id','batchId');
     }
+    public function course()
+    {
+        return $this->hasOne(Course::class,'id','course_id');
+    }
     public function student(){
         return $this->hasOne(Student::class,'id','studentId');
     }

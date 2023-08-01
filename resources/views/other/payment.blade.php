@@ -8,6 +8,7 @@
 	.select2-container {
 		width: 100% !important;
 	}
+
 	.ui-widget {
 		font-size: 1em;
 	}
@@ -27,7 +28,7 @@
 			<h4 class="page-title">Student Other Payment</h4>
 		</div>
 	</div>
-	
+
 	<div class="col-12">
 		<div class="card-box">
 			<div class="form-group row">
@@ -38,16 +39,19 @@
 			<div class="form-group row" id="details_data">
 			</div>
 			<form id="my-form">
-			{{ csrf_field() }}
-			<div class="row" id="student_detl_data">
-			</div>
-			<div class="table-responsive" id="paymentTblData">
-				
-			</div>
+				{{ csrf_field() }}
+				<div class="row" id="student_detl_data">
+				</div>
+				<div class="table-responsive" id="paymenthisTblData">
+
+				</div>
+				<div class="table-responsive" id="paymentTblData">
+
+				</div>
 			</form>
 		</div>
 	</div>
-	
+
 </div>
 @endsection
 @push('scripts')
@@ -55,22 +59,21 @@
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script src="{{ asset('backend/js/pages/jquery-ui.min.js') }}"></script>
 <script>
-
-var systemId = "{{request()->get('systemId')}}";
+	var systemId = "{{request()->get('systemId')}}";
 	var sId = "{{request()->get('sId')}}";
-	if(sId){
+	if (sId) {
 		return_row_with_data(sId);
 
 	}
- 
-$(document).on('submit', '#my-form', function(event) {
+
+	$(document).on('submit', '#my-form', function(event) {
 		event.preventDefault();
 		$('#submit-btn').prop('disabled', true); // disable the button
 		var formData = $('#my-form').serialize();
 		var optType = $('#optType option:selected').val();
-		if(optType == 1){
-				// Make the AJAX request
-				$.ajax({
+		if (optType == 1) {
+			// Make the AJAX request
+			$.ajax({
 				url: "{{route(currentUser().'.payments.coursestore')}}",
 				type: "POST",
 				// Your data to send in the AJAX request
@@ -81,12 +84,12 @@ $(document).on('submit', '#my-form', function(event) {
 					toastr.success(response.success);
 					window.location.href = "{{route(currentUser().'.batchwiseEnrollStudent') }}";
 				},
-				error: function (response) {
+				error: function(response) {
 					// handle errors
 				},
 			});
-			
-		}else{
+
+		} else {
 			// Make the AJAX request
 			$.ajax({
 				url: "{{route(currentUser().'.payments.store')}}",
@@ -99,28 +102,29 @@ $(document).on('submit', '#my-form', function(event) {
 					toastr.success(response.success);
 					window.location.href = "{{route(currentUser().'.payments.index') }}";
 				},
-				error: function (response) {
+				error: function(response) {
 					// handle errors
 				},
 			});
 		}
-    });
+	});
 
 
 
 
 
 
-	function optType(type){
-		if(type==1){
+	function optType(type) {
+		if (type == 1) {
 			$.ajax({
 				url: "{{route(currentUser().'.databyStudentId')}}",
 				method: 'GET',
 				dataType: 'json',
 				data: {
 					sId: sId,
-					systemId,systemId,
-					type:1
+					systemId,
+					systemId,
+					type: 1
 				},
 				success: function(res) {
 					//console.log(res.data);
@@ -132,7 +136,7 @@ $(document).on('submit', '#my-form', function(event) {
 					console.log(e);
 				}
 			});
-		}else{
+		} else {
 			$.ajax({
 				url: "{{route(currentUser().'.databyStudentId')}}",
 				method: 'GET',
@@ -154,73 +158,95 @@ $(document).on('submit', '#my-form', function(event) {
 	}
 
 
-		$(document).on('click', '#showData', function() {
-		
-			var optType = $('#optType option:selected').val();
+	$(document).on('click', '#showData', function() {
 
-			var opt = $('#opt option:selected').val();
-			var sId = $('#sId').val();
-			if(optType == 2 && opt == 4){
-					$.ajax({
-						url: "{{route(currentUser().'.otherPaymentByStudentId')}}",
-						method: 'GET',
-						dataType: 'json',
-						data: {
-							sId:sId,
-						},
-						success: function(res) {
-							//console.log(res.data);
-							$('#paymentTblData').empty();
-							$('#paymentTblData').append(res.data);
-						},
-						error: function(e) {
-							console.log(e);
-						}
-					});
-				
-			}else if(optType == 1 && opt == 4){
-				$.ajax({
-						url: "{{route(currentUser().'.coursePaymentByStudentId')}}",
-						method: 'GET',
-						dataType: 'json',
-						data: {
-							sId:sId,
-							systemId,systemId,
-						},
-						success: function(res) {
-							console.log(res.data);
-							$('#paymentTblData').empty();
-							$('#paymentTblData').append(res.data);
-						},
-						error: function(e) {
-							console.log(e);
-						}
-					});
-			}
-		});
-	
-/*=== Check Input Price== */
-function checkPrice(index){
-	
-		var paidpricebyRow 		= parseFloat($('#paidpricebyRow_'+index).val());
-		var coursepricebyRow 	= parseFloat($('#coursepricebyRow_'+index).val());
+		var optType = $('#optType option:selected').val();
+
+		var opt = $('#opt option:selected').val();
+		var sId = $('#sId').val();
+		var systmVal = $('#systmVal option:selected').val();
+		if (optType == 2 && opt == 4) {
+			$.ajax({
+				url: "{{route(currentUser().'.otherPaymentByStudentId')}}",
+				method: 'GET',
+				dataType: 'json',
+				data: {
+					sId: sId,
+				},
+				success: function(res) {
+					//console.log(res.data);
+					$('#paymentTblData').empty();
+					$('#paymentTblData').append(res.data);
+				},
+				error: function(e) {
+					console.log(e);
+				}
+			});
+
+		} else if (optType == 1 && opt == 4) {
+			var course_id = $('#course_id option:selected').val();
+
+			$.ajax({
+				url: "{{route(currentUser().'.allPaymentCourseReportBySid')}}",
+				method: 'GET',
+				dataType: 'json',
+				data: {
+					systmVal: systmVal,
+					sId: sId,
+					course_id: course_id
+				},
+				success: function(res) {
+					//console.log(res.data);
+					$('#paymenthisTblData').empty();
+					$('#paymenthisTblData').append(res.data);
+				},
+				error: function(e) {
+					console.log(e);
+				}
+			});
+			$.ajax({
+				url: "{{route(currentUser().'.coursePaymentByStudentId')}}",
+				method: 'GET',
+				dataType: 'json',
+				data: {
+					sId: sId,
+					systemId,
+					systemId,
+				},
+				success: function(res) {
+					//console.log(res.data);
+					$('#paymentTblData').empty();
+					$('#paymentTblData').append(res.data);
+				},
+				error: function(e) {
+					console.log(e);
+				}
+			});
+		}
+	});
+
+	/*=== Check Input Price== */
+	function checkPrice(index) {
+
+		var paidpricebyRow = parseFloat($('#paidpricebyRow_' + index).val());
+		var coursepricebyRow = parseFloat($('#coursepricebyRow_' + index).val());
 		/*To Calculate discount With Paid Price */
-		paidpricebyRow 	+= parseFloat($('#discountbyRow_'+index).val())?parseFloat($('#discountbyRow_'+index).val()):0;
+		paidpricebyRow += parseFloat($('#discountbyRow_' + index).val()) ? parseFloat($('#discountbyRow_' + index).val()) : 0;
 		/*console.log(paidpricebyRow);
 		console.log(coursepricebyRow);*/
 		var tPayable = parseFloat($('.tPayable').val());
-		if(paidpricebyRow > coursepricebyRow){
+		if (paidpricebyRow > coursepricebyRow) {
 			toastr["warning"]("Paid Amount Cannot be Greater Than Course Price!!");
 			return false;
-		}else{
+		} else {
 			var total = 0;
-			$('.paidpricebyRow').each(function(index, element){
-			if($(element).val()!="")
-            total += parseFloat($(element).val());
+			$('.paidpricebyRow').each(function(index, element) {
+				if ($(element).val() != "")
+					total += parseFloat($(element).val());
 
-		});
-		$('.tPaid').val(total);
-		$('.tDue').val(tPayable-total);
+			});
+			$('.tPaid').val(total);
+			$('.tDue').val(tPayable - total);
 		}
 	}
 	/*===== Payment Calculation======*/
@@ -253,7 +279,7 @@ function checkPrice(index){
 								id: el.sId
 							};
 						});
-					}else{
+					} else {
 						$('#details_data').html('');
 						$('#student_detl_data').html('');
 					}
@@ -303,7 +329,7 @@ function checkPrice(index){
 			},
 			success: function(res) {
 				//console.log(res.data);
-				if(res.data){
+				if (res.data) {
 					optType(1);
 					$('#details_data').append(res.data);
 					$('#student_detl_data').append(res.sdata);

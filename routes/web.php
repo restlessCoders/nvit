@@ -568,6 +568,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
         /*=== Payment Edit====*/
         Route::get('/payment/report/{id}/{sId}', [PaymentController::class, 'edit'])->name('accountmanager.payment.edit');
+        Route::get('/payment/course/report/{id}/{sId}', [PaymentController::class, 'courseEdit'])->name('accountmanager.payment.course.edit');
         /*===Payment report==*/
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('accountmanager.allPaymentReportBySid');
         Route::get('/payment/report/bundel', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('accountmanager.allPaymentCourseReportBySid');

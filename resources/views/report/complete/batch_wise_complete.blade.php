@@ -156,6 +156,9 @@
 				newWin.close();
 			}, 10);
 		}
+
+
+		
 	</script>
 
 	@endpush
