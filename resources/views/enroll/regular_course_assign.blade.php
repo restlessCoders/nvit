@@ -19,9 +19,8 @@
 	</div>
 	<div class="col-12">
 		<div class="card-box">
-			<form action="" method="POST" enctype="multipart/form-data">
+			<form action="{{route(currentUser().'.assign_single_batch_toEnrollStudent',$enroll_data->id)}}" method="POST" enctype="multipart/form-data">
 				@csrf
-				@method('PUT')
 				<input type="hidden" value="{{ Session::get('user') }}" name="userId">
 				<div class="form-group row">
 					<div class="col-lg-12">
@@ -43,7 +42,7 @@
 										{{\DB::table('courses')->where('id',$enroll_data->course_id)->first()->courseName}}
 									</td>
 									<td>
-										<select name="batch_id" class="js-example-basic-single form-control select2 @if($errors->has('batch_id')) {{ 'is-invalid' }} @endif">
+										<select name="batch_id" class="js-example-basic-single form-control select2 @if($errors->has('batch_id')) {{ 'is-invalid' }} @endif" required>
 											<option></option>
 											@if(count($batches) > 0)
 											@foreach($batches as $b)
@@ -58,9 +57,11 @@
 										@endif
 									</td>
 									<td>
+										@if($enroll_data->batch_id == 0)
 									<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
 						Assign Batch
 					</button>
+					@endif
 									</td>
 								</tr>
 							</thead>

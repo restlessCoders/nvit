@@ -274,7 +274,7 @@ class PaymentReportController extends Controller
             ->join('student_courses', 'paymentdetails.course_id', '=', 'student_courses.course_id')
             ->join('courses', 'paymentdetails.course_id', '=', 'courses.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
-            ->where('student_courses.student_id', $request->sId)
+            ->where('paymentdetails.studentId', $request->sId)
             ->where('paymentdetails.deduction','>=',0);
 
         if ($request->systmVal) {
