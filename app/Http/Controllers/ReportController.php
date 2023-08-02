@@ -521,7 +521,7 @@ class ReportController extends Controller
                 return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
             }
             else {
-                //DB::table('student_batches')->where('id',$id)->update(['batch_id' => $request->batch_id]);
+                DB::table('student_batches')->where('id',$id)->update(['batch_id' => $request->batch_id]);
                 DB::commit();
                 return redirect()->route(currentUser().'.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
             }
