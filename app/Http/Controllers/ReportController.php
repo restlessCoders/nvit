@@ -512,14 +512,16 @@ class ReportController extends Controller
         if ($request->batch_id) {
             $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
                         left join student_batches on student_batches.batch_id=batches.id
-                        WHERE batches.id=$request->batch_id
+                        WHERE batches.id=$request->batch_id and 
+                        student_batches.status=2 and student_batches.is_drop = 0
                         GROUP by student_batches.batch_id,batches.seat");
             /*print_r($seat_data);
             die;*/
-            if ($seat_data[0]->tst > $seat_data[0]->seat_available)
+            if ($seat_data[0]->tst >= $seat_data[0]->seat_available){
                 return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+            }
             else {
-                DB::table('student_batches')->where('id',$id)->update(['batch_id' => $request->batch_id]);
+                //DB::table('student_batches')->where('id',$id)->update(['batch_id' => $request->batch_id]);
                 DB::commit();
                 return redirect()->route(currentUser().'.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
             }
