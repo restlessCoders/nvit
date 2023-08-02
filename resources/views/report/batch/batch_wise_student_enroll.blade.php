@@ -245,6 +245,17 @@
                   					</form>
 									@endif
 
+									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
+									<form id="withdraw-undo-form" action="{{route(currentUser().'.withdraw_undo')}}" style="display: inline;">
+									@csrf
+                      				<input name="id" type="hidden" value="{{$batch->sb_id}}">    
+									<input name="batch_id" type="hidden" value="{{$batch->batch_id}}">    
+									<input name="course_id" type="hidden" value="{{$batch->course_id}}">         
+                      				<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}" data-student="{{ $batch->sId }}" class="withdraw_undo btn btn-secondary btn-sm" data-toggle="tooltip" title="Undo Withdraw"><i class="fas fa-edit mr-2"></i>Undo</a>
+                  					</form>
+									@endif
+									
+
 									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
 										@if($deduct < 0)
 										<button type="button" class="btn btn-info btn-sm">Void</button>
@@ -432,14 +443,32 @@
       })
       .then((willDelete) => {
         if (willDelete) {
-          $('#withdraw-active-form').submit();
+			$(this).parent().submit();
         }
       });
   });
+  $('.withdraw_undo').on('click', function(event) {
+    var name = $(this).data("name");
+	var batch = $(this).data("batch");
+	var student_id = $(this).data("student");
+    event.preventDefault();
+    swal({
+        title: `Are want to Undo withdraw Student ID#${student_id}|Name ${name} From Batch ${batch}?`,
+        icon: "success",
+        buttons: true,
+        dangerMode: false,
+      })
+      .then((willDelete) => {
+        if (willDelete) {
+			$(this).parent().submit();
+        }
+      });
+  });
+  
 </script>
 @if(Session::has('response'))
 <script>
-	Command: toastr["{{Session::get('response')['errors']}}"]("{{Session::get('response')['message']}}")
+	Command: toastr["{{Session::get('response')['class']}}"]("{{Session::get('response')['message']}}")
 	toastr.options = {
 		"closeButton": false,
 		"debug": false,
@@ -457,7 +486,6 @@
 		"showMethod": "fadeIn",
 		"hideMethod": "fadeOut"
 	}
-
 </script>
 @endif
 @endpush

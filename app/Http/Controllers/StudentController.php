@@ -813,6 +813,31 @@ class StudentController extends Controller
         $note->created_by   = currentUserId();
         $note->save();
         return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Successful'));
+        }
     }
+    public function withdraw_undo(Request $request){
+        $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
+        left join student_batches on student_batches.batch_id=batches.id
+        WHERE batches.id=$request->batch_id and 
+        student_batches.status=2 and student_batches.is_drop = 0
+        GROUP by student_batches.batch_id,batches.seat");
+        /*print_r($seat_data);
+        die;*/
+        if ($seat_data[0]->tst >= $seat_data[0]->seat_available){
+        return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+        }
+        else {
+            $withdraw_undo_student = DB::table('student_batches')->where('id',$request->id)->update(['is_drop'=>0]);
+            if($withdraw_undo_student){
+                $data = DB::table('student_batches')->where('id',$request->id)->first();
+                $batch = Batch::find($data->batch_id);
+            $note               =  new Note;
+            $note->student_id   =  $data->student_id;
+            $note->note         = 'Withdraw Undo from Batch #'.$batch->batchId;
+            $note->created_by   = currentUserId();
+            $note->save();
+            return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Undo Successful'));
+            }
+        }
     }
 }

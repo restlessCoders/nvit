@@ -197,6 +197,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*=== Withdraw | Drop ===*/
         Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('superadmin.withdraw');
+        Route::get('/student/batch/undo/withdraw/', [StudentController::class, 'withdraw_undo'])->name('superadmin.withdraw_undo');
     });
 });
 
@@ -528,6 +529,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::resource('/refund', RefundController::class, ["as" => "operationmanager"]);
         /*=== Withdraw | Drop ===*/
         Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('operationmanager.withdraw');
+        Route::get('/student/batch/undo/withdraw/', [StudentController::class, 'withdraw_undo'])->name('operationmanager.withdraw_undo');
     });
 });
 
