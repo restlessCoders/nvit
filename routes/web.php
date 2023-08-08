@@ -331,6 +331,7 @@ Route::group(['middleware' => 'isSalesManager'], function () {
 
         /*=== Withdraw | Drop ===*/
         Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('salesmanager.withdraw');
+        Route::get('/student/batch/undo/withdraw/', [StudentController::class, 'withdraw_undo'])->name('salesmanager.withdraw_undo');
     });
 });
 
