@@ -623,7 +623,9 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         Route::post('/course/wise/enroll/list/delete', [ReportController::class, 'course_wise_student_enroll_data_delete'])->name('accountmanager.course_wise_student_enroll_data_delete');
 
         /* Batch wise enroll payment report */
-        Route::get('/payment/report/batchwise/enroll/all', [PaymentReportController::class, 'allPaymentReportBySid_for_batch_enroll_report'])->name('accountmanager.allPaymentReportBySid_for_batch_enroll_report');
+        Route::get('/payment/report/batchwise/enroll/batch', [PaymentReportController::class, 'allPaymentReportBySid_for_batch_enroll_report'])->name('accountmanager.allPaymentReportBySid_for_batch_enroll_report');
+        /* Course wise enroll payment report */
+        Route::get('/payment/report/batchwise/enroll/course', [PaymentReportController::class, 'allPaymentCourseReportBySid_for_batch_enroll_report'])->name('accountmanager.allPaymentCourseReportBySid_for_batch_enroll_report');
         
     });
 });

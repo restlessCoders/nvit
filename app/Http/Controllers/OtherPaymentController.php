@@ -43,7 +43,7 @@ class OtherPaymentController extends Controller
         $data = '<div class="col-sm-3" id="type"><select class="form-control" id="optType" onchange="optType(this.value)">';
         $data .= '<option value="">Select</option>';
         $data .= '<option value="1" selected>Course (No Batch)</option>';
-        $data .= '</select></div>';
+        $data .= '</select><input type="hidden" id="systmVal" value="'.$request->systemId.'"></div>';
         /*==Student Data==*/
         $studentbyId =  DB::table('students')
             ->select('students.id', 'students.name', 'students.executiveId', 'users.name as exName')

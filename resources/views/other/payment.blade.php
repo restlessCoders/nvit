@@ -62,7 +62,7 @@
 	var systemId = "{{request()->get('systemId')}}";
 	var sId = "{{request()->get('sId')}}";
 	if (sId) {
-		return_row_with_data(sId);
+		return_row_with_data(sId,systemId);
 
 	}
 
@@ -164,7 +164,7 @@
 
 		var opt = $('#opt option:selected').val();
 		var sId = $('#sId').val();
-		var systmVal = $('#systmVal option:selected').val();
+		var systmVal = $('#systmVal').val();
 		if (optType == 2 && opt == 4) {
 			$.ajax({
 				url: "{{route(currentUser().'.otherPaymentByStudentId')}}",
@@ -185,9 +185,9 @@
 
 		} else if (optType == 1 && opt == 4) {
 			var course_id = $('#course_id option:selected').val();
-
+alert(systmVal)
 			$.ajax({
-				url: "{{route(currentUser().'.allPaymentCourseReportBySid')}}",
+				url: "{{route(currentUser().'.allPaymentReportBySid_for_batch_enroll_report')}}",
 				method: 'GET',
 				dataType: 'json',
 				data: {
@@ -315,7 +315,7 @@
 	});
 
 
-	function return_row_with_data(student_id) {
+	function return_row_with_data(student_id,systemId) {
 		$("#item_search").addClass('ui-autocomplete-loader-center');
 		var rowcount = $("#hidden_rowcount").val();
 
@@ -325,7 +325,8 @@
 			method: 'GET',
 			dataType: 'json',
 			data: {
-				student_id: student_id
+				student_id: student_id,
+				systemId:systemId
 			},
 			success: function(res) {
 				//console.log(res.data);

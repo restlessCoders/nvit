@@ -188,7 +188,11 @@
 							</td>
 							<td>
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' ) 
+								@if($batch->batch_id != 0)
 								{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}
+								@else
+								{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('cpaidAmount')}}
+								@endif
 							@endif	
 							</td>
 							
