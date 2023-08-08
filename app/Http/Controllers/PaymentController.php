@@ -340,6 +340,7 @@ print_r($stData);die;*/
 
             // Payment Detail
             $batch_id       = $request->post('batch_id');
+            $course_id       = $request->post('course_id');
             $dueDate        = $request->post('dueDate');
             $cPayable       = $request->post('cPayable');
             $cpaidAmount    = $request->post('cpaidAmount');
@@ -360,6 +361,7 @@ print_r($stData);die;*/
                 //$payment_detail['invoiceId']        = $invoiceId[$key];
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['batchId']          = $batch_id[$key];
+                $payment_detail['course_id']          = $course_id[$key];
                 $payment_detail['cPayable']         = $cPayable[$key];
                 $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
                 //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;

@@ -185,7 +185,7 @@
 
 		} else if (optType == 1 && opt == 4) {
 			var course_id = $('#course_id option:selected').val();
-alert(systmVal)
+
 			$.ajax({
 				url: "{{route(currentUser().'.allPaymentReportBySid_for_batch_enroll_report')}}",
 				method: 'GET',
