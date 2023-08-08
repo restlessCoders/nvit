@@ -240,7 +240,7 @@
 									@endphp
 
 									<!-- Withdraw Student From Batch -->
-									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
+									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
 									
 									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
 									@csrf
