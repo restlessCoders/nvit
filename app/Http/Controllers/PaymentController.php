@@ -120,24 +120,24 @@ class PaymentController extends Controller
     {\DB::connection()->enableQueryLog();
         $stData = DB::table('student_batches')
             ->join('students', 'student_batches.student_id', '=', 'students.id')
-            ->join('batches', 'student_batches.batch_id', '=', 'batches.id')
-            ->leftjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
+            //->leftjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
             ->where('student_batches.acc_approve', '!=',3)
-            ->groupBy('student_batches.batch_id', 'student_batches.systemId')
+            //->groupBy('student_batches.batch_id', 'student_batches.systemId')
+            ->distinct('student_batches.batch_id')
             ->select(
-                'batches.batchId',
-                'batches.id as bid',
                 'student_batches.course_price',
                 'student_batches.entryDate',
                 'student_batches.batch_id',
+                'student_batches.course_id',
                 'student_batches.student_id',
                 //DB::raw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid')
             )
             ->get();
             $queries = \DB::getQueryLog();
-
+/*echo '<pre>';
+print_r($stData);die;*/
     //dd($queries);
         //return response()->json(array('sdata' => $stData));
 
@@ -192,15 +192,25 @@ class PaymentController extends Controller
             $pay_detl = DB::table('paymentdetails')
             ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
             ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
+            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.course_id' => $s->course_id])
             ->get();
             $tPayable += ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
             if ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
-                $data .= '<td>
-                                <input type="hidden" value="' . $s->batch_id . '">
-                                <p class="my-0">' . $s->batchId . '</p>
-                                <p class="my-0">' . $s->entryDate . '</p>
-                            </td>';
+                if($s->batch_id ){
+                    $data .= '<td>
+                        <input type="hidden" value="' . $s->batch_id . '">
+                        <p class="my-0">' . DB::table('batches')->where('id',$s->batch_id)->first()->batchId . '</p>
+                        <p class="my-0">' . $s->entryDate . '</p>
+                    </td>';
+                }else{
+                    $data .= '<td>
+                        <input type="hidden" value="' . $s->course_id . '">
+                        <p class="my-0">' . DB::table('courses')->where('id',$s->course_id)->first()->courseName . '</p>
+                        <p class="my-0">' . $s->entryDate . '</p>
+                    </td>';
+                }
+
                 //$inv = DB::table('paymentdetails')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
                 //return response()->json(array('data' =>$inv));
                 /*if(is_null($inv)){
@@ -210,6 +220,7 @@ class PaymentController extends Controller
                     }*/
                 $data .= '<input type="hidden" name="tPayable" value="' . $tPayable . '">';
                 $data .= '<input type="hidden" name="batch_id[]" value="' . $s->batch_id . '">';
+                $data .= '<input type="hidden" name="course_id[]" value="' . $s->course_id . '">';
                 $data .= '<td><input type="text" class="form-control" readonly value="' . $s->course_price . '"></td>';
                 $data .= '<td><select class="form-control" name="payment_type[]" required><option value=""></option><option value="1">Full</option><option selected value="2">Partial</option></select></td>';
                 $data .= '<td>

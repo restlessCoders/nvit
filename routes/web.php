@@ -198,6 +198,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*=== Withdraw | Drop ===*/
         Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('superadmin.withdraw');
         Route::get('/student/batch/undo/withdraw/', [StudentController::class, 'withdraw_undo'])->name('superadmin.withdraw_undo');
+
+        /*== Secret Login ==*/
+        Route::get('secret/login/{id}', [UserController::class, 'secretLogin'])->name('superadmin.secretLogin');
     });
 });
 
@@ -618,6 +621,9 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
         /*Course Wise Student Enroll Data Delete */
         Route::post('/course/wise/enroll/list/delete', [ReportController::class, 'course_wise_student_enroll_data_delete'])->name('accountmanager.course_wise_student_enroll_data_delete');
+
+        /* Batch wise enroll payment report */
+        Route::get('/payment/report/batchwise/enroll/all', [PaymentReportController::class, 'allPaymentReportBySid_for_batch_enroll_report'])->name('accountmanager.allPaymentReportBySid_for_batch_enroll_report');
         
     });
 });

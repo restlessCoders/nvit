@@ -191,7 +191,6 @@ class PaymentReportController extends Controller
 
         $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         $queries = \DB::getQueryLog();
-
     //dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
@@ -349,6 +348,118 @@ class PaymentReportController extends Controller
 
             $data .= '</tr>';
             $sl++;
+        }
+        $data .= '</table>';
+        return response()->json(array('data' => $data));
+    }
+
+    public function allPaymentReportBySid_for_batch_enroll_report(Request $request)
+    {
+        DB::connection()->enableQueryLog();
+        $stData = DB::table('student_batches')
+            ->select('student_batches.course_id','student_batches.course_price','batches.batchId as batchName', 'student_batches.student_id','student_batches.batch_id')
+           
+            ->leftjoin('batches', 'student_batches.batch_id', '=', 'batches.id')
+            ->where('student_batches.student_id', '=', $request->sId)
+            ->where('student_batches.systemId', '=', $request->systmVal)
+            ->where('student_batches.acc_approve', '!=',3);
+            //->distinct('student_batches.batch_id');
+
+
+        $stData = $stData->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
+        $queries = \DB::getQueryLog();
+        /*echo '<pre>';
+print_r($stData);die;*/
+    //dd($queries);
+        //return response()->json(array('data' =>$payments));
+        $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
+        $data .= '<table class="table table-bordered mb-3 text-center">
+                <thead>
+                    <tr>
+                        <th>SL.</th>
+                        <th width="120px">Invoice & Date</th>
+                        <th width="120px">MR & Date</th>
+                        <th>Note</th>
+                        <th>Batch</th>
+                        <th>Invoice Amt.</th>
+                        <th>Paid</th>
+                        <th>Dis</th>
+                        <th>Due</th>
+                        <th>Fee Type</th>
+                        <th>Due Date</th>
+                        <!--<th>Others</th>
+                        <th>Action</th>-->
+                    </tr>
+                </thead>';
+        $sl = 1;
+        foreach ($stData as $key => $s) {
+            $payments = DB::table('paymentdetails')
+            ->selectRaw('paymentdetails.*, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote')
+            ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
+            
+            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
+            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.course_id' => $s->course_id])
+            ->where('paymentdetails.cpaidAmount', '!=',0)
+            ->get();
+
+            foreach($payments as $p){
+               
+            $data .= '<tr>';
+            $data .= '<td>' . $sl . '</td>';
+            /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
+                        <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
+            if(!empty($p->invoiceId)){
+                $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            }else{
+                $data .= '<td>-</td>';
+            }
+                        
+            $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+            $data .= '<td>' . $p->accountNote . '</td>';
+            if($p->batchId !=0){
+                $data .= '<td>'.DB::table('batches')->where('id',$p->batchId)->first()->batchId.'</td>';
+                $data .= '<td>'.DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->batchId)->first()->course_price.'</td>';
+            }
+           
+            else{
+                $data .= '<td>'.DB::table('courses')->where('id',$p->course_id)->first()->courseName.'</td>';
+                $data .= '<td>'.DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price.'</td>';
+            }
+
+           
+            $data .= '<td>' . $p->cpaidAmount . '</td>';
+            $data .= '<td>' . $p->discount . '</td>';
+            $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
+            if ($p->feeType == 1)
+                $text = "Registration";
+            else
+                $text = "Invoice";
+            $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
+            if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
+                if(!empty($p->dueDate))
+                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+                else
+                $data .= '<td><strong class="">-</strong></td>';
+            }else{
+                $data .= '<td>-</td>';  
+            }
+            
+            /*$data .= '<td width="150px">
+                                    <p class="text-left m-0 p-0">Paid By:-</p>
+                                    <p class="text-left m-0 p-0">Paid:' . \Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')  . '</p>
+                                    <p class="text-left m-0 p-0">Updated By:-</p>
+                                    <p class="text-left m-0 p-0">Update:' . \Carbon\Carbon::createFromTimestamp(strtotime($p->updated_at))->format('j M, Y')  . '</p>
+                                </td>';
+            $data .= '<td width="130px">
+                                    <a href="" class="text-success" title="print"><i class="fas fa-print mr-1"></i></a>
+                                    <a href="' . route(currentUser() . '.payment.edit', [encryptor('encrypt', $p->id), $p->studentId]) . '" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
+                                    <a href="" class="text-danger" title="delete"><i class="far fa-trash-alt mr-1"></i></a>
+                                    <a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
+                                    <a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>
+                                </td>';*/
+            $data .= '</tr>';
+            $sl++;
+        }
         }
         $data .= '</table>';
         return response()->json(array('data' => $data));

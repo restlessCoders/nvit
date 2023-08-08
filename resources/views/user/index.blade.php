@@ -57,6 +57,9 @@
 						<th>Role</th>
 						<th>Branch</th>
 						<th>Status</th>
+						@if(currentUser() == 'superadmin')
+						<th>Secret Login</th>
+						@endif
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -76,6 +79,11 @@
 							<span class="text-danger">Inactive</span>
 							@endif
 						</td>
+						@if(currentUser() == 'superadmin')
+						<td>
+							<a href="{{route(currentUser().'.secretLogin',$user->id)}}" class="btn btn-sm btn-success">Login As {{$user->username}}</a>
+						</td>
+						@endif
 						<td>
 							<a href="{{route(currentUser().'.editUser',[Replace($user->name), encryptor('encrypt', $user->id)])}}" class="mr-2"><i class="far fa-edit text-info"></i></a>
 							<a href="{{route(currentUser().'.deleteUser', [Replace($user->name), encryptor('encrypt', $user->id)])}}"><i class="far fa-trash-alt text-danger"></i></a>

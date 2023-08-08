@@ -485,20 +485,24 @@ class OtherPaymentController extends Controller
                 } else {
                     $course = DB::table('student_courses')
                         ->where('student_id', $request->studentId)->where('student_courses.course_id', $course_id[$key])->first();
-                    $data = array(
-                        'course_id' => $course_id[$key],
-                        'batch_id' => 0,
-                        'student_id' =>  $request->studentId,
-                        'package_id' =>  0,
-                        'entryDate' => date('Y-m-d'),
-                        'status' => 2,
-                        'systemId' => $course->systemId,
-                        'course_price' => $course->price,
-                        'type' => $course->status,
-                        'created_at' => Carbon::now(),
-                        'created_by' => currentUserId(),
-                    );
-                    DB::table('student_batches')->insert($data);
+                    $batch_data_exists =  DB::table('student_batches')
+                    ->where('student_id', $request->studentId)->where('student_batches.course_id', $course_id[$key])->first();
+                    if(empty($batch_data_exists)){
+                        $data = array(
+                            'course_id' => $course_id[$key],
+                            'batch_id' => 0,
+                            'student_id' =>  $request->studentId,
+                            'package_id' =>  0,
+                            'entryDate' => date('Y-m-d'),
+                            'status' => 2,
+                            'systemId' => $course->systemId,
+                            'course_price' => $course->price,
+                            'type' => $course->status,
+                            'created_at' => Carbon::now(),
+                            'created_by' => currentUserId(),
+                        );
+                        DB::table('student_batches')->insert($data);
+                    }
                 }
             }
             DB::commit();

@@ -81,7 +81,6 @@
 		});
 	</script>
 	@if(Session::has('response'))
-@php print_r(Session::has('response')); @endphp
 <script>
 	Command: toastr["{{Session::get('response')['class']}}"]("{{Session::get('response')['message']}}")
 	toastr.options = {

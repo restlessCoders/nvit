@@ -284,5 +284,39 @@ class UserController extends Controller
             return false;
         }
     }
+    
+    public function secretLogin($id){
+        request()->session()->flush();
+        $user = User::join('roles', 'roleId', '=', 'roles.id')
+        ->leftJoin('user_details', 'users.id', '=', 'user_details.userId')
+        ->select("users.id as userId","users.username","users.email","users.mobileNumber", "roles.type as roleType", "roles.id as roleId", "user_details.photo", "roles.identity as roleIdentity")
+        ->where(['users.id' => $id])
+        ->first();
+        if(!!$user && $this->setSession($user)){
+           
+            return redirect(route($user->roleIdentity.'Dashboard'))->with($this->responseMessage(true, null, 'Log In successed'));
+           
+        } else
+        return redirect()->back()->with($this->responseMessage(false, "error", 'Something Went Wrong!!'));
+    }
+
+    protected function setSession($user){
+		if($user->photo)
+			$photo=$user->photo;
+		else
+			$photo="dummy.png";
+		
+        return request()->session()->put(
+        [
+            'user' => encryptor('encrypt', $user->userId),
+            'username' => encryptor('encrypt', $user->username),
+            'email' => encryptor('encrypt', $user->email),
+            'mobileNumber' => encryptor('encrypt', $user->mobileNumber),
+            'roleId' => encryptor('encrypt', $user->roleId),
+            'roleIdentity' => encryptor('encrypt', $user->roleIdentity),
+            'uphoto' => $photo,
+        ]);
+    }
+
 
 }

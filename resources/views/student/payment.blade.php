@@ -158,7 +158,7 @@
 			var batchId = $('#batch_id option:selected').val();
 
 			$.ajax({
-				url: "{{route(currentUser().'.allPaymentReportBySid')}}",
+				url: "{{route(currentUser().'.allPaymentReportBySid_for_batch_enroll_report')}}",
 				method: 'GET',
 				dataType: 'json',
 				data: {
