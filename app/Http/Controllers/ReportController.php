@@ -333,25 +333,20 @@ class ReportController extends Controller
     {
         $batch_data = Batch::find($request->batch_id);
         $image_path = asset('backend/images/logo.webp');
-        $data = '<div class="col-md-12 text-center">';
-        $data .= '<div class="row">';
-        $data .= '<div class="col-md-2"><img src=' . $image_path . ' alt="" height="80"></div>';
-        $data .= '<div class="col-md-10">';
-        $data .=     '<h4 class="m-0">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
-        $data .=     '<p class="m-0" style="font-size:10px"><strong>Batch Completion Report</strong></p>';
-        $data .=     '<p class="m-0 d-flex justify-content-center">
-                        <strong>Started On : ' . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y') . '</strong>
+        $data = '<div style="width:10%;display:inline-block;"><img src=' . $image_path . ' alt="" height="40"></div>';
+        $data .=     '<div style="width:90%;display:inline-block;text-align:center;"><h4 class="m-0 p-0 text-center" style="font-size:11px;font-weight:700;">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
+        $data .= '<p class="m-0 p-0 text-center" style="font-size:9px"><strong class="text-center">Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong></p>';
+        $data .=     '<p class="m-0 p-0 text-center" style="font-size:9px"><strong>Batch Completion Report</strong></p></div>';
+
+
+
+        $data .=     '<p class="m-0 p-0" style="font-size:10px;display:flex;justify-content:space-between">
+                        <strong>Started On :'  . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y') . '</strong>
+                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>
                         <strong>' . \DB::table('batchslots')->where('id', $batch_data->bslot)->first()->slotName . '</strong>
-                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>';
-        $data .= '</div>';
-        $data .= '<div class="col-md-12">';
-        $data .=     '<p class="m-0 d-flex justify-content-between">
-                        <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>
-                        <strong>Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong>
-                        <strong>Batch : ' . $batch_data->batchId . '</strong></p>';
-        $data .= '</div>';
-        $data .= '</div>';
-        $data .= '</div>';
+                        <strong>Batch : ' . $batch_data->batchId . '</strong>
+                        <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>  
+                        </p>';
 
 
         $startDate = new DateTime($batch_data->startDate);
@@ -367,7 +362,7 @@ class ReportController extends Controller
         <th style="border:1px solid #000;;color:#000;"><strong>Op. Note</strong></th>
         <th style="border:1px solid #000;;color:#000;"><strong>GM. Note</strong></th>
         <th style="border:1px solid #000;;color:#000;"><strong>Ex. Note</strong></th>*/
-        $data .= '<table class="table table-sm text-center" style="border:1px solid #000;color:#000;">
+        $data .= '<table class="table table-sm text-center" style="width:100%;text-align:center;border:1px solid #000;color:#000;">
                     <tbody>
                         <tr>
                             <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>ID</strong></th>
