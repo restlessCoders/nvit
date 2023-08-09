@@ -28,7 +28,8 @@ class PaymentReportController extends Controller
         ->leftjoin('batches', 'paymentdetails.batchId', '=', 'batches.id')
         ->leftjoin('courses', 'paymentdetails.course_id', '=', 'courses.id')
         ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','courses.courseName','students.name','students.contact','students.executiveId','users.username')
-        ->orderby('payments.mrNo','desc');
+        ->orderby('payments.mrNo','desc')
+        ->where('paymentdetails.deduction','>=',0);
         /*echo '<pre>';
         print_r($payments->toArray());die*/;
         if($request->studentId){

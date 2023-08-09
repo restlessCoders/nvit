@@ -448,7 +448,9 @@ print_r($stData);die;*/
             ->join('users', 'students.executiveId', '=', 'users.id')
             ->where('students.id', $sId)->first();
 
-        $paymentdetl = Payment::with('paymentDetail')->find(encryptor('decrypt', $id));
+        $paymentdetl = Payment::with(['paymentDetail' => function ($query) {
+           $query->where('paymentdetails.deduction','>=',0);
+        }])->find(encryptor('decrypt', $id));
 
 
 
