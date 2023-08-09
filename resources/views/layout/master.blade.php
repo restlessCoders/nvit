@@ -295,7 +295,7 @@
                                 </ul>
                             </li>
 
-                            <li class="has-submenu">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-package-variant-closed"></i>Reports <div class="arrow-down"></div></a>
                                 <ul class="submenu">
@@ -306,7 +306,7 @@
                                             <li><a href="{{route(currentUser().'.batchwiseEnrollStudent')}}">List</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif"">
+                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif">
                                         <a href="#">Course Enroll<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') {{route(currentUser().'.coursewiseEnrollStudent')}} @endif">List</a></li>
@@ -349,7 +349,7 @@
                             </li>
                             
 
-                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer') @else d-none @endif"">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager') @else d-none @endif"">
                                 <a href="#">
                                     <i class="mdi mdi-certificate"></i>Certification<div class="arrow-down"></div></a>
                                 <ul class="submenu">

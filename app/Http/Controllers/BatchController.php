@@ -53,7 +53,7 @@ class BatchController extends Controller
                 <option value="">Select</option>
                 <option value="2">Enroll</option>
                 <option value="3">Knocking</option>
-                <option value="4">Evloulation</option>
+                <option value="4">Evaluation</option>
             </select>
         </td>';
         $data .='<td id="td_'.$request->rowcount.'" style="text-align: center;">
@@ -79,6 +79,9 @@ class BatchController extends Controller
     }
     public function index(Request $request)
     {
+        if(currentUser() == 'trainer')
+        $allBatch = Batch::where('trainerId', currentUserId())->paginate(25);
+        else
         $allBatch = Batch::where('status',1)->orderBy('id', 'DESC')->paginate(25);
         /*$allBatch = DB::table('batches')
         ->join('student_batches','batches.id','=','student_batches.batch_id','left')

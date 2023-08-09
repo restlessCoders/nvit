@@ -212,7 +212,11 @@ class ReportController extends Controller
     }
     public function batchwiseAttendance()
     {
-        $batches = Batch::where('status', 1)->get();
+        if(currentUser() == 'trainer')
+        $batches = Batch::where('trainerId', currentUserId())->get();
+        else
+        $batches = Batch::all();
+
         return view('report.attendance.batch_wise_attendance', compact('batches'));
     }
     public function batchwiseAttendanceReport(Request $request)
@@ -322,7 +326,11 @@ class ReportController extends Controller
     }
     public function batchwiseCompletion()
     {
+        /* Need To use batch Completion status here in table */
+        if(currentUser() == 'trainer')
         $batches = Batch::where('trainerId', currentUserId())->get();
+        else
+        $batches = Batch::all();
         /*$certificate_batches = Certificate::where('created_by',currentUserId())->pluck('batch_id')->unique()->toArray();
         print_r($certificate_batches);die;
         $batches = Batch::where('trainerId',currentUserId())->whereNotIn('id', $certificate_batches)->get();

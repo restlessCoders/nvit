@@ -85,7 +85,7 @@
 							<option value=""></option>
 							<option value="2">Enroll</option>
 							<option value="3">Knocking</option>
-							<option value="4">Evloulation</option>
+							<option value="4">Evaluation</option>
 						</select>
 					</div>
 					@endif
@@ -206,7 +206,7 @@
 							<td>
 								@if($batch->status == 2) Enroll @endif
 								@if($batch->status == 3) Knocking @endif
-								@if($batch->status == 4)Evloulation @endif
+								@if($batch->status == 4)Evaluation @endif
 							</td>
 							<td>
 								@if($batch->type == 1)

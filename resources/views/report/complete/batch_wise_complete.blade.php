@@ -37,6 +37,7 @@
 		font-size: 12pt;
 	}
 
+
 </style>
 
 @endpush
@@ -92,7 +93,7 @@
 					<button class="btn btn-primary" onclick="printPageArea('data')"><i class="fa fa-print fa-sm"></i></button>
 				</div>
 
-				<div class="col-md-12 selected-area" id="data">
+				<div class="col-md-12 selected-area" id="data" style="margin-left:30px;">
 
 				</div>
 
