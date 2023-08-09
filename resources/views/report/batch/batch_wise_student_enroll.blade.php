@@ -51,7 +51,7 @@
 						<select name="batch_id" class="js-example-basic-single form-control">
 							<option></option>
 							@forelse($batches as $batch)
-							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
+							<option value="{{$batch->id}}" @if(request()->get('batch_id') == $batch->id) selected @endif>{{$batch->batchId}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -62,7 +62,7 @@
 						<select name="executiveId" class="js-example-basic-single form-control">
 							<option></option>
 							@forelse($executives as $e)
-							<option value="{{$e->id}}">{{$e->username}}</option>
+							<option value="{{$e->id}}" @if(request()->get('executiveId') == $e->id) selected @endif>{{$e->username}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -74,7 +74,7 @@
 						<select name="refId" class="js-example-basic-single form-control">
 							<option></option>
 							@forelse($references as $ref)
-							<option value="{{$ref->id}}">{{$ref->refName}}</option>
+							<option value="{{$ref->id}}" @if(request()->get('refId') == $ref->id) selected @endif>{{$ref->refName}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -83,19 +83,19 @@
 						<label for="status" class="col-form-label">Select Status</label>
 						<select class="js-example-basic-single form-control" id="status" name="status">
 							<option value=""></option>
-							<option value="2">Enroll</option>
-							<option value="3">Knocking</option>
-							<option value="4">Evaluation</option>
+							<option value="2" @if(request()->get('status') ==2) selected @endif>Enroll</option>
+							<option value="3" @if(request()->get('status') ==3) selected @endif>Knocking</option>
+							<option value="4" @if(request()->get('status') ==4) selected @endif>Evaluation</option>
 						</select>
 					</div>
 					@endif
 					<div class="col-sm-2">
-						<label for="status" class="col-form-label">Type</label>
+						<label for="type" class="col-form-label">Type</label>
 						<select class="js-example-basic-single form-control" id="type" name="type">
 							<option value=""></option>
-							<option value="1">Due</option>
-							<option value="2">Registration</option>
-							<option value="3">Full Paid</option>
+							<option value="1" @if(request()->get('type') ==1) selected @endif>Due</option>
+							<option value="2" @if(request()->get('type') ==2) selected @endif>Registration</option>
+							<option value="3" @if(request()->get('type') ==3) selected @endif>Full Paid</option>
 						</select>
 					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
