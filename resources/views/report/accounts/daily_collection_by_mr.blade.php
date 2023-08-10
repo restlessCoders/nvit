@@ -186,7 +186,7 @@
 						<td class="align-middle">{{--$p->invoiceId--}}
 							@if(\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
-							->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->exists())
+							->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->exists() && $p->feeType==2)
 							{{
 								\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
@@ -215,7 +215,7 @@
 						<td class="align-middle"><strong class="text-danger" style="font-size:12px;">@if($p->dueDate){{date('d M Y',strtotime($p->dueDate))}} @else - @endif</strong></td>
 						@endif
 						<td class="align-middle">
-							@if($p->batchId)
+							@if($p->bid)
 							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}
 							@else
 							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price}}{{--$p->cPayable--}}

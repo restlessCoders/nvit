@@ -30,8 +30,7 @@ class PaymentReportController extends Controller
         ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','courses.courseName','students.name','students.contact','students.executiveId','users.username')
         ->orderby('payments.mrNo','desc')
         ->where('paymentdetails.deduction','>=',0);
-        /*echo '<pre>';
-        print_r($payments->toArray());die*/;
+       
         if($request->studentId){
             $payments->where('students.name', 'like', '%'.$request->sdata.'%')
             ->where('students.id', $request->studentId)
