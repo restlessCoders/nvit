@@ -115,7 +115,7 @@
 						</select>
 					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
-						<button type="submit" class="btn btn-primary"><i class="bi bi-search fa-sm"></i></button>
+						<button type="submit" class="btn btn-primary me-2"><i class="fa fa-search fa-sm"></i></button>
 						<a href="{{route(currentUser().'.daily_collection_report_by_mr')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
