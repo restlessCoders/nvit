@@ -249,7 +249,7 @@
                   					</form>
 									@endif
 
-									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
+									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
 									<form id="withdraw-undo-form" action="{{route(currentUser().'.withdraw_undo')}}" style="display: inline;">
 									@csrf
                       				<input name="id" type="hidden" value="{{$batch->sb_id}}">    

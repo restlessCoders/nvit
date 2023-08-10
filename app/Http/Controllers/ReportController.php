@@ -406,11 +406,11 @@ class ReportController extends Controller
             $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
             if ($cer_data) {
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]" value="' . $cer_data->attn . '"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]" ' . ($cer_data->perf == 1 ? 'checked="checked"' : '') . '></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]" ' . ($cer_data->perf == 1 ? 'checked="checked"' : '') . ' value="'.($cer_data->perf == 1 ?1:0).'"></td>';
 
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]" ' . ($cer_data->pass == 1 ? 'checked="checked"' : '') . '></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]" ' . ($cer_data->pass == 1 ? 'checked="checked"' : '') . ' value="'.($cer_data->pass == 1 ?1:0).'"></td>';
 
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]" ' . ($cer_data->drop == 1 ? 'checked="checked"' : '') . '></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]" ' . ($cer_data->drop == 1 ? 'checked="checked"' : '') . ' value="'.($cer_data->pass == 1 ?1:0).'"></td>';
             } else {
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]"></td>';
@@ -443,7 +443,7 @@ class ReportController extends Controller
               $(this).val(1);
             } else {
               console.log("unchecked");
-              $(this).val(1);
+              $(this).val(0);
             }
         });
       </script>';

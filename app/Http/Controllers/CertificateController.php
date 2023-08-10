@@ -17,9 +17,10 @@ class CertificateController extends Controller
      */
     public function index()
     {
-       /* $certificates_data = Certificate::where('created_by',currentUserId())->distinct('batch_id')->get();
-        echo '<pre>';
-        print_r($certificates_data->toArray());*/
+        $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->where('created_by',currentUserId())->groupBy('batch_id')->paginate(20);
+        return view('certificates.index',compact('certificates'));
+        /*echo '<pre>';
+        print_r($certificates->toArray());*/
     }
 
     /**
@@ -87,9 +88,12 @@ class CertificateController extends Controller
      * @param  \App\Models\Certificate  $certificate
      * @return \Illuminate\Http\Response
      */
-    public function edit(Certificate $certificate)
+    public function edit($batch_id)
     {
-        //
+        $certificates = Certificate::where('batch_id',$batch_id)->get();
+        return view('certificates.edit',compact('certificates'));
+        /*echo '<pre>';
+        print_r($certificates->toArray());*/
     }
 
     /**
