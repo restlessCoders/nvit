@@ -545,7 +545,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::get('/student/batch/undo/withdraw/', [StudentController::class, 'withdraw_undo'])->name('operationmanager.withdraw_undo');
 
         /*Certificate Controller */
-        Route::resource('/certificate', CertificateController::class, ["as" => "operationmanager"]);
+        Route::resource('/certificate', CertificateController::class, ["as" => "operationmanager`"]);
     });
 });
 
