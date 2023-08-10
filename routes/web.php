@@ -201,6 +201,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*== Secret Login ==*/
         Route::get('secret/login/{id}', [UserController::class, 'secretLogin'])->name('superadmin.secretLogin');
+
+        /*Certificate Controller */
+        Route::resource('/certificate', CertificateController::class, ["as" => "superadmin"]);
     });
 });
 
@@ -332,6 +335,9 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         /*=== Withdraw | Drop ===*/
         Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('salesmanager.withdraw');
         Route::get('/student/batch/undo/withdraw/', [StudentController::class, 'withdraw_undo'])->name('salesmanager.withdraw_undo');
+
+        /*Certificate Controller */
+        Route::resource('/certificate', CertificateController::class, ["as" => "salesmanager"]);
     });
 });
 
@@ -407,6 +413,9 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         /*Payment Report */
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('salesexecutive.allPaymentReportBySid');
         Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('salesexecutive.allPaymentCourseReportBySid');
+
+        /*Certificate Controller */
+        Route::resource('/certificate', CertificateController::class, ["as" => "salesexecutive"]);
     });
 });
 
@@ -534,6 +543,9 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         /*=== Withdraw | Drop ===*/
         Route::get('/student/batch/withdraw/', [StudentController::class, 'withdraw'])->name('operationmanager.withdraw');
         Route::get('/student/batch/undo/withdraw/', [StudentController::class, 'withdraw_undo'])->name('operationmanager.withdraw_undo');
+
+        /*Certificate Controller */
+        Route::resource('/certificate', CertificateController::class, ["as" => "operationmanager"]);
     });
 });
 
