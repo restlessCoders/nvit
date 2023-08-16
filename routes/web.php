@@ -639,6 +639,8 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         Route::get('/payment/report/batchwise/enroll/batch', [PaymentReportController::class, 'allPaymentReportBySid_for_batch_enroll_report'])->name('accountmanager.allPaymentReportBySid_for_batch_enroll_report');
         /* Course wise enroll payment report */
         Route::get('/payment/report/batchwise/enroll/course', [PaymentReportController::class, 'allPaymentCourseReportBySid_for_batch_enroll_report'])->name('accountmanager.allPaymentCourseReportBySid_for_batch_enroll_report');
+
+        Route::resource('/certificate', CertificateController::class, ["as" => "accountmanager"]);
         
     });
 });

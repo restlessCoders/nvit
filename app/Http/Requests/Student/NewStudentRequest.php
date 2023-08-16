@@ -26,10 +26,11 @@ class NewStudentRequest extends FormRequest
         if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' ||  strtolower(currentUser()) === 'operationmanager' ||  strtolower(currentUser()) === 'frontdesk') {
             $rules['executiveId'] = 'required';
         }
+        //'contact'       => 'required|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students',
         return [
             'name' 		    => 'required|string',
-            'contact'       => 'required|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students',
-            'altContact'    => 'nullable|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students',
+            'contact'       => 'required|unique:students',
+            'altContact'    => 'nullable|unique:students',
             'email'         => 'nullable|string|unique:students,email',
             'refId' 	    => 'required',
             'executiveId' 	    => isset($rules['executiveId']) ? $rules['executiveId'] : 'nullable',

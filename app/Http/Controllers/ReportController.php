@@ -405,21 +405,21 @@ class ReportController extends Controller
             '</td>';
             $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
             if ($cer_data) {
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]" value="' . $cer_data->attn . '"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]" ' . ($cer_data->perf == 1 ? 'checked="checked"' : '') . ' value="'.($cer_data->perf == 1 ?1:0).'"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn['.$s_data->id.']" value="' . $cer_data->attn . '"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf['.$s_data->id.']" ' . ($cer_data->perf == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
 
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]" ' . ($cer_data->pass == 1 ? 'checked="checked"' : '') . ' value="'.($cer_data->pass == 1 ?1:0).'"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass['.$s_data->id.']" ' . ($cer_data->pass == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
 
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]" ' . ($cer_data->drop == 1 ? 'checked="checked"' : '') . ' value="'.($cer_data->pass == 1 ?1:0).'"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop['.$s_data->id.']" ' . ($cer_data->drop == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
+                $data .= '<input type="hidden" name="posting_date[]" value="'.date('Y-m-d',strtotime($cer_data->created_at)).'">';
             } else {
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[]"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[]"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn['.$s_data->id.']" value=""></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf['.$s_data->id.']" value="1"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass['.$s_data->id.']" value="1"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop['.$s_data->id.']" value="1"></td>';
+               
             }
-            $data .= '<input type="hidden" name="perf[]" value="0">';
-            $data .= '<input type="hidden" name="pass[]" value="0">';
-            $data .= '<input type="hidden" name="drop[]" value="0">';
+           
             /*$data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
@@ -434,19 +434,6 @@ class ReportController extends Controller
             $data .= '<div class="col-md-12 d-flex justify-content-end"><button class="btn btn-primary" type="submit">Save</button></div>';
             $data .= '</form>';
         }
-
-        $data .= '<script>  
-        $("input[type=\'checkbox\']").on("click", function() {
-            // Check if the checkbox is currently checked
-            if ($(this).prop("checked")) {
-              console.log("pl");
-              $(this).val(1);
-            } else {
-              console.log("unchecked");
-              $(this).val(0);
-            }
-        });
-      </script>';
 
 
         return response()->json(array('data' => $data));

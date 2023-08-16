@@ -17,7 +17,11 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->where('created_by',currentUserId())->groupBy('batch_id')->paginate(20);
+        if(currentUser() == 'trainer'){
+            $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->where('created_by',currentUserId())->groupBy('batch_id')->paginate(20);
+        }else{
+            $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->groupBy('batch_id')->paginate(20);
+        }
         return view('certificates.index',compact('certificates'));
         /*echo '<pre>';
         print_r($certificates->toArray());*/
@@ -57,18 +61,18 @@ class CertificateController extends Controller
         $pass             = $request->post('pass');
         $drop             = $request->post('drop');
 
-        for ($key = 0; $key < $count; $key++) {
-            $certificate['student_id'] = $student_id[$key];
+        foreach ($student_id as $key=>$st) {
+            $certificate['student_id'] = $st;
             $certificate['batch_id']   = $batch_id[$key];
-            $certificate['attn']   = $attn[$key];
-            $certificate['perf']       = isset($perf[$key]) ? ($perf[$key] == 1 ? 1 : 0) : 0;
-            $certificate['pass']       = isset($pass[$key]) ? ($pass[$key] == 1 ? 1 : 0) : 0;
-            $certificate['drop']       = isset($drop[$key]) ? ($drop[$key] == 1 ? 1 : 0) : 0;
+            $certificate['attn']   = $attn[$st];
+            $certificate['perf']       = isset($perf[$st]) ? $perf[$st] : 0;
+            $certificate['pass']       = isset($pass[$st]) ? $pass[$st] : 0;
+            $certificate['drop']       = isset($drop[$st]) ? $drop[$st] : 0;
             $certificate['created_by'] = currentUserId();
             $certificate['created_at'] = Carbon::now();
             DB::table('certificates')->insert($certificate);
         }
-        return redirect(route(currentUser().'.certificate.index'))->with($this->responseMessage(true, null, 'Data Saved'));
+        return redirect(route(currentUser().'.batchwiseCompletion'))->with($this->responseMessage(true, null, 'Data Saved'));
     }
 
     /**

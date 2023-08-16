@@ -14,7 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('certificates', function (Blueprint $table) {
-            //
+            $table->date('posting_date')->comment('Data Posting Date')->after('edit_allow');
+            $table->integer('t_class')->comment('Actual Number Of Class Completed')->after('posting_date');
         });
     }
 
@@ -26,7 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('certificates', function (Blueprint $table) {
-            //
+            $table->dropColumn('posting_date');
+            $table->dropColumn('t_class');
         });
     }
 };

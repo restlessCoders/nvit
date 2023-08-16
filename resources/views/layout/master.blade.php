@@ -295,7 +295,7 @@
                                 </ul>
                             </li>
 
-                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager') @else d-none @endif">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager' || currentUser() == 'frontdesk') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-package-variant-closed"></i>Reports <div class="arrow-down"></div></a>
                                 <ul class="submenu">
@@ -357,7 +357,7 @@
                                     <li class="has-submenu">
                                         <a href="#">Certificate<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'trainer') {{route(currentUser().'.certificate.index')}} @endif">List</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'trainer' || currentUser() == 'accountmanager') {{route(currentUser().'.certificate.index')}} @endif">List</a></li>
                                         </ul>
                                     </li>
                                 </ul>

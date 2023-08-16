@@ -29,10 +29,11 @@ class UpdateStudentRequest extends FormRequest
             $rules['executiveId'] = 'required';
             $rules['refId'] 	  = 'required';
         }
+        //'altContact'    => "regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students,$id",
         $rules = [
             'name' 		    => 'required|string',
             'contact'       => "required|string|unique:students,contact,$id",
-            'altContact'    => "regex:/^(?:\+?88)?01[35-9]\d{8}$/|unique:students,$id",
+            'altContact'    => "unique:students,$id",
             'email'         => "string|unique:students,email,$id",
         ];
         return $rules;
