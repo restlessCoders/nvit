@@ -219,7 +219,11 @@
 							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}
 							@else
 							{{$p->course_id}}-{{$p->studentId}}
-							{{--\DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price--}}{{--$p->cPayable--}}
+							@php $course_price = \DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()
+							print_r($course_price);
+							
+							@endphp{{--$p->cPayable--}}
+							
 							@endif
 
 						</td>
