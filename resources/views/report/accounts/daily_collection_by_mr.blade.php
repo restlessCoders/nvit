@@ -215,9 +215,10 @@
 						<td class="align-middle"><strong class="text-danger" style="font-size:12px;">@if($p->dueDate){{date('d M Y',strtotime($p->dueDate))}} @else - @endif</strong></td>
 						@endif
 						<td class="align-middle">
-							@if($p->bid !=0)
+							@if($p->bid)
 							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}
-							@else
+							@endif
+							@if($p->course_id)
 							{{$p->course_id}}-{{$p->studentId}}
 							@php $course_price = \DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()
 							print_r($course_price);
