@@ -158,6 +158,12 @@ class ReportController extends Controller
         }
         if ($request->status) {
             $allBatches->where('student_batches.status', $request->status);
+            
+        }
+        if($request->drop){
+            $allBatches->where('student_batches.is_drop',1);
+        }else{
+            $allBatches->where('student_batches.is_drop',0);
         }
 
         $perPage = 20;

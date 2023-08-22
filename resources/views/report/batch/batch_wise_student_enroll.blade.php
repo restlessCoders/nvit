@@ -88,6 +88,13 @@
 							<option value="4" @if(request()->get('status') ==4) selected @endif>Evaluation</option>
 						</select>
 					</div>
+					<div class="col-sm-2">
+						<label for="drop" class="col-form-label">Withdraw</label>
+						<select class="js-example-basic-single form-control" id="drop" name="drop">
+							<option value=""></option>
+							<option value="1" @if(request()->get('drop') ==1) selected @endif>Withdraw</option>
+						</select>
+					</div>
 					@endif
 					<div class="col-sm-2">
 						<label for="type" class="col-form-label">Type</label>
@@ -240,7 +247,8 @@
 									@endphp
 
 									<!-- Withdraw Student From Batch -->
-									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
+									@php $withdraw_drop_allow = ['superadmin' , 'operationmanager'  , 'salesmanager']; @endphp
+									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
 									
 									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
 									@csrf
@@ -249,7 +257,7 @@
                   					</form>
 									@endif
 
-									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
+									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
 									<form id="withdraw-undo-form" action="{{route(currentUser().'.withdraw_undo')}}" style="display: inline;">
 									@csrf
                       				<input name="id" type="hidden" value="{{$batch->sb_id}}">    
