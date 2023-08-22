@@ -218,9 +218,9 @@
 							@if($p->bid)
 							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}
 							@endif
-							@if($p->course_id != 0)
+							@if($p->course_id)
 							{{$p->course_id}}-{{$p->studentId}}
-							@php $course_price = \DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()
+							@php $course_price = \DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first();
 							print_r($course_price);
 							
 							@endphp{{--$p->cPayable--}}
