@@ -68,7 +68,7 @@ class RefundController extends Controller
                         $note->note         = $request->note;
                         $note->created_by   = currentUserId();
                         $note->save();
-                        return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Successful'));
+                        return redirect()->back()->with($this->responseMessage(true, null, 'Refund Successful'));
                     }
                 }
             }
@@ -134,13 +134,14 @@ class RefundController extends Controller
             ->join('student_batches', function ($join) {
                 $join->on('students.id', '=', 'student_batches.student_id')
                     ->where('student_batches.status', '=', '2')
-                    ->where('student_batches.pstatus', '=', '0')
+                    /*->where('student_batches.pstatus', '=', '0')*/
                     ->where('student_batches.acc_approve', '!=', '3');
             })
             ->join('batches', 'student_batches.batch_id', '=', 'batches.id')
             ->select('student_batches.batch_id', 'batches.batchId')
             ->where('student_batches.systemId', $request->systemId)
             ->get();
+            //print_r($enrollStudent->toArray());die;
             /* Check This data is getting batch data or course data if getting course data prepare another  with if condition course*/ 
         $data = '<div class="col-sm-3"><label>Select Batch|Course<span class="text-danger sup">*</span></label><select class="js-example-basic-single form-control" id="batch_id" name="batch_id" required>';
         $data .= '<option value="">Select</option>';
