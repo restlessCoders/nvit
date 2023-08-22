@@ -520,7 +520,7 @@ class ReportController extends Controller
                 DB::table('student_batches')->where('id',$id)->update(['batch_id' => $request->batch_id]);
                 /*Also Have to update Batch Id paymentdetails table */
                 $batch_data = DB::table('student_batches')->where('id',$id)->first();
-                DB::table('paymentdetails')->where('paymentdetails.batchId',$batch_data->student_id)->where('course_id',$batch_data->student_id)->update(['batch_id' => $request->batch_id]);
+                DB::table('paymentdetails')->where('batchId',$batch_data->student_id)->where('course_id',$batch_data->student_id)->update(['batch_id' => $request->batch_id]);
                 DB::commit();
                 return redirect()->route(currentUser().'.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
             }
