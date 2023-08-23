@@ -248,14 +248,10 @@
 
 									<!-- Withdraw Student From Batch -->
 									@php $withdraw_drop_allow = ['superadmin' , 'operationmanager'  , 'salesmanager']; @endphp
-									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0  && $batch->status == 2 && $batch->is_drop == 0)
-									@if(\DB::table('batches')->where('id',$batch->batch_id)->first()->exists())
-									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
-									@csrf
-                      				<input name="id" type="hidden" value="{{$batch->sb_id}}">              
-                      				<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}" data-student="{{ $batch->sId }}" class="withdraw btn btn-secondary btn-sm" data-toggle="tooltip" title="Withdraw"><i class="fas fa-edit mr-2"></i>Drop</a>
+									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
+									{{ $batch->batch_id }}
+									
                   					</form>
-									@endif
 									@endif
 
 									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
