@@ -273,6 +273,12 @@ Route::group(['middleware' => 'isSalesManager'], function () {
             Route::delete('/enroll/delete/{id}', [StudentController::class, 'deleteEnroll'])->name('salesmanager.enrollment.destroy');
         });
 
+         /*==Student Transfer==*/
+         Route::get('/student/transfer/list', [StudentController::class, 'studentTransferList'])->name('salesmanager.studentTransferList');
+         Route::get('/student/transfer', [StudentController::class, 'studentTransfer'])->name('salesmanager.studentTransfer');
+         Route::get('/student/executive', [StudentController::class, 'studentExecutive'])->name('salesmanager.studentExecutive');
+         Route::post('/student/transfer/save', [StudentController::class, 'stTransfer'])->name('salesmanager.stTransfer');
+
         Route::resource('/notes', NoteController::class, ["as" => "salesmanager"]);
 
         Route::get('/batch/all', [BatchController::class, 'all'])->name('salesmanager.allBatches');
