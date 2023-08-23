@@ -94,10 +94,11 @@ class CertificateController extends Controller
      */
     public function edit($batch_id)
     {
-        $certificates = Certificate::where('batch_id',$batch_id)->get();
-        return view('certificates.edit',compact('certificates'));
+        //echo $batch_id;die;
+        $certificate = Certificate::select('batch_id')->where('batch_id',$batch_id)->first();
+        return view('certificates.edit',compact('certificate'));
         /*echo '<pre>';
-        print_r($certificates->toArray());*/
+        print_r($certificate->toArray());die;*/
     }
 
     /**

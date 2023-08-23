@@ -49,7 +49,7 @@
 								<td width="80px">
 									@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer')
 									<a href="{{route(currentUser().'.certificate.edit',$c->batch_id)}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
-									<a href="{{route(currentUser().'.certificate.edit',[encryptor('encrypt', $c->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
+									<!-- <a href="{{route(currentUser().'.certificate.edit',[encryptor('encrypt', $c->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a> -->
 									@endif
 								</td>
 							</tr>
