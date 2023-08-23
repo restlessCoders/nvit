@@ -251,8 +251,8 @@
 									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
 									{{ $batch->batch_id}}
 									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
-
-									{{ \DB::table('batches')->where('id',$batch->batch_id)->first() }}
+									@csrf
+									@php print_r(\DB::table('batches')->where('id',$batch->batch_id)->first()); @endphp
                       				<input name="id" type="hidden" value="{{$batch->sb_id}}">              
                       				<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="" data-student="{{ $batch->sId }}" class="withdraw btn btn-secondary btn-sm" data-toggle="tooltip" title="Withdraw"><i class="fas fa-edit mr-2"></i>Drop</a>
                   					</form>
