@@ -27,18 +27,18 @@
             <form action="{{route(currentUser().'.refund.store')}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <label>Student ID: <span class="text-danger sup">*</span></label>
                         <input type="text" name="sb_id" value="{{ $student->id }}" class="form-control" readonly />
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <label>Student Name: <span class="text-danger sup">*</span></label>
                         <input type="text" value="{{ $student->name }}" class="form-control" readonly />
                     </div>
                     @php $sl = 1; @endphp
-                    <div class="col-lg-3" id="systemId">
+                    <div class="col-lg-2" id="systemId">
                         <label class="control-label">Select Admission: </label>
-                        <select name="systemId" class="form-control @if($errors->has('type')) {{ 'is-invalid' }} @endif">
+                        <select name="systemId" class="form-control @if($errors->has('type')) {{ 'is-invalid' }} @endif" required>
                             <option value="">Select Admission</option>
                             @forelse ($enrollStudent as $key => $e)
                             <option value="{{$e->systemId}}">Admission-{{$sl++}}</option>;
@@ -48,13 +48,13 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-lg-3">
-                        <label class="control-label">Operation Type: </label>
-                        <select name="type" class="form-control @if($errors->has('type')) {{ 'is-invalid' }} @endif">
+                    <div class="col-lg-2">
+                        <label class="control-label">Adjustment Type: </label>
+                        <select name="op_type" class="form-control @if($errors->has('type')) {{ 'is-invalid' }} @endif" required>
                             <option value="">Select Type</option>
                             <option value="1">Refund</option>
                             <option value="2">Adjustment</option>
-                            <option value="3">Deduction</option>
+                            <!-- <option value="3">Deduction</option> -->
                         </select>
                         @if($errors->has('type'))
                         <small class="d-block text-danger mb-3">
@@ -62,11 +62,11 @@
                         </small>
                         @endif
                     </div>
-                    <div class="col-lg-3">
+                    <!-- <div class="col-lg-3">
                         <label>Deduction Amount:</label>
                         <input type="text" name="nid" class="form-control"/>
-                    </div>
-                    <div class="col-lg-6">
+                    </div> -->
+                    <div class="col-lg-12">
                         <label class="control-label">Note: </label>
                         <textarea name="note" class="form-control" rows="5"></textarea>
                     </div>
@@ -78,9 +78,6 @@
                 <div class="form-group text-right mb-0">
                     <button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
                         Submit
-                    </button>
-                    <button type="reset" class="btn btn-secondary waves-effect">
-                        Cancel
                     </button>
                 </div>
         </div>

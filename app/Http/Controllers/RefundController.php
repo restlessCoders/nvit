@@ -44,7 +44,7 @@ class RefundController extends Controller
             $batch_single_info = DB::table('student_batches')->where(['student_id'=>$request->sb_id,'batch_id' => $request->batch_id])->first();
             if($batch_single_info){
                 /*==== Refund ===*/
-                if($request->type == 1){
+               
                     /* Payment and Payment Details */
                     $payment_detl = DB::table('paymentdetails')->where(['studentId' => $batch_single_info->student_id,'batchId' => $request->batch_id]);
                     if($batch_single_info->batch_id)
@@ -56,21 +56,24 @@ class RefundController extends Controller
                     $payment_detl = $payment_detl->get();
             
                     foreach($payment_detl as $payment){
-                        DB::table('paymentdetails')->where('id',$payment->id)->update(['deduction' => -$payment->cpaidAmount]);
+                        DB::table('paymentdetails')->where('id',$payment->id)->update(['deduction' => -$payment->cpaidAmount,'op_type' => $request->op_type]);
                         $payment_data = DB::table('payments')->where('id',$payment->paymentId)->first();
-                        DB::table('payments')->where('id',$payment->paymentId)->update(['deduction' => -$payment->cpaidAmount]);
+                        DB::table('payments')->where('id',$payment->paymentId)->update(['deduction' => -$payment->cpaidAmount,'op_type' => $request->op_type]);
             
                     }
                     if($batch_single_info){
-                        DB::table('student_batches')->where(['student_id'=>$request->sb_id,'batch_id' => $request->batch_id])->update(['acc_approve' => 3]);
+                        DB::table('student_batches')->where(['student_id'=>$request->sb_id,'batch_id' => $request->batch_id])->update(['acc_approve' => 3,'op_type' => $request->op_type]);
                         $note               =  new Note;
                         $note->student_id   =  $batch_single_info->student_id;
                         $note->note         = $request->note;
                         $note->created_by   = currentUserId();
                         $note->save();
-                        return redirect()->back()->with($this->responseMessage(true, null, 'Refund Successful'));
                     }
-                }
+                    if($request->type == 1){
+                        return redirect()->route(currentUser().'.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Refund Successful'));
+                    }else{
+                        return redirect()->route(currentUser().'.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Adjustment Successful'));
+                    }
             }
         }else{
             $batch_multiple_info = DB::table('student_batches')->where(['systemId'=>$request->systemId])->get();
