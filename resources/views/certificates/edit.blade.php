@@ -86,8 +86,8 @@
             // Create a DateInterval of 1 day
             $interval = new DateInterval('P1D');
             @endphp
-
-            <form action="{{route(currentUser() . '.certificate.store')}}" method="post">
+            {{--route(currentUser() . '.certificate.store')--}}
+            <form action="" method="post">
                 {{csrf_field()}}
      
                 {{--<th style="border:1px solid #000;;color:#000;"><strong>Ins. Note</strong></th>
@@ -99,7 +99,7 @@
                     <tbody>
                         <tr>
                             <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>ID</strong></th>
-                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Name</strong></th>
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;text-align:left;"><strong>Name</strong></th>
                             <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Invoice</strong></th>
                             <th style="border:1px solid #000;color:#000;"><strong>Executive</strong></th>
                             <th style="border:1px solid #000;;color:#000;"><strong>Attn.</strong></th>
@@ -107,6 +107,7 @@
                             <th style="border:1px solid #000;;color:#000;"><strong>Pass</strong></th>
                             <!-- <th style="border:1px solid #000;;color:#000;"><strong>Drop</strong></th> -->
                             <th style="border:1px solid #000;;color:#000;"><strong>Certificate Issued</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Certificate Delivered</strong></th>
                         </tr>
                         @php
                         if ($certificate->batch_id) {
@@ -122,7 +123,7 @@
                             <td style="border:1px solid #000;color:#000;">{{$s_data->id}}</td>
                             <input type="hidden" name="student_id[]" value="{{ $s_data->id }}">
                             <input type="hidden" name="batch_id[]" value="{{ $batch_data->id }}">
-                            <td style="border:1px solid #000;color:#000;">{{ strtoupper($s_data->name) }}</td>
+                            <td style="border:1px solid #000;color:#000;text-align:left;">{{ strtoupper($s_data->name) }}</td>
                             <td style="border:1px solid #000;color:#000;">
                             @php
                                 if (\DB::table('payments')
@@ -145,7 +146,8 @@
                             <td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[]" {{ $cer_data->pass == 1 ? 'checked="checked"' : '' }} disabled></td>
 
                             <!-- <td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]" {{ $cer_data->drop == 1 ? 'checked="checked"' : '' }}></td> -->
-                            <td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[]" {{ $cer_data->drop == 1 ? 'checked="checked"' : '' }}></td>
+                            <td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="issue_status[]" {{ $cer_data->issue_status == 1 ? 'checked="checked"' : '' }}></td>
+                            <td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="delivery_status[]" {{ $cer_data->delivery_status == 1 ? 'checked="checked"' : '' }}></td>
 
                             @endif
 

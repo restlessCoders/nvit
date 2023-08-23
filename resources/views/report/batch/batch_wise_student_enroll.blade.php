@@ -248,7 +248,7 @@
 
 									<!-- Withdraw Student From Batch -->
 									@php $withdraw_drop_allow = ['superadmin' , 'operationmanager'  , 'salesmanager']; @endphp
-									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
+									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->batch_id!=0 && $batch->status == 2 && $batch->is_drop == 0)
 									
 									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
 									@csrf
