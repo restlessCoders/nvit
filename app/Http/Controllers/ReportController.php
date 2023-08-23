@@ -504,7 +504,7 @@ class ReportController extends Controller
     public function assign_single_batch_toEnrollStudent(Request $request, $id)
     {
         
-        DB::beginTransaction();
+
         if ($request->batch_id) {
             $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
                         left join student_batches on student_batches.batch_id=batches.id
@@ -517,10 +517,12 @@ class ReportController extends Controller
                 return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
             }
             else {
+                DB::beginTransaction();
                 DB::table('student_batches')->where('id',$id)->update(['batch_id' => $request->batch_id]);
                 /*Also Have to update Batch Id paymentdetails table */
                 $batch_data = DB::table('student_batches')->where('id',$id)->first();
-                DB::table('paymentdetails')->where('batchId',$batch_data->student_id)->where('course_id',$batch_data->student_id)->update(['batchId' => $request->batch_id]);
+                //print_r($batch_data);die;
+                DB::table('paymentdetails')->where('studentId',$batch_data->student_id)->where('course_id',$batch_data->course_id)->update(['batchId' => $request->batch_id]);
                 DB::commit();
                 return redirect()->route(currentUser().'.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
             }
