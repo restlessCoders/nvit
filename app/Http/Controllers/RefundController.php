@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Note;
 use DB;
+use Illuminate\Support\Carbon;
 use App\Http\Traits\ResponseTrait;
 class RefundController extends Controller
 {
@@ -56,13 +57,13 @@ class RefundController extends Controller
                     $payment_detl = $payment_detl->get();
             
                     foreach($payment_detl as $payment){
-                        DB::table('paymentdetails')->where('id',$payment->id)->update(['deduction' => -$payment->cpaidAmount,'op_type' => $request->op_type]);
+                        DB::table('paymentdetails')->where('id',$payment->id)->update(['deduction' => -$payment->cpaidAmount,'op_type' => $request->op_type,'updated_by' => currentUserId(),'updated_at' => Carbon::now() ]);
                         $payment_data = DB::table('payments')->where('id',$payment->paymentId)->first();
-                        DB::table('payments')->where('id',$payment->paymentId)->update(['deduction' => -$payment->cpaidAmount,'op_type' => $request->op_type]);
+                        DB::table('payments')->where('id',$payment->paymentId)->update(['deduction' => -$payment->cpaidAmount,'op_type' => $request->op_type,'updated_by' => currentUserId(),'updated_at' => Carbon::now() ]);
             
                     }
                     if($batch_single_info){
-                        DB::table('student_batches')->where(['student_id'=>$request->sb_id,'batch_id' => $request->batch_id])->update(['acc_approve' => 3,'op_type' => $request->op_type]);
+                        DB::table('student_batches')->where(['student_id'=>$request->sb_id,'batch_id' => $request->batch_id])->update(['acc_approve' => 3,'op_type' => $request->op_type,'updated_by' => currentUserId(),'updated_at' => Carbon::now()]);
                         $note               =  new Note;
                         $note->student_id   =  $batch_single_info->student_id;
                         $note->note         = $request->note;

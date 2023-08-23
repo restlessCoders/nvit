@@ -68,7 +68,7 @@
                     </div> -->
                     <div class="col-lg-12">
                         <label class="control-label">Note: </label>
-                        <textarea name="note" class="form-control" rows="5"></textarea>
+                        <textarea name="note" class="form-control" rows="5" required></textarea>
                     </div>
                     <!-- <div class="col-lg-4">
                         <label>NID:</label>
