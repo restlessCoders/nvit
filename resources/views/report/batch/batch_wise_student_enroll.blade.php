@@ -250,6 +250,7 @@
 									@php $withdraw_drop_allow = ['superadmin' , 'operationmanager'  , 'salesmanager']; @endphp
 									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
 {{$batch->batch_id}}
+{{$sum}}
 									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
 									@csrf
                       				<input name="id" type="hidden" value="{{$batch->sb_id}}">              
