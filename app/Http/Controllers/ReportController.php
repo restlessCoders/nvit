@@ -115,7 +115,7 @@ class ReportController extends Controller
                         'student_batches.is_drop'
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
-                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.6)');
+                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) {
