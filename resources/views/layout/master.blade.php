@@ -333,16 +333,16 @@
                                 <a href="#">
                                     <i class="mdi mdi-hand"></i>Batch<div class="arrow-down"></div></a>
                                 <ul class="submenu">
-                                    <li class="has-submenu">
+                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')  @else d-none @endif">
                                         <a href="#">Attendance<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'trainer') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu">
                                         <a href="#">Batch Completion Report<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'superadmin' ||  currentUser() == 'operationmanager' || currentUser() == 'trainer') {{route(currentUser().'.batchwiseCompletion')}} @endif">Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' ||  currentUser() == 'operationmanager' ||  currentUser() == 'accountmanager' || currentUser() == 'trainer') {{route(currentUser().'.batchwiseCompletion')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
                                 </ul>

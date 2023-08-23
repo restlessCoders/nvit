@@ -21,7 +21,7 @@
     <div class="col-12">
         <div class="card-box">
             <form action="{{ route(currentUser().'.transfer') }}" method="POST" enctype="multipart/form-data">
-            <input type="hidden" value="{{ Session::get('user') }}" name="userId">
+                <input type="hidden" value="{{ Session::get('user') }}" name="userId">
                 @csrf
                 <div class="form-group row">
                     <div class="col-lg-4 row">
@@ -50,9 +50,22 @@
                         <div class="col-lg-4 row">
                         </div>
                     </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-4 row">
+                        <label class="col-sm-3 control-label">Transfer Resson: </label>
+                        <div class="col-sm-9">
+                            <select name="op_type" class="form-control @if($errors->has('type')) {{ 'is-invalid' }} @endif" required>
+                                <option value="">Select Type</option>
+                                <option value="3">Batch Transfer</option>
+                                <option value="4">Repeat</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="col-lg-12">
-                    <div class="form-group row">
-                       
+                        <div class="form-group row">
+
                             <label for="note" class="col-sm-2 col-form-label">Note</label>
                             <div class="col-sm-10">
                                 <textarea class="form-control" id="operationNote" name="note" rows="5" placeholder="Note" style="
@@ -60,12 +73,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group text-right mb-0">
-							<button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
-								Submit
-							</button>
 
-						</div>
+
+
+                    <div class="form-group text-right mb-0">
+                        <button class="btn btn-primary waves-effect waves-light mr-1" type="submit">
+                            Submit
+                        </button>
+
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -104,24 +121,24 @@
 @if(Session::has('response'))
 @php print_r(Session::has('response')); @endphp
 <script>
-	Command: toastr["{{Session::get('response')['class']}}"]("{{Session::get('response')['message']}}")
-	toastr.options = {
-		"closeButton": false,
-		"debug": false,
-		"newestOnTop": false,
-		"progressBar": false,
-		"positionClass": "toast-top-right",
-		"preventDuplicates": false,
-		"onclick": null,
-		"showDuration": "300",
-		"hideDuration": "1000",
-		"timeOut": "5000",
-		"extendedTimeOut": "1000",
-		"showEasing": "swing",
-		"hideEasing": "linear",
-		"showMethod": "fadeIn",
-		"hideMethod": "fadeOut"
-	}
+    Command: toastr["{{Session::get('response')['class']}}"]("{{Session::get('response')['message']}}")
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
 </script>
 @endif
 @endpush

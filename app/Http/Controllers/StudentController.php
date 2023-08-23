@@ -571,6 +571,13 @@ class StudentController extends Controller
             if ($seat_data[0]->tst > $seat_data[0]->seat_available) {
                 return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
             }
+            /* ======================= Check Step ==========================================================*/
+            /*
+            1. Student Drop From Batch
+            2. Then Void That Batch Payemnt and Paymentdetails with update op type with payment and payment details and student batches with news batch id and op_type
+            3. Then Enroll To New Batch
+            4. Then Previous payment and pyamentdetails data added to new batch
+            */
             $data = array(
                 'batch_id' => $request->newbatchId,
                 'updated_at' => Carbon::now()
@@ -616,7 +623,7 @@ class StudentController extends Controller
         $e_data = DB::table('student_batches')
             ->selectRaw("student_batches.batch_id,batches.batchId")
             ->join('batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
-            ->where(['student_id' => $request->id, 'student_batches.status' => 2])
+            ->where(['student_id' => $request->id, 'student_batches.status' => 2 ,'is_drop' => 1])
             ->whereNotIn('student_batches.batch_id', $curbatchId)
             ->groupBy('student_batches.batch_id', 'batches.batchId')
             ->get();

@@ -300,7 +300,7 @@ class ReportController extends Controller
         foreach ($batch_students as $batch_student) {
             $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
             $words = explode(" ", $s_data->name);
-            $firstThreeWords = array_slice($words, 0, 2);
+            $firstThreeWords = array_slice($words, 0, 3);
             $name = implode(" ", $firstThreeWords);
 
             $data .= '<tr height="20px">';
@@ -398,7 +398,7 @@ class ReportController extends Controller
             $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->id . '</td>';
             $data .= '<input type="hidden" name="student_id[]" value="' . $s_data->id . '">';
             $data .= '<input type="hidden" name="batch_id[]" value="' . $batch_data->id . '">';
-            $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->name . '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . strtoupper($s_data->name) . '</td>';
             $data .= '<td style="border:1px solid #000;color:#000;">';
             if (\DB::table('payments')
                 ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
