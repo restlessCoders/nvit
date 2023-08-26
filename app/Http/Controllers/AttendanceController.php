@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Batch;
 use Illuminate\Http\Request;
-
+use DB;
 class AttendanceController extends Controller
 {
     /**
@@ -14,7 +15,7 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        //
+       
     }
 
     /**
@@ -24,7 +25,10 @@ class AttendanceController extends Controller
      */
     public function create()
     {
-        //
+        if(currentUser() == 'trainer'){
+            $batches = Batch::where('trainerId', currentUserId())->paginate(20);
+        }
+        return view('attendance.index',compact('batches'));
     }
 
     /**
@@ -55,9 +59,10 @@ class AttendanceController extends Controller
      * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function edit(Attendance $attendance)
+    public function edit($id)
     {
-        //
+        $all_students = DB::table('student_batches')->where('batch_id',$id)->where('status',2)->where('is_drop',0)->get();
+        return view('attendance.edit',compact('id','all_students'));
     }
 
     /**

@@ -58,15 +58,16 @@
         #topnav .navbar-toggle span {
             background-color: #6c757d;
         }
-        @media (min-width: 1200px){
+
+        @media (min-width: 1200px) {
             .container-fluid {
                 max-width: 95%;
             }
         }
+
         .wrapper {
             padding: 60px 0 12px;
         }
-
     </style>
     <!--begin::Page Scripts(used by this page)-->
     @stack('styles')
@@ -191,7 +192,7 @@
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'salesexecutive') @else d-none @endif">
-                                    <a href="#">Bundle Courses <div class="arrow-down"></div></a>
+                                        <a href="#">Bundle Courses <div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li class="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif"><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.bundelcourse.create')}} @endif">Add New</a></li>
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'accountmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.bundelcourse.index')}} @endif">All Bundle Courses</a></li>
@@ -321,7 +322,7 @@
                                         </ul>
                                     </li>
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"">
-                                        <a href="#">Course Interest<div class="arrow-down"></div></a>
+                                        <a href=" #">Course Interest<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">List</a></li>
                                         </ul>
@@ -334,9 +335,16 @@
                                     <i class="mdi mdi-hand"></i>Batch<div class="arrow-down"></div></a>
                                 <ul class="submenu">
                                     <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')  @else d-none @endif">
-                                        <a href="#">Attendance<div class="arrow-down"></div></a>
+                                        <a href="#">Attendance Report Print<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu @if(currentUser() == 'trainer')  @else d-none @endif">
+                                        <a href="#">Attendance<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li><a href="@if(currentUser() == 'trainer') {{route(currentUser().'.attendance.create')}} @endif">Add Attendance</a></li>
+                                            <li><a href="@if(currentUser() == 'trainer') {{route(currentUser().'.attendance.index')}} @endif">Attendance Report</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu">
@@ -347,11 +355,11 @@
                                     </li>
                                 </ul>
                             </li>
-                            
+
 
                             <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer') @else d-none @endif"">
-                                <a href="#">
-                                    <i class="mdi mdi-certificate"></i>Certification<div class="arrow-down"></div></a>
+                                <a href=" #">
+                                <i class="mdi mdi-certificate"></i>Certification<div class="arrow-down"></div></a>
                                 <ul class="submenu">
 
                                     <li class="has-submenu">

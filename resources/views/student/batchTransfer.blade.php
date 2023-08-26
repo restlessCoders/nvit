@@ -59,6 +59,7 @@
                                 <option value="">Select Type</option>
                                 <option value="3">Batch Transfer</option>
                                 <option value="4">Repeat</option>
+                                <option value="5">Course Transfer</option>
                             </select>
                         </div>
                     </div>

@@ -222,7 +222,7 @@
 								Installment
 								@endif
 							</td>
-							<td class="d-flex">
+							<td>
 								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
 									@if($batch->batch_id == 0)
 									<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>B.Assign</a>
@@ -249,7 +249,7 @@
 									<!-- Withdraw Student From Batch -->
 									@php $withdraw_drop_allow = ['superadmin' , 'operationmanager'  , 'salesmanager']; @endphp
 									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
-									{{ $batch->batch_id}}
+
 									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
 									@csrf
                       				<input name="id" type="hidden" value="{{$batch->sb_id}}">              
@@ -269,28 +269,69 @@
 									
 
 									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-										@if($deduct < 0)
-										<button type="button" class="btn btn-info btn-sm">Void</button>
-										@else
-										<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
+										{{--@if($deduct < 0)--}}
+										<!-- <button type="button" class="btn btn-info btn-sm">Void</button> -->
+										@if($batch->op_type == 1)
+											<button type="button" class="btn btn-danger btn-sm">Refund</button>
+											@elseif($batch->op_type ==2)
+											<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
+											@elseif($batch->op_type ==3)
+											<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
+											@elseif($batch->op_type ==4)
+											<button type="button" class="btn btn-danger btn-sm">Repeat</button>
+											@elseif($batch->op_type ==5)
+											<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
+											@else
+											<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
 										@endif
+										{{--@else--}}
+										
+										{{--@endif--}}
 									
 									@elseif($batch->course_price == $sum && $batch->status == 2)
 										@if($batch->isBundel == 1)
 											Bundel Course
 										@else
-											@if($deduct < 0)
-											<button type="button" class="btn btn-danger btn-sm">Void</button>
-											@else
-											<button type="button" class="btn btn-success btn-sm">Full Paid</button>
-											@endif
+											{{--@if($deduct < 0)--}}
+												
+												
+												@if($batch->op_type ==1)
+												<button type="button" class="btn btn-danger btn-sm">Refund</button>
+												@elseif($batch->op_type ==2)
+												<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
+												@elseif($batch->op_type ==3)
+												<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
+												@elseif($batch->op_type ==4)
+												<button type="button" class="btn btn-danger btn-sm">Repeat</button>
+												@elseif($batch->op_type ==5)
+												<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
+												@else
+												<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+												@endif
+												
+											{{--@else--}}
+											
+											{{--@endif--}}
 										@endif
 									@else
-										@if($deduct < 0)
-										<button type="button" class="btn btn-info btn-sm">Void</button>
-										@else
-										@if($inv && $batch->status == 2) <div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div> @elseif(empty($inv) && $batch->status == 2) <div class="btn btn-secondary btn-sm" style="font-weight:bold;">Reg.</div> @else - @endif
-										@endif
+										{{--@if($deduct < 0)--}}
+										<!-- <button type="button" class="btn btn-info btn-sm">Void</button> -->
+										{{--@else--}}
+										
+										{{--@endif--}}
+											@if($batch->op_type ==1)
+												<button type="button" class="btn btn-danger btn-sm">Refund</button>
+												@elseif($batch->op_type ==2)
+												<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
+												@elseif($batch->op_type ==3)
+												<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
+												@elseif($batch->op_type ==4)
+												<button type="button" class="btn btn-danger btn-sm">Repeat</button>
+												@elseif($batch->op_type ==5)
+												<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
+											@else
+												@if($inv && $batch->status == 2) <div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div> @elseif(empty($inv) && $batch->status == 2) <div class="btn btn-secondary btn-sm" style="font-weight:bold;">Reg. @else - @endif</div>
+											@endif
 									@endif
 									@if($sum > 0 && $deduct == 0)
 									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>

@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->tinyInteger('op_type')->comment('1 => Refund, 2 => Adjustment 3=> Batch Transfer 4=> Repeat 5=> Course Transfer')->after('executiveId')->default(0);
+        Schema::table('batches', function (Blueprint $table) {
+            $table->integer('actual_class')->after('type')->default(0);
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->dropColumn('op_type');
+        Schema::table('batches', function (Blueprint $table) {
+            $table->dropColumn('actual_class');
         });
     }
 };

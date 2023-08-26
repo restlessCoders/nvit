@@ -25,6 +25,7 @@ use App\Http\Controllers\PaymentTransferController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RefundController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\AttendanceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -698,6 +699,8 @@ Route::group(['middleware' => 'isTrainer'], function () {
 
         /*Certificate Controller */
         Route::resource('/certificate', CertificateController::class, ["as" => "trainer"]);
+        /*Attendance Controller */
+        Route::resource('/attendance', AttendanceController::class, ["as" => "trainer"]);
     });
 });
 
