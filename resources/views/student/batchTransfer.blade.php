@@ -20,7 +20,7 @@
     </div>
     <div class="col-12">
         <div class="card-box">
-            <h5 class="alert alert-danger">!! Attention Make Sure Your Are Processing Right Data Because This Operation Once Complete Can not be Undone..</h5>
+            <h5 class="alert alert-danger text-center">!! Attention Make Sure Your Are Processing Right Data Because This Operation Once Complete Can not be Undone..</h5>
             <form action="{{ route(currentUser().'.transfer') }}" method="POST" enctype="multipart/form-data">
                 <input type="hidden" value="{{ Session::get('user') }}" name="userId">
                 @csrf
