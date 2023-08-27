@@ -204,7 +204,7 @@
 							</td>
 							
 							<td>
-							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' ) 
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk') 
 							{{$batch->contact}}
 							@else
 							-
