@@ -45,7 +45,7 @@
 					<div class="col-sm-1">
 						<label for="year" class="col-form-label">Year</label>
 						<select name="year" class="js-example-basic-single form-control me-3">
-							<option>Year</option>
+							<option></option>
 							@php
 							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}" @if(request()->get('year') == $i) selected @endif>{{$i}}</option>
 								@php
@@ -60,7 +60,7 @@
 					<div class="col-sm-1">
 						<label for="month" class="col-form-label">Month</label>
 						<select name="month" class="js-example-basic-single form-control me-3">
-							<option>Month</option>
+							<option></option>
 							@php
 							$months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
 							for($i=0;$i<count($months);$i++){ $monthValue=$i + 1; // Adding 1 to the index to get the correct month value @endphp <option value="{{$monthValue}}" @if(request()->get('month') == $monthValue) selected @endif>{{$months[$i]}}</option>
@@ -82,7 +82,7 @@
 					<div class="col-sm-2">
 						<label for="executiveId" class="col-form-label">Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control me-3">
-							<option>Select Executive</option>
+							<option></option>
 							@forelse($users as $user)
 							<option value="{{$user->id}}" @if(request()->get('executiveId') == $user->id) selected @endif>{{$user->username}}</option>
 							@empty
@@ -93,7 +93,7 @@
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Batch</label>
 						<select name="batch_id" class="js-example-basic-single form-control me-3">
-							<option value="">Select Batch</option>
+							<option></option>
 							@forelse($batches as $batch)
 							<option value="{{$batch->id}}" @if(request()->get('batch_id') == $batch->id) selected @endif>{{$batch->batchId}}</option>
 							@empty
@@ -103,7 +103,7 @@
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Fee Type</label>
 						<select name="feeType" class="js-example-basic-single form-control me-3">
-							<option value="">Select Type</option>
+							<option></option>
 							<option value="1" @if(request()->get('feeType') == 1) selected @endif>Registration</option>
 							<option value="2" @if(request()->get('feeType') == 2) selected @endif>Invoice</option>
 							<option value="3" @if(request()->get('feeType') == 3) selected @endif>Due</option>
@@ -112,7 +112,7 @@
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Payment Mode</label>
 						<select name="type" class="js-example-basic-single form-control me-3">
-							<option value="">Mode</option>
+							<option></option>
 							<option value="1" @if(request()->get('type') == 1) selected @endif>Cash</option>
 							<option value="2" @if(request()->get('type') == 2) selected @endif>Bkash</option>
 							<option value="3" @if(request()->get('type') == 3) selected @endif>Bank</option>
