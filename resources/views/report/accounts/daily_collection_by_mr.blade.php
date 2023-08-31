@@ -43,23 +43,27 @@
 
 				<div class="row">
 					<div class="col-sm-1">
-						<label for="name" class="col-form-label">Year</label>
-						<select name="month" class="js-example-basic-single form-control me-3">
-							<option value="">Year</option>
+						<label for="year" class="col-form-label">Year</label>
+						<select name="year" class="js-example-basic-single form-control me-3">
+							<option>Year</option>
 							@php
-							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
+							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}" @if(request()->get('year') == $i) selected @endif>{{$i}}</option>
 								@php
 								}
 								@endphp
 						</select>
 					</div>
+					@php
+					//echo 'ok';
+					//echo request()->get('month');die;
+					@endphp
 					<div class="col-sm-1">
-						<label for="name" class="col-form-label">Month</label>
+						<label for="month" class="col-form-label">Month</label>
 						<select name="month" class="js-example-basic-single form-control me-3">
-							<option value="">Month</option>
+							<option>Month</option>
 							@php
 							$months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
-							for($i=0;$i<count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
+							for($i=0;$i<count($months);$i++){ $monthValue=$i + 1; // Adding 1 to the index to get the correct month value @endphp <option value="{{$monthValue}}" @if(request()->get('month') == $monthValue) selected @endif>{{$months[$i]}}</option>
 								@php
 								}
 								@endphp
@@ -76,11 +80,11 @@
 					</div>
 					@if(currentUser() != 'salesexecutive')
 					<div class="col-sm-2">
-						<label for="name" class="col-form-label">Executive</label>
+						<label for="executiveId" class="col-form-label">Executive</label>
 						<select name="executiveId" class="js-example-basic-single form-control me-3">
-							<option value="">Select Executive</option>
+							<option>Select Executive</option>
 							@forelse($users as $user)
-							<option value="{{$user->id}}">{{$user->username}}</option>
+							<option value="{{$user->id}}" @if(request()->get('executiveId') == $user->id) selected @endif>{{$user->username}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -91,7 +95,7 @@
 						<select name="batch_id" class="js-example-basic-single form-control me-3">
 							<option value="">Select Batch</option>
 							@forelse($batches as $batch)
-							<option value="{{$batch->id}}">{{$batch->batchId}}</option>
+							<option value="{{$batch->id}}" @if(request()->get('batch_id') == $batch->id) selected @endif>{{$batch->batchId}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -100,27 +104,27 @@
 						<label for="name" class="col-form-label">Fee Type</label>
 						<select name="feeType" class="js-example-basic-single form-control me-3">
 							<option value="">Select Type</option>
-							<option value="1">Registration</option>
-							<option value="2">Invoice</option>
-							<option value="3">Due</option>
+							<option value="1" @if(request()->get('feeType') == 1) selected @endif>Registration</option>
+							<option value="2" @if(request()->get('feeType') == 2) selected @endif>Invoice</option>
+							<option value="3" @if(request()->get('feeType') == 3) selected @endif>Due</option>
 						</select>
 					</div>
 					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Payment Mode</label>
 						<select name="type" class="js-example-basic-single form-control me-3">
 							<option value="">Mode</option>
-							<option value="1">Cash</option>
-							<option value="2">Bkash</option>
-							<option value="3">Bank</option>
+							<option value="1" @if(request()->get('type') == 1) selected @endif>Cash</option>
+							<option value="2" @if(request()->get('type') == 2) selected @endif>Bkash</option>
+							<option value="3" @if(request()->get('type') == 3) selected @endif>Bank</option>
 						</select>
 					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
-						<button type="submit" class="btn btn-primary me-2"><i class="fa fa-search fa-sm"></i></button>
-						<a href="{{route(currentUser().'.daily_collection_report_by_mr')}}" class="reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
+						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
+						<a href="{{route(currentUser().'.daily_collection_report_by_mr')}}" class="ml-2 reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
 			</form>
-								<button type="btn btn-primary excelExport">Excel</button>
+			<button type="btn btn-primary excelExport">Excel</button>
 			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;">
 				<thead>
 					<tr>
@@ -169,11 +173,11 @@
 						<td class="align-middle">{{$p->studentId}}</td>
 						<td class="align-middle">{{$p->name}}</td>
 						<td class="align-middle">
-						@if(currentUserId() == $p->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager')
-						{{$p->contact}}
-						@else
-						-	
-						@endif
+							@if(currentUserId() == $p->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager')
+							{{$p->contact}}
+							@else
+							-
+							@endif
 						</td>
 						<td class="align-middle">
 							@if($p->batchId)
@@ -220,7 +224,7 @@
 							@endif
 							@if($p->course_id)
 							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price}}{{--$p->cPayable--}}
-							
+
 							@endif
 
 						</td>
@@ -288,10 +292,14 @@
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
+	$('.js-example-basic-single').select2({
+		placeholder: 'Select Option',
+		allowClear: true
+	});
 	/*$('.excelExport').on('click',  function() {
 		TableToExcel.convert(document.getElementById("table1"));
 	});*/
-	
+
 	TableToExcel.convert(document.getElementById("table1"));
 	$('.payment').on('click', '.delete', function(event) {
 		event.preventDefault();
