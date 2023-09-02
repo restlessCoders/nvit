@@ -205,6 +205,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*Certificate Controller */
         Route::resource('/certificate', CertificateController::class, ["as" => "superadmin"]);
+
+        /*Batch Wise Student Attendance Report */
+        Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('superadmin.batchwiseStudentAttnReport');
     });
 });
 
@@ -345,6 +348,9 @@ Route::group(['middleware' => 'isSalesManager'], function () {
 
         /*Certificate Controller */
         Route::resource('/certificate', CertificateController::class, ["as" => "salesmanager"]);
+
+        /*Batch Wise Student Attendance Report */
+        Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('salesmanager.batchwiseStudentAttnReport');
     });
 });
 
@@ -423,6 +429,9 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         /*Certificate Controller */
         Route::resource('/certificate', CertificateController::class, ["as" => "salesexecutive"]);
+
+        /*Batch Wise Student Attendance Report */
+        Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('salesexecutive.batchwiseStudentAttnReport');
     });
 });
 
@@ -699,8 +708,13 @@ Route::group(['middleware' => 'isTrainer'], function () {
 
         /*Certificate Controller */
         Route::resource('/certificate', CertificateController::class, ["as" => "trainer"]);
+
         /*Attendance Controller */
         Route::resource('/attendance', AttendanceController::class, ["as" => "trainer"]);
+
+        /*Batch Wise Student Attendance Report */
+        Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('trainer.batchwiseStudentAttnReport');
+        Route::get('/batch/wise/student/attendance/add', [ReportController::class, 'batchwiseStudentAttnAdd'])->name('trainer.batchwiseStudentAttnAdd');
     });
 });
 

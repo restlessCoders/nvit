@@ -15,6 +15,7 @@ use App\Models\Payment;
 use DateTime;
 use DateInterval;
 use App\Http\Traits\ResponseTrait;
+use App\Models\Attendance;
 use App\Models\Certificate;
 use Illuminate\Support\Carbon;
 
@@ -71,7 +72,7 @@ class ReportController extends Controller
                     /*->on('student_batches.course_id', '=', 'paymentdetails.course_id');*/
                 })
                 ->leftjoin('users', 'students.executiveId', '=', 'users.id')
-                ->select('student_batches.op_type','student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop');
+                ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop');
             if ($request->type == 1) {
                 $allBatches = $allBatches->where(function ($query) {
                     $query->where('paymentdetails.feeType', '=', 2)
@@ -131,7 +132,7 @@ class ReportController extends Controller
             }
         } else {
             $allBatches = DB::table('student_batches')
-                ->select('student_batches.op_type','student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop')
+                ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop')
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
@@ -159,12 +160,11 @@ class ReportController extends Controller
         }
         if ($request->status) {
             $allBatches->where('student_batches.status', $request->status);
-            
         }
-        if($request->drop){
-            $allBatches->where('student_batches.is_drop',1);
-        }else{
-            $allBatches->where('student_batches.is_drop',0);
+        if ($request->drop) {
+            $allBatches->where('student_batches.is_drop', 1);
+        } else {
+            $allBatches->where('student_batches.is_drop', 0);
         }
 
         $perPage = 20;
@@ -219,10 +219,10 @@ class ReportController extends Controller
     }
     public function batchwiseAttendance()
     {
-        if(currentUser() == 'trainer')
-        $batches = Batch::where('trainerId', currentUserId())->get();
+        if (currentUser() == 'trainer')
+            $batches = Batch::where('trainerId', currentUserId())->get();
         else
-        $batches = Batch::all();
+            $batches = Batch::all();
 
         return view('report.attendance.batch_wise_attendance', compact('batches'));
     }
@@ -334,10 +334,10 @@ class ReportController extends Controller
     public function batchwiseCompletion()
     {
         /* Need To use batch Completion status here in table */
-        if(currentUser() == 'trainer')
-        $batches = Batch::where('trainerId', currentUserId())->get();
+        if (currentUser() == 'trainer')
+            $batches = Batch::where('trainerId', currentUserId())->get();
         else
-        $batches = Batch::all();
+            $batches = Batch::all();
         /*$certificate_batches = Certificate::where('created_by',currentUserId())->pluck('batch_id')->unique()->toArray();
         print_r($certificate_batches);die;
         $batches = Batch::where('trainerId',currentUserId())->whereNotIn('id', $certificate_batches)->get();
@@ -412,21 +412,20 @@ class ReportController extends Controller
             '</td>';
             $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
             if ($cer_data) {
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn['.$s_data->id.']" value="' . $cer_data->attn . '"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf['.$s_data->id.']" ' . ($cer_data->perf == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[' . $s_data->id . ']" value="' . $cer_data->attn . '"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[' . $s_data->id . ']" ' . ($cer_data->perf == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
 
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass['.$s_data->id.']" ' . ($cer_data->pass == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[' . $s_data->id . ']" ' . ($cer_data->pass == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
 
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop['.$s_data->id.']" ' . ($cer_data->drop == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
-                $data .= '<input type="hidden" name="posting_date[]" value="'.date('Y-m-d',strtotime($cer_data->created_at)).'">';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[' . $s_data->id . ']" ' . ($cer_data->drop == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
+                $data .= '<input type="hidden" name="posting_date[]" value="' . date('Y-m-d', strtotime($cer_data->created_at)) . '">';
             } else {
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn['.$s_data->id.']" value=""></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf['.$s_data->id.']" value="1"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass['.$s_data->id.']" value="1"></td>';
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop['.$s_data->id.']" value="1"></td>';
-               
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[' . $s_data->id . ']" value=""></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[' . $s_data->id . ']" value="1"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[' . $s_data->id . ']" value="1"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[' . $s_data->id . ']" value="1"></td>';
             }
-           
+
             /*$data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"></td>';
@@ -445,6 +444,218 @@ class ReportController extends Controller
 
         return response()->json(array('data' => $data));
     }
+    public function batchwiseStudentAttnAdd(Request $request)
+    {
+        $batch_data = Batch::find($request->batch_id);
+        $image_path = asset('backend/images/logo.webp');
+        $data = '<div style="width:10%;display:inline-block;"><img src=' . $image_path . ' alt="" height="40"></div>';
+        $data .=     '<div style="width:90%;display:inline-block;text-align:center;"><h4 class="m-0 p-0 text-center" style="font-size:11px;font-weight:700;">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
+        $data .= '<p class="m-0 p-0 text-center" style="font-size:9px"><strong class="text-center">Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong></p>';
+        $data .=     '<p class="m-0 p-0 text-center" style="font-size:9px"><strong>Student Daily Attendance Report</strong></p></div>';
+
+
+
+        $data .=     '<p class="m-0 p-0" style="font-size:10px;display:flex;justify-content:space-between">
+                        <strong>Started On :'  . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y') . '</strong>
+                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>
+                        <strong>' . \DB::table('batchslots')->where('id', $batch_data->bslot)->first()->slotName . '</strong>
+                        <strong>Batch : ' . $batch_data->batchId . '</strong>
+                        <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>  
+                        </p>';
+
+
+        $startDate = new DateTime($batch_data->startDate);
+        $endDate = new DateTime($batch_data->endDate);
+
+        // Create a DateInterval of 1 day
+        $interval = new DateInterval('P1D');
+
+        if (currentUser() == 'trainer') {
+            $data .= '<form action="' . route(currentUser() . '.attendance.store') . '" method="post"> ' . csrf_field() . '';
+        }
+        $data .=    '<div class="row">
+                        <div class="col-md-12 d-flex justify-content-end">
+                            <div class="col-md-3">
+                                <div class="input-group my-2">
+                                    <input type="text" name="postingDate" class="form-control" placeholder="dd/mm/yyyy">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="icon-calender"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>';
+        $data .= '<table class="table table-sm" style="width:100%;border:1px solid #000;color:#000;">
+                    <tbody>
+                        <tr>
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>ID</strong></th>
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Name</strong></th>
+                            <th class="align-middle" style="border:1px solid #000;;color:#000;"><strong>Invoice</strong></th>
+                            <th style="border:1px solid #000;color:#000;"><strong>Executive</strong></th>
+                            <th style="border:1px solid #000;;color:#000;"><strong>Is Present.</strong></th>
+                        </tr>';
+
+        if ($request->batch_id) {
+            $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->where('is_drop', 0)->get();
+        }
+        foreach ($batch_students as $batch_student) {
+            $data .= '<tr>';
+            $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
+
+            $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->id . '</td>';
+            $data .= '<input type="hidden" name="student_id[]" value="' . $s_data->id . '">';
+            $data .= '<input type="hidden" name="batch_id[]" value="' . $batch_data->id . '">';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . strtoupper($s_data->name) . '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;">';
+            if (\DB::table('payments')
+                ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
+                ->where(['paymentdetails.batchId' => $request->batch_id, 'paymentdetails.studentId' => $batch_student->student_id])->whereNotNull('payments.invoiceId')->exists()
+            ) {
+                $data .= \DB::table('payments')->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')->where(['paymentdetails.batchId' => $request->batch_id, 'paymentdetails.studentId' => $batch_student->student_id])->whereNotNull('payments.invoiceId')->first()->invoiceId;
+            } else {
+                $data .= '-';
+            }
+            '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
+
+            $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="isPresent[' . $s_data->id . ']" value="1"></td>';
+            $data .= '</tr>';
+        }
+
+
+
+
+        $data .=    '</tbody>
+                </table>';
+        if ($request->batch_id) {
+            $postingDate = DB::table('attendances')->select('postingDate')->where('batch_id', $request->batch_id)->groupBy('postingDate')->pluck('postingDate')->toArray(); // Convert the result to an array;
+            // Convert the array of postingDates to a JavaScript-friendly string
+            $jsDisabledDates = implode("','", $postingDate);
+            // Add single quotes at the beginning and end of the JavaScript string
+            $jsDisabledDates = "'" . $jsDisabledDates . "'";
+        }
+        $data .= '<div class="col-md-12 d-flex justify-content-end"><button class="btn btn-primary" type="submit">Submit</button></div>';
+        $data .= '</form>';
+        $data .= '<script>var jsDisabledDates = [' . $jsDisabledDates . '];console.log(jsDisabledDates);
+                $("input[name=\'postingDate\']").daterangepicker({
+                    singleDatePicker: true,
+                    startDate: new Date(),
+                    showDropdowns: true,
+                    autoUpdateInput: true,
+                    format: \'dd/mm/yyyy\',
+                    isInvalidDate: function(date) {
+                        // Format the date to match the array format
+                        var formattedDate = date.format(\'YYYY-MM-DD\');
+                        // Check if the formatted date is in the disabledDates array
+                        return jsDisabledDates.includes(formattedDate);
+                    }
+                }).on(\'changeDate\', function(e) {
+                    var date = moment(e.date).format(\'YYYY/MM/DD\');
+                    $(this).val(date);
+                });</script>';
+
+
+
+
+        return response()->json(array('data' => $data));
+    }
+    public function batchwiseStudentAttnReport(Request $request)
+    {
+        $batch_data = Batch::find($request->batch_id);
+        $image_path = asset('backend/images/logo.webp');
+        $data = '<div style="width:10%;display:inline-block;"><img src=' . $image_path . ' alt="" height="40"></div>';
+        $data .=     '<div style="width:90%;display:inline-block;text-align:center;"><h4 class="m-0 p-0 text-center" style="font-size:11px;font-weight:700;">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
+        $data .= '<p class="m-0 p-0 text-center" style="font-size:9px"><strong class="text-center">Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong></p>';
+        $data .=     '<p class="m-0 p-0 text-center" style="font-size:9px"><strong>Student Daily Attendance Report</strong></p></div>';
+
+
+
+        $data .=     '<p class="m-0 p-0" style="font-size:10px;display:flex;justify-content:space-between">
+                        <strong>Started On :'  . \Carbon\Carbon::createFromTimestamp(strtotime($batch_data->startDate))->format('j M, Y') . '</strong>
+                        <strong>' . \DB::table('batchtimes')->where('id', $batch_data->btime)->first()->time . '</strong>
+                        <strong>' . \DB::table('batchslots')->where('id', $batch_data->bslot)->first()->slotName . '</strong>
+                        <strong>Batch : ' . $batch_data->batchId . '</strong>
+                        <strong>Trainer : ' . \DB::table('users')->where('id', $batch_data->trainerId)->first()->name . '</strong>  
+                        </p>';
+
+
+        $startDate = new DateTime($batch_data->startDate);
+        $endDate = new DateTime($batch_data->endDate);
+
+        // Create a DateInterval of 1 day
+        $interval = new DateInterval('P1D');
+
+        if ($request->batch_id) {
+            $postingDate = DB::table('attendances')->select('postingDate')->where('batch_id', $request->batch_id)->groupBy('postingDate')->get();
+        }
+        $data .= '<table class="table table-sm" style="width:100%;border:1px solid #000;color:#000;">
+                    <tbody>
+                        <tr class="text-center">
+                            <th class="align-middle" rowspan="2" style="border:1px solid #000;;color:#000;width:5px;"><strong>ID</strong></th>
+                            <th class="align-middle" rowspan="2" style="border:1px solid #000;;color:#000;width:180px;"><strong>Name</strong></th>
+                            <th class="align-middle" rowspan="2" style="border:1px solid #000;;color:#000;width:5px;"><strong>Invoice</strong></th>
+                            <th class="align-middle" rowspan="2" style="border:1px solid #000;color:#000;width:5px;"><strong>Executive</strong></th>
+                            <th style="border:1px solid #000;;color:#000;" colspan="' . $postingDate->count() . '"><strong>Attendance Details</strong></th>
+                            <th style="border:1px solid #000;;color:#000;width:5px;"><strong>Tlass:- ' . $postingDate->count() . '</strong></th>
+                        </tr>';
+        $data .= '<tr>';
+        foreach ($postingDate as $pdate) {
+
+            $data .= '<th style="border:1px solid #000;;color:#000;text-align:center">'
+                . \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('d/m/y') .
+                '<p class="m-0 p-0">' . \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('D') . '</p>
+            </th>';
+        }
+        $data .= '<th class="text-center">T.Pre</th></tr>';
+
+
+
+        if ($request->batch_id) {
+            $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->where('is_drop', 0)->get();
+        }
+        foreach ($batch_students as $batch_student) {
+            $data .= '<tr>';
+            $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
+
+            $data .= '<td style="border:1px solid #000;color:#000;">' . $s_data->id . '</td>';
+            $data .= '<input type="hidden" name="student_id[]" value="' . $s_data->id . '">';
+            $data .= '<input type="hidden" name="batch_id[]" value="' . $batch_data->id . '">';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . strtoupper($s_data->name) . '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;">';
+            if (\DB::table('payments')
+                ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
+                ->where(['paymentdetails.batchId' => $request->batch_id, 'paymentdetails.studentId' => $batch_student->student_id])->whereNotNull('payments.invoiceId')->exists()
+            ) {
+                $data .= \DB::table('payments')->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')->where(['paymentdetails.batchId' => $request->batch_id, 'paymentdetails.studentId' => $batch_student->student_id])->whereNotNull('payments.invoiceId')->first()->invoiceId;
+            } else {
+                $data .= '-';
+            }
+            '</td>';
+            $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
+
+            foreach ($postingDate as $pdate) {
+                $attendance_data = Attendance::where('student_id', $batch_student->student_id)->where('batch_id', $batch_data->id)->where('postingDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('Y-m-d'))->first();
+                if ($attendance_data->isPresent == 1)
+                    $data .= '<th style="border:1px solid #000;color:#fff;background-color:green;text-align:center;"><strong>P</strong></th>';
+                else
+                    $data .= '<th style="border:1px solid #000;color:#fff;background-color:red;text-align:center;"><strong>A</strong></th>';
+            }
+            $data .= '<th style="border:1px solid #000;color:#000;text-align:center;">' . Attendance::where('student_id', $batch_student->student_id)->where('batch_id', $batch_data->id)->where('isPresent', '=', 1)->count() . '</th>';
+            $data .= '</tr>';
+        }
+
+
+
+
+        $data .=    '</tbody>
+                </table>';
+
+
+
+
+        return response()->json(array('data' => $data));
+    }
+
     public function editEnrollStudent($id)
     {
         $batches = Batch::where('status', 1)->get();
@@ -504,7 +715,7 @@ class ReportController extends Controller
     }
     public function assign_single_batch_toEnrollStudent(Request $request, $id)
     {
-        
+
 
         if ($request->batch_id) {
             $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
@@ -514,18 +725,17 @@ class ReportController extends Controller
                         GROUP by student_batches.batch_id,batches.seat");
             /*print_r($seat_data);
             die;*/
-            if ($seat_data[0]->tst >= $seat_data[0]->seat_available){
+            if ($seat_data[0]->tst >= $seat_data[0]->seat_available) {
                 return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
-            }
-            else {
+            } else {
                 DB::beginTransaction();
-                DB::table('student_batches')->where('id',$id)->update(['batch_id' => $request->batch_id]);
+                DB::table('student_batches')->where('id', $id)->update(['batch_id' => $request->batch_id]);
                 /*Also Have to update Batch Id paymentdetails table */
-                $batch_data = DB::table('student_batches')->where('id',$id)->first();
+                $batch_data = DB::table('student_batches')->where('id', $id)->first();
                 //print_r($batch_data);die;
-                DB::table('paymentdetails')->where('studentId',$batch_data->student_id)->where('course_id',$batch_data->course_id)->update(['batchId' => $request->batch_id]);
+                DB::table('paymentdetails')->where('studentId', $batch_data->student_id)->where('course_id', $batch_data->course_id)->update(['batchId' => $request->batch_id]);
                 DB::commit();
-                return redirect()->route(currentUser().'.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
+                return redirect()->route(currentUser() . '.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
             }
         } else {
             return redirect()->back()->with($this->responseMessage(false, 'error', 'Please Select Batch!'));

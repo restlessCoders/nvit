@@ -190,7 +190,11 @@
 							
 							<td>
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
-							{{$batch->course_price}}
+								@if($batch->batch_id != 0)
+								{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('discount')}}
+								@else
+								{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')}}
+								@endif
 							@endif 
 							</td>
 							<td>
