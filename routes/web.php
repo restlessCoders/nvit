@@ -206,6 +206,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*Certificate Controller */
         Route::resource('/certificate', CertificateController::class, ["as" => "superadmin"]);
 
+        /*Attendance Controller */
+        Route::resource('/attendance', AttendanceController::class, ["as" => "trainer"])->only(['index']);
+
         /*Batch Wise Student Attendance Report */
         Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('superadmin.batchwiseStudentAttnReport');
     });
@@ -351,6 +354,9 @@ Route::group(['middleware' => 'isSalesManager'], function () {
 
         /*Batch Wise Student Attendance Report */
         Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('salesmanager.batchwiseStudentAttnReport');
+
+        /*Attendance Controller */
+        Route::resource('/attendance', AttendanceController::class, ["as" => "salesmanager"])->only(['index']);
     });
 });
 
@@ -432,6 +438,9 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         /*Batch Wise Student Attendance Report */
         Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('salesexecutive.batchwiseStudentAttnReport');
+
+        /*Attendance Controller */
+        Route::resource('/attendance', AttendanceController::class, ["as" => "salesexecutive"])->only(['index']);
     });
 });
 
@@ -562,6 +571,9 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*Certificate Controller */
         Route::resource('/certificate', CertificateController::class, ["as" => "operationmanager"]);
+
+        /*Attendance Controller */
+        Route::resource('/attendance', AttendanceController::class, ["as" => "operationmanager"])->only(['index']);
     });
 });
 
