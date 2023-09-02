@@ -207,7 +207,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         Route::resource('/certificate', CertificateController::class, ["as" => "superadmin"]);
 
         /*Attendance Controller */
-        Route::resource('/attendance', AttendanceController::class, ["as" => "trainer"])->only(['index']);
+        Route::resource('/attendance', AttendanceController::class, ["as" => "superadmin"])->only(['index']);
 
         /*Batch Wise Student Attendance Report */
         Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('superadmin.batchwiseStudentAttnReport');
