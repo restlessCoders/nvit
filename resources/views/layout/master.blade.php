@@ -343,7 +343,7 @@
                                     <li class="has-submenu @if(currentUser() == 'trainer' || currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive')  @else d-none @endif">
                                         <a href="#">Attendance<div class="arrow-down"></div></a>
                                         <ul class="submenu">
-                                            <li><a href="@if(currentUser() == 'trainer') {{route(currentUser().'.attendance.create')}} @endif">Add Attendance</a></li>
+                                            <li class="@if(currentUser() == 'trainer')  @else d-none @endif"><a href="@if(currentUser() == 'trainer') {{route(currentUser().'.attendance.create')}} @endif">Add Attendance</a></li>
                                             <li><a href="@if(currentUser() == 'trainer'  || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'superadmin') {{route(currentUser().'.attendance.index')}} @endif">Attendance Report</a></li>
                                         </ul>
                                     </li>
