@@ -401,6 +401,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
+        Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('salesexecutive.editEnrollStudent');
+        Route::post('/batch/single/assign/{id}', [ReportController::class, 'assign_single_batch_toEnrollStudent'])->name('salesexecutive.assign_single_batch_toEnrollStudent');
 
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesexecutive.coursePreference');
