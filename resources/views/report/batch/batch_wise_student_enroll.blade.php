@@ -242,7 +242,7 @@
 							@endif
 						</td>
 						<td>
-							@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
+							@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUserId() == $batch->executiveId)
 							@if($batch->batch_id == 0)
 							<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>B.Assign</a>
 							@endif
