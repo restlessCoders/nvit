@@ -404,7 +404,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="9"></td>
+						<td colspan="10"></td>
 						<td>{{$total_cpyable}}</td>
 					</tr>
 				</tfoot>

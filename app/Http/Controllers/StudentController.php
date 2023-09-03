@@ -576,7 +576,7 @@ class StudentController extends Controller
 
         DB::connection()->enableQueryLog();
         $seat_data = DB::select("SELECT IFNULL(sb.tst, 0) AS tst, b.seat AS seat_available FROM batches AS b 
-            LEFT JOIN (SELECT batch_id, COUNT(id) AS tst FROM student_batches WHERE status = 2 GROUP BY batch_id) 
+            LEFT JOIN (SELECT batch_id, COUNT(id) AS tst FROM student_batches WHERE status = 2 and is_drop = 0 GROUP BY batch_id) 
             AS sb ON b.id = sb.batch_id WHERE b.id = $request->newbatchId");
         $queries = \DB::getQueryLog();
 
