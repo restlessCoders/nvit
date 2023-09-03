@@ -1,5 +1,5 @@
 @extends('layout.master')
-@section('title', 'Attendance Posting')
+@section('title', 'Attendance Edit')
 @push('styles')
 <style>
     .table-sm td,
@@ -50,7 +50,7 @@
                     <li class="breadcrumb-item active">Edit</li>
                 </ol>
             </div>
-            <h4 class="page-title">Attendance Edit</h4>
+            <h4 class="page-title">Attendance Edit For {{ request()->input('postingDate') }}</h4>
         </div>
     </div>
     <div class="col-12">
@@ -76,35 +76,35 @@
                 <strong>Batch : {{ $batch_data->batchId }} </strong>
                 <strong>Trainer : {{ DB::table('users')->where('id', $batch_data->trainerId)->first()->name }}</strong>
             </p>
-            
-            <form action="{{route(currentUser() . '.attendance.store')}}" method="post">
-                @csrf
 
-            <div class="row">
-                <div class="col-md-12 d-flex justify-content-end">
-                    <div class="col-md-3">
-                        <div class="input-group my-2">
-                            <input type="text" name="postingDate" class="form-control" placeholder="dd/mm/yyyy">
-                            <div class="input-group-append">
-                                <span class="input-group-text"><i class="icon-calender"></i></span>
+            <form action="{{route(currentUser() . '.attendance.update',$id)}}" method="post">
+                @csrf
+                @method('PUT')
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-end">
+                        <div class="col-md-3">
+                            <div class="input-group my-2">
+                                <input type="text" name="postingDate" class="form-control" placeholder="dd/mm/yyyy">
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="icon-calender"></i></span>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+
+
+
+
                 </div>
 
+                @php
+                $startDate = new DateTime($batch_data->startDate);
+                $endDate = new DateTime($batch_data->endDate);
 
-
-
-
-            </div>
-
-            @php
-            $startDate = new DateTime($batch_data->startDate);
-            $endDate = new DateTime($batch_data->endDate);
-
-            // Create a DateInterval of 1 day
-            $interval = new DateInterval('P1D');
-            @endphp
+                // Create a DateInterval of 1 day
+                $interval = new DateInterval('P1D');
+                @endphp
 
 
                 {{--<th style="border:1px solid #000;;color:#000;"><strong>Ins. Note</strong></th>
@@ -127,7 +127,7 @@
                         @foreach ($all_students as $batch_student)
                         @php
                         $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
-                        $cer_data = \App\Models\Attendance::where('student_id', $batch_student->student_id)->where('batch_id', $batch_data->id)->first();
+                        $cer_data = \App\Models\Attendance::where('student_id', $batch_student->student_id)->where('batch_id', $batch_data->id)->where('postingDate', \Carbon\Carbon::createFromTimestamp(strtotime(request()->get('postingDate')))->format('Y-m-d'))->first();
                         @endphp
                         <tr>
                             <td style="border:1px solid #000;color:#000;">{{$s_data->id}}</td>
@@ -177,16 +177,20 @@
 @endsection
 @push('scripts')
 <script>
+    // Extract the postingDate from the URL (e.g., '2023-07-13')
+    var postingDateFromURL = '{{ request()->input('postingDate') }}';
+    // Convert the postingDate to 'DD/MM/YYYY' format
+    var formattedDate = moment(postingDateFromURL, 'YYYY-MM-DD');
+
     $("input[name='postingDate']").daterangepicker({
         singleDatePicker: true,
-        startDate: new Date(),
+        startDate: formattedDate,
         showDropdowns: true,
         autoUpdateInput: true,
         format: 'dd/mm/yyyy',
-    }).on('changeDate', function(e) {
-        var date = moment(e.date).format('YYYY/MM/DD');
-        $(this).val(date);
-    });
+    }).on('apply.daterangepicker', function(ev, picker) {
+    $(this).val(picker.startDate.format('DD/MM/YYYY'));
+});
 </script>
 </script>
 

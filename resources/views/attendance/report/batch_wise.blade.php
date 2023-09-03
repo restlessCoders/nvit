@@ -28,10 +28,9 @@
 	table td,
 	table th {
 		color: #000;
+		font-size: 12px;
 	}
-	td{
-		font-size: 10px;
-	}
+
 
 	p strong {
 		margin-right: 10px;

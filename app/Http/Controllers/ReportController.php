@@ -586,9 +586,9 @@ class ReportController extends Controller
         $interval = new DateInterval('P1D');
 
         if ($request->batch_id) {
-            $postingDate = DB::table('attendances')->select('postingDate')->where('batch_id', $request->batch_id)->groupBy('postingDate')->get();
+            $postingDate = DB::table('attendances')->select('postingDate','edit_allow')->where('batch_id', $request->batch_id)->groupBy('postingDate')->get();
         }
-        $data .= '<table class="table table-sm" style="width:100%;border:1px solid #000;color:#000;">
+        $data .= '<div class="table-responsive"><table class="table table-sm" style="width:100%;border:1px solid #000;color:#000;">
                     <tbody>
                         <tr class="text-center">
                             <th class="align-middle" rowspan="2" style="border:1px solid #000;;color:#000;width:5px;"><strong>ID</strong></th>
@@ -596,14 +596,28 @@ class ReportController extends Controller
                             <th class="align-middle" rowspan="2" style="border:1px solid #000;;color:#000;width:5px;"><strong>Invoice</strong></th>
                             <th class="align-middle" rowspan="2" style="border:1px solid #000;color:#000;width:5px;"><strong>Executive</strong></th>
                             <th style="border:1px solid #000;;color:#000;" colspan="' . $postingDate->count() . '"><strong>Attendance Details</strong></th>
-                            <th style="border:1px solid #000;;color:#000;width:5px;"><strong>Tlass:- ' . $postingDate->count() . '</strong></th>
+                            <th style="border:1px solid #000;;color:#000;width:5px;"><strong>Tclass:- ' . $postingDate->count() . '</strong></th>
                         </tr>';
         $data .= '<tr>';
         foreach ($postingDate as $pdate) {
 
             $data .= '<th style="border:1px solid #000;;color:#000;text-align:center">'
-                . \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('d/m/y') .
-                '<p class="m-0 p-0">' . \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('D') . '</p>
+                . \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('d/m/y');
+                if(currentUser() == 'operationmanager' && $pdate->edit_allow == 0){
+                    $data .= '<form action="' . route(currentUser() . '.attendance.update',$request->batch_id) . '" method="post"> ' . csrf_field() . ' ' . method_field('PUT') . '';
+                    $data .= '<input type="hidden" name="postingDate" value="'.$pdate->postingDate.'">';
+                    $data .= '<input type="hidden" name="type" value="1">';
+                    $data .= '<button type="submit" class="btn btn-sm btn-warning">Edit Allow</button>';
+                    $data .= '</form>';
+                }
+                if(currentUser() == 'trainer' && $pdate->edit_allow == 1){
+                    // $data .= '<a class="d-block btn btn-sm btn-info" title="Edit Attendance" href="'.route(currentUser() . '.attendance.edit',$request->batch_id).'">Edit</a>';
+                    $data .= '<form action="' . route(currentUser() . '.attendance.edit',$request->batch_id) . '"> ' . csrf_field() . '';
+                    $data .= '<input type="hidden" name="postingDate" value="'.$pdate->postingDate.'">';
+                    $data .= '<button type="submit" class="btn btn-sm btn-warning">Edit</button>';
+                    $data .= '</form>';
+                }
+                $data .='<p class="m-0 p-0">' . \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('D') . '</p>
             </th>';
         }
         $data .= '<th class="text-center">T.Pre</th></tr>';
@@ -648,7 +662,7 @@ class ReportController extends Controller
 
 
         $data .=    '</tbody>
-                </table>';
+                </table></div>';
 
 
 

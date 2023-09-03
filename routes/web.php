@@ -573,7 +573,8 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::resource('/certificate', CertificateController::class, ["as" => "operationmanager"]);
 
         /*Attendance Controller */
-        Route::resource('/attendance', AttendanceController::class, ["as" => "operationmanager"])->only(['index']);
+        Route::resource('/attendance', AttendanceController::class, ["as" => "operationmanager"])->only(['index','update']);
+        Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('operationmanager.batchwiseStudentAttnReport');
     });
 });
 
