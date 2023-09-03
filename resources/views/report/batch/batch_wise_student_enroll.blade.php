@@ -6,15 +6,18 @@
 @endpush
 @push('styles')
 <style>
-	th{
-		font-size:14px;
+	th {
+		font-size: 14px;
 	}
-	table,tr{
-		font-size:13px;
+
+	table,
+	tr {
+		font-size: 13px;
 	}
-	.btn{
+
+	.btn {
 		font-size: 11px;
-		margin:1px;
+		margin: 1px;
 	}
 </style>
 @endpush
@@ -134,6 +137,7 @@
 						<th>Inv</th>
 						<th>Inv Price</th>
 						<th>Paid</th>
+						<th>Due</th>
 						<th>Contact</th>
 						<th>Type</th>
 						<th>Status</th>
@@ -141,236 +145,269 @@
 					</tr>
 				</thead>
 				<tbody>
+					@php $total_cpyable = 0; @endphp
 					@if(count($allBatches))
 					@foreach($allBatches as $batch)
 					{{--<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">--}}
 					<!--<form action="" method="POST" enctype="multipart/form-data">-->
-						<tr>
-							<td>{{ (($allBatches->currentPage() - 1) * $allBatches->perPage()) + $loop->iteration }}</td>
-							<td>{{$batch->sId}}</td>
-							<td>{{$batch->sName}}
+					<tr>
+						<td>{{ (($allBatches->currentPage() - 1) * $allBatches->perPage()) + $loop->iteration }}</td>
+						<td>{{$batch->sId}}</td>
+						<td>{{$batch->sName}}
 							@if($batch->is_drop == 1) <strong class="text-danger">(Withdrawn)</strong>@endif
-							</td>
-							<td>{{$batch->exName}}</td>
-							@if(currentUser() == 'superadmin')
-							<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
-							@endif
-							<td>
+						</td>
+						<td>{{$batch->exName}}</td>
+						@if(currentUser() == 'superadmin')
+						<td>{{\DB::table('references')->where('id',$batch->refId)->first()->refName}}</td>
+						@endif
+						<td>
 							@if(\DB::table('batches')->where('id',$batch->batch_id)->first())
 							{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}
 							@else
-								@if(\DB::table('courses')->where('id',$batch->course_id)->first())
-								{{\DB::table('courses')->where('id',$batch->course_id)->first()->courseName}}
-								@endif
+							@if(\DB::table('courses')->where('id',$batch->course_id)->first())
+							{{\DB::table('courses')->where('id',$batch->course_id)->first()->courseName}}
 							@endif
-							</td>
-							<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
-								@php $inv = \DB::table('payments')
-								->join('paymentdetails','paymentdetails.paymentId','payments.id')
-								->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists(); @endphp
-								@if($inv)
-								{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
+							@endif
+						</td>
+						<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
+							@php $inv = \DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists(); @endphp
+							@if($inv)
+							{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')}}
-								@else
-								-
-								@endif
-							</td>
-							<td>
-								@if(\DB::table('payments')
-								->join('paymentdetails','paymentdetails.paymentId','payments.id')
-								->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
-								{{\DB::table('payments')
+							@else
+							-
+							@endif
+						</td>
+						<td>
+							@if(\DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists())
+							{{\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
-								@else
-								-
-								@endif
-							</td>
-							
-							<td>
-							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
-								@if($batch->batch_id != 0)
-								{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('discount')}}
-								@else
-								{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')}}
-								@endif
-							@endif 
-							</td>
-							<td>
-							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' ) 
-								@if($batch->batch_id != 0)
-								{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}
-								@else
-								{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('cpaidAmount')}}
-								@endif
-							@endif	
-							</td>
-							
-							<td>
-							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager'  || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk') 
+							@else
+							-
+							@endif
+						</td>
+						@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
+						<td>
+
+							@if($batch->batch_id != 0)
+							{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('discount')}}
+							@else
+							{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')}}
+							@endif
+
+						</td>
+						<td>
+
+							@if($batch->batch_id != 0)
+							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')}}
+							@else
+							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('cpaidAmount')}}
+							@endif
+
+						</td>
+						<td>
+							@if($batch->batch_id != 0)
+							{{$batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount'))}}
+							@php $total_cpyable += $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('cpaidAmount')); @endphp
+							@else
+							{{$batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('cpaidAmount'))}}
+							@php $total_cpyable += $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('cpaidAmount')); @endphp
+							@endif
+						</td>
+						@endif
+
+						<td>
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk')
 							{{$batch->contact}}
 							@else
 							-
 							@endif
-							</td>
-							<td>
-								@if($batch->status == 2) Enroll @endif
-								@if($batch->status == 3) Knocking @endif
-								@if($batch->status == 4)Evaluation @endif
-							</td>
-							<td>
-								@if($batch->type == 1)
-								At a Time
-								@else
-								Installment
-								@endif
-							</td>
-							<td>
-								@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
-									@if($batch->batch_id == 0)
-									<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>B.Assign</a>
-									@endif
-								@endif
+						</td>
+						<td>
+							@if($batch->status == 2) Enroll @endif
+							@if($batch->status == 3) Knocking @endif
+							@if($batch->status == 4)Evaluation @endif
+						</td>
+						<td>
+							@if($batch->type == 1)
+							At a Time
+							@else
+							Installment
+							@endif
+						</td>
+						<td>
+							@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager')
+							@if($batch->batch_id == 0)
+							<a href="{{route(currentUser().'.editEnrollStudent',[encryptor('encrypt', $batch->sb_id)])}}" class="btn btn-info btn-sm"><i class="fas fa-edit mr-2"></i>B.Assign</a>
+							@endif
+							@endif
 
-								@if($batch->batch_id)
+							@if($batch->batch_id)
 
-									@php 
-									$sum = \DB::table('paymentdetails')
-									->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
-									->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
-									->first()
-									->total; 
+							@php
+							$sum = \DB::table('paymentdetails')
+							->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
+							->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
+							->first()
+							->total;
 
-									$deduct = \DB::table('paymentdetails')
-									->selectRaw('COALESCE(SUM(deduction), 0) as deduction')
-									->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
-									->first()
-									->deduction; 
-									
-									@endphp
+							$deduct = \DB::table('paymentdetails')
+							->selectRaw('COALESCE(SUM(deduction), 0) as deduction')
+							->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])
+							->first()
+							->deduction;
 
-									<!-- Withdraw Student From Batch -->
-									@php $withdraw_drop_allow = ['superadmin' , 'operationmanager'  , 'salesmanager']; @endphp
-									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
+							@endphp
 
-									<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
-									@csrf
-                      				<input name="id" type="hidden" value="{{$batch->sb_id}}">              
-                      				<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}" data-student="{{ $batch->sId }}" class="withdraw btn btn-secondary btn-sm" data-toggle="tooltip" title="Withdraw"><i class="fas fa-edit mr-2"></i>Drop</a>
-                  					</form>
-									@endif
+							<!-- Withdraw Student From Batch -->
+							@php $withdraw_drop_allow = ['superadmin' , 'operationmanager' , 'salesmanager']; @endphp
+							@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 0)
 
-									@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
-									<form id="withdraw-undo-form" action="{{route(currentUser().'.withdraw_undo')}}" style="display: inline;">
-									@csrf
-                      				<input name="id" type="hidden" value="{{$batch->sb_id}}">    
-									<input name="batch_id" type="hidden" value="{{$batch->batch_id}}">    
-									<input name="course_id" type="hidden" value="{{$batch->course_id}}">         
-                      				<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}" data-student="{{ $batch->sId }}" class="withdraw_undo btn btn-secondary btn-sm" data-toggle="tooltip" title="Undo Withdraw"><i class="fas fa-edit mr-2"></i>Undo</a>
-                  					</form>
-									@endif
-									
+							<form id="withdraw-active-form" action="{{route(currentUser().'.withdraw')}}" style="display: inline;">
+								@csrf
+								<input name="id" type="hidden" value="{{$batch->sb_id}}">
+								<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}" data-student="{{ $batch->sId }}" class="withdraw btn btn-secondary btn-sm" data-toggle="tooltip" title="Withdraw"><i class="fas fa-edit mr-2"></i>Drop</a>
+							</form>
+							@endif
 
-									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-										{{--@if($deduct < 0)--}}
-										<!-- <button type="button" class="btn btn-info btn-sm">Void</button> -->
-										@if($batch->op_type == 1)
-											<button type="button" class="btn btn-danger btn-sm">Refund</button>
-											@elseif($batch->op_type ==2)
-											<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
-											@elseif($batch->op_type ==3)
-											<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
-											@elseif($batch->op_type ==4)
-											<button type="button" class="btn btn-danger btn-sm">Repeat</button>
-											@elseif($batch->op_type ==5)
-											<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
-											@else
-											<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
-										@endif
-										{{--@else--}}
-										
-										{{--@endif--}}
-									
-									@elseif($batch->course_price == $sum && $batch->status == 2)
-										@if($batch->isBundel == 1)
-											Bundel Course
-										@else
-											{{--@if($deduct < 0)--}}
-												
-												
-												@if($batch->op_type ==1)
-												<button type="button" class="btn btn-danger btn-sm">Refund</button>
-												@elseif($batch->op_type ==2)
-												<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
-												@elseif($batch->op_type ==3)
-												<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
-												@elseif($batch->op_type ==4)
-												<button type="button" class="btn btn-danger btn-sm">Repeat</button>
-												@elseif($batch->op_type ==5)
-												<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
-												@else
-												<button type="button" class="btn btn-success btn-sm">Full Paid</button>
-												@endif
-												
-											{{--@else--}}
-											
-											{{--@endif--}}
-										@endif
-									@else
-										{{--@if($deduct < 0)--}}
-										<!-- <button type="button" class="btn btn-info btn-sm">Void</button> -->
-										{{--@else--}}
-										
-										{{--@endif--}}
-											@if($batch->op_type ==1)
-												<button type="button" class="btn btn-danger btn-sm">Refund</button>
-												@elseif($batch->op_type ==2)
-												<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
-												@elseif($batch->op_type ==3)
-												<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
-												@elseif($batch->op_type ==4)
-												<button type="button" class="btn btn-danger btn-sm">Repeat</button>
-												@elseif($batch->op_type ==5)
-												<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
-											@else
-												@if($inv && $batch->status == 2) <div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div> @elseif(empty($inv) && $batch->status == 2) <div class="btn btn-secondary btn-sm" style="font-weight:bold;">Reg. @else - @endif</div>
-											@endif
-									@endif
-									@if($sum > 0 && $deduct == 0)
-									<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>
-										@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager' && $deduct ==0)
-										<a href="{{route(currentUser().'.refund.edit',$batch->sId)}}" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Adjustment</a>
-										@endif
-									@endif
+							@if(in_array(currentUser(),$withdraw_drop_allow) && $sum > 0 && $batch->status == 2 && $batch->is_drop == 1)
+							<form id="withdraw-undo-form" action="{{route(currentUser().'.withdraw_undo')}}" style="display: inline;">
+								@csrf
+								<input name="id" type="hidden" value="{{$batch->sb_id}}">
+								<input name="batch_id" type="hidden" value="{{$batch->batch_id}}">
+								<input name="course_id" type="hidden" value="{{$batch->course_id}}">
+								<a href="javascript:void(0)" data-name="{{$batch->sName}}" data-batch="{{\DB::table('batches')->where('id',$batch->batch_id)->first()->batchId}}" data-student="{{ $batch->sId }}" class="withdraw_undo btn btn-secondary btn-sm" data-toggle="tooltip" title="Undo Withdraw"><i class="fas fa-edit mr-2"></i>Undo</a>
+							</form>
+							@endif
 
-								@else
-									@php $sum = \DB::table('paymentdetails')
-									->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
-									->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])
-									->first()
-									->total; @endphp
-									@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
-									<a href="{{route(currentUser().'.payments.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
-									@elseif($batch->course_price == $sum && $batch->status == 2)
-									<button type="button" class="btn btn-success btn-sm">Full Paid</button>
-									@else
-									<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
-									@endif
-									@if($sum > 0)
-									<a data-systemid="{{ $batch->systemId }}" data-course_id="{{ $batch->course_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payCourseHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>
-									@endif
-								@endif
-							</td>
-						</tr>
-					<!--</form>-->
-					@endforeach
-					@else
-					<tr>
-						<td colspan="6">No Data Found</td>
+
+							@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
+							{{--@if($deduct < 0)--}}
+							<!-- <button type="button" class="btn btn-info btn-sm">Void</button> -->
+							@if($batch->op_type == 1)
+							<button type="button" class="btn btn-danger btn-sm">Refund</button>
+							@elseif($batch->op_type ==2)
+							<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
+							@elseif($batch->op_type ==3)
+							<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
+							@elseif($batch->op_type ==4)
+							<button type="button" class="btn btn-danger btn-sm">Repeat</button>
+							@elseif($batch->op_type ==5)
+							<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
+							@else
+							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
+							@endif
+							{{--@else--}}
+
+							{{--@endif--}}
+
+							@elseif($batch->course_price == $sum && $batch->status == 2)
+							@if($batch->isBundel == 1)
+							Bundel Course
+							@php
+							$bundel_info = \DB::table('bundel_course_enroll')->where('student_id',$batch->sId)->first();
+							$bundel = \DB::table('student_batches')->where('student_id',$batch->sId)->where('id',$bundel_info->main_course_id)->first();
+							@endphp
+							@if(\DB::table('payments')
+							->join('paymentdetails','paymentdetails.paymentId','payments.id')
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.course_id' => $bundel->course_id])->whereNotNull('payments.invoiceId')->exists())
+
+							<strong>Invoice:-{{\DB::table('payments')
+												->join('paymentdetails','paymentdetails.paymentId','payments.id')
+												->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.course_id' => $bundel->course_id])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
+							</strong>
+							@endif
+
+
+
+							@else
+							{{--@if($deduct < 0)--}}
+
+
+							@if($batch->op_type ==1)
+							<button type="button" class="btn btn-danger btn-sm">Refund</button>
+							@elseif($batch->op_type ==2)
+							<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
+							@elseif($batch->op_type ==3)
+							<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
+							@elseif($batch->op_type ==4)
+							<button type="button" class="btn btn-danger btn-sm">Repeat</button>
+							@elseif($batch->op_type ==5)
+							<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
+							@else
+							<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+							@endif
+
+							{{--@else--}}
+
+							{{--@endif--}}
+							@endif
+							@else
+							{{--@if($deduct < 0)--}}
+							<!-- <button type="button" class="btn btn-info btn-sm">Void</button> -->
+							{{--@else--}}
+
+							{{--@endif--}}
+							@if($batch->op_type ==1)
+							<button type="button" class="btn btn-danger btn-sm">Refund</button>
+							@elseif($batch->op_type ==2)
+							<button type="button" class="btn btn-danger btn-sm">Adjustment</button>
+							@elseif($batch->op_type ==3)
+							<button type="button" class="btn btn-danger btn-sm">Batch Transfer</button>
+							@elseif($batch->op_type ==4)
+							<button type="button" class="btn btn-danger btn-sm">Repeat</button>
+							@elseif($batch->op_type ==5)
+							<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
+							@else
+							@if($inv && $batch->status == 2) <div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div> @elseif(empty($inv) && $batch->status == 2) <div class="btn btn-secondary btn-sm" style="font-weight:bold;">Reg. @else - @endif</div>
+							@endif
+							@endif
+							@if($sum > 0 && $deduct == 0)
+							<a data-systemid="{{ $batch->systemId }}" data-batch_id="{{ $batch->batch_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>
+							@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager' && $deduct ==0)
+							<a href="{{route(currentUser().'.refund.edit',$batch->sId)}}" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i>Adjustment</a>
+							@endif
+							@endif
+
+							@else
+							@php $sum = \DB::table('paymentdetails')
+							->selectRaw('COALESCE(SUM(cpaidAmount), 0) + COALESCE(SUM(discount), 0) as total')
+							->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])
+							->first()
+							->total; @endphp
+							@if($batch->course_price > $sum && $batch->status == 2 && strtolower(currentUser()) == 'accountmanager')
+							<a href="{{route(currentUser().'.payments.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-danger btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
+							@elseif($batch->course_price == $sum && $batch->status == 2)
+							<button type="button" class="btn btn-success btn-sm">Full Paid</button>
+							@else
+							<div class="btn btn-danger btn-sm" style="font-weight:bold;">Due</div>
+							@endif
+							@if($sum > 0)
+							<a data-systemid="{{ $batch->systemId }}" data-course_id="{{ $batch->course_id }}" data-student-id="{{ $batch->sId }}" data-student-name="{{ $batch->sName }}" href="#" data-toggle="modal" data-target="#payCourseHisModal" class="btn btn-primary btn-sm" title="Payment History">Detail</a>
+							@endif
+							@endif
+						</td>
 					</tr>
-					@endif
+				<!--</form>-->
+				@endforeach
+				@else
+				<tr>
+					<td colspan="6">No Data Found</td>
+				</tr>
+				@endif
 				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="9"></td>
+						<td>{{$total_cpyable}}</td>
+					</tr>
+				</tfoot>
 			</table>
 			{{$allBatches->links()}}
 		</div>
@@ -488,40 +525,39 @@
 
 	/*Withdraw Code */
 	$('.withdraw').on('click', function(event) {
-    var name = $(this).data("name");
-	var batch = $(this).data("batch");
-	var student_id = $(this).data("student");
-    event.preventDefault();
-    swal({
-        title: `Are want to withdraw Student ID#${student_id}|Name ${name} From Batch ${batch}?`,
-        icon: "success",
-        buttons: true,
-        dangerMode: false,
-      })
-      .then((willDelete) => {
-        if (willDelete) {
-			$(this).parent().submit();
-        }
-      });
-  });
-  $('.withdraw_undo').on('click', function(event) {
-    var name = $(this).data("name");
-	var batch = $(this).data("batch");
-	var student_id = $(this).data("student");
-    event.preventDefault();
-    swal({
-        title: `Are want to Undo withdraw Student ID#${student_id}|Name ${name} From Batch ${batch}?`,
-        icon: "success",
-        buttons: true,
-        dangerMode: false,
-      })
-      .then((willDelete) => {
-        if (willDelete) {
-			$(this).parent().submit();
-        }
-      });
-  });
-  
+		var name = $(this).data("name");
+		var batch = $(this).data("batch");
+		var student_id = $(this).data("student");
+		event.preventDefault();
+		swal({
+				title: `Are want to withdraw Student ID#${student_id}|Name ${name} From Batch ${batch}?`,
+				icon: "success",
+				buttons: true,
+				dangerMode: false,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$(this).parent().submit();
+				}
+			});
+	});
+	$('.withdraw_undo').on('click', function(event) {
+		var name = $(this).data("name");
+		var batch = $(this).data("batch");
+		var student_id = $(this).data("student");
+		event.preventDefault();
+		swal({
+				title: `Are want to Undo withdraw Student ID#${student_id}|Name ${name} From Batch ${batch}?`,
+				icon: "success",
+				buttons: true,
+				dangerMode: false,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$(this).parent().submit();
+				}
+			});
+	});
 </script>
 @if(Session::has('response'))
 <script>

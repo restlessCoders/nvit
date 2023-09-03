@@ -25,25 +25,25 @@
 				<p class="p-0" style="font-size:16px"><strong>Course Wise Report</strong></p>
 			</div>
 
-			<form action="{{route(currentUser().'.coursewiseStudent')}}" method="post" role="search">
+			<form action="{{route(currentUser().'.coursewiseStudent')}}" role="search">
 				@csrf
 				<div class="row">
 					<div class="col-sm-2">
 						<label for="course_id" class="col-form-label">Select Course</label>
 						<select name="course_id" class="js-example-basic-single form-control">
-							<option value="">Select Course</option>
+							<option></option>
 							@forelse($courses as $course)
-							<option value="{{$course->id}}">{{$course->courseName}}</option>
+							<option value="{{$course->id}}" @if(request()->get('course_id') == $course->id) selected @endif>{{$course->courseName}}</option>
 							@empty
 							@endforelse
 						</select>
 					</div>
 					<div class="col-sm-2">
 						<label for="executiveId" class="col-form-label">Select Executive</label>
-						<select name="executiveId" class="js-example-basic-single form-control">
-							<option value="">Select Executive</option>
+						<select name="executiveId" class="js-example-basic-single form-control me-3">
+							<option></option>
 							@forelse($executives as $e)
-							<option value="{{$e->id}}">{{$e->name}}</option>
+							<option value="{{$e->id}}" @if(request()->get('executiveId') == $e->id) selected @endif>{{$e->name}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -51,9 +51,9 @@
 					<div class="col-sm-2">
 						<label for="refId" class="col-form-label">Select Reference</label>
 						<select name="refId" class="js-example-basic-single form-control">
-							<option value="">Select Reference</option>
+							<option></option>
 							@forelse($references as $ref)
-							<option value="{{$ref->id}}">{{$ref->refName}}</option>
+							<option value="{{$ref->id}}" @if(request()->get('refId') == $ref->id) selected @endif>{{$ref->refName}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -61,9 +61,9 @@
 					<div class="col-sm-3">
 						<label for="refId" class="col-form-label">Select Slot</label>
 						<select name="slotId" class="js-example-basic-single form-control">
-							<option value="">Select Batch Slot</option>
+							<option></option>
 							@forelse($batch_slots as $bs)
-							<option value="{{$bs->id}}">{{$bs->slotName}}</option>
+							<option value="{{$bs->id}}" @if(request()->get('slotId') == $bs->id) selected @endif>{{$bs->slotName}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -71,9 +71,9 @@
 					<div class="col-sm-3">
 						<label for="refId" class="col-form-label">Select Time</label>
 						<select name="timeId" class="js-example-basic-single form-control">
-							<option value="">Select Batch Time</option>
+							<option></option>
 							@forelse($batch_times as $bt)
-							<option value="{{$bt->id}}">{{$bt->time}}</option>
+							<option value="{{$bt->id}}" @if(request()->get('timeId') == $bt->id) selected @endif>{{$bt->time}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -99,6 +99,7 @@
 						<th>Executive</th>
 						<th>Reference</th>
 						<th>Course</th>
+						<th>Price</th>
 						<th width="200px">Batch Slot</th>
 						<th width="200px">Batch Time</th>
 						<th>Created At</th>
@@ -106,8 +107,10 @@
 					</tr>
 				</thead>
 				<tbody>
+					@php $projection = 0; @endphp
 					@if(count($courses_pre))
 					@foreach($courses_pre as $course)
+					@php $projection += \DB::table('courses')->where('id',$course->course_id)->first()->rPrice; @endphp
 					<tr>
 						<td>{{$loop->iteration}}</td>
 						<td>{{$course->sId}}</td>
@@ -115,6 +118,7 @@
 						<td>{{$course->exName}}</td>
 						<td>{{\DB::table('references')->where('id',$course->refId)->first()->refName}}</td>
 						<td>{{\DB::table('courses')->where('id',$course->course_id)->first()->courseName}}</td>
+						<td>{{\DB::table('courses')->where('id',$course->course_id)->first()->rPrice}}</td>
 						<td>{{\DB::table('batchslots')->where('id',$course->batch_slot_id)->first()->slotName}}</td>
 						<td>{{\DB::table('batchtimes')->where('id',$course->batch_time_id)->first()->time}}</td>
 						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($course->created_at))->format('j M, Y')}}</td>
@@ -127,10 +131,16 @@
 					@endforeach
 					@else
 					<tr>
-						<td colspan="6">No Data Found</td>
+						<td colspan="11">No Data Found</td>
 					</tr>
 					@endif
 				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="6"></td>
+						<td>{{$projection}}</td>
+					</tr>
+				</tfoot>
 			</table>
 			{{$courses_pre->links()}}
 		</div>
@@ -144,7 +154,10 @@
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
-	$('.js-example-basic-single').select2();
+	$('.js-example-basic-single').select2({
+		placeholder: 'Select Option',
+		allowClear: true
+	});
 </script>
 @if(Session::has('response'))
 <script>

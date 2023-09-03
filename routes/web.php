@@ -171,7 +171,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*=== Course Report= ==*/
         Route::get('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('superadmin.coursewiseStudent');
-        Route::post('/course/wise/report', [ReportController::class, 'coursewiseStudent'])->name('superadmin.coursewiseStudent');
+
         /*Course Enroll Report */
         Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('superadmin.coursewiseEnrollStudent');
         Route::post('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('superadmin.coursewiseEnrollStudent');
