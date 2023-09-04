@@ -616,6 +616,10 @@ class ReportController extends Controller
                     $data .= '<input type="hidden" name="postingDate" value="'.$pdate->postingDate.'">';
                     $data .= '<button type="submit" class="btn btn-sm btn-warning">Edit</button>';
                     $data .= '</form>';
+                    $data .= '<form action="' . route(currentUser() . '.attendance.destroy',$request->batch_id) . '" method="post"> ' . csrf_field() . ' ' . method_field('DELETE') . '';
+                    $data .= '<input type="hidden" name="postingDate" value="'.$pdate->postingDate.'">';
+                    $data .= '<button type="submit" class="btn btn-sm btn-danger">Delete</button>';
+                    $data .= '</form>';
                 }
                 $data .='<p class="m-0 p-0">' . \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('D') . '</p>
             </th>';

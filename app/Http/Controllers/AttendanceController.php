@@ -141,8 +141,15 @@ class AttendanceController extends Controller
      * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Attendance $attendance)
+    public function destroy(Request $request, $id)
     {
-        //
+        try {
+        $attendance = DB::table('attendances')->where('batch_id', $id)->where('postingDate', \Carbon\Carbon::createFromTimestamp(strtotime($request->postingDate))->format('Y-m-d'))->delete();
+        if($attendance) return redirect(route(currentUser().'.attendance.index'))->with($this->responseMessage(true, null, 'Attendance Deleted'));
+        } catch (Exception $e) {
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }
     }
 }
