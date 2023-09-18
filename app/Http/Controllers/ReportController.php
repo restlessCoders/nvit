@@ -346,12 +346,13 @@ class ReportController extends Controller
     }
     public function batchwiseCompletionReport(Request $request)
     {
+        $postingDate = DB::table('attendances')->select('postingDate','edit_allow')->where('batch_id', $request->batch_id)->groupBy('postingDate')->get();
         $batch_data = Batch::find($request->batch_id);
         $image_path = asset('backend/images/logo.webp');
         $data = '<div style="width:10%;display:inline-block;"><img src=' . $image_path . ' alt="" height="40"></div>';
         $data .=     '<div style="width:90%;display:inline-block;text-align:center;"><h4 class="m-0 p-0 text-center" style="font-size:11px;font-weight:700;">NEW VISION INFORMATION TECHNOLOGY LTD.</h4>';
         $data .= '<p class="m-0 p-0 text-center" style="font-size:9px"><strong class="text-center">Course : ' . \DB::table('courses')->where('id', $batch_data->courseId)->first()->courseName . '</strong></p>';
-        $data .=     '<p class="m-0 p-0 text-center" style="font-size:9px"><strong>Batch Completion Report</strong></p></div>';
+        $data .=     '<p class="m-0 p-0 text-center" style="font-size:9px"><strong>Batch Completion Report</strong></p><p><strong>Total Class:-'.$postingDate->count().'</strong></p></div>';
 
 
 
@@ -412,7 +413,8 @@ class ReportController extends Controller
             '</td>';
             $data .= '<td style="border:1px solid #000;color:#000;">' . \DB::table('users')->where('id', $s_data->executiveId)->first()->username . '</td>';
             if ($cer_data) {
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[' . $s_data->id . ']" value="' . $cer_data->attn . '"></td>';
+                //$data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[' . $s_data->id . ']" value="' . $cer_data->attn . '"></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[' . $s_data->id . ']" value="' . Attendance::where('student_id', $s_data->id)->where('batch_id', $request->batch_id)->where('isPresent', '=', 1)->count()  . '"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[' . $s_data->id . ']" ' . ($cer_data->perf == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
 
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[' . $s_data->id . ']" ' . ($cer_data->pass == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
@@ -420,7 +422,7 @@ class ReportController extends Controller
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[' . $s_data->id . ']" ' . ($cer_data->drop == 1 ? 'checked="checked"' : '') . ' value="1"></td>';
                 $data .= '<input type="hidden" name="posting_date[]" value="' . date('Y-m-d', strtotime($cer_data->created_at)) . '">';
             } else {
-                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[' . $s_data->id . ']" value=""></td>';
+                $data .= '<td style="border:1px solid #000;color:#000;"><input size="2" type="text" name="attn[' . $s_data->id . ']" value="' . Attendance::where('student_id', $s_data->id)->where('batch_id', $request->batch_id)->where('isPresent', '=', 1)->count()  . '" readonly></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="perf[' . $s_data->id . ']" value="1"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="pass[' . $s_data->id . ']" value="1"></td>';
                 $data .= '<td style="border:1px solid #000;color:#000;"><input size="1" type="checkbox" name="drop[' . $s_data->id . ']" value="1"></td>';
