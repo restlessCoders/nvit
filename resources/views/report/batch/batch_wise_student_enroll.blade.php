@@ -406,7 +406,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="@if(currentUser() == 'Superadmin') 8 @else 9 @endif"></td>
+						<td colspan="@if(currentUser() == 'Superadmin') 9 @else 10 @endif"></td>
 						<td>{{$total_cpyable}}</td>
 					</tr>
 				</tfoot>
