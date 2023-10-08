@@ -376,10 +376,10 @@ print_r($stData);die;*/
                 $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
                 
                 if ($cpaidAmount[$key] < $cPayable[$key]+$discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] ==2) {
-                    //$payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
-                    $date = new Carbon($dueDate[$key]);
+                    $payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
+                    /*$date = new Carbon($dueDate[$key]);
                     $date->addMonth();
-                    $payment_detail['dueDate']      = $date->toDateString();
+                    $payment_detail['dueDate']      = $date->toDateString();*/
                 }
                 $payment_detail['created_at']       = date("Y-m-d h:i:s");
                 /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
