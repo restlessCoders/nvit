@@ -135,7 +135,7 @@
 					</div>
 				</div>
 			</form>
-			<button type="btn btn-primary my-2" class="excelExport">Excel</button>
+			<button type="btn btn-primary" class="excelExport" style="margin:10px 0;">Excel</button>
 			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;" id="table1">
 				<thead>
 					<tr>
