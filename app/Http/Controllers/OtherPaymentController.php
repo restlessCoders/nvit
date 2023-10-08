@@ -253,6 +253,13 @@ class OtherPaymentController extends Controller
                                     </div>
                                 </div>
                             </td>';
+                $inv = \DB::table('payments')
+                ->join('paymentdetails','paymentdetails.paymentId','payments.id')
+                ->where(['paymentdetails.studentId'=>$request->sId,'paymentdetails.course_id' => $s->course_id])->whereNotNull('payments.invoiceId')->first();
+                if($inv)
+                $data .= '<script>$("input[name=\'invoiceId\']").val('.$inv->invoiceId.');$("#feeType").val("2");</script>';
+                else
+                $data .= '<script>$("#feeType").val("1");</script>';
                 $data .= '<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option value="1" selected>Cash</option><option value="2">Bkash</option><option value="3">Card</option></select></td>';
                 $data .= '<td><select class="form-control" id="feeType" name="feeType[]" required><option value="">Select</option>';
                 $data .= '<option value="1" selected>Registration</option><option value="2" required>Course</option></select></td>';
@@ -413,6 +420,7 @@ class OtherPaymentController extends Controller
             $discount        = $request->post('discount');
             $payment_mode        = $request->post('payment_mode');
             $feeType        = $request->post('feeType');
+            $dueDate        = $request->post('dueDate');
 
             //$m_price	    = $request->post('m_price');
             foreach ($request->cpaidAmount as $key => $cdata) {
@@ -423,6 +431,7 @@ class OtherPaymentController extends Controller
                 /*$payment_detail['mrNo']             = $request->mrNo;*/
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['course_id']          = $course_id[$key];
+                $payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
                 $payment_detail['batchId']          = 0;
                 $payment_detail['cPayable']         = $cPayable[$key];
                 $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
