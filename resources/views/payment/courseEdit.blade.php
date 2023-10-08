@@ -107,8 +107,8 @@
                         <p class="my-0">{{$p->course->courseName}}</p>
                         <p class="my-0">{{$studentsBatches->created_at}}</p>
                     </td>
-                    <input type="text" name="id[]" value="{{$p->id}}">
-                    <input type="text" name="course_id[]" value="{{$p->course_id}}">
+                    <input type="hidden" name="id[]" value="{{$p->id}}">
+                    <input type="hidden" name="course_id[]" value="{{$p->course_id}}">
                     <td><input type="text" class="form-control" readonly value="{{$studentsBatches->price}}"></td>
                     <td><select class="form-control" name="payment_type[]">
                             <option value=""></option>

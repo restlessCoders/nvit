@@ -655,7 +655,7 @@ class ReportController extends Controller
 
             foreach ($postingDate as $pdate) {
                 $attendance_data = Attendance::where('student_id', $batch_student->student_id)->where('batch_id', $batch_data->id)->where('postingDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('Y-m-d'))->first();
-                //if ($attendance_data !== null) 
+                //if ($attendance_data !== null && $attendance_data->isPresent == 1) 
                 if ($attendance_data->isPresent == 1)
                     $data .= '<th style="border:1px solid #000;color:#fff;background-color:green;text-align:center;"><strong>P</strong></th>';
                 else

@@ -141,6 +141,8 @@ print_r($stData);die;*/
     //dd($queries);
         //return response()->json(array('sdata' => $stData));
 
+        
+
         $data = '<h5 style="font-size:18px;line-height:20px;">Recipt Details</h5>';
         $data .= '<table class="table table-sm table-bordered mb-3 text-center" style="font-size: small;">
                 <thead>
@@ -158,7 +160,7 @@ print_r($stData);die;*/
                             <input type="hidden" value="' . Session::get("user") . '" name="userId">
                         </td>
                         <td>
-                            <input type="text" id="invoiceId" class="form-control" name="invoiceId" class="form-control">
+                            <input type="text" id="invoiceId" class="form-control" name="invoiceId" class="form-control" value="">
                         </td>
                         <td>
                             <div class="input-group">
@@ -210,7 +212,13 @@ print_r($stData);die;*/
                         <p class="my-0">' . $s->entryDate . '</p>
                     </td>';
                 }
-
+                $inv = \DB::table('payments')
+                ->join('paymentdetails','paymentdetails.paymentId','payments.id')
+                ->where(['paymentdetails.studentId'=>$request->sId,'paymentdetails.batchId' => $s->batch_id])->whereNotNull('payments.invoiceId')->first();
+                if($inv)
+                $data .= '<script>$("input[name=\'invoiceId\']").val('.$inv->invoiceId.');$("#feeType").val("2");</script>';
+                else
+                $data .= '<script>$("#feeType").val("1");</script>';
                 //$inv = DB::table('paymentdetails')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
                 //return response()->json(array('data' =>$inv));
                 /*if(is_null($inv)){
@@ -233,7 +241,7 @@ print_r($stData);die;*/
                             </td>';
                 $data .= '<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option selected value="1">Cash</option><option value="2">Bkash</option><option value="3">Bank</option></select></td>';
                 $data .= '<td><select class="form-control" id="feeType" name="feeType[]" required><option value="">Select</option>';
-                $data .= '<option selected value="1">Registration</option><option value="2" required>Course</option></select></td>';
+                $data .= '<option value="1">Registration</option><option value="2" required>Course</option></select></td>';
                 $data .= '<td><input type="text" name="discount[]" class="paidpricebyRow form-control" id="discountbyRow_' . $key . '"  onkeyup="checkPrice(' . $key . ')"></td>';
                 $data .= '<td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" required id="paidpricebyRow_' . $key . '" onkeyup="checkPrice(' . $key . ')"></td>';
                 $data .= '<td><input name="cPayable[]" type="text" class="form-control" readonly value="' . ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount)) . '" id="coursepricebyRow_' . $key . '"></td>';
@@ -525,7 +533,8 @@ print_r($stData);die;*/
             $feeType        = $request->post('feeType');
             $invoiceId      = $request->post('invoiceId');
             $batch_id       = $request->post('batch_id');
-
+            $course_id       = $request->post('course_id');
+            
             //$m_price	    = $request->post('m_price');
             $tpaidAmt = 0;
             foreach ($request->id as $key => $cdata) {
@@ -533,16 +542,29 @@ print_r($stData);die;*/
                 $payment_detail = Paymentdetail::findOrFail($id[$key]);
                 //$payment_detail['mrNo']             = $request->mrNo;
                 //$payment_detail['invoiceId']        = $invoiceId[$key]?$invoiceId[$key]:null;
-                $payable = DB::table('paymentdetails')->where('studentId', '=', $request->studentId)->where('batchId', '=', $batch_id[$key])->get();
+                $payable = DB::table('paymentdetails')->where('studentId', '=', $request->studentId);
+                if($batch_id)
+                $payable = $payable->where('batchId', '=', $batch_id[$key])->get();
+                else
+                $payable = $payable->where('course_id', '=', $course_id[$key])->get();
                 /*To Update Account Approve */
-                $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
+                $s_batch_data = DB::table('student_batches');
+                if($batch_id)
+                $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
+                else
+                $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'course_id' => $course_id[$key]])->first();
                 $psum = 0;
                 $pcourse_price = 0;
                 foreach ($payable as $p) {
                     $sum = DB::table('paymentdetails')
                         ->where('id', '<', $p->id)
-                        ->where('studentId', '=', $request->studentId)->where('batchId', '=', $batch_id[$key])
-                        ->sum('cpaidAmount');
+                        ->where('studentId', '=', $request->studentId);
+                        if($batch_id)
+                        $sum->where('batchId', '=', $batch_id[$key]);
+                        else
+                        $sum->where('course_id', '=', $course_id[$key]);
+
+                    $sum = $sum->sum('cpaidAmount');
 
                     $sum_cpayable = DB::table('paymentdetails')
                     ->where('paymentId', $p->paymentId)
