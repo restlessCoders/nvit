@@ -431,7 +431,9 @@ class OtherPaymentController extends Controller
                 /*$payment_detail['mrNo']             = $request->mrNo;*/
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['course_id']          = $course_id[$key];
+                if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
                 $payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
+                }
                 $payment_detail['batchId']          = 0;
                 $payment_detail['cPayable']         = $cPayable[$key];
                 $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
