@@ -28,7 +28,7 @@
 				@csrf
 				<div class="row">
 					<div class="col-sm-6">
-						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
+						<label for="name" class="col-form-label">Student Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
 					<div class="col-sm-3">
@@ -100,7 +100,7 @@
 							@endforelse
 						</select>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-1">
 						<label for="name" class="col-form-label">Fee Type</label>
 						<select name="feeType" class="js-example-basic-single form-control me-3">
 							<option></option>
@@ -118,13 +118,24 @@
 							<option value="3" @if(request()->get('type') == 3) selected @endif>Bank</option>
 						</select>
 					</div>
+					<div class="col-sm-1">
+						<label for="perPage" class="col-form-label">Per Page</label>
+						<select name="perPage" class="js-example-basic-single form-control">
+							<option></option>
+							<option value="25" @if(request()->get('perPage') == 25) selected @endif>25</option>
+							<option value="50" @if(request()->get('perPage') == 50) selected @endif>50</option>
+							<option value="100" @if(request()->get('perPage') == 100) selected @endif>100</option>
+							<option value="250" @if(request()->get('perPage') == 250) selected @endif>250</option>
+							<option value="500" @if(request()->get('perPage') == 500) selected @endif>500</option>
+						</select>
+					</div>
 					<div class="col-sm-12 d-flex justify-content-end my-1">
 						<button type="submit" class="btn btn-primary"><i class="fa fa-search fa-sm"></i></button>
 						<a href="{{route(currentUser().'.daily_collection_report_by_mr')}}" class="ml-2 reset-btn btn btn-warning"><i class="fa fa-undo fa-sm"></i></a>
 					</div>
 				</div>
 			</form>
-			<button type="btn btn-primary excelExport">Excel</button>
+			<button type="btn btn-primary my-2" class="excelExport">Excel</button>
 			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;" id="table1">
 				<thead>
 					<tr>
@@ -301,11 +312,6 @@
 			TableToExcel.convert(document.getElementById("table1"));
 		});
 	});
-	/*$('.excelExport').on('click',  function() {
-		TableToExcel.convert(document.getElementById("table1"));
-	});*/
-
-	//TableToExcel.convert(document.getElementById("table1"));
 	$('.payment').on('click', '.delete', function(event) {
 		event.preventDefault();
 		swal({

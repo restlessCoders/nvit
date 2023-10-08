@@ -85,7 +85,7 @@ class PaymentReportController extends Controller
             $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
         }  
         
-        $perPage = 20;
+        $perPage = $request->perPage?$request->perPage:25;
         $payments = $payments->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'studentId' => $request->studentId,
