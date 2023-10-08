@@ -125,7 +125,7 @@
 				</div>
 			</form>
 			<button type="btn btn-primary excelExport">Excel</button>
-			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;">
+			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;" id="table1">
 				<thead>
 					<tr>
 						<th width="100px">Date</th>
@@ -296,11 +296,16 @@
 		placeholder: 'Select Option',
 		allowClear: true
 	});
+	$(document).ready(function() {
+		$('.excelExport').on('click', function() {
+			TableToExcel.convert(document.getElementById("table1"));
+		});
+	});
 	/*$('.excelExport').on('click',  function() {
 		TableToExcel.convert(document.getElementById("table1"));
 	});*/
 
-	TableToExcel.convert(document.getElementById("table1"));
+	//TableToExcel.convert(document.getElementById("table1"));
 	$('.payment').on('click', '.delete', function(event) {
 		event.preventDefault();
 		swal({
