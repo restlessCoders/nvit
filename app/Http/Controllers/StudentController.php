@@ -536,7 +536,7 @@ class StudentController extends Controller
     }
     public function active($id)
     {
-        $dumpStudent = Student::findOrFail(encryptor('decrypt', $id));
+        $dumpStudent = Student::findOrFail($id);
         $dumpStudent->status = 1;
         $dumpStudent->save();
         return back();

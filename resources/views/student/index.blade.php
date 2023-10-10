@@ -351,7 +351,7 @@
 				{{$allactiveStudent->links()}}
 			</div>
 			<div class="tab-pane fade" id="dump_students" role="tabpanel" aria-labelledby="dump-students-tab">
-				<table class="responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+				<table class="dump_students responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 					<thead>
 						<tr>
 							<th>SL.</th>
@@ -394,6 +394,11 @@
 								@endif
 							</td>
 							<td>
+								<form id="active-form" method="POST" action="{{route(currentUser().'.activeStudent',$student->id)}}">
+								@csrf
+								<input name="_method" type="hidden" value="PUT">
+								<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
+								</form>
 								@if(strtolower(currentUser()) == 'superadmin')
 								<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-edit text-info font-16"></i>Edit</a><br>
 								<a href="{{route(currentUser().'.studentCourseAssign',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-pen text-info success-16"></i>Course Assign</a><br>
@@ -464,7 +469,7 @@
 	});
 </script>
 <script>
-	$('.waiting-student tbody').on('click', '.active_student', function(event) {
+	$('.dump_students tbody').on('click', '.active_student', function(event) {
 		var name = $(this).data("name");
 		event.preventDefault();
 		swal({
