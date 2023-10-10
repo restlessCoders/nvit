@@ -526,7 +526,10 @@ class StudentController extends Controller
     public function dump($id)
     {
         $dumpStudent = Student::findOrFail(encryptor('decrypt', $id));
-        $dumpStudent->executiveId = 0;
+        //Here We need to use dump if free executive id will be zero 
+        // first dump then need to make it delete by superadmin
+        // need to keep recored for dumping if reson is wrong data it will delete
+        //$dumpStudent->executiveId = 0;
         $dumpStudent->status = 3;
         $dumpStudent->save();
         return back();
