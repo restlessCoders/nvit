@@ -146,7 +146,7 @@
 				</div>
 			</form>
 
-			<div class="tab-pane fade in active show" id="active_students" role="tabpanel" aria-labelledby="active-students-tab">
+			<div class="active_students tab-pane fade in active show" id="active_students" role="tabpanel" aria-labelledby="active-students-tab">
 				<table class="table table-sm table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 					<thead>
 						<tr class="text-center">
@@ -251,7 +251,12 @@
 								<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
 								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#stuDetl" class="text-success" title="details"><i class="far fa-trash-alt mr-1"></i></a>
 								<!-- <a href="" class="text-warning" title="note"><i class="fas fa-redo-alt"></i></a> -->
-								<a href="" class="text-purple" title="dump"><i class="fas fa-dumpster"></i></a>
+								<form method="POST" action="{{route(currentUser().'.dumpStudent',[encryptor('encrypt', $student->id)])}}" style="display: inline;">
+								@csrf
+								@method('PUT')
+								<input name="_method" type="hidden" value="PUT">
+								<a href="javascript:void(0)" data-status="{{$student->status}}" data-name="{{$student->name}}" type="submit" class="dump mr-2 text-purple" data-toggle="tooltip" title="Dump"><i class="fas fa-dumpster"></i></a>
+								</form>
 								@endif
 							</td>
 
@@ -441,7 +446,7 @@
 @endif
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script>
-	$('.responsive-datatable tbody').on('click', '.dump', function(event) {
+	$('.active_students').on('click', '.dump', function(event) {
 		var name = $(this).data("name");
 		event.preventDefault();
 		swal({
@@ -453,7 +458,7 @@
 			})
 			.then((willDelete) => {
 				if (willDelete) {
-					$('#dump-form').submit();
+					$(this).parent().submit();
 				}
 			});
 	});
