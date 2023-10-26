@@ -839,10 +839,10 @@ class StudentController extends Controller
 
         $newbatchId = DB::table('batch_transfers')->where(['student_id' => $request->id])->pluck('newbatchId')->toArray();
         $allBatch = DB::table('batches')
-            //->join('student_batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
+            ->join('student_batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
             ->selectRaw('batches.id,batches.batchId,batches.courseId,batches.startDate,batches.endDate,batches.bslot,batches.btime,batches.trainerId,batches.examDate,batches.examTime,batches.examRoom,batches.seat,batches.status,batches.created_at,batches.updated_at,count(student_batches.student_id) as tst')
             ->whereNotIn('batches.id', $newbatchId)
-            //->groupBy('student_batches.batch_id')
+            ->groupBy('student_batches.batch_id')
             ->get();
 
         $data2 = '<label for="newbatchId" class="col-sm-3 col-form-label">To Batch</label>
