@@ -853,6 +853,10 @@ class StudentController extends Controller
             $data2 .= '<option value="' . $b->id . '">' . $b->batchId . '</option>';
         }
         $data2 .= '</select></div>';
+        $data2 .= '<script>$(\'.js-example-basic-single\').select2({
+            placeholder: \'Select Option\',
+            allowClear: true
+        });</script>';
         return response()->json(array('data' => $data, 'data2' => $data2));
     }
     /*=========Course Preference==== */

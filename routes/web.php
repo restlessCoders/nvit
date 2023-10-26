@@ -615,6 +615,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         Route::get('/payment/data', [PaymentController::class, 'paymentData'])->name('accountmanager.paymentData');
 
         Route::resource('/payment', PaymentController::class, ["as" => "accountmanager"]);
+        Route::post('/payment-update', [PaymentController::class,'newStore'])->name('accountmanager.newStore');
 
         /*=== Payment Edit====*/
         Route::get('/payment/report/{id}/{sId}', [PaymentController::class, 'edit'])->name('accountmanager.payment.edit');

@@ -263,11 +263,11 @@
 							{{--|| currentUser() == 'superadmin'--}}
 							@if(currentUser() == 'accountmanager')
 							@if($p->batchId)
-							<a href="{{route(currentUser().'.payment.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
+							<a href="{{route(currentUser().'.payment.edit',[encryptor('encrypt', $p->id),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
 							@else
-							<a href="{{route(currentUser().'.payment.course.edit',[encryptor('encrypt', $p->paymentId),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
+							<a href="{{route(currentUser().'.payment.course.edit',[encryptor('encrypt', $p->id),$p->studentId])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
 							@endif
-							{{--<form method="POST" action="{{route(currentUser().'.payment.destroy',[encryptor('encrypt', $p->paymentId)])}}" style="display: inline;">
+							{{--<form method="POST" action="{{route(currentUser().'.payment.destroy',[encryptor('encrypt', $p->id)])}}" style="display: inline;">
 							@csrf
 							@method('DELETE')
 							<input name="_method" type="hidden" value="DELETE">
