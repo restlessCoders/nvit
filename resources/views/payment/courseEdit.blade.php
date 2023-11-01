@@ -166,9 +166,9 @@
 										resize:none;">{{ $paymentdetl->accountNote }}</textarea>
                 </div>
             </div>
-            <div class="float-right mt-2">
+            {{--<div class="float-right mt-2">
                 <button type="submit" class="btn btn-primary waves-effect waves-light" id="submit-btn">Update Payment</button>
-            </div>
+            </div>--}}
             <div class="clearfix"></div>
             </form>
         </div>
