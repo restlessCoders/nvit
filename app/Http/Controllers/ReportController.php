@@ -655,8 +655,8 @@ class ReportController extends Controller
 
             foreach ($postingDate as $pdate) {
                 $attendance_data = Attendance::where('student_id', $batch_student->student_id)->where('batch_id', $batch_data->id)->where('postingDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($pdate->postingDate))->format('Y-m-d'))->first();
-                //if ($attendance_data !== null && $attendance_data->isPresent == 1) 
-                if ($attendance_data->isPresent == 1)
+                if ($attendance_data !== null && $attendance_data->isPresent == 1) 
+                // if ($attendance_data->isPresent == 1)
                     $data .= '<th style="border:1px solid #000;color:#fff;background-color:green;text-align:center;"><strong>P</strong></th>';
                 else
                     $data .= '<th style="border:1px solid #000;color:#fff;background-color:red;text-align:center;"><strong>A</strong></th>';
@@ -736,28 +736,33 @@ class ReportController extends Controller
     }
     public function assign_single_batch_toEnrollStudent(Request $request, $id)
     {
-
-
+        DB::beginTransaction();
         if ($request->batch_id) {
-            $seat_data = DB::select("SELECT COUNT(student_batches.id) as tst ,batches.seat as seat_available FROM batches
+            $seat_data = DB::select("SELECT COALESCE(COUNT(student_batches.id), 0) as tst ,batches.seat as seat_available FROM batches
                         left join student_batches on student_batches.batch_id=batches.id
                         WHERE batches.id=$request->batch_id and 
                         student_batches.status=2 and student_batches.is_drop = 0
                         GROUP by student_batches.batch_id,batches.seat");
             /*print_r($seat_data);
             die;*/
-            if ($seat_data[0]->tst >= $seat_data[0]->seat_available) {
-                return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
-            } else {
-                DB::beginTransaction();
-                DB::table('student_batches')->where('id', $id)->update(['batch_id' => $request->batch_id]);
-                /*Also Have to update Batch Id paymentdetails table */
-                $batch_data = DB::table('student_batches')->where('id', $id)->first();
-                //print_r($batch_data);die;
-                DB::table('paymentdetails')->where('studentId', $batch_data->student_id)->where('course_id', $batch_data->course_id)->update(['batchId' => $request->batch_id]);
-                DB::commit();
-                return redirect()->route(currentUser() . '.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
+            if($seat_data){
+                if ($seat_data[0]->tst >= $seat_data[0]->seat_available) {
+                    return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+                }
+            }else{
+                $seat_data = DB::select("SELECT batches.seat as seat_available FROM batches WHERE batches.id=$request->batch_id");
+                if(!$seat_data){
+                    return redirect()->back()->with($this->responseMessage(false, null, 'Please Assing Seat In Bathces'));
+                }
             }
+            DB::table('student_batches')->where('id', $id)->update(['batch_id' => $request->batch_id]);
+            /*Also Have to update Batch Id paymentdetails table */
+            $batch_data = DB::table('student_batches')->where('id', $id)->first();
+            //print_r($batch_data);die;
+            DB::table('paymentdetails')->where('studentId', $batch_data->student_id)->where('course_id', $batch_data->course_id)->update(['batchId' => $request->batch_id]);
+            DB::commit();
+            return redirect()->route(currentUser() . '.batchwiseEnrollStudent')->with($this->responseMessage(true, null, 'Batch Assigned Successfully'));
+
         } else {
             return redirect()->back()->with($this->responseMessage(false, 'error', 'Please Select Batch!'));
         }
