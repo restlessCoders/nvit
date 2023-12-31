@@ -41,11 +41,23 @@
 						<label for="name" class="col-form-label">Month</label>
 						<select name="month" class="js-example-basic-single form-control me-3">
 							<option value="">Month</option>
+							<option value="1">Jan</option>
+							<option value="2">Feb</option>
+							<option value="3">Mar</option>
+							<option value="4">Apr</option>
+							<option value="5">May</option>
+							<option value="6">June</option>
+							<option value="7">July</option>
+							<option value="8">August</option>
+							<option value="9">September</option>
+							<option value="10">October</option>
+							<option value="11">November</option>
+							<option value="12">December</option>
 							@php
-							$months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
-							for($i=0;$i<=count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
-								@php
-								}
+							// $months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
+							// for($i=0;$i<=count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
+							// 	@php
+							// 	}
 								@endphp
 						</select>
 					</div>
