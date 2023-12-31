@@ -43,7 +43,7 @@
 							<option value="">Month</option>
 							@php
 							$months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
-							for($i=1;$i<=count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
+							for($i=0;$i<=count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
 								@php
 								}
 								@endphp
