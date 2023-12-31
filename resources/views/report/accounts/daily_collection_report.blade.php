@@ -53,12 +53,6 @@
 							<option value="10">October</option>
 							<option value="11">November</option>
 							<option value="12">December</option>
-							@php
-							// $months = array("Jan", "Feb", "Mar", "Apr","May","June","July","August","September","October","November","December");
-							// for($i=0;$i<count($months);$i++){ @endphp <option value="{{date("n", strtotime($months[$i]))}}">{{$months[$i]}}</option>
-							// 	@php
-							// 	}
-								@endphp
 						</select>
 					</div>
 					<!-- <div class="col-sm-3">
