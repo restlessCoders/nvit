@@ -396,7 +396,7 @@ print_r($stData);die;*/
                 $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
                 /* print_r($batch_id);die;
  print_r($s_batch_data);die;*/
-                if ($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]+$discount[$key]) {
+                /*if ($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]+$discount[$key]) {
                     $data = array(
                         'acc_approve' => $invoiceId ? 2 : 1,
                         'updated_at' => Carbon::now(),
@@ -418,6 +418,13 @@ print_r($stData);die;*/
                         DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
                     }
                     
+                }*/
+                if ($request->invoiceId) {
+                    $data = array(
+                        'acc_approve' => 2,
+                        'updated_at' => Carbon::now(),
+                    );
+                    DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
                 }
                 DB::commit();
             }

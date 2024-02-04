@@ -47,7 +47,7 @@
 						<select name="year" class="js-example-basic-single form-control me-3">
 							<option></option>
 							@php
-							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}" @if(request()->get('year') == $i) selected @endif>{{$i}}</option>
+							for($i=2023;$i<=date('Y');$i++){ @endphp <option value="{{$i}}" @if(request()->get('year') == $i) selected @endif>{{$i}}</option>
 								@php
 								}
 								@endphp

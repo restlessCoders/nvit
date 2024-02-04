@@ -31,7 +31,7 @@
 						<select name="year" class="js-example-basic-single form-control me-3">
 							<option value="">Select Year</option>
 							@php
-							for($i=2023;$i<=2023;$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
+							for($i=2023;$i<=date('Y');$i++){ @endphp <option value="{{$i}}">{{$i}}</option>
 								@php
 								}
 								@endphp

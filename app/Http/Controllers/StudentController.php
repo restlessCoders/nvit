@@ -251,8 +251,17 @@ class StudentController extends Controller
                         student_batches.status=2
                         GROUP by student_batches.batch_id,batches.seat");
                     //print_r($seat_data);die;
-                    if ($seat_data[0]->tst > $seat_data[0]->seat_available)
-                        return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+
+                    if ($seat_data) {
+                        if ($seat_data[0]->tst >= $seat_data[0]->seat_available) {
+                            return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+                        }
+                    } else {
+                        $seat_data = DB::select("SELECT batches.seat as seat_available FROM batches WHERE batches.id=$request->batch_id");
+                        if (!$seat_data) {
+                            return redirect()->back()->with($this->responseMessage(false, null, 'Please Assing Seat In Bathces'));
+                        }
+                    }
                 } elseif ($request->status == 3 || $request->status == 4) {
                     $data = array(
                         'status' => $request->status,
@@ -573,7 +582,7 @@ class StudentController extends Controller
         if ($request->curbatchId == $request->newbatchId) {
             return redirect()->back()->with($this->responseMessage(false, null, 'Current Batch and Transferred Batch Same!!'));
         }
-        if(DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->newbatchId])->first()){
+        if (DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->newbatchId])->first()) {
             return redirect()->back()->with($this->responseMessage(false, null, 'Student Already Exists On This Batch'));
         }
 
@@ -585,8 +594,15 @@ class StudentController extends Controller
 
         //dd($queries);
 
-        if ($seat_data[0]->tst > $seat_data[0]->seat_available) {
-            return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+        if ($seat_data) {
+            if ($seat_data[0]->tst >= $seat_data[0]->seat_available) {
+                return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
+            }
+        } else {
+            $seat_data = DB::select("SELECT batches.seat as seat_available FROM batches WHERE batches.id=$request->batch_id");
+            if (!$seat_data) {
+                return redirect()->back()->with($this->responseMessage(false, null, 'Please Assing Seat In Bathces'));
+            }
         }
 
         /* Check Regular or Bundel */
@@ -596,22 +612,14 @@ class StudentController extends Controller
         if ($new_course->course_type == 1) {
             /* ========= if Regular Course =========== */
             /* ============= Check Old Batch and New Batch Couse same or not ============*/
-            $old_course = DB::table('batches')->select('courses.course_type', 'courses.id')->join('courses', 'batches.courseId', '=', 'courses.id')
+            $old_course = DB::table('batches')->select('courses.course_type', 'courses.id', 'batches.id as bid')->join('courses', 'batches.courseId', '=', 'courses.id')
                 ->where('batches.id', $request->curbatchId)->first();
+            //echo DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $old_course->bid])->first()->course_price;
+            //print_r($old_course);die;
             //if($new_course->id == $old_course->id){
             //echo 'same';die;
 
-            /* Payment and Payment Details */
-            $payment_detl = DB::table('paymentdetails')->where(['studentId' => $request->student_id, 'batchId' => $request->curbatchId])
-                ->where('batchId', $request->curbatchId)->get();
-
-            foreach ($payment_detl as $payment) {
-                DB::table('paymentdetails')->where('id', $payment->id)->update(['batchId' => $request->newbatchId, 'op_type' => $request->op_type, 'updated_by' => currentUserId(), 'updated_at' => Carbon::now()]);
-                $payment_data = DB::table('payments')->where('id', $payment->paymentId)->first();
-                DB::table('payments')->where('id', $payment->paymentId)->update(['op_type' => $request->op_type, 'updated_by' => currentUserId(), 'updated_at' => Carbon::now()]);
-            }
-
-            DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->curbatchId])->update(['new_batch_id' => $request->newbatchId,'acc_approve' => 3, 'op_type' => $request->op_type, 'updated_by' => currentUserId(), 'updated_at' => Carbon::now()]);
+            DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->curbatchId])->update(['new_batch_id' => $request->newbatchId, 'acc_approve' => 3, 'op_type' => $request->op_type, 'updated_by' => currentUserId(), 'updated_at' => Carbon::now()]);
             $note               =  new Note;
             $note->student_id   =  $request->student_id;
             $note->note         = $request->note;
@@ -621,8 +629,18 @@ class StudentController extends Controller
             $inv = DB::table('payments')
                 ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
                 ->where(['paymentdetails.studentId' => $request->student_id, 'paymentdetails.batchId' => $request->curbatchId])->whereNotNull('payments.invoiceId')->exists();
+            //dd($inv);
             if ($inv) {
                 /*===============As Invoice Done Course Price Remain Same ================= */
+                /* Payment and Payment Details */
+                $payment_detl = DB::table('paymentdetails')->where(['studentId' => $request->student_id, 'batchId' => $request->curbatchId])
+                    ->where('batchId', $request->curbatchId)->get();
+
+                foreach ($payment_detl as $payment) {
+                    DB::table('paymentdetails')->where('id', $payment->id)->update(['batchId' => $request->newbatchId, 'op_type' => $request->op_type, 'updated_by' => currentUserId(), 'updated_at' => Carbon::now()]);
+                    $payment_data = DB::table('payments')->where('id', $payment->paymentId)->first();
+                    DB::table('payments')->where('id', $payment->paymentId)->update(['op_type' => $request->op_type, 'updated_by' => currentUserId(), 'updated_at' => Carbon::now()]);
+                }
                 $enroll_data = DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->curbatchId])
                     ->first();
                 /*Stystem Id */
@@ -634,57 +652,16 @@ class StudentController extends Controller
                     'entryDate' => date('Y-m-d'),
                     'status' => 2,
                     'systemId' => $systemId,
-                    'course_price' => $enroll_data->course_price,
+                    'course_price' => DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->curbatchId])->first()->course_price,
+                    'acc_approve' => 2,
                     'type' => $enroll_data->type,
                     'created_at' => Carbon::now(),
                     'created_by' => currentUserId(),
                 );
                 DB::table('student_batches')->insert($data);
-
-                /*==== Insert payment and PaymentdDetails for New Batch From Old Batch====== */
-                /* Payment and Payment Details */
-                /*$payment_detl = DB::table('paymentdetails')->where(['studentId' => $request->student_id, 'batchId' => $request->curbatchId])
-                    ->where('batchId', $request->curbatchId)->get();
-
-                foreach ($payment_detl as $payment) {
-                    $paymentDetail = DB::table('paymentdetails')->where('id', $payment->id)->first();
-                    $payment_data = DB::table('payments')->where('id', $payment->paymentId)->first();
-
-                    DB::table('payments')->insert(
-                        [
-                            'paymentDate'       =>  Carbon::now()->format('Y-m-d'),
-                            'studentId'         =>  $request->student_id,
-                            'mrNo'              =>  $payment_data->mrNo,
-                            'invoiceId'         =>  $payment_data->invoiceId,
-                            'executiveId'       =>  $payment_data->executiveId,
-                            'tPayable'          =>  $payment_data->tPayable,
-                            'paidAmount'        =>  $payment_data->paidAmount,
-                            'accountNote'       =>  $request->note,
-                            'created_at'        => date("Y-m-d h:i:s"),
-                            'created_by'        => currentUserId(),
-                        ]
-                    );
-                    $paymentId = DB::getPdo()->lastInsertId();
-
-                    foreach ($paymentDetail as $p) {
-                        $payment_detail['paymentId']        = $paymentId;
-                        $payment_detail['studentId']        = $request->student_id;
-                        $payment_detail['batchId']          = $request->newbatchId;
-                        $payment_detail['course_id']        = $p->course_id;
-                        $payment_detail['cPayable']         = $p->cPayable;
-                        $payment_detail['cpaidAmount']      = $p->cpaidAmount;
-                        $payment_detail['payment_type']     = $p->payment_type;
-                        $payment_detail['dueDate']          = $p->dueDate;
-                        $payment_detail['created_at']       = date("Y-m-d h:i:s");
-                        $payment_detail['discount']         = $p->discount;
-                        $payment_detail['payment_mode']     = $p->payment_mode;
-                        $payment_detail['feeType']          = $p->feeType;
-                        $payment_detail['created_by']       = currentUser();
-
-                        DB::table('paymentdetails')->insert($payment_detail);
-                    }
-                }*/
             } else {
+                echo 'ok';
+                die;
                 /*===============As Invoice Not Done Course Price Will Change ================= */
                 /* if payment is greater than main course price need to deposit that amount in student account */
                 $enroll_data = DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->curbatchId])
@@ -711,49 +688,7 @@ class StudentController extends Controller
                 );
                 DB::table('student_batches')->insert($data);
 
-                /*==== Insert payment and PaymentdDetails for New Batch From Old Batch====== */
-                /* Payment and Payment Details */
-                /*$payment_detl = DB::table('paymentdetails')->where(['studentId' => $request->student_id, 'batchId' => $request->curbatchId])
-                    ->where('batchId', $request->curbatchId)->get();
-
-                foreach ($payment_detl as $payment) {
-                    $paymentDetail = DB::table('paymentdetails')->where('id', $payment->id)->first();
-                    $payment_data = DB::table('payments')->where('id', $payment->paymentId)->first();
-
-                    DB::table('payments')->insert(
-                        [
-                            'paymentDate'       =>  Carbon::now()->format('Y-m-d'),
-                            'studentId'         =>  $request->student_id,
-                            'mrNo'              =>  $payment_data->mrNo,
-                            'invoiceId'         =>  $payment_data->invoiceId,
-                            'executiveId'       =>  $payment_data->executiveId,
-                            'tPayable'          =>  $payment_data->tPayable,
-                            'paidAmount'        =>  $payment_data->paidAmount,
-                            'accountNote'       =>  $request->note,
-                            'created_at'        => date("Y-m-d h:i:s"),
-                            'created_by'        => currentUserId(),
-                        ]
-                    );
-                    $paymentId = DB::getPdo()->lastInsertId();
-
-                    foreach ($paymentDetail as $p) {
-                        $payment_detail['paymentId']        = $paymentId;
-                        $payment_detail['studentId']        = $request->student_id;
-                        $payment_detail['batchId']          = $request->newbatchId;
-                        $payment_detail['course_id']        = $p->course_id;
-                        $payment_detail['cPayable']         = $p->cPayable;
-                        $payment_detail['cpaidAmount']      = $p->cpaidAmount;
-                        $payment_detail['payment_type']     = $p->payment_type;
-                        $payment_detail['dueDate']          = $p->dueDate;
-                        $payment_detail['created_at']       = date("Y-m-d h:i:s");
-                        $payment_detail['discount']         = $p->discount;
-                        $payment_detail['payment_mode']     = $p->payment_mode;
-                        $payment_detail['feeType']          = $p->feeType;
-                        $payment_detail['created_by']       = currentUser();
-
-                        DB::table('paymentdetails')->insert($payment_detail);
-                    }
-                }*/
+                /*==== Update payment and PaymentdDetails for New Batch From Old Batch====== */
                 /*Course Price change in not invoice paymnet and paymentdetails table update */
                 $pay_detl = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->newbatchId)
                     ->first();
@@ -815,11 +750,9 @@ class StudentController extends Controller
     }
     public function studentEnrollBatch(Request $request)
     {
-        //\DB::connection()->enableQueryLog();
+        \DB::connection()->enableQueryLog();
         $curbatchId = DB::table('batch_transfers')->where(['student_id' => $request->id])->pluck('curbatchId')->toArray();
-        $queries = \DB::getQueryLog();
-
-        //dd($queries);
+       
 
         $e_data = DB::table('student_batches')
             ->selectRaw("student_batches.batch_id,batches.batchId")
@@ -828,6 +761,9 @@ class StudentController extends Controller
             ->whereNotIn('student_batches.batch_id', $curbatchId)
             ->groupBy('student_batches.batch_id', 'batches.batchId')
             ->get();
+            $queries = \DB::getQueryLog();
+
+            dd($queries);
         $data = '<label for="curbatchId" class="col-sm-3 col-form-label">From Batch</label>
             <div class="col-sm-9">
             <select class="js-example-basic-single form-control" id="curbatchId" name="curbatchId" required>
@@ -1034,22 +970,27 @@ class StudentController extends Controller
         WHERE batches.id=$request->batch_id and 
         student_batches.status=2 and student_batches.is_drop = 0
         GROUP by student_batches.batch_id,batches.seat");
-        /*print_r($seat_data);
-        die;*/
-        if ($seat_data[0]->tst >= $seat_data[0]->seat_available) {
-            return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
-        } else {
-            $withdraw_undo_student = DB::table('student_batches')->where('id', $request->id)->update(['is_drop' => 0]);
-            if ($withdraw_undo_student) {
-                $data = DB::table('student_batches')->where('id', $request->id)->first();
-                $batch = Batch::find($data->batch_id);
-                $note               =  new Note;
-                $note->student_id   =  $data->student_id;
-                $note->note         = 'Withdraw Undo from Batch #' . $batch->batchId;
-                $note->created_by   = currentUserId();
-                $note->save();
-                return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Undo Successful'));
+        /*print_r($seat_data);die;*/
+        if ($seat_data) {
+            if ($seat_data[0]->tst >= $seat_data[0]->seat_available) {
+                return redirect()->back()->with($this->responseMessage(false, null, 'No Seat Available!!'));
             }
+        } else {
+            $seat_data = DB::select("SELECT batches.seat as seat_available FROM batches WHERE batches.id=$request->batch_id");
+            if (!$seat_data) {
+                return redirect()->back()->with($this->responseMessage(false, null, 'Please Assing Seat In Bathces'));
+            }
+        }
+        $withdraw_undo_student = DB::table('student_batches')->where('id', $request->id)->update(['is_drop' => 0]);
+        if ($withdraw_undo_student) {
+            $data = DB::table('student_batches')->where('id', $request->id)->first();
+            $batch = Batch::find($data->batch_id);
+            $note               =  new Note;
+            $note->student_id   =  $data->student_id;
+            $note->note         = 'Withdraw Undo from Batch #' . $batch->batchId;
+            $note->created_by   = currentUserId();
+            $note->save();
+            return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Undo Successful'));
         }
     }
 }
