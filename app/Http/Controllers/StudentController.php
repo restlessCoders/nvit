@@ -755,12 +755,15 @@ class StudentController extends Controller
        
 
         $e_data = DB::table('student_batches')
-            ->selectRaw("student_batches.batch_id,batches.batchId")
-            ->join('batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
-            ->where(['student_id' => $request->id, 'student_batches.status' => 2, 'is_drop' => 1])
-            ->whereNotIn('student_batches.batch_id', $curbatchId)
-            ->groupBy('student_batches.batch_id', 'batches.batchId')
-            ->get();
+        ->selectRaw("student_batches.batch_id, batches.batchId")
+        ->leftJoin('batches', 'batches.id', '=', 'student_batches.batch_id')
+        ->where('student_batches.student_id', $request->id)
+        ->where('student_batches.status', 2)
+        ->where('student_batches.is_drop', 1)
+        ->whereNotIn('student_batches.batch_id', $curbatchId)
+        ->groupBy('student_batches.batch_id', 'batches.batchId')
+        ->get();
+    
             $queries = \DB::getQueryLog();
 
             dd($queries);
