@@ -660,8 +660,8 @@ class StudentController extends Controller
                 );
                 DB::table('student_batches')->insert($data);
             } else {
-                echo 'ok';
-                die;
+                /*echo 'ok';
+                die;*/
                 /*===============As Invoice Not Done Course Price Will Change ================= */
                 /* if payment is greater than main course price need to deposit that amount in student account */
                 $enroll_data = DB::table('student_batches')->where(['student_id' => $request->student_id, 'batch_id' => $request->curbatchId])
