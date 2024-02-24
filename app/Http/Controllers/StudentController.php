@@ -763,7 +763,7 @@ class StudentController extends Controller
             ->get();
             $queries = \DB::getQueryLog();
 
-            //dd($queries);
+            dd($queries);
         $data = '<label for="curbatchId" class="col-sm-3 col-form-label">From Batch</label>
             <div class="col-sm-9">
             <select class="js-example-basic-single form-control" id="curbatchId" name="curbatchId" required>
