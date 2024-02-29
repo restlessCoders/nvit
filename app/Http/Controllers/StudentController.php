@@ -690,7 +690,7 @@ class StudentController extends Controller
 
                 /*==== Update payment and PaymentdDetails for New Batch From Old Batch====== */
                 /*Course Price change in not invoice paymnet and paymentdetails table update */
-                $pay_detl = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->newbatchId)
+                $pay_detl = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->curbatchId)
                     ->first();
                 if ($pay_detl) {
                     DB::table('paymentdetails')->where('id', '=', $pay_detl->id)->update(['cPayable' => $course[0]->price,'batchId',$request->newbatchId]);
@@ -758,7 +758,7 @@ class StudentController extends Controller
             ->selectRaw("student_batches.batch_id,batches.batchId")
             ->join('batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
             ->where(['student_id' => $request->id, 'student_batches.status' => 2, 'is_drop' => 1])
-            //->whereNotIn('student_batches.batch_id', $curbatchId)
+            ->whereNotIn('student_batches.batch_id', $curbatchId)
             ->groupBy('student_batches.batch_id', 'batches.batchId')
             ->get();
             $queries = \DB::getQueryLog();
