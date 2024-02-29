@@ -693,7 +693,7 @@ class StudentController extends Controller
                 $pay_detl = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->newbatchId)
                     ->first();
                 if ($pay_detl) {
-                    DB::table('paymentdetails')->where('id', '=', $pay_detl->id)->update(['cPayable' => $course[0]->price]);
+                    DB::table('paymentdetails')->where('id', '=', $pay_detl->id)->update(['cPayable' => $course[0]->price,'batchId',$request->newbatchId]);
                     DB::table('payments')->where('id', $pay_detl->paymentId)->update(['tPayable' => $course[0]->price]);
                 }
                 $payable = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->newbatchId)->get();
