@@ -232,12 +232,12 @@
 						<td class="align-middle">
 							@if($p->bid)
 							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->bid)->first()->course_price}}{{--$p->cPayable--}}
+							@else
+							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price}}
 							@endif
 							@if($p->course_id)
-							{{\DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price}}{{--$p->cPayable--}}
-
+							{{-- \DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price --}}{{--$p->cPayable--}}
 							@endif
-
 						</td>
 						<td class="align-middle">{{$p->cpaidAmount}}</td>
 						<td class="align-middle">{{$p->discount?$p->discount:0}}</td>

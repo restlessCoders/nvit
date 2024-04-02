@@ -69,13 +69,13 @@
                             <p class="my-0"></p>
                         </td>
                         <input type="text" name="id[]" value="{{$p->id}}"><!-- Payment Details Table ID -->
-                        <input type="text" name="pid[]" value="{{$p->id}}"><!-- Payments Table ID -->
+                        <input type="text" name="pid[]" value="{{$p->paymentId}}"><!-- Payments Table ID -->
                         <input type="hidden" name="batch_id[]" value="{{$p->batchId}}">
+                        <input type="hidden" name="course_id[]" value="{{ \DB::table('batches')->where('id',$p->batchId)->first()->courseId}}">
                         <td><input type="text" class="form-control" name="mrNo[]" value="{{$payment->mrNo}}"></td>
                         <td><input type="text" class="form-control" name="invoiceId[]" value="{{$payment->invoiceId}}"></td>
-                        <td><input type="text" class="form-control" readonly value="{{$p->cPayable}}"></td>
+                        <td><input type="text" class="form-control" readonly value="{{$p->cPayable}}" name="cPayable[]"></td>
                         <td>
-
                             <div class="input-group">
                                 <input type="text" name="paymentDate[]" value="{{ $payment->paymentDate }}" onfocus="dueDate({{$key}},'{{ $payment->paymentDate }}')" class="dueDate_{{$key}} form-control" placeholder="dd/mm/yyyy">
                                 <div class="input-group-append">
@@ -132,9 +132,9 @@
                     </tfoot>
                 </table>
 
-                {{--<div class="float-right mt-2">
+                <div class="float-right mt-2">
                     <button type="submit" class="btn btn-primary waves-effect waves-light" id="submit-btn">Update Payment</button>
-                </div>--}}
+                </div>
                 <div class="clearfix"></div>
             </form>
         </div>

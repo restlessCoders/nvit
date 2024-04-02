@@ -117,14 +117,13 @@ class PaymentController extends Controller
         return response()->json(array('data' => $data, 'sdata' => $stData));
     }
     public function paymentData(Request $request)
-    {
-        \DB::connection()->enableQueryLog();
+    {\DB::connection()->enableQueryLog();
         $stData = DB::table('student_batches')
             ->join('students', 'student_batches.student_id', '=', 'students.id')
             //->leftjoin('paymentdetails', 'student_batches.student_id', '=', 'paymentdetails.studentId')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
-            ->where('student_batches.acc_approve', '!=', 3)
+            ->where('student_batches.acc_approve', '!=',3)
             //->groupBy('student_batches.batch_id', 'student_batches.systemId')
             ->distinct('student_batches.batch_id')
             ->select(
@@ -136,13 +135,13 @@ class PaymentController extends Controller
                 //DB::raw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid')
             )
             ->get();
-        $queries = \DB::getQueryLog();
-        /*echo '<pre>';
+            $queries = \DB::getQueryLog();
+/*echo '<pre>';
 print_r($stData);die;*/
-        //dd($queries);
+    //dd($queries);
         //return response()->json(array('sdata' => $stData));
 
-
+        
 
         $data = '<h5 style="font-size:18px;line-height:20px;">Recipt Details</h5>';
         $data .= '<table class="table table-sm table-bordered mb-3 text-center" style="font-size: small;">
@@ -193,33 +192,33 @@ print_r($stData);die;*/
         $tPayable = 0;
         foreach ($stData as $key => $s) {
             $pay_detl = DB::table('paymentdetails')
-                ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
-                ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.batchId' => $s->batch_id])
-                ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.course_id' => $s->course_id])
-                ->get();
+            ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
+            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
+            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.course_id' => $s->course_id])
+            ->get();
             $tPayable += ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
             if ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
-                if ($s->batch_id) {
+                if($s->batch_id ){
                     $data .= '<td>
                         <input type="hidden" value="' . $s->batch_id . '">
-                        <p class="my-0">' . DB::table('batches')->where('id', $s->batch_id)->first()->batchId . '</p>
+                        <p class="my-0">' . DB::table('batches')->where('id',$s->batch_id)->first()->batchId . '</p>
                         <p class="my-0">' . $s->entryDate . '</p>
                     </td>';
-                } else {
+                }else{
                     $data .= '<td>
                         <input type="hidden" value="' . $s->course_id . '">
-                        <p class="my-0">' . DB::table('courses')->where('id', $s->course_id)->first()->courseName . '</p>
+                        <p class="my-0">' . DB::table('courses')->where('id',$s->course_id)->first()->courseName . '</p>
                         <p class="my-0">' . $s->entryDate . '</p>
                     </td>';
                 }
                 $inv = \DB::table('payments')
-                    ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
-                    ->where(['paymentdetails.studentId' => $request->sId, 'paymentdetails.batchId' => $s->batch_id])->whereNotNull('payments.invoiceId')->first();
-                if ($inv)
-                    $data .= '<script>$("input[name=\'invoiceId\']").val(' . $inv->invoiceId . ');$("#feeType").val("2");</script>';
+                ->join('paymentdetails','paymentdetails.paymentId','payments.id')
+                ->where(['paymentdetails.studentId'=>$request->sId,'paymentdetails.batchId' => $s->batch_id])->whereNotNull('payments.invoiceId')->first();
+                if($inv)
+                $data .= '<script>$("input[name=\'invoiceId\']").val('.$inv->invoiceId.');$("#feeType").val("2");</script>';
                 else
-                    $data .= '<script>$("#feeType").val("1");</script>';
+                $data .= '<script>$("#feeType").val("1");</script>';
                 //$inv = DB::table('paymentdetails')->where(['studentId' => $request->sId,'batchId' => $s->bid])->whereNotNull('invoiceId')->first();
                 //return response()->json(array('data' =>$inv));
                 /*if(is_null($inv)){
@@ -325,11 +324,11 @@ print_r($stData);die;*/
         }
         // Code to store data in database
         //return response()->json($request->all(),200);
-
+        
         DB::beginTransaction();
 
         try {
-
+           
             DB::table('payments')->insert(
                 [
                     'paymentDate'       =>  date('Y-m-d', strtotime($request->paymentDate)),
@@ -361,43 +360,43 @@ print_r($stData);die;*/
 
             //$m_price	    = $request->post('m_price');
             foreach ($request->cpaidAmount as $key => $cdata) {
-                if ($cpaidAmount[$key] <> 0) {
-                    /*if($cPayable[$key] == $cpaidAmount[$key]){
+                if($cpaidAmount[$key] <>0){
+                /*if($cPayable[$key] == $cpaidAmount[$key]){
                     $payment_detail['type']             = 0;
                 }*/
-                    $payment_detail['paymentId']        = $paymentId;
-                    //$payment_detail['mrNo']             = $request->mrNo;
-                    //$payment_detail['invoiceId']        = $invoiceId[$key];
-                    $payment_detail['studentId']        = $request->studentId;
-                    $payment_detail['batchId']          = $batch_id[$key];
-                    $payment_detail['course_id']          = $course_id[$key];
-                    $payment_detail['cPayable']         = $cPayable[$key];
-                    $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
-                    //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
-                    $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
-
-                    if ($cpaidAmount[$key] < $cPayable[$key] + $discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] == 2) {
-                        if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
-                            $payment_detail['dueDate']      = date('Y-m-d', strtotime($dueDate[$key]));
-                        }
-                        /*$date = new Carbon($dueDate[$key]);
+                $payment_detail['paymentId']        = $paymentId;
+                //$payment_detail['mrNo']             = $request->mrNo;
+                //$payment_detail['invoiceId']        = $invoiceId[$key];
+                $payment_detail['studentId']        = $request->studentId;
+                $payment_detail['batchId']          = $batch_id[$key];
+                $payment_detail['course_id']          = $course_id[$key];
+                $payment_detail['cPayable']         = $cPayable[$key];
+                $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
+                //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
+                $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
+                
+                if ($cpaidAmount[$key] < $cPayable[$key]+$discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] ==2) {
+                    if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
+                    $payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
+                    }
+                    /*$date = new Carbon($dueDate[$key]);
                     $date->addMonth();
                     $payment_detail['dueDate']      = $date->toDateString();*/
-                    }
-                    $payment_detail['created_at']       = date("Y-m-d h:i:s");
-                    /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
-                    $payment_detail['discount']     = $discount[$key];
-                    $payment_detail['payment_mode']     = $payment_mode[$key];
-                    $payment_detail['feeType']          = $feeType[$key];
-                    $payment_detail['created_by']        = encryptor('decrypt', $request->userId);
+                }
+                $payment_detail['created_at']       = date("Y-m-d h:i:s");
+                /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
+                $payment_detail['discount']     = $discount[$key];
+                $payment_detail['payment_mode']     = $payment_mode[$key];
+                $payment_detail['feeType']          = $feeType[$key];
+                $payment_detail['created_by']        = encryptor('decrypt', $request->userId);
 
-                    DB::table('paymentdetails')->insert($payment_detail);
+                DB::table('paymentdetails')->insert($payment_detail);
 
-                    /*To Update Account Approve */
-                    $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
-                    /* print_r($batch_id);die;
+                /*To Update Account Approve */
+                $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
+                /* print_r($batch_id);die;
  print_r($s_batch_data);die;*/
-                    /*if ($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]+$discount[$key]) {
+                /*if ($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $cPayable[$key]+$discount[$key]) {
                     $data = array(
                         'acc_approve' => $invoiceId ? 2 : 1,
                         'updated_at' => Carbon::now(),
@@ -420,16 +419,16 @@ print_r($stData);die;*/
                     }
                     
                 }*/
-                    if ($request->invoiceId) {
-                        $data = array(
-                            'acc_approve' => 2,
-                            'updated_at' => Carbon::now(),
-                        );
-                        DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
-                    }
-                    DB::commit();
+                if ($request->invoiceId) {
+                    $data = array(
+                        'acc_approve' => 2,
+                        'updated_at' => Carbon::now(),
+                    );
+                    DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
                 }
+                DB::commit();
             }
+        }
             return response()->json(['success' => 'Payment Complete successfully.']);
             //return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));
 
@@ -469,20 +468,20 @@ print_r($stData);die;*/
         /*$paymentdetl = Payment::with(['paymentDetail' => function ($query) {
            $query->where('paymentdetails.deduction','>=',0);
         }])->find(encryptor('decrypt', $id));*/
+        
+        $payment_data = DB::table('paymentdetails')->where('id',encryptor('decrypt', $id))->first();
+        
 
-        $payment_data = DB::table('paymentdetails')->where('id', encryptor('decrypt', $id))->first();
-
-
-        if ($payment_data->batchId) {
-            $paymentdetl = DB::table('paymentdetails')->where('studentId', $sId)->where('batchId', $payment_data->batchId)->get();
+        if($payment_data->batchId){
+            $paymentdetl = DB::table('paymentdetails')->where('studentId',$sId)->where('batchId',$payment_data->batchId)->get();
             $studentsBatches = DB::table('student_batches')->where('student_id', $sId)->where('batch_id', '=', $payment_data->batchId)->first();
         } else
-            $paymentdetl = DB::table('paymentdetails')->where('studentId', $sId)->where('course_id', $payment_data->course_id)->get();
-        // echo '<pre>';
-        // print_r($paymentdetl);die;
+            $paymentdetl = DB::table('paymentdetails')->where('studentId',$sId)->where('course_id',$payment_data->course_id)->get();
+            // echo '<pre>';
+            // print_r($paymentdetl);die;
 
 
-        return view('payment.edit', compact('sdata', 'paymentdetl', 'studentsBatches'));
+        return view('payment.edit', compact('sdata', 'paymentdetl','studentsBatches'));
     }
     public function courseEdit($id, $sId)
     {
@@ -554,7 +553,7 @@ print_r($stData);die;*/
             $invoiceId      = $request->post('invoiceId');
             $batch_id       = $request->post('batch_id');
             $course_id       = $request->post('course_id');
-
+            
             //$m_price	    = $request->post('m_price');
             $tpaidAmt = 0;
             foreach ($request->id as $key => $cdata) {
@@ -563,54 +562,54 @@ print_r($stData);die;*/
                 //$payment_detail['mrNo']             = $request->mrNo;
                 //$payment_detail['invoiceId']        = $invoiceId[$key]?$invoiceId[$key]:null;
                 $payable = DB::table('paymentdetails')->where('studentId', '=', $request->studentId);
-                if ($batch_id)
-                    $payable = $payable->where('batchId', '=', $batch_id[$key])->get();
+                if($batch_id)
+                $payable = $payable->where('batchId', '=', $batch_id[$key])->get();
                 else
-                    $payable = $payable->where('course_id', '=', $course_id[$key])->get();
+                $payable = $payable->where('course_id', '=', $course_id[$key])->get();
                 /*To Update Account Approve */
                 $s_batch_data = DB::table('student_batches');
-                if ($batch_id)
-                    $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
+                if($batch_id)
+                $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
                 else
-                    $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'course_id' => $course_id[$key]])->first();
+                $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'course_id' => $course_id[$key]])->first();
                 $psum = 0;
                 $pcourse_price = 0;
                 foreach ($payable as $p) {
                     $sum = DB::table('paymentdetails')
-                        ->where('id', '<', $p->id)
+                        ->where('id', '<',$p->id)
                         ->where('studentId', '=', $request->studentId);
-                    if ($batch_id)
+                        if($batch_id)
                         $sum = $sum->where('batchId', '=', $batch_id[$key]);
-                    else
+                        else
                         $sum = $sum->where('course_id', '=', $course_id[$key]);
 
-                    $sum = $sum->select([
-                        DB::raw('SUM(cpaidAmount) as total_cpaidAmount'),
-                        DB::raw('SUM(COALESCE(discount, 0)) as total_discount'),
-                    ])
+                        $sum = $sum->select([
+                            DB::raw('SUM(cpaidAmount) as total_cpaidAmount'),
+                            DB::raw('SUM(COALESCE(discount, 0)) as total_discount'),
+                        ])
                         ->first();
-                    $sum = $cpaidAmount[$key] + $discount[$key];
-
-                    //echo $id[$key];die;
+                        $sum =$cpaidAmount[$key]+$discount[$key];
+                   
+//echo $id[$key];die;
                     $sum_cpayable = DB::table('paymentdetails')
-                        ->where('paymentId', $p->paymentId)
-                        ->sum('cPayable');
+                    ->where('paymentId', $p->paymentId)
+                    ->sum('cPayable');
                     $sum_cpaidAmount = DB::table('paymentdetails')
-                        ->where('paymentId', $p->paymentId)
-                        ->sum('cpaidAmount');
-
-
+                    ->where('paymentId', $p->paymentId)
+                    ->sum('cpaidAmount');
+                   
+             
                     DB::table('paymentdetails')->where('id', $p->id)
                         ->update(['cPayable' => $s_batch_data->course_price - $sum]);
                     DB::table('payments')->where('id', $p->paymentId)
-                        ->update(['tPayable' => $sum_cpayable, 'paidAmount' => $sum_cpaidAmount]);
+                            ->update(['tPayable' => $sum_cpayable,'paidAmount' => $sum_cpaidAmount]);
                     //$payment_detail['cPayable']         = $cPayable[$key];
                     $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
 
                     //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
                     $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
                     //if ($cpaidAmount[$key] < $cPayable[$key]) {
-                    $payment_detail['dueDate']      = $dueDate[$key] ? Carbon::createFromFormat('d/m/Y', $dueDate[$key])->format('Y-m-d') : null;
+                    $payment_detail['dueDate']      = $dueDate[$key]?Carbon::createFromFormat('d/m/Y', $dueDate[$key])->format('Y-m-d'):null;
                     //$date = new Carbon($dueDate[$key]);
                     //$date->addMonth();
                     //$payment_detail['dueDate']      = $date->toDateString();
@@ -670,118 +669,165 @@ print_r($stData);die;*/
      */
     public function destroy($id)
     {
-
+        
         $paymentdetl = Payment::with('paymentDetail')->find(encryptor('decrypt', $id));
         if ($paymentdetl) {
             $paymentdetl->paymentDetail()->delete(); // Delete the associated payment details
             $paymentdetl->delete(); // Delete the payment record itself
             return redirect(route(currentUser() . '.daily_collection_report_by_mr'))->with($this->responseMessage(false, 'error', 'Payment Deleted'));
         }
+        
     }
     public function newStore(Request $request)
     {
+        print_r($request->toArray());die;
+
+        $rules = [
+            'mrNo.*'                 => 'required|integer|unique:payments,mrNo,' . encryptor('decrypt', $id),
+            'paymentDate'       => 'required',
+        ];
+        $messages = [
+            'mrNo.required' => 'The Money Receipt No field is required.',
+            'mrNo.unique' => 'Mr No Alreay Used!',
+            'paymentDate.required' => 'The Payment Date field is required.'
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        // Code to store data in database
+        //return response()->json($request->all(),200);
+        DB::beginTransaction();
 
         try {
-            DB::beginTransaction();
-            // Retrieve IDs from the arrays
-            $paymentIds = $request->input('pid', []);
-            $paymentDetailIds = $request->input('id', []);
 
-            // Delete records from Payment table
-            DB::connection()->enableQueryLog();
-            DB::table('payments')->whereIn('id', $paymentIds)->delete();
-            $queries = \DB::getQueryLog();
-            //dd($queries);
+            $paymentId = DB::table('payments')->where('id', encryptor('decrypt', $id))
+                ->update(
+                    [
+                        'paymentDate'       =>  date('Y-m-d', strtotime($request->paymentDate)),
+                        'mrNo'              =>  $request->mrNo,
+                        'invoiceId'         =>  $request->invoiceId,
+                        'updated_by'         =>  encryptor('decrypt', $request->userId),
+                        'tPayable'          =>  $request->tPayable,
+                        'paidAmount'        =>  $request->paidAmount,
+                        'accountNote'       =>  $request->accountNote,
+                        //'status'            =>  ($request->tPayable == ($request->paidAmount+$request->disocunt))?0:1,
+                        'updated_at'        => date("Y-m-d h:i:s"),
+                    ]
+                );
 
-            // Delete records from Paymentdetail table
-            DB::table('paymentdetails')->whereIn('id', $paymentDetailIds)->delete();
-            DB::commit();
-                $rules = [
-                    'mrNo'                 => 'required|unique:payments,mrNo',
-                    'paymentDate'       => 'required',
-                ];
-                $messages = [
-                    'mrNo.required' => 'The Money Receipt No field is required.',
-                    'mrNo.unique' => 'Mr No Alreay Used!',
-                    'paymentDate.required' => 'The Payment Date field is required.'
-                ];
 
-                $validator = Validator::make($request->all(), $rules, $messages);
-                if ($validator->fails()) {
-                    return response()->json(['errors' => $validator->errors()], 422);
-                }
-                DB::beginTransaction();
-                foreach ($request->pid as $key => $payment) {
-                    DB::table('payments')->insert(
-                        [
-                            'paymentDate'       =>  date('Y-m-d', strtotime($request->paymentDate[$key])),
-                            'studentId'         =>  $request->studentId,
-                            'mrNo'              =>  $request->mrNo[$key],
-                            'invoiceId'         =>  $request->invoiceId[$key],
-                            'executiveId'       =>  $request->executiveId,
-                            'tPayable'          =>  $request->tPayable,
-                            'paidAmount'        =>  $request->cpaidAmount[$key],
-                            'accountNote'       =>  $request->accountNote,
-                            'created_at'        => date("Y-m-d h:i:s"),
-                            'created_by'        => encryptor('decrypt', $request->userId),
-                        ]
-                    );
-                    $paymentId = DB::getPdo()->lastInsertId();
+            // Payment Detail
+            $id       = $request->post('id');
+            $dueDate        = $request->post('dueDate');
+            $cPayable       = $request->post('cPayable');
+            $cpaidAmount    = $request->post('cpaidAmount');
+            $payment_type    = $request->post('payment_type');
+            $discount        = $request->post('discount');
+            $payment_mode        = $request->post('payment_mode');
+            $feeType        = $request->post('feeType');
+            $invoiceId      = $request->post('invoiceId');
+            $batch_id       = $request->post('batch_id');
+            $course_id       = $request->post('course_id');
+            
+            //$m_price	    = $request->post('m_price');
+            $tpaidAmt = 0;
+            foreach ($request->id as $key => $cdata) {
 
-                    // Payment Detail
-                    $batch_id       = $request->post('batch_id');
-                    $course_id       = $request->post('course_id');
-                    $dueDate        = $request->post('dueDate');
-                    $cPayable       = $request->post('cPayable');
-                    $cpaidAmount    = $request->post('cpaidAmount');
-                    $payment_type    = $request->post('payment_type');
-                    $discount        = $request->post('discount');
-                    $payment_mode    = $request->post('payment_mode');
-                    $feeType        = $request->post('feeType');
-                    $invoiceId      = $request->post('invoiceId');
-                    //foreach ($request->cpaidAmount as $key => $cdata) {
-                        if ($cpaidAmount[$key] <> 0) {
-                            $payment_detail['paymentId']        = $paymentId;
-                            $payment_detail['studentId']        = $request->studentId;
-                            $payment_detail['batchId']          = $batch_id[$key];
-                            $payment_detail['course_id']          = $course_id[$key];
-                            $payment_detail['cPayable']         = $cPayable[$key];
-                            $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
-                            $payment_detail['payment_type']             = $payment_type[$key];
+                $payment_detail = Paymentdetail::findOrFail($id[$key]);
+                //$payment_detail['mrNo']             = $request->mrNo;
+                //$payment_detail['invoiceId']        = $invoiceId[$key]?$invoiceId[$key]:null;
+                $payable = DB::table('paymentdetails')->where('studentId', '=', $request->studentId);
+                if($batch_id)
+                $payable = $payable->where('batchId', '=', $batch_id[$key])->get();
+                else
+                $payable = $payable->where('course_id', '=', $course_id[$key])->get();
+                /*To Update Account Approve */
+                $s_batch_data = DB::table('student_batches');
+                if($batch_id)
+                $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
+                else
+                $s_batch_data = $s_batch_data->where(['student_id' => $request->studentId, 'course_id' => $course_id[$key]])->first();
+                $psum = 0;
+                $pcourse_price = 0;
+                foreach ($payable as $p) {
+                    $sum = DB::table('paymentdetails')
+                        ->where('id', '<',$p->id)
+                        ->where('studentId', '=', $request->studentId);
+                        if($batch_id)
+                        $sum = $sum->where('batchId', '=', $batch_id[$key]);
+                        else
+                        $sum = $sum->where('course_id', '=', $course_id[$key]);
 
-                            if ($cpaidAmount[$key] < $cPayable[$key] + $discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] == 2) {
-                                if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
-                                    $payment_detail['dueDate']      = date('Y-m-d', strtotime($dueDate[$key]));
-                                }
-                            }
-                            $payment_detail['created_at']       = date("Y-m-d h:i:s");
-                            $payment_detail['discount']     = $discount[$key];
-                            $payment_detail['payment_mode']     = $payment_mode[$key];
-                            $payment_detail['feeType']          = $feeType[$key];
-                            $payment_detail['created_by']        = encryptor('decrypt', $request->userId);
+                        $sum = $sum->select([
+                            DB::raw('SUM(cpaidAmount) as total_cpaidAmount'),
+                            DB::raw('SUM(COALESCE(discount, 0)) as total_discount'),
+                        ])
+                        ->first();
+                        $sum =$cpaidAmount[$key]+$discount[$key];
+                   
+//echo $id[$key];die;
+                    $sum_cpayable = DB::table('paymentdetails')
+                    ->where('paymentId', $p->paymentId)
+                    ->sum('cPayable');
+                    $sum_cpaidAmount = DB::table('paymentdetails')
+                    ->where('paymentId', $p->paymentId)
+                    ->sum('cpaidAmount');
+                   
+             
+                    DB::table('paymentdetails')->where('id', $p->id)
+                        ->update(['cPayable' => $s_batch_data->course_price - $sum]);
+                    DB::table('payments')->where('id', $p->paymentId)
+                            ->update(['tPayable' => $sum_cpayable,'paidAmount' => $sum_cpaidAmount]);
+                    //$payment_detail['cPayable']         = $cPayable[$key];
+                    $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
 
-                            DB::table('paymentdetails')->insert($payment_detail);
+                    //$payment_detail['m_price']          = $m_price[$key]?$m_price[$key]:0.00;
+                    $payment_detail['payment_type']             = $payment_type[$key]; //($cPayable[$key] == $cpaidAmount[$key])?0:1;
+                    //if ($cpaidAmount[$key] < $cPayable[$key]) {
+                    $payment_detail['dueDate']      = $dueDate[$key]?Carbon::createFromFormat('d/m/Y', $dueDate[$key])->format('Y-m-d'):null;
+                    //$date = new Carbon($dueDate[$key]);
+                    //$date->addMonth();
+                    //$payment_detail['dueDate']      = $date->toDateString();
+                    //}
+                    $payment_detail['created_at']       = date("Y-m-d h:i:s");
+                    /*$payment_detail['updated_at']       = date("Y-m-d h:i:s");*/
+                    $payment_detail['discount']     = $discount[$key];
+                    $payment_detail['payment_mode']     = $payment_mode[$key];
+                    $payment_detail['feeType']          = $feeType[$key];
+                    $payment_detail->save();
 
-                            /*To Update Account Approve */
-                            $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
-                            /* print_r($batch_id);die;*/
 
-                        if ($request->invoiceId) {
+
+                    if ($s_batch_data->acc_approve == 0 && $cpaidAmount[$key] < $s_batch_data->course_price - $sum) {
+                        $data = array(
+                            'acc_approve' => $invoiceId ? 2 : 1,
+                            'updated_at' => Carbon::now(),
+                            'pstatus' => 0
+                        );
+                        DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
+                    } else if ($s_batch_data->acc_approve == 1 && $cpaidAmount[$key] == $s_batch_data->course_price - $sum) {
+                        $data = array(
+                            'acc_approve' => $invoiceId ? 2 : 1,
+                            'updated_at' => Carbon::now(),
+                            'pstatus' => 1
+                        );
+                        DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
+                    } else {
+                        if (request()->has($invoiceId)) {
                             $data = array(
                                 'acc_approve' => 2,
                                 'updated_at' => Carbon::now(),
                             );
                             DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
                         }
-                        }
-                    //}
-                    
-                   
+                    }
+
+                    DB::commit();
                 }
-                DB::commit();
-                return response()->json(['success' => 'Payment Complete successfully.']);
-                //return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));
-          
+            }
+            //die;
+            return redirect(route(currentUser() . '.daily_collection_report_by_mr'))->with($this->responseMessage(true, null, 'Payment Received'));
         } catch (\Exception $e) {
             DB::rollback();
             // something went wrong
