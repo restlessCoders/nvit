@@ -680,7 +680,7 @@ print_r($stData);die;*/
     }
     public function newStore(Request $request)
     {
-        dd($request);
+        //dd($request);
         try {
             DB::beginTransaction();
             // Retrieve IDs from the arrays
