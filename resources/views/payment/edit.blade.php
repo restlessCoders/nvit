@@ -68,8 +68,8 @@
                             <p class="my-0">{{\DB::table('batches')->where('id',$p->batchId)->first()->batchId}}</p>
                             <p class="my-0"></p>
                         </td>
-                        <input type="text" name="id[]" value="{{$p->id}}"><!-- Payment Details Table ID -->
-                        <input type="text" name="pid[]" value="{{$p->paymentId}}"><!-- Payments Table ID -->
+                        <input type="hidden" name="id[]" value="{{$p->id}}"><!-- Payment Details Table ID -->
+                        <input type="hidden" name="pid[]" value="{{$p->paymentId}}"><!-- Payments Table ID -->
                         <input type="hidden" name="batch_id[]" value="{{$p->batchId}}">
                         <input type="hidden" name="course_id[]" value="{{ \DB::table('batches')->where('id',$p->batchId)->first()->courseId}}">
                         <td><input type="text" class="form-control" name="mrNo[]" value="{{$payment->mrNo}}"></td>
@@ -144,16 +144,6 @@
 @endsection
 @push('scripts')
 <script>
-    $('input[name="paymentDate"]').daterangepicker({
-        singleDatePicker: true,
-        startDate: new Date(),
-        showDropdowns: true,
-        autoUpdateInput: true,
-        format: 'dd/mm/yyyy',
-    }).on('changeDate', function(e) {
-        var date = moment(e.date).format('YYYY/MM/DD');
-        $(this).val(date);
-    });
 
 
     function dueDate(index, due_date) {

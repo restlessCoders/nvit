@@ -714,7 +714,7 @@ print_r($stData);die;*/
                 foreach ($request->pid as $key => $payment) {
                     DB::table('payments')->insert(
                         [
-                            'paymentDate'       =>  date('Y-m-d', strtotime($request->paymentDate[$key])),
+                            'paymentDate'       => Carbon::createFromFormat('d/m/Y', $request->paymentDate[$key])->format('Y-m-d'),
                             'studentId'         =>  $request->studentId,
                             'mrNo'              =>  $request->mrNo[$key],
                             'invoiceId'         =>  $request->invoiceId[$key],
@@ -751,7 +751,7 @@ print_r($stData);die;*/
 
                             if ($cpaidAmount[$key] < $cPayable[$key] + $discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] == 2) {
                                 if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
-                                    $payment_detail['dueDate']      = date('Y-m-d', strtotime($dueDate[$key]));
+                                    $payment_detail['dueDate']      = Carbon::createFromFormat('d/m/Y', $request->dueDate[$key])->format('Y-m-d');
                                 }
                             }
                             $payment_detail['created_at']       = date("Y-m-d h:i:s");
