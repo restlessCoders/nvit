@@ -690,11 +690,19 @@ class StudentController extends Controller
 
                 /*==== Update payment and PaymentdDetails for New Batch From Old Batch====== */
                 /*Course Price change in not invoice paymnet and paymentdetails table update */
-                $pay_detl = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->curbatchId)
-                    ->first();
-                if ($pay_detl) {
-                    DB::table('paymentdetails')->where('id', '=', $pay_detl->id)->update(['cPayable' => $course[0]->price,'batchId' => $request->newbatchId]);
-                    DB::table('payments')->where('id', $pay_detl->paymentId)->update(['tPayable' => $course[0]->price]);
+                $pay_detls = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->curbatchId)
+                    ->get();
+                /* == Check Here multiple ==*/
+                if ($pay_detls->isNotEmpty()) {
+                    foreach ($pay_detls as $pay_detl) {
+                        DB::table('paymentdetails')
+                            ->where('id', '=', $pay_detl->id)
+                            ->update(['cPayable' => $course[0]->price, 'batchId' => $request->newbatchId]);
+
+                        DB::table('payments')
+                            ->where('id', $pay_detl->paymentId)
+                            ->update(['tPayable' => $course[0]->price]);
+                    }
                 }
                 $payable = DB::table('paymentdetails')->where('studentId', '=', $request->student_id)->where('batchId', '=', $request->newbatchId)->get();
                 foreach ($payable as $p) {

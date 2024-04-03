@@ -680,7 +680,6 @@ print_r($stData);die;*/
     }
     public function newStore(Request $request)
     {
-
         try {
             DB::beginTransaction();
             // Retrieve IDs from the arrays
@@ -744,10 +743,10 @@ print_r($stData);die;*/
                             $payment_detail['paymentId']        = $paymentId;
                             $payment_detail['studentId']        = $request->studentId;
                             $payment_detail['batchId']          = $batch_id[$key];
-                            $payment_detail['course_id']          = $course_id[$key];
+                            $payment_detail['course_id']        = $course_id[$key];
                             $payment_detail['cPayable']         = $cPayable[$key];
                             $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
-                            $payment_detail['payment_type']             = $payment_type[$key];
+                            $payment_detail['payment_type']     = $payment_type[$key];
 
                             if ($cpaidAmount[$key] < $cPayable[$key] + $discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] == 2) {
                                 if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
@@ -779,8 +778,8 @@ print_r($stData);die;*/
                    
                 }
                 DB::commit();
-                return response()->json(['success' => 'Payment Complete successfully.']);
-                //return redirect(route(currentUser().'.payment.index'))->with($this->responseMessage(true, null, 'Payment Received'));
+                //return response()->json(['success' => 'Payment Complete successfully.']);
+                return redirect(route(currentUser().'.daily_collection_report_by_mr'))->with($this->responseMessage(true, null, 'Payment Updated'));
           
         } catch (\Exception $e) {
             DB::rollback();

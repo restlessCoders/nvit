@@ -155,6 +155,14 @@
         $(this).val(date);
     });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        // Call dueDate for each input element with the appropriate data
+        $('[name="paymentDate[]"]').each(function(index) {
+            var due_date = $(this).val(); // Get the value of the input element
+            dueDate(index, due_date); // Call dueDate function with the index and due_date
+        });
+    });
+
     function dueDate(index, due_date) {
         if (due_date)
             date = due_date;
