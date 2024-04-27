@@ -766,7 +766,7 @@ class StudentController extends Controller
             ->selectRaw("student_batches.batch_id,batches.batchId")
             ->join('batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
             ->where(['student_id' => $request->id, 'student_batches.status' => 2, 'is_drop' => 1])
-            ->whereNotIn('student_batches.batch_id', $curbatchId)
+            //->whereNotIn('student_batches.batch_id', $curbatchId)
             ->groupBy('student_batches.batch_id', 'batches.batchId')
             ->get();
             $queries = \DB::getQueryLog();
