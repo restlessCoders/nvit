@@ -124,7 +124,8 @@
 				<p class="m-0 text-center text-danger"><strong>Seat Available: {{$batchInfo->seat-$batch_seat_count}}</strong></p>
 			</div>
 			@endif
-			<table class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+			<button type="btn btn-primary" class="excelExport" style="margin:10px 0;">Excel</button>
+			<table class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" id="table1">
 				<thead>
 					<tr>
 						<th>SL.</th>
@@ -456,6 +457,11 @@
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
+	$(document).ready(function() {
+		$('.excelExport').on('click', function() {
+			TableToExcel.convert(document.getElementById("table1"));
+		});
+	});
 	$('.js-example-basic-single').select2({
 		placeholder: 'Select Option',
 		allowClear: true
