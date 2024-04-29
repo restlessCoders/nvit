@@ -342,7 +342,7 @@
 					</div>
 				</div>
 				@endif
-				
+				{{$allactiveStudent->links()}}
 			</div>
 			<div class="tab-pane fade" id="dump_students" role="tabpanel" aria-labelledby="dump-students-tab">
 				<table class="dump_students responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
