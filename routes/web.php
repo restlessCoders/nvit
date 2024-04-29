@@ -234,6 +234,7 @@ Route::group(['middleware' => 'isFrontdesk'], function () {
             Route::get('/add', [StudentController::class, 'addForm'])->name('frontdesk.addNewStudentForm');
             Route::post('/add', [StudentController::class, 'store'])->name('frontdesk.addNewStudent');
             Route::get('/all',  [StudentController::class, 'index'])->name('frontdesk.allStudent');
+            Route::get('/student-detail',  [StudentController::class, 'studentDetail'])->name('frontdesk.studentDetail');
         });
         Route::resource('/batch', BatchController::class, ["as" => "frontdesk"])->only(['index']);
         Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('frontdesk.batchSearch');
@@ -272,6 +273,7 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class, 'index'])->name('salesmanager.allStudent');
+            Route::get('/student-detail',  [StudentController::class, 'studentDetail'])->name('salesmanager.studentDetail');
             Route::get('/add', [StudentController::class, 'addForm'])->name('salesmanager.addNewStudentForm');
             Route::post('/add', [StudentController::class, 'store'])->name('salesmanager.addNewStudent');
             Route::get('/edit/{id}', [StudentController::class, 'editForm'])->name('salesmanager.editStudent');
@@ -380,6 +382,7 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class, 'index'])->name('salesexecutive.allStudent');
+            Route::get('/student-detail',  [StudentController::class, 'studentDetail'])->name('salesexecutive.studentDetail');
             Route::get('/add', [StudentController::class, 'addForm'])->name('salesexecutive.addNewStudentForm');
             Route::post('/add', [StudentController::class, 'store'])->name('salesexecutive.addNewStudent');
             Route::get('/edit/{id}', [StudentController::class, 'editForm'])->name('salesexecutive.editStudent');
@@ -478,6 +481,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class, 'index'])->name('operationmanager.allStudent');
+            Route::get('/student-detail',  [StudentController::class, 'studentDetail'])->name('operationmanager.studentDetail');
             Route::get('/add', [StudentController::class, 'addForm'])->name('operationmanager.addNewStudentForm');
             Route::post('/add', [StudentController::class, 'store'])->name('operationmanager.addNewStudent');
             Route::get('/edit/{id}', [StudentController::class, 'editForm'])->name('operationmanager.editStudent');
