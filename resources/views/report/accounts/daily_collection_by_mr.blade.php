@@ -69,13 +69,11 @@
 								@endphp
 						</select>
 					</div>
-					<div class="col-sm-2">
-						<label for="name" class="col-form-label">Date</label>
+					<div class="col-md-3">
+						<label for="name" class="col-form-label">Select Date Range</label>
 						<div class="input-group">
-							<input type="text" name="paymentDate" class="form-control" placeholder="dd/mm/yyyy">
-							<div class="input-group-append">
-								<span class="input-group-text"><i class="icon-calender"></i></span>
-							</div>
+							<input type="text" id="date_range" name="date_range" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
+							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
 					</div>
 					@if(currentUser() != 'salesexecutive')
@@ -109,8 +107,8 @@
 							<option value="3" @if(request()->get('feeType') == 3) selected @endif>Due</option>
 						</select>
 					</div>
-					<div class="col-sm-2">
-						<label for="name" class="col-form-label">Payment Mode</label>
+					<div class="col-sm-1">
+						<label for="name" class="col-form-label">Mode</label>
 						<select name="type" class="js-example-basic-single form-control me-3">
 							<option></option>
 							<option value="1" @if(request()->get('type') == 1) selected @endif>Cash</option>
@@ -135,8 +133,12 @@
 					</div>
 				</div>
 			</form>
-			<button type="btn btn-primary" class="excelExport" style="margin:10px 0;">Excel</button>
-			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;" id="table1">
+			<div class="row pb-1">
+				<div class="col-12">
+					<button type="button" class="btn btn-sm btn-primary float-end" onclick="get_print()"><i class="bi bi-file-excel"></i> Export Excel</button>
+				</div>
+			</div>
+			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;">
 				<thead>
 					<tr>
 						<th width="100px">Date</th>
@@ -294,6 +296,10 @@
 		</div>
 	</div>
 </div> <!-- end row -->
+
+<div class="full_page"></div>
+<div id="my-content-div" class="d-none"></div>
+
 @endsection
 @push('scripts')
 <script>
@@ -307,11 +313,7 @@
 		placeholder: 'Select Option',
 		allowClear: true
 	});
-	$(document).ready(function() {
-		$('.excelExport').on('click', function() {
-			TableToExcel.convert(document.getElementById("table1"));
-		});
-	});
+
 	$('.payment').on('click', '.delete', function(event) {
 		event.preventDefault();
 		swal({
@@ -328,16 +330,18 @@
 			});
 	});
 	$('.js-example-basic-single').select2();
-	$("input[name='paymentDate']").daterangepicker({
-		singleDatePicker: true,
-		startDate: new Date(),
-		showDropdowns: true,
-		autoUpdateInput: false,
-		format: 'dd/mm/yyyy',
-	}).on('changeDate', function(e) {
-		var date = moment(e.date).format('YYYY/MM/DD');
-		$(this).val(date);
-	});
+	$("input[name='date_range']").daterangepicker({
+			singleDatePicker: false,
+			//startDate: new Date(),
+			showDropdowns: true,
+			autoUpdateInput: true,
+			format: 'dd/mm/yyyy',
+		}).on('changeDate', function(e) {
+			var date = moment(e.date).format('YYYY/MM/DD');
+			$(this).val(date);
+		});
+		// Set the input value to an empty string after initialization
+		$("input[name='date_range']").val('');
 </script>
 @if(Session::has('response'))
 <script>
@@ -361,4 +365,26 @@
 	}
 </script>
 @endif
+	<script>
+    function exportReportToExcel(idname,filename) {
+        let table = document.getElementsByTagName(idname); // you can use document.getElementById('tableId') as well by providing id to the table tag
+        TableToExcel.convert(table[1], { // html code may contain multiple tables so here we are refering to 1st table tag
+        name: `${filename}.xlsx`, // fileName you could use any name
+        sheet: {
+            name: 'Daily Collection Report' // sheetName
+        }
+        });
+        $("#my-content-div").html("");
+        $('.full_page').html("");
+    }
+    function get_print(){
+        $('.full_page').html('<div style="background:rgba(0,0,0,0.5);width:100vw; height:100vh;position:fixed; top:0; left;0"><div class="loader my-5"></div></div>');
+        $.get(
+            "{{route(currentUser().'.daily_collection_report_by_mr_report_print')}}{!! ltrim(Request()->fullUrl(),Request()->url()) !!}",
+            function (data) {
+                $("#my-content-div").html(data);
+            }
+        ).then(function(){exportReportToExcel('table','Daily Collection Report')})
+    }
+</script>
 @endpush

@@ -45,7 +45,7 @@
 			<form action="{{route(currentUser().'.batchwiseEnrollStudent')}}" method="" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-2">
+					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Student ID|Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
@@ -55,6 +55,16 @@
 							<option></option>
 							@forelse($batches as $batch)
 							<option value="{{$batch->id}}" @if(request()->get('batch_id') == $batch->id) selected @endif>{{$batch->batchId}}</option>
+							@empty
+							@endforelse
+						</select>
+					</div>
+					<div class="col-sm-2">
+						<label for="course_id" class="col-form-label">Select Course</label>
+						<select name="course_id" class="js-example-basic-single form-control">
+							<option></option>
+							@forelse($courses as $course)
+							<option value="{{$course->id}}" @if(request()->get('course_id') == $course->id) selected @endif>{{$course->courseName}}</option>
 							@empty
 							@endforelse
 						</select>
@@ -81,6 +91,13 @@
 							@empty
 							@endforelse
 						</select>
+					</div>
+					<div class="col-md-3">
+						<label for="name" class="col-form-label">Select Date Range</label>
+						<div class="input-group">
+							<input type="text" id="date_range" name="date_range" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
+							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
+						</div>
 					</div>
 					<div class="col-sm-2">
 						<label for="status" class="col-form-label">Select Status</label>
@@ -114,7 +131,11 @@
 					</div>
 				</div>
 			</form>
-
+			<div class="row pb-1">
+				<div class="col-12">
+					<button type="button" class="btn btn-sm btn-primary float-end" onclick="get_print()"><i class="bi bi-file-excel"></i> Export Excel</button>
+				</div>
+			</div>
 			@if($batchInfo)
 			<div class="col-md-12">
 				<h4 class="text-center">{{$batchInfo->batchId}}</h4>
@@ -124,8 +145,7 @@
 				<p class="m-0 text-center text-danger"><strong>Seat Available: {{$batchInfo->seat-$batch_seat_count}}</strong></p>
 			</div>
 			@endif
-			<button type="btn btn-primary" class="excelExport" style="margin:10px 0;">Excel</button>
-			<table class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" id="table1">
+			<table class="table table-sm table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 				<thead>
 					<tr>
 						<th>SL.</th>
@@ -451,17 +471,16 @@
 		</div>
 	</div>
 </div>
+
+<div class="full_page"></div>
+<div id="my-content-div" class="d-none"></div>
+
 @endsection
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 <script src="{{asset('backend/libs/multiselect/jquery.multi-select.js')}}"></script>
 <script src="{{asset('backend/libs/select2/select2.min.js')}}"></script>
 <script>
-	$(document).ready(function() {
-		$('.excelExport').on('click', function() {
-			TableToExcel.convert(document.getElementById("table1"));
-		});
-	});
 	$('.js-example-basic-single').select2({
 		placeholder: 'Select Option',
 		allowClear: true
@@ -568,6 +587,19 @@
 				}
 			});
 	});
+
+	$("input[name='date_range']").daterangepicker({
+			singleDatePicker: false,
+			//startDate: new Date(),
+			showDropdowns: true,
+			autoUpdateInput: true,
+			format: 'dd/mm/yyyy',
+		}).on('changeDate', function(e) {
+			var date = moment(e.date).format('YYYY/MM/DD');
+			$(this).val(date);
+		});
+		// Set the input value to an empty string after initialization
+		$("input[name='date_range']").val('');
 </script>
 @if(Session::has('response'))
 <script>
@@ -591,4 +623,26 @@
 	}
 </script>
 @endif
+<script>
+    function exportReportToExcel(idname,filename) {
+        let table = document.getElementsByTagName(idname); // you can use document.getElementById('tableId') as well by providing id to the table tag
+        TableToExcel.convert(table[1], { // html code may contain multiple tables so here we are refering to 1st table tag
+        name: `${filename}.xlsx`, // fileName you could use any name
+        sheet: {
+            name: 'Batch Wise Enrll Report' // sheetName
+        }
+        });
+        $("#my-content-div").html("");
+        $('.full_page').html("");
+    }
+    function get_print(){
+        $('.full_page').html('<div style="background:rgba(0,0,0,0.5);width:100vw; height:100vh;position:fixed; top:0; left;0"><div class="loader my-5"></div></div>');
+        $.get(
+            "{{route(currentUser().'.batchwiseEnrollStudentPrint')}}{!! ltrim(Request()->fullUrl(),Request()->url()) !!}",
+            function (data) {
+                $("#my-content-div").html(data);
+            }
+        ).then(function(){exportReportToExcel('table','Batch Wise Enroll Report')})
+    }
+</script>
 @endpush

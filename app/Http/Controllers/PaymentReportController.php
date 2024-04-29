@@ -11,10 +11,108 @@ use Illuminate\Http\Request;
 use DB;
 use Carbon\Carbon;
 
+use View;
 class PaymentReportController extends Controller
 {
     public function daily_collection_report_by_mr(Request $request)
     {
+        //dd($request->paymentDate);
+        
+        $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
+        $batches = Batch::where('status',1)->get();
+        
+        $payments = 
+       
+        
+        //Payment::with('paymentDetail')->orderby('mrNo','desc');
+        Payment::join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
+        ->leftjoin('students', 'paymentdetails.studentId', '=', 'students.id')
+        ->leftjoin('users', 'payments.executiveId', '=', 'users.id')
+        ->leftjoin('batches', 'paymentdetails.batchId', '=', 'batches.id')
+        ->leftjoin('courses', 'paymentdetails.course_id', '=', 'courses.id')
+        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','courses.courseName','students.name','students.contact','students.executiveId','users.username')
+        ->orderby('payments.mrNo','desc')
+        ->where('paymentdetails.deduction','>=',0);
+       
+        if($request->studentId){
+            $payments->where('students.name', 'like', '%'.$request->sdata.'%')
+            ->where('students.id', $request->studentId)
+            ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
+            ->orWhere('students.contact', 'like', '%'.$request->studentId.'%');
+        }
+        /*if($request->paymentDate){
+            $payments->where('payments.paymentDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($request->paymentDate))->format('Y-m-d'));
+        }*/
+        if (isset($request->date_range)) {
+            $date_range = explode('-', $request->date_range);
+            $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
+            $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
+            //print_r($date_range);die;
+            //$postingDate = Attendance::whereBetween('postingDate', [$from, $to]);
+            $payments->whereBetween('payments.paymentDate', [$from, $to]);
+        }
+            
+        if($request->executiveId){
+            $payments->where('payments.executiveId',$request->executiveId);
+        }
+        if($request->batch_id){
+            $payments->whereHas('paymentDetail', function ($query) use ($request) {
+                $query->where('paymentdetails.batchId', $request->batch_id);
+            });
+        }
+        if($request->invoiceId){
+            $payments->where('payments.invoiceId', $request->invoiceId);
+        }
+        if($request->mrNo){
+            $payments->where('payments.mrNo', $request->mrNo);
+        }
+        if($request->feeType){
+            if ($request->feeType == 3) {
+                $payments = $payments->where(function($query) {
+                    $query->where('paymentdetails.feeType', '!=', 1)
+                        ->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) > 0")
+                        ->whereIn('paymentdetails.id', function($subquery) {
+                            $subquery->select(DB::raw('MAX(id)'))
+                                ->from('paymentdetails as pd')
+                                ->whereRaw('pd.studentId = paymentdetails.studentId')
+                                ->whereRaw('pd.batchId = paymentdetails.batchId');
+                        });
+                });
+            } else {
+                $payments->whereHas('paymentDetail', function ($query) use ($request) {
+                    $query->where('paymentdetails.feeType', $request->feeType);
+                });
+            }                       
+        }
+        if(strtolower(currentUser()) == 'salesexecutive'){
+            $payments->where('payments.executiveId', '=', currentUserId());
+        }
+        if ($request->year) {
+            $payments = $payments->whereYear('payments.paymentDate', $request->year);
+        }
+        if ($request->month) {
+            $payments = $payments->whereMonth('payments.paymentDate', $request->month);
+        }     
+        if ($request->payment_type) {
+            $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
+        }  
+        
+        $perPage = $request->perPage?$request->perPage:25;
+        $payments = $payments->paginate($perPage)->appends([
+            'executiveId' => $request->executiveId,
+            'studentId' => $request->studentId,
+            'batch_id' => $request->batch_id,
+            'date_range' => $request->date_range,
+            'year' => $request->year,
+            'month' => $request->month,
+            'payment_type' => $request->payment_type,
+            'feeType' => $request->feeType,
+        ]);
+        /* echo '<pre>';
+        print_r($payments->toArray());die;*/
+        return view('report.accounts.daily_collection_by_mr', compact('payments', 'users', 'batches'));
+    }
+    public function daily_collection_report_by_mr_report_print(Request $request){
         $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
         $batches = Batch::where('status',1)->get();
         
@@ -84,21 +182,10 @@ class PaymentReportController extends Controller
         if ($request->payment_type) {
             $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
         }  
-        
-        $perPage = $request->perPage?$request->perPage:25;
-        $payments = $payments->paginate($perPage)->appends([
-            'executiveId' => $request->executiveId,
-            'studentId' => $request->studentId,
-            'batch_id' => $request->batch_id,
-            'paymentDate' => $request->paymentDate,
-            'year' => $request->year,
-            'month' => $request->month,
-            'payment_type' => $request->payment_type,
-            'feeType' => $request->feeType,
-        ]);
-        /* echo '<pre>';
-        print_r($payments->toArray());die;*/
-        return view('report.accounts.daily_collection_by_mr', compact('payments', 'users', 'batches'));
+        $payments = $payments->get();
+
+        return View::make("report.accounts.daily_collection_by_mr_report_print", compact('payments'))
+        ->render();
     }
     public function daily_collection_report(Request $request)
     {

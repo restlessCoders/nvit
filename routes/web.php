@@ -157,12 +157,14 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
+        Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('superadmin.batchwiseEnrollStudentPrint');
         Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('superadmin.editEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
 
         /*===Payment report==*/
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('superadmin.daily_collection_report');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('superadmin.daily_collection_report_by_mr');
+        Route::get('/daily/collection/report/mr/print', [PaymentReportController::class, 'daily_collection_report_by_mr_report_print'])->name('superadmin.daily_collection_report_by_mr_report_print');
         
 
         /*Attendance Report */
@@ -322,10 +324,12 @@ Route::group(['middleware' => 'isSalesManager'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
+        Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('salesmanager.batchwiseEnrollStudentPrint');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
 
         /*===Payment report==*/
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('salesmanager.daily_collection_report');
+        Route::get('/daily/collection/report/mr/print', [PaymentReportController::class, 'daily_collection_report_by_mr_report_print'])->name('salesmanager.daily_collection_report_by_mr_report_print');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('salesmanager.daily_collection_report_by_mr');
 
         /*=== Course Report= ==*/
@@ -400,6 +404,7 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
+        Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('salesexecutive.batchwiseEnrollStudentPrint');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesexecutive.batchwiseEnrollStudent');
         Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('salesexecutive.editEnrollStudent');
         Route::post('/batch/single/assign/{id}', [ReportController::class, 'assign_single_batch_toEnrollStudent'])->name('salesexecutive.assign_single_batch_toEnrollStudent');
@@ -420,6 +425,7 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
 
         /*===Payment report==*/
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('salesexecutive.daily_collection_report');
+        Route::get('/daily/collection/report/mr/print', [PaymentReportController::class, 'daily_collection_report_by_mr_report_print'])->name('salesexecutive.daily_collection_report_by_mr_report_print');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('salesexecutive.daily_collection_report_by_mr');
 
         /*=== Course Report= ==*/
@@ -530,6 +536,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('operationmanager.batchwiseEnrollStudent');
+        Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('operationmanager.batchwiseEnrollStudentPrint');
         Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('operationmanager.editEnrollStudent');
         Route::post('/batch/assign/{id}', [ReportController::class, 'assign_batch_toEnrollStudent'])->name('operationmanager.assign_batch_toEnrollStudent');
         Route::post('/batch/single/assign/{id}', [ReportController::class, 'assign_single_batch_toEnrollStudent'])->name('operationmanager.assign_single_batch_toEnrollStudent');
@@ -542,6 +549,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
 
         /*===Payment report==*/
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('operationmanager.daily_collection_report');
+        Route::get('/daily/collection/report/mr/print', [PaymentReportController::class, 'daily_collection_report_by_mr_report_print'])->name('operationmanager.daily_collection_report_by_mr_report_print');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('operationmanager.daily_collection_report_by_mr');
 
         /*Attendance Report */
@@ -624,6 +632,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('accountmanager.allPaymentReportBySid');
         Route::get('/payment/report/bundel', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('accountmanager.allPaymentCourseReportBySid');
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('accountmanager.daily_collection_report');
+        Route::get('/daily/collection/report/mr/print', [PaymentReportController::class, 'daily_collection_report_by_mr_report_print'])->name('accountmanager.daily_collection_report_by_mr_report_print');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('accountmanager.daily_collection_report_by_mr');
 
 
@@ -631,6 +640,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
+        Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('accountmanager.batchwiseEnrollStudentPrint');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
 
 
@@ -649,9 +659,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         Route::resource('/payment-transfer', PaymentTransferController::class, ["as" => "accountmanager"]);
         Route::get('/payment-transfer-data', [PaymentTransferController::class,'payment_transfer_data'])->name('accountmanager.payment_transfer_data');
 
-        /*===Report Data===*/
-        Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
-        Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('accountmanager.batchwiseEnrollStudent');
+      
 
          /*Course Enroll Report */
          Route::get('/course/wise/enroll/list', [ReportController::class, 'coursewiseEnrollStudent'])->name('accountmanager.coursewiseEnrollStudent');
