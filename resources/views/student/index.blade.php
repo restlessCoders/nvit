@@ -250,6 +250,7 @@
 								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#addNoteModal" class="text-info" title="note"><i class="far fa-sticky-note mr-1"></i></a>
 								<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
 								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#stuDetl" class="text-success" title="details"><i class="far fa-trash-alt mr-1"></i></a>
+								
 								<!-- <a href="" class="text-warning" title="note"><i class="fas fa-redo-alt"></i></a> -->
 								<form method="POST" action="{{route(currentUser().'.dumpStudent',[encryptor('encrypt', $student->id)])}}" style="display: inline;">
 								@csrf
@@ -327,28 +328,21 @@
 				<div class="modal fade" id="stuDetl" tabindex="-1" role="dialog" aria-labelledby="addstuDetlModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-xl" role="document">
 						<div class="modal-content">
-							
+							<div class="modal-header">
+								<h5 class="modal-title" id="addNoteModalLabel">Student Name:-<span id="student_name"></span>|ID:-<span id="student_id"></span></h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
 							<div class="col-md-12">
-								<h5 class="page-title">Enroll History</h5>
-								<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-									<thead>
-										<tr>
-											<th>Sl.</th>
-											<th>Recall Date</th>
-											<th>Note</th>
-											<th>Notes By</th>
-											<th>Posted On</th>
-										</tr>
-									</thead>
-									<tbody>
-									</tbody>
-								</table>
+								<div class="table-responsive" id="paymenthisTblData">
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 				@endif
-				{{$allactiveStudent->links()}}
+				
 			</div>
 			<div class="tab-pane fade" id="dump_students" role="tabpanel" aria-labelledby="dump-students-tab">
 				<table class="dump_students responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -568,5 +562,30 @@
 	});
 </script>
 @endif
-
+<script>
+	$('#stuDetl').on('show.bs.modal', function(event) {
+		$('#paymenthisTblData').empty();
+		var button = $(event.relatedTarget);
+		var sId = button.data('student-id');
+		var studentName = button.data('student-name');
+		var modal = $(this);
+		modal.find('#student_id').text(sId);
+		modal.find('#student_name').text(studentName);
+		$.ajax({
+			url: "{{route(currentUser().'.studentDetail')}}",
+			method: 'GET',
+			dataType: 'json',
+			data: {
+				sId: sId,
+			},
+			success: function(res) {
+				console.log(res.data);
+				$('#paymenthisTblData').append(res.data);
+			},
+			error: function(e) {
+				console.log(e);
+			}
+		});
+	});
+</script>
 @endpush

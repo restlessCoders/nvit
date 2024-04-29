@@ -19,6 +19,7 @@ use App\Http\Requests\Student\StudentCourseRequest;
 use App\Http\Traits\ResponseTrait;
 use App\Models\Batchslot;
 use App\Models\Batchtime;
+use App\Models\Attendance;
 use Image;
 use Exception;
 use DB;
@@ -1001,5 +1002,40 @@ class StudentController extends Controller
             $note->save();
             return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Undo Successful'));
         }
+    }
+    public function studentDetail(Request $request){
+        /*=== Student All Enroll Course ===*/
+        $student_data = Student::with('student_batches')->where('id',$request->sId)->first();
+        $data = '<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Sl.</th>
+                        <th>Batch No</th>
+                        <th>Total Class</th>
+                        <th>Total Attendence</th>
+                    </tr>
+                </thead>';
+                $sl = 1;
+                $data .='<tbody>';
+                        foreach($student_data->student_batches as $b){
+                            $data .='<tr>';
+                            $data .='<td>'.$sl++.'</td>'; 
+                            $data .='<td>'.$b?->batch->batchId.'</td>';
+                            $total_class = Attendance::select('postingDate', DB::raw('COUNT(postingDate) AS count'))
+                            ->where('batch_id', $b->batch_id)
+                            ->groupBy('postingDate')
+                            ->get();
+
+                            $data .='<td>'.$total_class->count().'</td>'; 
+                            $data .='<td>'.Attendance::where('student_id', $b->student_id)->where('batch_id', $b->batch_id)->where('isPresent', '=', 1)->count().'</td>'; 
+                            $data .='</tr>';
+                        }
+                $data .='</tbody>';
+        $data .='</table>';
+        return response()->json(array('data' => $data));
+        /*echo $data;
+        echo '<pre>';
+        print_r($student_data);
+        echo '</pre>';*/
     }
 }

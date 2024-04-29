@@ -25,12 +25,15 @@ class Student extends Model
         return $this->belongsTo(Reference::class,'refId','id');
     }
     public function batches(){
-        return $this->belongsToMany(Student::class,'student_batches','student_id','batch_id')->withPivot(['accountsNote','acc_approve','status']);;
+        return $this->belongsToMany(Student::class,'student_batches','student_id','batch_id')->withPivot(['acc_approve','status']);;
     }
     public function executive(){
         return $this->belongsTo(User::class,'executiveId','id');
     }
     public function notes(){
         return $this->hasMany(Note::class,'student_id','id');
+    }
+    public function student_batches(){
+        return $this->hasMany(StudentBatch::class,'student_id','id');
     }
 }

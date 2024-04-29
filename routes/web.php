@@ -91,6 +91,7 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         Route::prefix('student')->group(function () {
             //Student Controller
             Route::get('/all',  [StudentController::class, 'index'])->name('superadmin.allStudent');
+            Route::get('/student-detail',  [StudentController::class, 'studentDetail'])->name('superadmin.studentDetail');
             Route::get('/add', [StudentController::class, 'addForm'])->name('superadmin.addNewStudentForm');
             Route::post('/add', [StudentController::class, 'store'])->name('superadmin.addNewStudent');
             Route::get('/edit/{id}', [StudentController::class, 'editForm'])->name('superadmin.editStudent');
