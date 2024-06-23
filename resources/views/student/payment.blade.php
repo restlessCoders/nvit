@@ -156,7 +156,6 @@
 		//if (opt == 1) {
 			var feeType = $('#pType option:selected').val();
 			var batchId = $('#batch_id option:selected').val();
-			alert(batchId);
 
 			$.ajax({
 				url: "{{route(currentUser().'.allPaymentReportBySid_for_batch_enroll_report')}}",
