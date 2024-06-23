@@ -488,12 +488,12 @@ print_r($stData);die;*/
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
             
             ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
-            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.course_id' => $s->course_id])
+            ->where(['paymentdetails.studentId' => $s->student_id/*,'paymentdetails.course_id' => $s->course_id*/])
             ->where('paymentdetails.cpaidAmount', '!=',0)
             ->whereNull('paymentdetails.deleted_at')
             ->get();
             $queries = \DB::getQueryLog();
-            dd($queries);
+            //dd($queries);
             foreach($payments as $p){
                
             $data .= '<tr>';
