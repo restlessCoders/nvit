@@ -77,7 +77,7 @@
                         <td><input type="text" class="form-control" readonly value="{{$p->cPayable}}" name="cPayable[]"></td>
                         <td>
                             <div class="input-group">
-                                <input type="text" name="paymentDate[]" value="{{ $payment->paymentDate }}" onfocus="dueDate({{$key}},'{{ $payment->paymentDate }}')" class="dueDate_{{$key}} form-control" placeholder="dd/mm/yyyy">
+                                <input type="text" name="paymentDate[]" value="{{ $payment->paymentDate }}" onfocus="paymentDate(this)" class="paymentDate_{{$key}} form-control" data-index="{{ $key }}" data-date="{{ $payment->paymentDate }}" placeholder="dd/mm/yyyy">
                                 <div class="input-group-append">
                                     <span class="input-group-text"><i class="icon-calender"></i></span>
                                 </div>
@@ -90,7 +90,7 @@
                             </select></td>
                         <td>
                             <div class="input-group">
-                                <input type="text" name="dueDate[]" value="{{ $p->dueDate }}" onfocus="dueDate({{$key}},'{{ $p->dueDate }}')" class="dueDate_{{$key}} form-control" placeholder="dd/mm/yyyy">
+                                <input type="text" name="dueDate[]" value="{{ $p->dueDate }}" onfocus="dueDate(this)" class="dueDate_{{$key}} form-control" data-index="{{ $key }}" data-date="{{ $p->dueDate }}" placeholder="dd/mm/yyyy">
                                 <div class="input-group-append">
                                     <span class="input-group-text"><i class="icon-calender"></i></span>
                                 </div>
@@ -146,7 +146,7 @@
 <script>
 
 
-    function dueDate(index, due_date) {
+    /*function dueDate(index, due_date) {
         if (due_date)
             date = due_date;
         else
@@ -163,7 +163,55 @@
             var date = moment(e.date).format('YYYY/MM/DD');
             $(this).val(date);
         });
+    }*/
+
+    function paymentDate(element) {
+        var index = $(element).data('index');
+        var paymentDate = $(element).data('date');
+        var date = paymentDate ? paymentDate : new Date();
+        //alert("p"+date);
+        $('.paymentDate_' + index).daterangepicker({
+            singleDatePicker: true,
+            startDate: moment(date).format('DD/MM/YYYY'),
+            showDropdowns: true,
+            autoUpdateInput: true,
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }).on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
     }
+
+    function dueDate(element) {
+        var index = $(element).data('index');
+        var due_date = $(element).data('date');
+        var date = due_date ? due_date : new Date();
+        //alert("d"+date);
+
+        $('.dueDate_' + index).daterangepicker({
+            singleDatePicker: true,
+            startDate: moment(date).format('DD/MM/YYYY'),
+            showDropdowns: true,
+            autoUpdateInput: true,
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }).on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+    }
+
+
+    $(document).ready(function() {
+        $('input[name="paymentDate[]"]').each(function() {
+            paymentDate(this);
+        });
+        $('input[name="dueDate[]"]').each(function() {
+            dueDate(this);
+        });
+    });
+
     /*=== Check Input Price== */
     function checkPrice(index) {
         var paidpricebyRow = parseFloat($('#paidpricebyRow_' + index).val());

@@ -701,6 +701,34 @@ Route::group(['middleware' => 'isTrainingmanager'], function () {
         Route::post('/changePass', [UserController::class, 'changePass'])->name('trainingmanager.changePass');
         Route::post('/changePer', [UserController::class, 'changePer'])->name('trainingmanager.changePer');
         Route::post('/changeAcc', [UserController::class, 'changeAcc'])->name('trainingmanager.changeAcc');
+
+        Route::resource('/batch', BatchController::class, ["as" => "trainingmanager"])->only(['index']);
+        Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('trainingmanager.batchSearch');
+
+        /*Attendance Controller */
+        Route::resource('/attendance', AttendanceController::class, ["as" => "trainingmanager"]);
+
+        
+        /*Batch Wise Student Attendance Report */
+        Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('trainingmanager.batchwiseStudentAttnReport');
+        Route::get('/batch/wise/student/attendance/add', [ReportController::class, 'batchwiseStudentAttnAdd'])->name('trainingmanager.batchwiseStudentAttnAdd');
+
+        /*===Report Data===*/
+        Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('trainingmanager.batchwiseEnrollStudent');
+        Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('trainingmanager.batchwiseEnrollStudent');
+
+        /*Payment Report */
+        Route::get('/payment/report/all', [PaymentReportController::class, 'allPaymentReportBySid'])->name('trainingmanager.allPaymentReportBySid');
+        Route::get('/payment/report/course/all', [PaymentReportController::class, 'allPaymentCourseReportBySid'])->name('trainingmanager.allPaymentCourseReportBySid');
+
+        Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('trainingmanager.batchwiseEnrollStudentPrint');
+
+        /*Batch Completion Report */
+        Route::get('/batch/wise/completion', [ReportController::class, 'batchwiseCompletion'])->name('trainingmanager.batchwiseCompletion');
+        Route::get('/batch/wise/completion/report', [ReportController::class, 'batchwiseCompletionReport'])->name('trainingmanager.batchwiseCompletionReport');
+
+        Route::resource('/certificate', CertificateController::class, ["as" => "trainingmanager"]);
+        
     });
 });
 

@@ -14,6 +14,7 @@ use Session;
 use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
 {
@@ -474,12 +475,12 @@ print_r($stData);die;*/
 
 
         if ($payment_data->batchId) {
-            $paymentdetl = DB::table('paymentdetails')->where('studentId', $sId)->where('batchId', $payment_data->batchId)->get();
+            $paymentdetl = DB::table('paymentdetails')->where('studentId', $sId)->where('batchId', $payment_data->batchId)->whereNull('deleted_at')->get();
             $studentsBatches = DB::table('student_batches')->where('student_id', $sId)->where('batch_id', '=', $payment_data->batchId)->first();
         } else
-            $paymentdetl = DB::table('paymentdetails')->where('studentId', $sId)->where('course_id', $payment_data->course_id)->get();
-        // echo '<pre>';
-        // print_r($paymentdetl);die;
+            $paymentdetl = DB::table('paymentdetails')->where('studentId', $sId)->where('course_id', $payment_data->course_id)->whereNull('deleted_at')->get();
+        /*echo '<pre>';
+        print_r($paymentdetl);die;*/
 
 
         return view('payment.edit', compact('sdata', 'paymentdetl', 'studentsBatches'));
@@ -680,53 +681,59 @@ print_r($stData);die;*/
     }
     public function newStore(Request $request)
     {
-        //dd($request);
+        //  dd($request);
         try {
             DB::beginTransaction();
             // Retrieve IDs from the arrays
             $paymentIds = $request->input('pid', []);
             $paymentDetailIds = $request->input('id', []);
-
+            $mrNos = $request->input('mrNo', []);
             // Delete records from Payment table
             DB::connection()->enableQueryLog();
-            DB::table('payments')->whereIn('id', $paymentIds)->delete();
+            //DB::table('payments')->whereIn('id', $paymentIds)->update(['mrNo' => null, 'invoiceId' => null, 'deleted_at' => now()]);
             $queries = \DB::getQueryLog();
             //dd($queries);
 
             // Delete records from Paymentdetail table
-            DB::table('paymentdetails')->whereIn('id', $paymentDetailIds)->delete();
-            DB::commit();
+            DB::table('paymentdetails')->whereIn('id', $paymentDetailIds)->update(['deleted_at' => now()]);
+            //DB::commit();
                 $rules = [
-                    'mrNo'                 => 'required|unique:payments,mrNo',
+                    //'mrNo'                 => 'required|unique:payments,mrNo',
                     'paymentDate'       => 'required',
                 ];
                 $messages = [
-                    'mrNo.required' => 'The Money Receipt No field is required.',
-                    'mrNo.unique' => 'Mr No Alreay Used!',
+                    //'mrNo.required' => 'The Money Receipt No field is required.',
+                    //'mrNo.unique' => 'Mr No Alreay Used!',
                     'paymentDate.required' => 'The Payment Date field is required.'
                 ];
-
+// If there are mrNo values provided, dynamically add validation rules for each mrNo
+if (!empty($mrNos)) {
+    foreach ($mrNos as $index => $mrNo) {
+        $rules['mrNo.' . $index] = [
+            'required',
+            Rule::unique('payments', 'mrNo')->ignore($request->input('pid.' . $index), 'id')
+        ];
+    }
+}
                 $validator = Validator::make($request->all(), $rules, $messages);
                 if ($validator->fails()) {
                     return response()->json(['errors' => $validator->errors()], 422);
                 }
-                DB::beginTransaction();
+                //DB::beginTransaction();
                 foreach ($request->pid as $key => $payment) {
-                    DB::table('payments')->insert(
-                        [
-                            'paymentDate'       => Carbon::createFromFormat('d/m/Y', $request->paymentDate[$key])->format('Y-m-d'),
-                            'studentId'         =>  $request->studentId,
-                            'mrNo'              =>  $request->mrNo[$key],
-                            'invoiceId'         =>  $request->invoiceId[$key],
-                            'executiveId'       =>  $request->executiveId,
-                            'tPayable'          =>  $request->tPayable,
-                            'paidAmount'        =>  $request->cpaidAmount[$key],
-                            'accountNote'       =>  $request->accountNote,
-                            'created_at'        => date("Y-m-d h:i:s"),
-                            'created_by'        => encryptor('decrypt', $request->userId),
-                        ]
-                    );
-                    $paymentId = DB::getPdo()->lastInsertId();
+                    DB::table('payments')
+    ->where('id', $paymentIds[$key]) // assuming 'id' is the primary key or unique identifier for the record
+    ->update([
+        'paymentDate'       => Carbon::createFromFormat('d/m/Y', $request->paymentDate[$key])->format('Y-m-d'),
+        'mrNo'              => $request->mrNo[$key],
+        'invoiceId'         => $request->invoiceId[$key],
+        'tPayable'          => $request->tPayable,
+        'paidAmount'        => $request->cpaidAmount[$key],
+        'accountNote'       => $request->accountNote,
+        'updated_at'        => date("Y-m-d h:i:s"),
+        'updated_by'        => currentUserId(),
+    ]);
+
 
                     // Payment Detail
                     $batch_id       = $request->post('batch_id');
@@ -739,9 +746,10 @@ print_r($stData);die;*/
                     $payment_mode    = $request->post('payment_mode');
                     $feeType        = $request->post('feeType');
                     $invoiceId      = $request->post('invoiceId');
+                    $paymentId      = $request->post('pid');
                     //foreach ($request->cpaidAmount as $key => $cdata) {
                         if ($cpaidAmount[$key] <> 0) {
-                            $payment_detail['paymentId']        = $paymentId;
+                            $payment_detail['paymentId']        = $paymentId[$key];
                             $payment_detail['studentId']        = $request->studentId;
                             $payment_detail['batchId']          = $batch_id[$key];
                             $payment_detail['course_id']        = $course_id[$key];

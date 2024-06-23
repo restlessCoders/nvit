@@ -96,7 +96,7 @@ class PaymentReportController extends Controller
         if ($request->payment_type) {
             $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
         }  
-        
+        $payments = $payments->whereNull('paymentdetails.deleted_at');
         $perPage = $request->perPage?$request->perPage:25;
         $payments = $payments->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
@@ -262,7 +262,8 @@ class PaymentReportController extends Controller
             ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
             ->where('paymentdetails.studentId', $request->sId)
-            ->where('paymentdetails.deduction','>=',0);
+            ->where('paymentdetails.deduction','>=',0)
+            ->whereNull('paymentdetails.deleted_at');
 
         if ($request->systmVal) {
             $payments->where('student_batches.systemId', $request->systmVal);
@@ -481,12 +482,13 @@ print_r($stData);die;*/
         $sl = 1;
         foreach ($stData as $key => $s) {
             $payments = DB::table('paymentdetails')
-            ->selectRaw('paymentdetails.*, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote')
+            ->selectRaw('paymentdetails.*, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote,paymentdetails.deleted_at')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
             
             ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
             ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.course_id' => $s->course_id])
             ->where('paymentdetails.cpaidAmount', '!=',0)
+            ->whereNull('paymentdetails.deleted_at')
             ->get();
 
             foreach($payments as $p){
