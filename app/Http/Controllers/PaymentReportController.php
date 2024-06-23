@@ -482,6 +482,7 @@ print_r($stData);die;*/
                 </thead>';
         $sl = 1;
         foreach ($stData as $key => $s) {
+            DB::connection()->enableQueryLog();
             $payments = DB::table('paymentdetails')
             ->selectRaw('paymentdetails.*, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote,paymentdetails.deleted_at')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
@@ -491,7 +492,8 @@ print_r($stData);die;*/
             ->where('paymentdetails.cpaidAmount', '!=',0)
             ->whereNull('paymentdetails.deleted_at')
             ->get();
-dd($payments);
+            $queries = \DB::getQueryLog();
+            dd($queries);
             foreach($payments as $p){
                
             $data .= '<tr>';
