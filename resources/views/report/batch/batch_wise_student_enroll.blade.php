@@ -626,6 +626,7 @@
 	}
 </script>
 @endif
+@if(currentUser() == 'superadmin')
 <script>
     function exportReportToExcel(idname,filename) {
         let table = document.getElementsByTagName(idname); // you can use document.getElementById('tableId') as well by providing id to the table tag
@@ -648,4 +649,5 @@
         ).then(function(){exportReportToExcel('table','Batch Wise Enroll Report')})
     }
 </script>
+@endif
 @endpush
