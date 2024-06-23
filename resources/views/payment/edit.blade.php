@@ -74,7 +74,7 @@
                         <input type="hidden" name="course_id[]" value="{{ \DB::table('batches')->where('id',$p->batchId)->first()->courseId}}">
                         <td><input type="text" class="form-control" name="mrNo[]" value="{{$payment->mrNo}}"></td>
                         <td><input type="text" class="form-control" name="invoiceId[]" value="{{$payment->invoiceId}}"></td>
-                        <td><input type="text" class="form-control" readonly value="{{$p->cPayable}}" name="cPayable[]"></td>
+                        <td><input type="text" class="form-control" value="{{$p->cPayable}}" name="cPayable[]"></td>
                         <td>
                             <div class="input-group">
                                 <input type="text" name="paymentDate[]" value="{{ $payment->paymentDate }}" onfocus="paymentDate(this)" class="paymentDate_{{$key}} form-control" data-index="{{ $key }}" data-date="{{ $payment->paymentDate }}" placeholder="dd/mm/yyyy">
