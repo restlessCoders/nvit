@@ -197,10 +197,10 @@ print_r($stData);die;*/
             $pay_detl = DB::table('paymentdetails')
                 ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
                 ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.batchId' => $s->batch_id])
-                ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.course_id' => $s->course_id])
+                ->where(['paymentdetails.studentId' => $s->student_id/*, 'paymentdetails.course_id' => $s->course_id*/])
                 ->get();
                 $queries = \DB::getQueryLog();
-                dd($queries);
+                //dd($queries);
             $tPayable += ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
             if ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
