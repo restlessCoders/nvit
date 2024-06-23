@@ -457,8 +457,8 @@ class PaymentReportController extends Controller
 
         $stData = $stData->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         $queries = \DB::getQueryLog();
-        echo '<pre>';
-print_r($stData);die;
+        /*echo '<pre>';
+print_r($stData);die;*/
     //dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
@@ -491,7 +491,7 @@ print_r($stData);die;
             ->where('paymentdetails.cpaidAmount', '!=',0)
             ->whereNull('paymentdetails.deleted_at')
             ->get();
-
+dd($payments);
             foreach($payments as $p){
                
             $data .= '<tr>';
