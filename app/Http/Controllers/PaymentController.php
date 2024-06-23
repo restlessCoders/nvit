@@ -193,11 +193,14 @@ print_r($stData);die;*/
             </thead>';
         $tPayable = 0;
         foreach ($stData as $key => $s) {
+            \DB::connection()->enableQueryLog();
             $pay_detl = DB::table('paymentdetails')
                 ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
                 ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.batchId' => $s->batch_id])
                 ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.course_id' => $s->course_id])
                 ->get();
+                $queries = \DB::getQueryLog();
+                dd($queries);
             $tPayable += ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
             if ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
@@ -246,7 +249,7 @@ print_r($stData);die;*/
                 $data .= '<option value="1">Registration</option><option value="2" required>Course</option></select></td>';
                 $data .= '<td><input type="text" name="discount[]" class="paidpricebyRow form-control" id="discountbyRow_' . $key . '"  onkeyup="checkPrice(' . $key . ')"></td>';
                 $data .= '<td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" required id="paidpricebyRow_' . $key . '" onkeyup="checkPrice(' . $key . ')"></td>';
-                $data .= '<td><input name="cPayable[]" type="text" class="form-control" readonly value="' . ($s->course_price - ($pay_detl->cpaid + $pay_detl->discount)) . '" id="coursepricebyRow_' . $key . '"></td>';
+                $data .= '<td><input name="cPayable[]" type="text" class="form-control" readonly value="' . ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount)) . '" id="coursepricebyRow_' . $key . '"></td>';
                 $data .= '</tr>';
                 $data .= '<script>$("input[name=\'paymentDate\'],#dueDate_' . $key . '").daterangepicker({
                     singleDatePicker: true,
