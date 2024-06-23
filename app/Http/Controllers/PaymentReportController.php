@@ -285,7 +285,7 @@ class PaymentReportController extends Controller
         $queries = \DB::getQueryLog();
 
     //dd($queries);
-        return response()->json(array('data' =>$payments));
+        //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
                 <thead>
@@ -363,7 +363,7 @@ class PaymentReportController extends Controller
         $queries = \DB::getQueryLog();
         /*echo '<pre>';
 print_r($stData);die;*/
-    //dd($queries);
+    dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
