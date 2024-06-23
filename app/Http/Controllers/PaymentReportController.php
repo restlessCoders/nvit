@@ -283,9 +283,9 @@ class PaymentReportController extends Controller
 
         $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         $queries = \DB::getQueryLog();
-dd($payments);
+
     //dd($queries);
-        //return response()->json(array('data' =>$payments));
+        return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
                 <thead>
