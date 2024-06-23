@@ -451,16 +451,15 @@ class PaymentReportController extends Controller
             ->leftjoin('batches', 'student_batches.batch_id', '=', 'batches.id')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
-            ->where('student_batches.acc_approve', '!=',3)
-            ->whereNull('paymentdetails.deleted_at');
+            ->where('student_batches.acc_approve', '!=',3);
             //->distinct('student_batches.batch_id');
 
 
         $stData = $stData->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         $queries = \DB::getQueryLog();
-        /*echo '<pre>';
-print_r($stData);die;*/
-    dd($queries);
+        echo '<pre>';
+print_r($stData);die;
+    //dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
