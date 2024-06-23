@@ -484,7 +484,7 @@ print_r($stData);die;*/
         foreach ($stData as $key => $s) {
             DB::connection()->enableQueryLog();
             $payments = DB::table('paymentdetails')
-            ->selectRaw('paymentdetails.*, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote,paymentdetails.deleted_at')
+            ->selectRaw('paymentdetails.cPayable, paymentdetails.cpaidAmount,paymentdetails.discount,paymentdetails.dueDate,paymentdetails.batchId,paymentdetails.studentId, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote,paymentdetails.deleted_at')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
             
             ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
