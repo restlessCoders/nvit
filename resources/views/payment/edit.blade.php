@@ -74,7 +74,7 @@
                         <input type="hidden" name="course_id[]" value="{{ \DB::table('batches')->where('id',$p->batchId)->first()->courseId}}">
                         <td><input type="text" class="form-control" name="mrNo[]" value="{{$payment->mrNo}}"></td>
                         <td><input type="text" class="form-control" name="invoiceId[]" value="{{$payment->invoiceId}}"></td>
-                        <td><input type="text" class="form-control" @if($key == 0) readonly @endif value="{{$p->cPayable}}" name="cPayable[]"></td>
+                        <td><input type="text" class="form-control payablebyRow" onchange="calculate()" @if($key == 0) readonly @endif value="{{$p->cPayable}}" name="cPayable[]"></td>
                         <td>
                             <div class="input-group">
                                 <input type="text" name="paymentDate[]" value="{{ $payment->paymentDate }}" onfocus="paymentDate(this)" class="paymentDate_{{$key}} form-control" data-index="{{ $key }}" data-date="{{ $payment->paymentDate }}" placeholder="dd/mm/yyyy">
@@ -107,8 +107,8 @@
                                 <option value="1" @if($p->feeType == 1) selected @endif>Reg</option>
                                 <option value="2" @if($p->feeType == 2) selected @endif>Course</option>
                             </select></td>
-                        <td><input type="text" name="discount[]" class="paidpricebyRow form-control" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
-                        <td><input type="text" name="cpaidAmount[]" class="paidpricebyRow form-control" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
+                        <td><input type="text" name="discount[]" class="paidDisbyRow form-control" onchange="calculate()" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
+                        <td><input type="text" name="cpaidAmount[]" class="paidAmtbyRow form-control" onchange="calculate()" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
                         <input type="hidden" class="form-control" readonly value="{{($studentsBatches->course_price)}}" id="coursepricebyRow_{{$key}}">
                         <!-- <tr>
                         <td colspan="1">
@@ -201,8 +201,38 @@
             $(this).val(picker.startDate.format('DD/MM/YYYY'));
         });
     }
+    function calculate() {
+        var totalPayable = parseFloat(document.querySelector('.tPayable').value);
+        var rows = document.querySelectorAll('tr');
+        var totalDue = 0;
 
+        rows.forEach(function(row, index) {
+            var payablebyRow = parseFloat(row.querySelector('.payablebyRow').value) || 0;
+            var paidDisbyRow = parseFloat(row.querySelector('.paidDisbyRow').value) || 0;
+            var paidAmtbyRow = parseFloat(row.querySelector('.paidAmtbyRow').value) || 0;
 
+            var amount = payablebyRow - (paidDisbyRow + paidAmtbyRow);
+            row.querySelector('.paidAmtbyRow').value = amount.toFixed(2);
+
+            totalDue += amount;
+        });
+
+        if (totalDue > totalPayable) {
+            alert("Total due amount cannot be greater than total payable amount.");
+            return;
+        }
+
+        document.querySelector('.tDue').value = totalDue.toFixed(2);
+    }
+
+    function checkPrice(index) {
+        // You can add any custom validation or checks here if needed.
+        calculate();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        calculate();
+    });
     $(document).ready(function() {
         $('input[name="paymentDate[]"]').each(function() {
             paymentDate(this);
@@ -237,10 +267,16 @@
     function due() {
         var tPayable = parseFloat($('.tPayable').val());
         var total = 0;
-        $('.paidpricebyRow').each(function(index, element) {
+        var total_dis = 0;
+        $('.paidAmtbyRow').each(function(index, element) {
             if ($(element).val() != "")
                 total += parseFloat($(element).val());
         });
+        $('.paidDisbyRow').each(function(index, element) {
+            if ($(element).val() != "")
+            total_dis += parseFloat($(element).val());
+        });
+        total += total_dis;
         $('.tPaid').val(total);
         $('.tDue').val(tPayable - total);
     }
