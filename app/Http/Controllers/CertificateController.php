@@ -18,9 +18,9 @@ class CertificateController extends Controller
     public function index()
     {
         if(currentUser() == 'trainer'){
-            $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->where('created_by',currentUserId())->groupBy('batch_id')->paginate(20);
+            $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->where('created_by',currentUserId())->orderBy('id')->groupBy('batch_id')->paginate(20);
         }else{
-            $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->groupBy('batch_id')->paginate(20);
+            $certificates = Certificate::select('batch_id','id','created_at','updated_at','created_by')->orderBy('id')->groupBy('batch_id')->paginate(20);
         }
         return view('certificates.index',compact('certificates'));
         /*echo '<pre>';
