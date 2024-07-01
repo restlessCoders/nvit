@@ -330,8 +330,10 @@
 			});
 	});
 	$('.js-example-basic-single').select2();
-	    // Define default start and end dates
-		var start = moment().subtract(29, 'days');
+
+	$(document).ready(function() {
+    // Define default start and end dates
+    var start = moment().subtract(29, 'days');
     var end = moment();
 
     function cb(start, end) {
@@ -355,7 +357,12 @@
     // Initialize the default date range display
     cb(start, end);
 
-	
+    // Event listener to update the input value on selection
+    $("input[name='date_range']").on('apply.daterangepicker', function(ev, picker) {
+        cb(picker.startDate, picker.endDate);
+    });
+});
+
 </script>
 @if(Session::has('response'))
 <script>
