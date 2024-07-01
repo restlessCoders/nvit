@@ -346,11 +346,6 @@
         autoUpdateInput: false,
         locale: {
             format: 'DD/MM/YYYY'
-        },
-        startDate: start,
-        endDate: end,
-        maxSpan: {
-            days: 365
         }
     }, cb);
 
@@ -362,6 +357,7 @@
         cb(picker.startDate, picker.endDate);
     });
 });
+
 
 </script>
 @if(Session::has('response'))
