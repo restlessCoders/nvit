@@ -330,18 +330,32 @@
 			});
 	});
 	$('.js-example-basic-single').select2();
-	$("input[name='date_range']").daterangepicker({
-			singleDatePicker: false,
-			//startDate: new Date(),
-			showDropdowns: true,
-			autoUpdateInput: true,
-			format: 'dd/mm/yyyy',
-		}).on('changeDate', function(e) {
-			var date = moment(e.date).format('YYYY/MM/DD');
-			$(this).val(date);
-		});
-		// Set the input value to an empty string after initialization
-		$("input[name='date_range']").val('');
+	    // Define default start and end dates
+		var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#date_range').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+    }
+
+    $("input[name='date_range']").daterangepicker({
+        singleDatePicker: false,
+        showDropdowns: true,
+        autoUpdateInput: false,
+        locale: {
+            format: 'DD/MM/YYYY'
+        },
+        startDate: start,
+        endDate: end,
+        maxSpan: {
+            days: 365
+        }
+    }, cb);
+
+    // Initialize the default date range display
+    cb(start, end);
+
+	
 </script>
 @if(Session::has('response'))
 <script>
