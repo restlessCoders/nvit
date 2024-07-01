@@ -246,11 +246,11 @@ class PaymentReportController extends Controller
             ->select('payments.executiveId', 'users.username')
             ->join('users', 'payments.executiveId', '=', 'users.id');
             if(strtolower(currentUser()) == 'salesexecutive'){
-                $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId())->groupBy('payments.executiveId')->get();
+                $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId())->groupBy('payments.executiveId');
             }else{
-                $salespersons = $salespersons->groupBy('payments.executiveId')->get();
+                $salespersons = $salespersons->groupBy('payments.executiveId');
             }
-            $salespersons = $salespersons->whereMonth('payments.paymentDate', '=', $currentMonth)->whereYear('payments.paymentDate', '=', $currentYear);
+            $salespersons = $salespersons->whereMonth('payments.paymentDate', '=', $currentMonth)->whereYear('payments.paymentDate', '=', $currentYear)->get();
             print_r($salespersons);die;
         return view('report.accounts.daily_collection_report', compact('payments', 'salespersons', 'users','currentMonth','currentYear'));
     }
