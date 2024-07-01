@@ -332,8 +332,31 @@
 	$('.js-example-basic-single').select2();
 
 	$(document).ready(function() {
+
+		var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#date_range span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('#date_range').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    cb(start, end);
+
     // Define default start and end dates
-    var start = moment().subtract(29, 'days');
+    /*var start = moment().subtract(29, 'days');
     var end = moment();
 
     function cb(start, end) {
@@ -355,7 +378,7 @@
     // Event listener to update the input value on selection
     $("input[name='date_range']").on('apply.daterangepicker', function(ev, picker) {
         cb(picker.startDate, picker.endDate);
-    });
+    });*/
 });
 
 
