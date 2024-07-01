@@ -250,7 +250,7 @@ class PaymentReportController extends Controller
             }else{
                 $salespersons = $salespersons->groupBy('payments.executiveId')->get();
             }
-            //print_r($salespersons);die;
+            print_r($salespersons);die;
         return view('report.accounts.daily_collection_report', compact('payments', 'salespersons', 'users','currentMonth','currentYear'));
     }
     public function allPaymentReportBySid(Request $request)
