@@ -87,6 +87,8 @@ class ReportController extends Controller
                                 ->whereRaw('pd.studentId = paymentdetails.studentId')
                                 ->whereRaw('pd.batchId = paymentdetails.batchId');
                         });
+                        // Add check for deleted_at being NULL
+                        $query->whereNull('paymentdetails.deleted_at');
                         if (isset($request->date_range)) {
                             $date_range = explode('-', $request->date_range);
                             $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
