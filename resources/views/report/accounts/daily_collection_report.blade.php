@@ -112,6 +112,21 @@
 						<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($payment->paymentDate))->format('j M, Y')}}</td>
 						@foreach ($salespersons as $salesperson)
 						<td>
+							@php
+    DB::connection()->enableQueryLog();
+
+	DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->where('payments.executiveId', $salesperson->executiveId)
+								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
+								->where('postingDate', $payment->paymentDate)
+								->where('exe_id', $salesperson->executiveId)
+								->sum('amount');
+$queries = DB::getQueryLog();
+@endphp
+
+{{-- dd($queries) --}}
 							{{ 	
 								/* Old Query */
 								/*DB::table('payments')	
@@ -123,6 +138,7 @@
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
 								->where('payments.executiveId', $salesperson->executiveId)
+								->whereNull('paymentdetails.deleted_at')
 								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
 								->where('postingDate', $payment->paymentDate)
 								->where('exe_id', $salesperson->executiveId)
@@ -153,6 +169,7 @@
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
+								->whereNull('paymentdetails.deleted_at')
 								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
 								->where('postingDate', $payment->paymentDate)
 								->sum('amount')/*- 
@@ -176,6 +193,7 @@
 								->whereMonth('payments.paymentDate', '=', $date->month)
     							->whereYear('payments.paymentDate', '=', $date->year)
 								->where('payments.executiveId', $salesperson->executiveId)
+								->whereNull('paymentdetails.deleted_at')
 								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
 								->whereMonth('postingDate', '=', $date->month)
     							->whereYear('postingDate', '=', $date->year)

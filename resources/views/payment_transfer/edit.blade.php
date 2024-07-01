@@ -71,7 +71,6 @@
                 date = '{{ $p->postingDate }}'
             else
                 date = new Date();
-				alert(date);
 			$('input[name="postingDate"]').daterangepicker({
 				singleDatePicker: true,
 				startDate: moment(date).format('DD/MM/YYYY'),
@@ -92,8 +91,6 @@
 				var batchId = '{{$p->batchId}}';
 				var batchId = '{{$p->batchId}}';
 				var mrNo = '{{$p->mrNo}}';
-
-				alert(student_id);
 				$.ajax({
 					url: "{{route(currentUser().'.payment_transfer_data')}}",
 					method: 'GET',

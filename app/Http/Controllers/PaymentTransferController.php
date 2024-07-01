@@ -67,6 +67,19 @@ class PaymentTransferController extends Controller
             /*$request->postingDate?date('Y-m-d', strtotime($request->postingDate)):null*/
             $transaction->save();
 
+            $transaction = new Transaction();
+            $transaction->studentId = $request->studentId;
+            $transaction->course_id = $request->course_id;
+            $transaction->batchId = $request->batchId;
+            $transaction->exe_id = $request->to_exe_id;
+            $transaction->mrNo = $request->mrNo;
+            $transaction->amount = $request->amount;
+            $transaction->type = 'amount_transfer';
+            $transaction->trx_type = '+';
+            $transaction->details = $request->amount.' Amount Receive From '.$from_exe_id->username;
+            $transaction->postingDate = $request->postingDate?Carbon::createFromFormat('d/m/Y', $request->postingDate)->format('Y-m-d'):null;
+            $transaction->save();
+
             return redirect(route(currentUser().'.payment-transfer.index'))->with($this->responseMessage(true, null, 'Payment Transfer Successful'));
 
         } catch (\Exception $e) {
@@ -109,9 +122,34 @@ class PaymentTransferController extends Controller
      * @param  \App\Models\PaymentTransfer  $paymentTransfer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PaymentTransfer $paymentTransfer)
+    public function update(Request $request, $id)
     {
-        //
+        /*try {
+            $to_exe_id = User::where('id',$request->to_exe_id)->first();
+            $from_exe_id = User::where('id',$request->from_exe_id)->first();
+
+            $pt =DB::table('transactions')->where('id',encryptor('decrypt', $id))->first();
+            if($pt){
+                $pt->studentId = $request->studentId;
+                $pt->course_id = $request->course_id;
+                $pt->batchId = $request->batchId;
+                $pt->exe_id = $request->from_exe_id;
+                $pt->mrNo = $request->mrNo;
+                $pt->amount = -$request->amount;
+                $pt->type = 'amount_transfer';
+                $pt->trx_type = '-';
+                $pt->details = $request->amount.' Amount transfer to '.$to_exe_id->username;
+                $pt->postingDate = $request->postingDate?Carbon::createFromFormat('d/m/Y', $request->postingDate)->format('Y-m-d'):null;
+    
+    
+                if(!!$pt->save()) return redirect(route(currentUser().'.payment_transfer.index'))->with($this->responseMessage(true, null, 'Transfer updated Successfully'));
+            }
+            
+        } catch (Exception $e) {
+			dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }*/
     }
 
     /**
@@ -135,7 +173,7 @@ class PaymentTransferController extends Controller
         
         $data = '<div class="col-lg-3">
         <label>Course: <span class="text-danger sup">*</span></label>
-        <select name="course_id" class="form-control"> <option></option>';
+        <select name="course_id" class="form-control js-example-basic-single select2"> <option></option>';
             if(count($courses) > 0){
                 foreach($courses as $c){
                     if($c->id == $request->course_id)
@@ -148,7 +186,7 @@ class PaymentTransferController extends Controller
 
         $data .= '<div class="col-lg-3">
         <label>Batch: <span class="text-danger sup">*</span></label>
-        <select name="batchId" class="form-control"> <option></option>';
+        <select name="batchId" class="form-control js-example-basic-single select2"> <option></option>';
             if(count($batches) > 0){
                 foreach($batches as $b){
                     if($b->id == $request->batchId)
@@ -175,7 +213,7 @@ class PaymentTransferController extends Controller
         //dd($transfer_exe_data);
         $data .= '<div class="col-lg-3">
         <label>To Executive: <span class="text-danger sup">*</span></label>
-        <select name="to_exe_id" class="form-control">
+        <select name="to_exe_id" class="form-control js-example-basic-single select2">
             <option></option>';
             if(count($executives) > 0){
                 foreach($executives as $e){
@@ -189,13 +227,17 @@ class PaymentTransferController extends Controller
 
         $data .= '<div class="col-lg-3">
                 <label>Mr No<span class="text-danger sup">*</span></label>
-                <input id="mrNo" type="text" class="form-control" name="mrNo" value="'.$transfer_exe_data->mrNo.'">
+                <input id="mrNo" type="text" class="form-control js-example-basic-single select2" name="mrNo" value="'.$transfer_exe_data->mrNo.'">
             </div>';
 
         $data .= '<div class="col-lg-3">
                      <label>Amount<span class="text-danger sup">*</span></label>
                     <input id="amount" type="text" class="form-control" name="amount" value="'.$transfer_exe_data->amount.'">
                 </div>';
+                $data .="<script>$('.js-example-basic-single').select2({
+                    placeholder: 'Select Option',
+                    allowClear: true
+                });</script>";
 
         return response()->json(array('data' => $data));
     }
