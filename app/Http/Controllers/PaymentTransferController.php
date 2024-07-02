@@ -65,7 +65,7 @@ class PaymentTransferController extends Controller
             $transaction->type = 'amount_transfer';
             $transaction->trx_type = '-';
             $transaction->details = $request->amount . ' Amount transfer to ' . $to_exe_id->username;
-            $transaction->postingDate = $request->postingDate ? Carbon::createFromFormat('d/m/Y', $request->postingDate)->format('Y-m-d') : null;
+            $transaction->postingDate = $request->postingDate ? Carbon::createFromFormat('m/d/Y', $request->postingDate)->format('Y-m-d') : null;
             /*$request->postingDate?date('Y-m-d', strtotime($request->postingDate)):null*/
             $transaction->save();
 
@@ -79,7 +79,7 @@ class PaymentTransferController extends Controller
             $transaction->type = 'amount_transfer';
             $transaction->trx_type = '+';
             $transaction->details = $request->amount . ' Amount Receive From ' . $from_exe_id->username;
-            $transaction->postingDate = $request->postingDate ? Carbon::createFromFormat('d/m/Y', $request->postingDate)->format('Y-m-d') : null;
+            $transaction->postingDate = $request->postingDate ? Carbon::createFromFormat('m/d/Y', $request->postingDate)->format('Y-m-d') : null;
             $transaction->save();
 
             return redirect(route(currentUser() . '.payment-transfer.index'))->with($this->responseMessage(true, null, 'Payment Transfer Successful'));
