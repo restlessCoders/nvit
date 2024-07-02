@@ -125,7 +125,7 @@
 								->sum('amount');
 $queries = DB::getQueryLog();
 @endphp
-{{----}}
+
 {{-- dd($queries) --}}
 							{{ 	
 								/* Old Query */
