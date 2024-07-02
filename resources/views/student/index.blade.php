@@ -394,7 +394,7 @@
 								<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
 								</form>
 								@if(strtolower(currentUser()) == 'superadmin')
-								<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-edit text-info font-16"></i>Edit</a><br>
+								<a target="_blank" href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-edit text-info font-16"></i>Edit</a><br>
 								<a href="{{route(currentUser().'.studentCourseAssign',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-pen text-info success-16"></i>Course Assign</a><br>
 								<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-lock text-primary font-16"></i>Enorll</a><br>
 								{{--<a href="{{route(currentUser().'.deleteStudent', [encryptor('encrypt', $student->id)])}}"><i class="fas fa-trash-alt text-danger font-16"></i></a>--}}

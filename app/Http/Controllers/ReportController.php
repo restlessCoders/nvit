@@ -97,8 +97,7 @@ class ReportController extends Controller
                                 $query->select(DB::raw(1))
                                     ->from('payments')
                                     ->whereRaw('payments.id = paymentdetails.paymentId')
-                                    ->whereBetween('payments.paymentDate', [$from, $to])
-                                    ->whereNull('payments.invoiceid');
+                                    ->whereBetween('payments.paymentDate', [$from, $to]);
                             });
                         }
                 });
@@ -147,7 +146,7 @@ class ReportController extends Controller
 
                         // Add check for deleted_at being NULL
                         $query->whereNull('paymentdetails.deleted_at');
-
+                        
                         if (isset($request->date_range)) {
                             $date_range = explode('-', $request->date_range);
                             $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
@@ -156,8 +155,7 @@ class ReportController extends Controller
                                 $query->select(DB::raw(1))
                                     ->from('payments')
                                     ->whereRaw('payments.id = paymentdetails.paymentId')
-                                    ->whereBetween('payments.paymentDate', [$from, $to])
-                                    ->whereNotNull('payments.invoiceid');
+                                    ->whereBetween('payments.paymentDate', [$from, $to]);
                             });
                         }
                 });
