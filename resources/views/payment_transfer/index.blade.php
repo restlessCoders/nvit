@@ -34,6 +34,7 @@
 					</tr>
 				</thead>
 				<tbody>
+					
 					@if(count($payment_transfers))
 					@foreach($payment_transfers as $p)
 					<tr>
@@ -46,9 +47,10 @@
 						<td>{{$p->postingDate}}</td>
 						<td>{{$p->amount}}</td>
 						<td>{{$p->details}}</td>
+
 						<td>
 							@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager')
-							<a href="{{route(currentUser().'.payment-transfer.edit',[encryptor('encrypt', $p->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
+							{{-- <a href="{{route(currentUser().'.payment-transfer.edit',[encryptor('encrypt', $p->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a> --}}
 							<form id="active-form" method="POST" action="{{route(currentUser().'.payment-transfer.destroy',[encryptor('encrypt', $p->id)])}}" style="display: inline;">
 								@csrf
 								@method('DELETE')
