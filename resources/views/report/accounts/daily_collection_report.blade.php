@@ -142,7 +142,7 @@ $queries = DB::getQueryLog();
 								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
 								->where('postingDate', $payment->paymentDate)
 								->where('exe_id', $salesperson->executiveId)
-								->sum('amount')
+								->sum('amount') 
 								/*
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
