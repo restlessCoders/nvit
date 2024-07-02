@@ -49,6 +49,8 @@ class PaymentTransferController extends Controller
      */
     public function store(Request $request)
     {
+        echo Carbon::createFromFormat('d/m/Y', $request->postingDate)->format('Y-m-d');
+        dd($request);
         try {
             $to_exe_id = User::where('id', $request->to_exe_id)->first();
             $from_exe_id = User::where('id', $request->from_exe_id)->first();
