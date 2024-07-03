@@ -158,6 +158,7 @@ $queries = DB::getQueryLog();
 						@php $total_course_fee += DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
+								->whereNull('paymentdetails.deleted_at')
 								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
 								->where('postingDate', $payment->paymentDate)
 								->sum('amount')/*- 
