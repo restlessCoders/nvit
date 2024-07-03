@@ -249,7 +249,7 @@ class PaymentReportController extends Controller
             
             ->groupBy('payments.executiveId', 'users.username');
             if(strtolower(currentUser()) == 'salesexecutive'){
-                $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId())->get();
+                $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId());
             }
             $salespersons = $salespersons->get();
             //print_r($salespersons);die;
