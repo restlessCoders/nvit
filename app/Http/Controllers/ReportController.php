@@ -147,7 +147,7 @@ class ReportController extends Controller
                         // Add check for deleted_at being NULL
                         $query->whereNull('paymentdetails.deleted_at');
                         
-                        if (isset($request->date_range)) {
+                        if (isset($request->from)) {
                             $date_range = explode('-', $request->date_range);
                             $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
                             $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
