@@ -81,7 +81,7 @@
 						</select>
 					</div>
 					@endif
-					@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
+					@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'accountmanager')
 					<div class="col-sm-2">
 						<label for="refId" class="col-form-label">Select Reference</label>
 						<select name="refId" class="js-example-basic-single form-control">
@@ -605,8 +605,9 @@
 
     $('#from, #to').daterangepicker({
         singleDatePicker: true,
-        startDate: start,
-        endDate: end,
+        //startDate: start,
+        //endDate: end,
+		autoUpdateInput: false,  // Prevents the default date from being shown
         ranges: {
             'Today': [moment(), moment()],
             'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -619,6 +620,10 @@
         // Callback function logic here if needed
         console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
     });
+	// Update the input fields only when a date is selected
+$('#from, #to').on('apply.daterangepicker', function(ev, picker) {
+    $(this).val(picker.startDate.format('YYYY-MM-DD'));
+});
 });
 </script>
 @if(Session::has('response'))
