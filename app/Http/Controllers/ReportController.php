@@ -147,17 +147,17 @@ class ReportController extends Controller
                         // Add check for deleted_at being NULL
                         $query->whereNull('paymentdetails.deleted_at');
                         
-                        
-                       
-                            $from = \Carbon\Carbon::createFromTimestamp(strtotime('2023-07-01'))->format('Y-m-d');
-                            $to = \Carbon\Carbon::createFromTimestamp(strtotime('2024-06-30'))->format('Y-m-d');
+                        /*if (isset($request->date_range)) {
+                            $date_range = explode('-', $request->date_range);
+                            $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
+                            $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
                             $query->whereExists(function ($query) use ($from, $to) {
                                 $query->select(DB::raw(1))
                                     ->from('payments')
                                     ->whereRaw('payments.id = paymentdetails.paymentId')
                                     ->whereBetween('payments.paymentDate', [$from, $to]);
                             });
-                        
+                        }*/
                 });
                 
             }
@@ -167,6 +167,18 @@ class ReportController extends Controller
                 ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop')
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
+        }
+        if (isset($request->from) && isset($request->to)) {
+            $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
+            $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
+            $allBatches = $allBatches->where(function ($query) use ($from,$to){
+                $query->whereExists(function ($query) use ($from, $to) {
+                    $query->select(DB::raw(1))
+                        ->from('payments')
+                        ->whereRaw('payments.id = paymentdetails.paymentId')
+                        ->whereBetween('payments.paymentDate', [$from, $to]);
+                });
+            });
         }
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
