@@ -109,7 +109,7 @@ class ReportController extends Controller
                     ->join('student_batches', function ($join) {
                         $join->on('student_batches.student_id', '=', 'pd.studentId')
                             ->on('student_batches.batch_id', '=', 'pd.batchId');
-                    })->whereNull('pd.deleted_at')
+                    })
                     ->select(
                         DB::raw('student_batches.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price'),
                         'student_batches.id as sb_id',
@@ -133,19 +133,21 @@ class ReportController extends Controller
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
-                    
-                    $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
-                    $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-                    $allBatches = $allBatches->where(function ($query) use ($from, $to) {
-                        $query->whereExists(function ($query) use ($from, $to) {
-                            $query->select(DB::raw(1))
-                                ->from('payments')
-                                ->whereRaw('payments.id = pd.paymentId')
-                                ->whereBetween('payments.paymentDate', [$from, $to]);
-                        })
-                        ->whereNull('payments.invoiceId'); // Adjust column name if necessary
-                    });
-                    
+                    $allBatches = $allBatches->where(function ($query) use ($request){
+                                                
+                        
+                                                if (isset($request->date_range)) {
+                                                    $date_range = explode('-', $request->date_range);
+                                                    $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
+                                                    $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
+                                                    $query->whereExists(function ($query) use ($from, $to) {
+                                                        $query->select(DB::raw(1))
+                                                            ->from('payments')
+                                                            ->whereRaw('payments.id = paymentdetails.paymentId')
+                                                            ->whereBetween('payments.paymentDate', [$from, $to]);
+                                                    });
+                                                }
+                                        });
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
@@ -160,7 +162,7 @@ class ReportController extends Controller
                         // Add check for deleted_at being NULL
                         $query->whereNull('paymentdetails.deleted_at');
                         
-                        /*if (isset($request->date_range)) {
+                        if (isset($request->date_range)) {
                             $date_range = explode('-', $request->date_range);
                             $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
                             $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
@@ -170,7 +172,7 @@ class ReportController extends Controller
                                     ->whereRaw('payments.id = paymentdetails.paymentId')
                                     ->whereBetween('payments.paymentDate', [$from, $to]);
                             });
-                        }*/
+                        }
                 });
                 
             }
@@ -181,7 +183,6 @@ class ReportController extends Controller
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
-        
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
                 ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
@@ -222,8 +223,7 @@ class ReportController extends Controller
             'refId' => $request->refId,
             'status' => $request->status,
             'type' => $request->type,
-            'from' => $request->from,
-            'to' => $request->to,
+            'date_range' => $request->date_range,
         ]);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
