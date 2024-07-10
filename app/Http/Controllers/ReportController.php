@@ -109,7 +109,7 @@ class ReportController extends Controller
                     ->join('student_batches', function ($join) {
                         $join->on('student_batches.student_id', '=', 'pd.studentId')
                             ->on('student_batches.batch_id', '=', 'pd.batchId');
-                    })
+                    })->whereNull('paymentdetails.deleted_at')
                     ->select(
                         DB::raw('student_batches.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price'),
                         'student_batches.id as sb_id',
@@ -138,8 +138,7 @@ class ReportController extends Controller
                     $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
                     $allBatches = $allBatches->where(function ($query) use ($from,$to){
                         
-                        // Add check for deleted_at being NULL
-                        $query->whereNull('paymentdetails.deleted_at');
+
                         $query->whereExists(function ($query) use ($from, $to) {
                             $query->select(DB::raw(1))
                                 ->from('payments')
