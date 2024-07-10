@@ -136,17 +136,16 @@ class ReportController extends Controller
                     
                     $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
                     $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-                    $allBatches = $allBatches->where(function ($query) use ($from,$to){
-                        
-
+                    $allBatches = $allBatches->where(function ($query) use ($from, $to) {
                         $query->whereExists(function ($query) use ($from, $to) {
                             $query->select(DB::raw(1))
                                 ->from('payments')
                                 ->whereRaw('payments.id = pd.paymentId')
                                 ->whereBetween('payments.paymentDate', [$from, $to]);
-                        });
-                        
-                    })->whereNull('payments.invoiceId');
+                        })
+                        ->whereNull('payments.invoiceId'); // Adjust column name if necessary
+                    });
+                    
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
