@@ -243,11 +243,18 @@ class PaymentReportController extends Controller
             }  
             $payments = $payments->get();
             $salespersons = DB::table('payments')
-            ->select('payments.executiveId', 'users.username')
-            ->join('users', 'payments.executiveId', '=', 'users.id')
-            ->whereMonth('payments.paymentDate', '=', $currentMonth)->whereYear('payments.paymentDate', '=', $currentYear)
-            
-            ->groupBy('payments.executiveId', 'users.username');
+                ->select('payments.executiveId', 'users.username', 'transactions.exe_id')
+                ->join('users', 'payments.executiveId', '=', 'users.id')
+                ->join('transactions', 'users.id', '=', 'transactions.exe_id')
+                ->where(function ($query) use ($currentMonth, $currentYear) {
+                $query->whereMonth('payments.paymentDate', '=', $currentMonth)
+                ->whereYear('payments.paymentDate', '=', $currentYear)
+                ->orWhere(function ($query) use ($currentMonth, $currentYear) {
+                  $query->whereMonth('transactions.postingDate', '=', $currentMonth)
+                        ->whereYear('transactions.postingDate', '=', $currentYear);
+              });
+            })
+            ->groupBy('payments.executiveId', 'users.username', 'transactions.exe_id');
             if(strtolower(currentUser()) == 'salesexecutive'){
                 $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId());
             }
