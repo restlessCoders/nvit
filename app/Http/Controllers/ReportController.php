@@ -146,7 +146,7 @@ class ReportController extends Controller
                                 ->whereBetween('payments.paymentDate', [$from, $to]);
                         });
                         
-                    })->whereNull('payments.invoice');
+                    })->whereNull('payments.invoiceId');
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
