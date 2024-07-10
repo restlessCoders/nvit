@@ -95,7 +95,7 @@
 					<div class="col-md-3">
 						<label for="name" class="col-form-label">From</label>
 						<div class="input-group">
-							<input type="text" id="" name="date_range" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
+							<input type="text" id="from" name="from" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
 					</div>
