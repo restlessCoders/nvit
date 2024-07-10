@@ -103,6 +103,18 @@ class ReportController extends Controller
                 });
             }
             if ($request->type == 2) {
+                
+                $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
+                $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
+                $allBatches = $allBatches->where(function ($query) use ($from,$to){
+                    $query->whereExists(function ($query) use ($from, $to) {
+                        $query->select(DB::raw(1))
+                            ->from('payments')
+                            ->whereRaw('payments.id = pd.paymentId')
+                            ->whereBetween('payments.paymentDate', [$from, $to]);
+                    });
+                });
+
                 $allBatches = DB::table('paymentdetails as pd')
                     ->join('students', 'pd.studentId', '=', 'students.id')
                     ->leftjoin('users', 'students.executiveId', '=', 'users.id')
@@ -132,18 +144,9 @@ class ReportController extends Controller
                         'student_batches.is_drop'
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
-                    ->havingRaw('SUM(pd.cpaidAmount+pd.discount) < (inv_price * 0.5)');
+                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
                     
-                    $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
-                    $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-                    $allBatches = $allBatches->where(function ($query) use ($from,$to){
-                        $query->whereExists(function ($query) use ($from, $to) {
-                            $query->select(DB::raw(1))
-                                ->from('payments')
-                                ->whereRaw('payments.id = pd.paymentId')
-                                ->whereBetween('payments.paymentDate', [$from, $to]);
-                        });
-                    });
+                  
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
