@@ -132,7 +132,7 @@ class ReportController extends Controller
                         'student_batches.is_drop'
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
-                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
+                    ->havingRaw('SUM(pd.cpaidAmount+pd.discount) < (inv_price * 0.5)');
                     
                     $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
                     $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
