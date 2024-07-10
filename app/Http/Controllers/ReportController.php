@@ -133,6 +133,17 @@ class ReportController extends Controller
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
+                    
+                    $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
+                    $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
+                    $allBatches = $allBatches->where(function ($query) use ($from,$to){
+                        $query->whereExists(function ($query) use ($from, $to) {
+                            $query->select(DB::raw(1))
+                                ->from('payments')
+                                ->whereRaw('payments.id = paymentdetails.paymentId')
+                                ->whereBetween('payments.paymentDate', [$from, $to]);
+                        });
+                    });
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
@@ -168,18 +179,7 @@ class ReportController extends Controller
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
-        if (isset($request->from) && isset($request->to)) {
-            $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
-            $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-            $allBatches = $allBatches->where(function ($query) use ($from,$to){
-                $query->whereExists(function ($query) use ($from, $to) {
-                    $query->select(DB::raw(1))
-                        ->from('payments')
-                        ->whereRaw('payments.id = paymentdetails.paymentId')
-                        ->whereBetween('payments.paymentDate', [$from, $to]);
-                });
-            });
-        }
+        
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
                 ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
