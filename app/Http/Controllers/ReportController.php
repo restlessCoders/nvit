@@ -165,7 +165,7 @@ class ReportController extends Controller
                 $query->whereExists(function ($query) use ($from, $to) {
                     $query->select(DB::raw(1))
                         ->from('payments')
-                        ->whereRaw('payments.id = paymentdetails.paymentId')
+                        ->whereRaw('payments.id = pd.paymentId')
                         ->whereBetween('payments.paymentDate', [$from, $to]);
                 });
             });
