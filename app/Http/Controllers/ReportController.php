@@ -137,8 +137,8 @@ class ReportController extends Controller
     ->where('sb.isBundel', 0)
     ->where('sb.is_drop', 0)
     ->groupBy('pd.studentId', 'pd.batchId', 'sb.course_price')
-    ->havingRaw('SUM(pd.cpaidAmount) < (sb.course_price - COALESCE(SUM(pd.discount), 0)) * 0.5')
-    ->get();
+    ->havingRaw('SUM(pd.cpaidAmount) < (sb.course_price - COALESCE(SUM(pd.discount), 0)) * 0.5');
+
 
             }
             if ($request->type == 3) {
