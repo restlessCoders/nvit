@@ -142,7 +142,7 @@ class ReportController extends Controller
                     'pstatus',
                     'isBundel',
                     'is_drop'
-                );
+                )->get();
 
             
            
