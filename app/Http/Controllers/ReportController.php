@@ -135,27 +135,27 @@ class ReportController extends Controller
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');*/
                     $allBatches = DB::table(DB::raw('(
                         SELECT 
-                            sb.course_price - COALESCE(pd.total_discount, 0) AS inv_price,
+                            student_batches.course_price - COALESCE(pd.total_discount, 0) AS inv_price,
                             pd.total_paid,
                             p.invoiceId,
-                            sb.id AS sb_id,
-                            sb.op_type,
-                            sb.systemId,
-                            s.id AS sId,
-                            s.name AS sName,
-                            s.contact,
-                            s.refId,
-                            s.executiveId,
-                            u.username AS exName,
-                            sb.entryDate,
-                            sb.status,
-                            sb.batch_id,
-                            sb.course_id,
-                            sb.type,
-                            sb.course_price,
-                            sb.pstatus,
-                            sb.isBundel,
-                            sb.is_drop
+                            student_batches.id AS sb_id,
+                            student_batches.op_type,
+                            student_batches.systemId,
+                            students.id AS sId,
+                            students.name AS sName,
+                            students.contact,
+                            students.refId,
+                            students.executiveId,
+                            users.username AS exName,
+                            student_batches.entryDate,
+                            student_batches.status,
+                            student_batches.batch_id,
+                            student_batches.course_id,
+                            student_batches.type,
+                            student_batches.course_price,
+                            student_batches.pstatus,
+                            student_batches.isBundel,
+                            student_batches.is_drop
                         FROM 
                             (SELECT 
                                  studentId, 
@@ -170,21 +170,21 @@ class ReportController extends Controller
                                  batchId, 
                                  course_id) pd
                         INNER JOIN 
-                            students s ON pd.studentId = s.id
+                            students ON pd.studentId = students.id
                         INNER JOIN 
                             payments p ON pd.studentId = p.studentId
                         LEFT JOIN 
-                            users u ON s.executiveId = u.id
+                            users ON students.executiveId = users.id
                         INNER JOIN 
-                            student_batches sb ON sb.student_id = pd.studentId AND sb.batch_id = pd.batchId
+                            student_batches ON student_batches.student_id = pd.studentId AND student_batches.batch_id = pd.batchId
                         WHERE 
                             p.invoiceId IS NULL 
                         GROUP BY 
                             pd.studentId, 
                             pd.batchId, 
-                            sb.course_price
+                            student_batches.course_price
                         HAVING 
-                            pd.total_paid < (inv_price * 0.5)
+                            pd.total_paid < (student_batches.course_price * 0.5)
                     ) as subquery'))
                     ->select(
                         'inv_price',
@@ -209,6 +209,7 @@ class ReportController extends Controller
                         'isBundel',
                         'is_drop'
                     );
+                    
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
