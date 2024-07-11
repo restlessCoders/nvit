@@ -103,7 +103,7 @@ class ReportController extends Controller
                 });
             }
             if ($request->type == 2) {
-                $allBatches = DB::table('paymentdetails as pd')
+                /*$allBatches = DB::table('paymentdetails as pd')
                     ->join('students', 'pd.studentId', '=', 'students.id')
                     ->leftjoin('users', 'students.executiveId', '=', 'users.id')
                     ->join('student_batches', function ($join) {
@@ -132,7 +132,83 @@ class ReportController extends Controller
                         'student_batches.is_drop'
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
-                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
+                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');*/
+                    $allBatches = DB::table(DB::raw('(
+                        SELECT 
+                            sb.course_price - COALESCE(pd.total_discount, 0) AS inv_price,
+                            pd.total_paid,
+                            p.invoiceId,
+                            sb.id AS sb_id,
+                            sb.op_type,
+                            sb.systemId,
+                            s.id AS sId,
+                            s.name AS sName,
+                            s.contact,
+                            s.refId,
+                            s.executiveId,
+                            u.username AS exName,
+                            sb.entryDate,
+                            sb.status,
+                            sb.batch_id,
+                            sb.course_id,
+                            sb.type,
+                            sb.course_price,
+                            sb.pstatus,
+                            sb.isBundel,
+                            sb.is_drop
+                        FROM 
+                            (SELECT 
+                                 studentId, 
+                                 batchId, 
+                                 course_id, 
+                                 SUM(cpaidAmount) AS total_paid, 
+                                 SUM(discount) AS total_discount
+                             FROM 
+                                 paymentdetails
+                             GROUP BY 
+                                 studentId, 
+                                 batchId, 
+                                 course_id) pd
+                        INNER JOIN 
+                            students s ON pd.studentId = s.id
+                        INNER JOIN 
+                            payments p ON pd.studentId = p.studentId
+                        LEFT JOIN 
+                            users u ON s.executiveId = u.id
+                        INNER JOIN 
+                            student_batches sb ON sb.student_id = pd.studentId AND sb.batch_id = pd.batchId
+                        WHERE 
+                            p.invoiceId IS NULL 
+                        GROUP BY 
+                            pd.studentId, 
+                            pd.batchId, 
+                            sb.course_price
+                        HAVING 
+                            pd.total_paid < (inv_price * 0.5)
+                    ) as subquery'))
+                    ->select(
+                        'inv_price',
+                        'total_paid',
+                        'invoiceId',
+                        'sb_id',
+                        'op_type',
+                        'systemId',
+                        'sId',
+                        'sName',
+                        'contact',
+                        'refId',
+                        'executiveId',
+                        'exName',
+                        'entryDate',
+                        'status',
+                        'batch_id',
+                        'course_id',
+                        'type',
+                        'course_price',
+                        'pstatus',
+                        'isBundel',
+                        'is_drop'
+                    );
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
