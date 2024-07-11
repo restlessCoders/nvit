@@ -167,6 +167,7 @@ class ReportController extends Controller
                     ->from('payments')
                     ->whereRaw('payments.id = paymentdetails.paymentId')
                     ->whereBetween('payments.paymentDate', [$from, $to]);
+                });
             });
         }
         if ($request->studentId) {
