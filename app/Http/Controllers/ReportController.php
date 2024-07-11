@@ -124,6 +124,17 @@ class ReportController extends Controller
                 } else {
                     $allBatches->where('student_batches.is_drop', 0);
                 }
+                $perPage = 20;
+
+                $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+                    'executiveId' => $request->executiveId,
+                    'studentId' => $request->studentId,
+                    'batch_id' => $request->batch_id,
+                    'refId' => $request->refId,
+                    'status' => $request->status,
+                    'type' => $request->type,
+                    'date_range' => $request->date_range,
+                ]);
             }
             if ($request->type == 2) {
                 /*$allBatches = DB::table('paymentdetails as pd')
@@ -231,7 +242,18 @@ class ReportController extends Controller
                         'pstatus',
                         'isBundel',
                         'is_drop'
-                    );
+                    )
+                    ->orderBy('created_at', 'desc')  // Order by created_at from the subquery
+->paginate($perPage)
+->appends([
+    'executiveId' => $request->executiveId,
+    'studentId' => $request->studentId,
+    'batch_id' => $request->batch_id,
+    'refId' => $request->refId,
+    'status' => $request->status,
+    'type' => $request->type,
+    'date_range' => $request->date_range,
+]);
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
@@ -278,17 +300,7 @@ class ReportController extends Controller
 
        
         
-        $perPage = 20;
-
-        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
-            'executiveId' => $request->executiveId,
-            'studentId' => $request->studentId,
-            'batch_id' => $request->batch_id,
-            'refId' => $request->refId,
-            'status' => $request->status,
-            'type' => $request->type,
-            'date_range' => $request->date_range,
-        ]);
+        
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
 
