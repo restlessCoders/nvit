@@ -103,7 +103,7 @@ class ReportController extends Controller
                 });
             }
             if ($request->type == 2) {
-                $allBatches = DB::table(DB::raw('(SELECT studentId, batchId, course_id, SUM(cpaidAmount) AS total_paid, SUM(discount) AS total_discount
+                DB::table(DB::raw('(SELECT studentId, batchId, course_id, SUM(cpaidAmount) AS total_paid, SUM(discount) AS total_discount
      FROM paymentdetails as pd
      GROUP BY studentId, batchId, course_id) pd'))
     ->select([
@@ -168,13 +168,13 @@ class ReportController extends Controller
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
         if (isset($request->from) && isset($request->to)) {
+            $allBatches = $allBatches->where(function ($query) use ($request){
             $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
             $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-            $allBatches = $allBatches->where(function ($query) use ($from, $to) {
-                $query->whereExists(function ($subquery) use ($from, $to) {
-                    $subquery->select(DB::raw(1))
+                $query->whereExists(function ($query) use ($from, $to) {
+                    $query->select(DB::raw(1))
                         ->from('payments')
-                        ->join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
+                        ->whereRaw('payments.id = pd.paymentId')
                         ->whereBetween('payments.paymentDate', [$from, $to]);
                 });
             });
@@ -196,23 +196,23 @@ class ReportController extends Controller
             $allBatches->where('students.executiveId', $request->executiveId);
         }
         if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
-            $allBatches->where('student_batches.status', 2);
+            $allBatches->where('sb.status', 2);
         }
         if (strtolower(currentUser()) == 'accountmanager') {
-            $allBatches->where('student_batches.isBundel', 0);
+            $allBatches->where('sb.isBundel', 0);
         }
         if ($request->status) {
-            $allBatches->where('student_batches.status', $request->status);
+            $allBatches->where('sb.status', $request->status);
         }
         if ($request->drop) {
-            $allBatches->where('student_batches.is_drop', 1);
+            $allBatches->where('sb.is_drop', 1);
         } else {
-            $allBatches->where('student_batches.is_drop', 0);
+            $allBatches->where('sb.is_drop', 0);
         }
         
         $perPage = 20;
 
-        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+        $allBatches = $allBatches->orderBy('sb.created_at', 'desc')->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'studentId' => $request->studentId,
             'batch_id' => $request->batch_id,
