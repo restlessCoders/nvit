@@ -137,7 +137,7 @@ class ReportController extends Controller
                 )
                 ->whereNull('p.invoiceId')
                 ->groupBy('pd.studentId', 'pd.batchId', 'sb.course_price')
-                ->havingRaw('SUM(pd.cpaidAmount) < (sb.course_price - COALESCE(SUM(pd.discount), 0)) * 0.5');
+                ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5');
 
 
             }
