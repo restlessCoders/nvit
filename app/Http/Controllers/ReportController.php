@@ -75,7 +75,33 @@ class ReportController extends Controller
                 })
                 ->leftjoin('users', 'students.executiveId', '=', 'users.id')
                 ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop');
-            
+            if ($request->type == 1) {
+                $allBatches = $allBatches->where(function ($query)  use ($request){
+                    $query->where('paymentdetails.feeType', '=', 2)
+                        /*->where('student_batches.batch_id', '!=',0)
+                    ->where('student_batches.isBundel', '=',0)*/
+                        ->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) > 0")
+                        ->whereIn('paymentdetails.id', function ($subquery) {
+                            $subquery->select(DB::raw('MAX(id)'))
+                                ->from('paymentdetails as pd')
+                                ->whereRaw('pd.studentId = paymentdetails.studentId')
+                                ->whereRaw('pd.batchId = paymentdetails.batchId');
+                        });
+                        // Add check for deleted_at being NULL
+                        $query->whereNull('paymentdetails.deleted_at');
+                        /*if (isset($request->date_range)) {
+                            $date_range = explode('-', $request->date_range);
+                            $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
+                            $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
+                            $query->whereExists(function ($query) use ($from, $to) {
+                                $query->select(DB::raw(1))
+                                    ->from('payments')
+                                    ->whereRaw('payments.id = paymentdetails.paymentId')
+                                    ->whereBetween('payments.paymentDate', [$from, $to]);
+                            });
+                        }*/
+                });
+            }
             if ($request->type == 2) {
                 /*$allBatches = DB::table('paymentdetails as pd')
                     ->join('students', 'pd.studentId', '=', 'students.id')
