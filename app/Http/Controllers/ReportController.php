@@ -113,24 +113,24 @@ class ReportController extends Controller
     })
     ->select(
         DB::raw('sb.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price'),
-        'sb.id as sb_id',
-        'sb.op_type',
-        'sb.systemId',
-        'students.id as sId',
-        'students.name as sName',
-        'students.contact',
-        'students.refId',
-        'students.executiveId',
-        'users.username as exName',
-        'sb.entryDate',
-        'sb.status',
-        'sb.batch_id',
-        'sb.course_id',
-        'sb.type',
-        'sb.course_price',
-        'sb.pstatus',
-        'sb.isBundel',
-        'sb.is_drop'
+        'student_batches.id as sb_id',
+                        'student_batches.op_type',
+                        'student_batches.systemId',
+                        'students.id as sId',
+                        'students.name as sName',
+                        'students.contact',
+                        'students.refId',
+                        'students.executiveId',
+                        'users.username as exName',
+                        'student_batches.entryDate',
+                        'student_batches.status',
+                        'student_batches.batch_id',
+                        'student_batches.course_id',
+                        'student_batches.type',
+                        'student_batches.course_price',
+                        'student_batches.pstatus',
+                        'student_batches.isBundel',
+                        'student_batches.is_drop'
     )
     ->whereNull('p.invoiceId')
 
@@ -217,7 +217,6 @@ class ReportController extends Controller
             'type' => $request->type,
             'from' => $request->from,
             'to' => $request->to,
-            'status' => $request->status,
         ]);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
