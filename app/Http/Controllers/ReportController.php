@@ -105,7 +105,7 @@ class ReportController extends Controller
             if ($request->type == 2) {
                 DB::table(DB::raw('(SELECT studentId, batchId, course_id, SUM(cpaidAmount) AS total_paid, SUM(discount) AS total_discount
      FROM paymentdetails as pd
-     GROUP BY pd.studentId, pd.batchId, pd.course_id)'))
+     GROUP BY studentId, batchId, course_id) pd'))
     ->select([
         DB::raw('sb.course_price - COALESCE(pd.total_discount, 0) AS inv_price'),
         'pd.total_paid',
@@ -168,13 +168,13 @@ class ReportController extends Controller
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
         if (isset($request->from) && isset($request->to)) {
-            $allBatches = $allBatches->where(function ($query) use ($request){
             $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
             $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-                $query->whereExists(function ($query) use ($from, $to) {
-                    $query->select(DB::raw(1))
+            $allBatches = $allBatches->where(function ($query) use ($from, $to) {
+                $query->whereExists(function ($subquery) use ($from, $to) {
+                    $subquery->select(DB::raw(1))
                         ->from('payments')
-                        ->whereRaw('payments.id = pd.paymentId')
+                        ->join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
                         ->whereBetween('payments.paymentDate', [$from, $to]);
                 });
             });
