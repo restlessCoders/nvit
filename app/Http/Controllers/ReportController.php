@@ -217,6 +217,7 @@ class ReportController extends Controller
             'type' => $request->type,
             'from' => $request->from,
             'to' => $request->to,
+            'status' => $request->status,
         ]);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
