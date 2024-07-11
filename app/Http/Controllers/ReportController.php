@@ -279,6 +279,15 @@ class ReportController extends Controller
                 ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop')
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
+                $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+                    'executiveId' => $request->executiveId,
+                    'studentId' => $request->studentId,
+                    'batch_id' => $request->batch_id,
+                    'refId' => $request->refId,
+                    'status' => $request->status,
+                    'type' => $request->type,
+                    'date_range' => $request->date_range,
+                ]);
         }
         if (isset($request->from) && isset($request->to)) {
             /*$allBatches = $allBatches->where(function ($query) use ($request){
