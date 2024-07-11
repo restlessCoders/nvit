@@ -196,18 +196,18 @@ class ReportController extends Controller
             $allBatches->where('students.executiveId', $request->executiveId);
         }
         if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
-            $allBatches->where('sb.status', 2);
+            $allBatches->where('student_batches.status', 2);
         }
         if (strtolower(currentUser()) == 'accountmanager') {
-            $allBatches->where('sb.isBundel', 0);
+            $allBatches->where('student_batches.isBundel', 0);
         }
         if ($request->status) {
-            $allBatches->where('sb.status', $request->status);
+            $allBatches->where('student_batches.status', $request->status);
         }
         if ($request->drop) {
-            $allBatches->where('sb.is_drop', 1);
+            $allBatches->where('student_batches.is_drop', 1);
         } else {
-            $allBatches->where('sb.is_drop', 0);
+            $allBatches->where('student_batches.is_drop', 0);
         }
         
         $perPage = 20;
