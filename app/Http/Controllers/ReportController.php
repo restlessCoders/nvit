@@ -58,6 +58,7 @@ class ReportController extends Controller
     //To Show Batchwise Student Enroll Data
     public function batchwiseEnrollStudent(Request $request)
     {
+        $perPage = 20;
         $batches = Batch::where('status', 1)->get();
         $courses = Course::where('status', 1)->get();
         $batchInfo = Batch::find($request->batch_id);
@@ -124,7 +125,7 @@ class ReportController extends Controller
                 } else {
                     $allBatches->where('student_batches.is_drop', 0);
                 }
-                $perPage = 20;
+                
 
                 $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
                     'executiveId' => $request->executiveId,
