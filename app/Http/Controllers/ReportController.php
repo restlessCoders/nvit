@@ -103,7 +103,7 @@ class ReportController extends Controller
                 });
             }
             if ($request->type == 2) {
-                DB::table(DB::raw('(SELECT studentId, batchId, course_id, SUM(cpaidAmount) AS total_paid, SUM(discount) AS total_discount
+                $allBatches = DB::table(DB::raw('(SELECT studentId, batchId, course_id, SUM(cpaidAmount) AS total_paid, SUM(discount) AS total_discount
      FROM paymentdetails as pd
      GROUP BY studentId, batchId, course_id) pd'))
     ->select([
@@ -140,7 +140,7 @@ class ReportController extends Controller
     
     ->groupBy('pd.studentId', 'pd.batchId', 'sb.course_price')
     ->havingRaw('pd.total_paid < (inv_price * 0.5)');
-echo 'ok';die;
+
 
             }
             if ($request->type == 3) {
