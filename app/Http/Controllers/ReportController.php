@@ -140,7 +140,7 @@ class ReportController extends Controller
                
                ->groupBy('pd.studentId', 'pd.batchId', 'sb.course_price')
                ->havingRaw('pd.total_paid < (inv_price * 0.5)');
-               -
+               
 
 
             }
