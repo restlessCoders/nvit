@@ -244,7 +244,7 @@ class ReportController extends Controller
                         'isBundel',
                         'is_drop'
                     )
-                    ->orderBy('pd.created_at', 'desc')  // Order by created_at from the subquery
+                    ->orderBy('created_at', 'desc')  // Order by created_at from the subquery
 ->paginate($perPage)
 ->appends([
     'executiveId' => $request->executiveId,
