@@ -235,7 +235,7 @@ class ReportController extends Controller
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
         if (isset($request->from) && isset($request->to)) {
-            $allBatches = $allBatches->where(function ($query) use ($request){
+            /*$allBatches = $allBatches->where(function ($query) use ($request){
             $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
             $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
             $query->whereExists(function ($query) use ($from, $to) {
@@ -244,7 +244,7 @@ class ReportController extends Controller
                     ->whereRaw('payments.id = paymentdetails.paymentId')
                     ->whereBetween('payments.paymentDate', [$from, $to]);
                 });
-            });
+            });*/
         }
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
