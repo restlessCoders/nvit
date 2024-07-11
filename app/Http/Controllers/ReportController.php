@@ -246,12 +246,12 @@ class ReportController extends Controller
         if ($request->drop) {
             $allBatches->where('student_batches.is_drop', 1);
         } else {
-            $allBatches->where('sb.is_drop', 0);
+            $allBatches->where('student_batches.is_drop', 0);
         }
         
         $perPage = 20;
 
-        $allBatches = $allBatches->orderBy('sb.created_at', 'desc')->paginate($perPage)->appends([
+        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'studentId' => $request->studentId,
             'batch_id' => $request->batch_id,
