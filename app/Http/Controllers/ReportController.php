@@ -113,24 +113,24 @@ class ReportController extends Controller
     })
     ->select(
         DB::raw('sb.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price'),
-        'student_batches.id as sb_id',
-                        'student_batches.op_type',
-                        'student_batches.systemId',
-                        'students.id as sId',
-                        'students.name as sName',
-                        'students.contact',
-                        'students.refId',
-                        'students.executiveId',
-                        'users.username as exName',
-                        'student_batches.entryDate',
-                        'student_batches.status',
-                        'student_batches.batch_id',
-                        'student_batches.course_id',
-                        'student_batches.type',
-                        'student_batches.course_price',
-                        'student_batches.pstatus',
-                        'student_batches.isBundel',
-                        'student_batches.is_drop'
+        'sb.id as sb_id',
+        'sb.op_type',
+        'sb.systemId',
+        'students.id as sId',
+        'students.name as sName',
+        'students.contact',
+        'students.refId',
+        'students.executiveId',
+        'users.username as exName',
+        'sb.entryDate',
+        'sb.status',
+        'sb.batch_id',
+        'sb.course_id',
+        'sb.type',
+        'sb.course_price',
+        'sb.pstatus',
+        'sb.isBundel',
+        'sb.is_drop'
     )
     ->whereNull('p.invoiceId')
 
@@ -183,7 +183,7 @@ class ReportController extends Controller
         }
 
         if ($request->batch_id) {
-            $allBatches->where('student_batches.batch_id', $request->batch_id);
+            $allBatches->where('sb.batch_id', $request->batch_id);
         }
         if ($request->refId) {
             $allBatches->where('students.refId', $request->refId);
@@ -192,23 +192,23 @@ class ReportController extends Controller
             $allBatches->where('students.executiveId', $request->executiveId);
         }
         if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
-            $allBatches->where('student_batches.status', 2);
+            $allBatches->where('sb.status', 2);
         }
         if (strtolower(currentUser()) == 'accountmanager') {
-            $allBatches->where('student_batches.isBundel', 0);
+            $allBatches->where('sb.isBundel', 0);
         }
         if ($request->status) {
-            $allBatches->where('student_batches.status', $request->status);
+            $allBatches->where('sb.status', $request->status);
         }
         if ($request->drop) {
-            $allBatches->where('student_batches.is_drop', 1);
+            $allBatches->where('sb.is_drop', 1);
         } else {
-            $allBatches->where('student_batches.is_drop', 0);
+            $allBatches->where('sb.is_drop', 0);
         }
         
         $perPage = 20;
 
-        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+        $allBatches = $allBatches->orderBy('sb.created_at', 'desc')->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'studentId' => $request->studentId,
             'batch_id' => $request->batch_id,
