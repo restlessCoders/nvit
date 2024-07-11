@@ -104,38 +104,40 @@ class ReportController extends Controller
             }
             if ($request->type == 2) {
                 $allBatches = DB::table('paymentdetails as pd')
-    ->join('students', 'pd.studentId', '=', 'students.id')
-    ->join('payments as p', 'pd.paymentId', '=', 'p.id')
-    ->leftJoin('users', 'students.executiveId', '=', 'users.id')
-    ->join('student_batches as sb', function ($join) {
-        $join->on('sb.student_id', '=', 'pd.studentId')
-             ->on('sb.batch_id', '=', 'pd.batchId');
-    })
-    ->select(
-        DB::raw('sb.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price'),
-        'sb.id as sb_id',
-        'sb.op_type',
-        'sb.systemId',
-        'students.id as sId',
-        'students.name as sName',
-        'students.contact',
-        'students.refId',
-        'students.executiveId',
-        'users.username as exName',
-        'sb.entryDate',
-        'sb.status',
-        'sb.batch_id',
-        'sb.course_id',
-        'sb.type',
-        'sb.course_price',
-        'sb.pstatus',
-        'sb.isBundel',
-        'sb.is_drop'
-    )
-    ->whereNull('p.invoiceId')
-
-    ->groupBy('pd.studentId', 'pd.batchId', 'sb.course_price')
-    ->havingRaw('SUM(pd.cpaidAmount) < (sb.course_price - COALESCE(SUM(pd.discount), 0)) * 0.5');
+                ->join('students as s', 'pd.studentId', '=', 's.id')
+                ->join('payments as p', 'pd.paymentId', '=', 'p.id')
+                ->leftJoin('users as u', 's.executiveId', '=', 'u.id')
+                ->join('student_batches as sb', function ($join) {
+                    $join->on('sb.student_id', '=', 'pd.studentId')
+                         ->on('sb.batch_id', '=', 'pd.batchId');
+                })
+                ->select(
+                    DB::raw('sb.course_price - COALESCE(pd.discount, 0) AS inv_price'),
+                    DB::raw('SUM(pd.cpaidAmount) AS total_paid'),
+                    DB::raw('SUM(pd.discount) AS total_discount'),
+                    'p.invoiceId',
+                    'sb.id as sb_id',
+                    'sb.op_type',
+                    'sb.systemId',
+                    's.id as sId',
+                    's.name as sName',
+                    's.contact',
+                    's.refId',
+                    's.executiveId',
+                    'u.username as exName',
+                    'sb.entryDate',
+                    'sb.status',
+                    'sb.batch_id',
+                    'sb.course_id',
+                    'sb.type',
+                    'sb.course_price',
+                    'sb.pstatus',
+                    'sb.isBundel',
+                    'sb.is_drop'
+                )
+                ->whereNull('p.invoiceId')
+                ->groupBy('pd.studentId', 'pd.batchId', 'sb.course_price')
+                ->havingRaw('SUM(pd.cpaidAmount) < (sb.course_price - COALESCE(SUM(pd.discount), 0)) * 0.5');
 
 
             }
