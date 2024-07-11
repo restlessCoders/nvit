@@ -151,7 +151,7 @@ class ReportController extends Controller
         
         $perPage = 20;
 
-        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+        $allBatches = $allBatches->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'studentId' => $request->studentId,
             'batch_id' => $request->batch_id,
