@@ -64,7 +64,7 @@ class ReportController extends Controller
         $references = Reference::all();
         $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
         $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->where('is_drop', 0)->count('student_id');
-
+        DB::connection()->enableQueryLog();
         if ($request->type) {
             $allBatches = DB::table('paymentdetails')
                 ->join('students', 'paymentdetails.studentId', '=', 'students.id')
@@ -261,6 +261,8 @@ class ReportController extends Controller
             'from' => $request->from,
             'to' => $request->to,
         ]);
+        $queries = \DB::getQueryLog();
+    dd($queries);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
 
