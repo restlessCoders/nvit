@@ -142,12 +142,27 @@ class ReportController extends Controller
                     'pstatus',
                     'isBundel',
                     'is_drop'
-                )->get();
+                );
 
             
-           
-        $queries = \DB::getQueryLog();
-    dd($queries);
+
+            
+        
+        
+        $perPage = 20;
+
+        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+            'executiveId' => $request->executiveId,
+            'studentId' => $request->studentId,
+            'batch_id' => $request->batch_id,
+            'refId' => $request->refId,
+            'status' => $request->status,
+            'type' => $request->type,
+            'from' => $request->from,
+            'to' => $request->to,
+        ]);
+        /*$queries = \DB::getQueryLog();
+    dd($queries);*/
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
 
