@@ -101,6 +101,29 @@ class ReportController extends Controller
                             });
                         }*/
                 });
+                if ($request->batch_id) {
+                    $allBatches->where('student_batches.batch_id', $request->batch_id);
+                }
+                if ($request->refId) {
+                    $allBatches->where('students.refId', $request->refId);
+                }
+                if ($request->executiveId) {
+                    $allBatches->where('students.executiveId', $request->executiveId);
+                }
+                if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
+                    $allBatches->where('student_batches.status', 2);
+                }
+                if (strtolower(currentUser()) == 'accountmanager') {
+                    $allBatches->where('student_batches.isBundel', 0);
+                }
+                if ($request->status) {
+                    $allBatches->where('student_batches.status', $request->status);
+                }
+                if ($request->drop) {
+                    $allBatches->where('student_batches.is_drop', 1);
+                } else {
+                    $allBatches->where('student_batches.is_drop', 0);
+                }
             }
             if ($request->type == 2) {
                 /*$allBatches = DB::table('paymentdetails as pd')
@@ -253,29 +276,7 @@ class ReportController extends Controller
                 ->orWhere('students.contact', 'like', '%' . $request->studentId . '%');
         }
 
-        if ($request->batch_id) {
-            $allBatches->where('student_batches.batch_id', $request->batch_id);
-        }
-        if ($request->refId) {
-            $allBatches->where('students.refId', $request->refId);
-        }
-        if ($request->executiveId) {
-            $allBatches->where('students.executiveId', $request->executiveId);
-        }
-        if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
-            $allBatches->where('sb.status', 2);
-        }
-        if (strtolower(currentUser()) == 'accountmanager') {
-            $allBatches->where('sb.isBundel', 0);
-        }
-        if ($request->status) {
-            $allBatches->where('sb.status', $request->status);
-        }
-        if ($request->drop) {
-            $allBatches->where('sb.is_drop', 1);
-        } else {
-            $allBatches->where('sb.is_drop', 0);
-        }
+       
         
         $perPage = 20;
 
