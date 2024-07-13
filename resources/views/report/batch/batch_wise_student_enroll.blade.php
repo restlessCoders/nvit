@@ -13,7 +13,6 @@
 	table,
 	tr {
 		font-size: 13px;
-	}
 
 	.btn {
 		font-size: 11px;
