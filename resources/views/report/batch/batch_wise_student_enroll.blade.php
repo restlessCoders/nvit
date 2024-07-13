@@ -146,7 +146,7 @@
 			<div class="col-md-12">
 				<h4 class="text-center">{{$batchInfo->batchId}}</h4>
 				<h5 class="text-center">{{$batchInfo->trainer?$batchInfo->trainer->name:'No Trainer Assigned'}}</h5>
-				<p class="m-0 text-left text-center"><strong>Batch Slot: {{$batchInfo->batchslot?slotName}} @endphp</strong></p>
+				<p class="m-0 text-left text-center"><strong>Batch Slot: {{$batchInfo->batchslot?slotName}}</strong></p>
 				<p class="m-0 text-left text-center"><strong>Batch Time: {{$batchInfo->batchtime?time}} @endphp</strong></p>
 				<p class="m-0 text-left text-primary"><strong>Start Date: @php echo date('d-m-Y',strtotime($batchInfo->startDate)) @endphp</strong></p>
 				<p class="m-0 text-right text-danger"><strong>End Date: @php echo date('d-m-Y',strtotime($batchInfo->endDate)) @endphp</strong></p>
