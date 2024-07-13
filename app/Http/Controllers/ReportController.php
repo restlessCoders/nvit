@@ -156,15 +156,6 @@ class ReportController extends Controller
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
-        if (isset($request->from) && isset($request->to)) {
-            $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
-            $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-            
-            $allBatches = $allBatches->whereHas('paymentDetails.payment', function ($query) use ($from, $to) {
-                $query->whereBetween('paymentDate', [$from, $to]);
-            });
-        }
-        
         
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
