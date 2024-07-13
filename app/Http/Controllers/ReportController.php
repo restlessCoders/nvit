@@ -640,10 +640,7 @@ class ReportController extends Controller
 
         // Create a DateInterval of 1 day
         $interval = new DateInterval('P1D');
-        if (
-            currentUser() == 'trainer' ||
-            currentUser() == 'trainingmanager'
-        ) {
+        if (currentUser() == 'trainer' || currentUser() == 'trainer') {
             $data .= '<form action="' . route(currentUser() . '.certificate.store') . '" method="post"> ' . csrf_field() . '';
         }
         /*<th style="border:1px solid #000;;color:#000;"><strong>Ins. Note</strong></th>
@@ -711,7 +708,7 @@ class ReportController extends Controller
         $data .=    '</tbody>
                 </table>';
 
-        if (currentUser() == 'trainer') {
+        if (currentUser() == 'trainer' || currentUser() == 'trainingmanager') {
             $data .= '<div class="col-md-12 d-flex justify-content-end"><button class="btn btn-primary" type="submit">Save</button></div>';
             $data .= '</form>';
         }
@@ -745,7 +742,7 @@ class ReportController extends Controller
         // Create a DateInterval of 1 day
         $interval = new DateInterval('P1D');
 
-        if (currentUser() == 'trainer') {
+        if (currentUser() == 'trainer' || currentUser() == 'trainingmanager') {
             $data .= '<form action="' . route(currentUser() . '.attendance.store') . '" method="post"> ' . csrf_field() . '';
         }
         $data .=    '<div class="row">
