@@ -199,7 +199,6 @@ class ReportController extends Controller
             $allBatches->where('student_batches.is_drop', 0);
         }
         
-        
         $perPage = 20;
 
         $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
@@ -211,10 +210,6 @@ class ReportController extends Controller
             'type' => $request->type,
             'date_range' => $request->date_range,
         ]);
-        
-       
-        
-        
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
 
