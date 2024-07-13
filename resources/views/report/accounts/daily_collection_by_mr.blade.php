@@ -333,7 +333,7 @@
 
 	$(document).ready(function() {
 
-		var start = moment().subtract(29, 'days');
+		/*var start = moment().subtract(29, 'days');
     var end = moment();
 
     function cb(start, end) {
@@ -353,7 +353,7 @@
         }
     }, cb);
 
-    cb(start, end);
+    cb(start, end);*/
 
     // Define default start and end dates
     /*var start = moment().subtract(29, 'days');
