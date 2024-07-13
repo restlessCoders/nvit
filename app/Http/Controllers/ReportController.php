@@ -58,7 +58,6 @@ class ReportController extends Controller
     //To Show Batchwise Student Enroll Data
     public function batchwiseEnrollStudent(Request $request)
     {
-        $perPage = 20;
         $batches = Batch::where('status', 1)->get();
         $courses = Course::where('status', 1)->get();
         $batchInfo = Batch::find($request->batch_id);
@@ -90,7 +89,7 @@ class ReportController extends Controller
                         });
                         // Add check for deleted_at being NULL
                         $query->whereNull('paymentdetails.deleted_at');
-                        /*if (isset($request->date_range)) {
+                        if (isset($request->date_range)) {
                             $date_range = explode('-', $request->date_range);
                             $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
                             $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
@@ -100,45 +99,11 @@ class ReportController extends Controller
                                     ->whereRaw('payments.id = paymentdetails.paymentId')
                                     ->whereBetween('payments.paymentDate', [$from, $to]);
                             });
-                        }*/
+                        }
                 });
-                if ($request->batch_id) {
-                    $allBatches->where('student_batches.batch_id', $request->batch_id);
-                }
-                if ($request->refId) {
-                    $allBatches->where('students.refId', $request->refId);
-                }
-                if ($request->executiveId) {
-                    $allBatches->where('students.executiveId', $request->executiveId);
-                }
-                if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
-                    $allBatches->where('student_batches.status', 2);
-                }
-                if (strtolower(currentUser()) == 'accountmanager') {
-                    $allBatches->where('student_batches.isBundel', 0);
-                }
-                if ($request->status) {
-                    $allBatches->where('student_batches.status', $request->status);
-                }
-                if ($request->drop) {
-                    $allBatches->where('student_batches.is_drop', 1);
-                } else {
-                    $allBatches->where('student_batches.is_drop', 0);
-                }
-                
-
-                $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
-                    'executiveId' => $request->executiveId,
-                    'studentId' => $request->studentId,
-                    'batch_id' => $request->batch_id,
-                    'refId' => $request->refId,
-                    'status' => $request->status,
-                    'type' => $request->type,
-                    'date_range' => $request->date_range,
-                ]);
             }
             if ($request->type == 2) {
-                /*$allBatches = DB::table('paymentdetails as pd')
+                $allBatches = DB::table('paymentdetails as pd')
                     ->join('students', 'pd.studentId', '=', 'students.id')
                     ->leftjoin('users', 'students.executiveId', '=', 'users.id')
                     ->join('student_batches', function ($join) {
@@ -167,94 +132,7 @@ class ReportController extends Controller
                         'student_batches.is_drop'
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
-                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');*/
-                    $allBatches = DB::table(DB::raw('(
-                        SELECT 
-                            sb.course_price - COALESCE(pd.total_discount, 0) AS inv_price,
-                            pd.total_paid,
-                            p.invoiceId,
-                            sb.id AS sb_id,
-                            sb.op_type,
-                            sb.systemId,
-                            s.id AS sId,
-                            s.name AS sName,
-                            s.contact,
-                            s.refId,
-                            s.executiveId,
-                            u.username AS exName,
-                            sb.entryDate,
-                            sb.status,
-                            sb.batch_id,
-                            sb.course_id,
-                            sb.type,
-                            sb.course_price,
-                            sb.pstatus,
-                            sb.isBundel,
-                            sb.is_drop
-                        FROM 
-                            (SELECT 
-                                 studentId, 
-                                 batchId, 
-                                 course_id, 
-                                 SUM(cpaidAmount) AS total_paid, 
-                                 SUM(discount) AS total_discount
-                             FROM 
-                                 paymentdetails
-                             GROUP BY 
-                                 studentId, 
-                                 batchId, 
-                                 course_id) pd
-                        INNER JOIN 
-                            students s ON pd.studentId = s.id
-                        INNER JOIN 
-                            payments p ON pd.studentId = p.studentId
-                        LEFT JOIN 
-                            users u ON s.executiveId = u.id
-                        INNER JOIN 
-                            student_batches sb ON sb.student_id = pd.studentId AND sb.batch_id = pd.batchId
-                        WHERE 
-                            p.invoiceId IS NULL 
-                        GROUP BY 
-                            pd.studentId, 
-                            pd.batchId, 
-                            sb.course_price
-                        HAVING 
-                            pd.total_paid < (inv_price * 0.5)
-                    ) as subquery'))
-                    ->select(
-                        'inv_price',
-                        'total_paid',
-                        'invoiceId',
-                        'sb_id',
-                        'op_type',
-                        'systemId',
-                        'sId',
-                        'sName',
-                        'contact',
-                        'refId',
-                        'executiveId',
-                        'exName',
-                        'entryDate',
-                        'status',
-                        'batch_id',
-                        'course_id',
-                        'type',
-                        'course_price',
-                        'pstatus',
-                        'isBundel',
-                        'is_drop'
-                    )
-                    
-->paginate($perPage)
-->appends([
-    'executiveId' => $request->executiveId,
-    'studentId' => $request->studentId,
-    'batch_id' => $request->batch_id,
-    'refId' => $request->refId,
-    'status' => $request->status,
-    'type' => $request->type,
-    'date_range' => $request->date_range,
-]);
+                    ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
             }
             if ($request->type == 3) {
                 $allBatches = $allBatches->where(function ($query) use ($request){
@@ -279,18 +157,9 @@ class ReportController extends Controller
                 ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop')
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
-                $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
-                    'executiveId' => $request->executiveId,
-                    'studentId' => $request->studentId,
-                    'batch_id' => $request->batch_id,
-                    'refId' => $request->refId,
-                    'status' => $request->status,
-                    'type' => $request->type,
-                    'date_range' => $request->date_range,
-                ]);
         }
-        if (isset($request->from) && isset($request->to)) {
-            /*$allBatches = $allBatches->where(function ($query) use ($request){
+        /*if (isset($request->from) && isset($request->to)) {
+            $allBatches = $allBatches->where(function ($query) use ($request){
             $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
             $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
             $query->whereExists(function ($query) use ($from, $to) {
@@ -299,8 +168,8 @@ class ReportController extends Controller
                     ->whereRaw('payments.id = paymentdetails.paymentId')
                     ->whereBetween('payments.paymentDate', [$from, $to]);
                 });
-            });*/
-        }
+            });
+        }*/
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
                 ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
@@ -308,9 +177,41 @@ class ReportController extends Controller
                 ->orWhere('students.contact', 'like', '%' . $request->studentId . '%');
         }
 
-       
+        if ($request->batch_id) {
+            $allBatches->where('student_batches.batch_id', $request->batch_id);
+        }
+        if ($request->refId) {
+            $allBatches->where('students.refId', $request->refId);
+        }
+        if ($request->executiveId) {
+            $allBatches->where('students.executiveId', $request->executiveId);
+        }
+        if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
+            $allBatches->where('student_batches.status', 2);
+        }
+        if (strtolower(currentUser()) == 'accountmanager') {
+            $allBatches->where('student_batches.isBundel', 0);
+        }
+        if ($request->status) {
+            $allBatches->where('student_batches.status', $request->status);
+        }
+        if ($request->drop) {
+            $allBatches->where('student_batches.is_drop', 1);
+        } else {
+            $allBatches->where('student_batches.is_drop', 0);
+        }
         
-        
+        $perPage = 20;
+
+        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
+            'executiveId' => $request->executiveId,
+            'studentId' => $request->studentId,
+            'batch_id' => $request->batch_id,
+            'refId' => $request->refId,
+            'status' => $request->status,
+            'type' => $request->type,
+            'date_range' => $request->date_range,
+        ]);
         return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
 
