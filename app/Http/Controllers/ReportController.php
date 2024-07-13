@@ -160,10 +160,11 @@ class ReportController extends Controller
             $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
             $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
             
-            $allBatches = $allBatches->whereHas('paymentDetail.payment', function ($query) use ($from, $to) {
-                $query->whereBetween('payments.paymentDate', [$from, $to]);
+            $allBatches = $allBatches->whereHas('paymentDetails.payment', function ($query) use ($from, $to) {
+                $query->whereBetween('paymentDate', [$from, $to]);
             });
         }
+        
         
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)

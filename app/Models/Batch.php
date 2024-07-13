@@ -33,4 +33,8 @@ class Batch extends Model
     {
         return $this->belongsToMany(Student::class, 'student_batches')->select(['course_price','entryDate']);
     }
+    public function paymentDetails()
+    {
+        return $this->hasMany(PaymentDetail::class, 'batch_id', 'id');
+    }
 }
