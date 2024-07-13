@@ -147,7 +147,17 @@ class ReportController extends Controller
                         // Add check for deleted_at being NULL
                         $query->whereNull('paymentdetails.deleted_at');
                         
+                        
                        
+                            $from = \Carbon\Carbon::createFromTimestamp(strtotime('2023-07-01'))->format('Y-m-d');
+                            $to = \Carbon\Carbon::createFromTimestamp(strtotime('2024-06-30'))->format('Y-m-d');
+                            $query->whereExists(function ($query) use ($from, $to) {
+                                $query->select(DB::raw(1))
+                                    ->from('payments')
+                                    ->whereRaw('payments.id = paymentdetails.paymentId')
+                                    ->whereBetween('payments.paymentDate', [$from, $to]);
+                            });
+                        
                 });
                 
             }
@@ -158,18 +168,6 @@ class ReportController extends Controller
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
-        /*if (isset($request->from) && isset($request->to)) {
-            $allBatches = $allBatches->where(function ($query) use ($request){
-            $from = \Carbon\Carbon::createFromTimestamp(strtotime($request->from))->format('Y-m-d');
-            $to = \Carbon\Carbon::createFromTimestamp(strtotime($request->to))->format('Y-m-d');
-            $query->whereExists(function ($query) use ($from, $to) {
-                $query->select(DB::raw(1))
-                    ->from('payments')
-                    ->whereRaw('payments.id = paymentdetails.paymentId')
-                    ->whereBetween('payments.paymentDate', [$from, $to]);
-                });
-            });
-        }*/
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
                 ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
