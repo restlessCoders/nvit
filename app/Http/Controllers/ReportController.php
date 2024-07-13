@@ -176,7 +176,6 @@ class ReportController extends Controller
         }
 
         if ($request->batch_id) {
-            echo 'ok';die;
             $allBatches->where('student_batches.batch_id', $request->batch_id);
         }
         if ($request->refId) {
@@ -199,6 +198,7 @@ class ReportController extends Controller
         } else {
             $allBatches->where('student_batches.is_drop', 0);
         }
+        
         
         $perPage = 20;
 
