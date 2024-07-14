@@ -245,7 +245,7 @@ class PaymentReportController extends Controller
             $salespersons = DB::table('payments')
                 ->select('payments.executiveId', 'users.username', 'transactions.exe_id')
                 ->join('users', 'payments.executiveId', '=', 'users.id')
-                ->join('transactions', 'users.id', '=', 'transactions.exe_id')
+                ->leftjoin('transactions', 'users.id', '=', 'transactions.exe_id')
                 ->where(function ($query) use ($currentMonth, $currentYear) {
                 $query->whereMonth('payments.paymentDate', '=', $currentMonth)
                 ->whereYear('payments.paymentDate', '=', $currentYear)
