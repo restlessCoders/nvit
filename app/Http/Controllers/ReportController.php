@@ -280,7 +280,7 @@ class ReportController extends Controller
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
             }
-            if ($request->type == 3) {
+            if ($request->type == 3) { 
                 $allBatches = $allBatches->where(function ($query) use ($request,$from,$to) {
                     $query->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) = 0")
                         ->whereIn('paymentdetails.id', function ($subquery) {
