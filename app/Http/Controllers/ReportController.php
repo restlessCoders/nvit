@@ -76,7 +76,7 @@ class ReportController extends Controller
                 ->leftjoin('users', 'students.executiveId', '=', 'users.id')
                 ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop');
             if ($request->type == 1) {
-                $allBatches = $allBatches->where(function ($query)  use ($request) {
+                $allBatches = $allBatches->where(function ($query)  use ($request){
                     $query->where('paymentdetails.feeType', '=', 2)
                         /*->where('student_batches.batch_id', '!=',0)
                     ->where('student_batches.isBundel', '=',0)*/
@@ -87,10 +87,10 @@ class ReportController extends Controller
                                 ->whereRaw('pd.studentId = paymentdetails.studentId')
                                 ->whereRaw('pd.batchId = paymentdetails.batchId');
                         });
-                    // Add check for deleted_at being NULL
-                    $query->whereNull('paymentdetails.deleted_at');
-                    //Old Date Range Query
-                    /*if (isset($request->date_range)) {
+                        // Add check for deleted_at being NULL
+                        $query->whereNull('paymentdetails.deleted_at');
+                        //Old Date Range Query
+                        /*if (isset($request->date_range)) {
                             $date_range = explode('-', $request->date_range);
                             $from = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[0]))->format('Y-m-d');
                             $to = \Carbon\Carbon::createFromTimestamp(strtotime($date_range[1]))->format('Y-m-d');
@@ -136,7 +136,7 @@ class ReportController extends Controller
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
             }
             if ($request->type == 3) {
-                $allBatches = $allBatches->where(function ($query) use ($request) {
+                $allBatches = $allBatches->where(function ($query) use ($request){
                     $query->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) = 0")
                         ->whereIn('paymentdetails.id', function ($subquery) {
                             $subquery->select(DB::raw('MAX(id)'))
@@ -144,17 +144,19 @@ class ReportController extends Controller
                                 ->whereRaw('pd.studentId = paymentdetails.studentId')
                                 ->whereRaw('pd.batchId = paymentdetails.batchId');
                         });
-                    // Add check for deleted_at being NULL
-                    $query->whereNull('paymentdetails.deleted_at');
+                        // Add check for deleted_at being NULL
+                        $query->whereNull('paymentdetails.deleted_at');
                 });
+                
             }
+            
         } else {
             $allBatches = DB::table('student_batches')
                 ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop')
                 ->join('students', 'students.id', '=', 'student_batches.student_id')
                 ->join('users', 'users.id', '=', 'students.executiveId');
         }
-
+        
         if ($request->studentId) {
             $allBatches->where('students.id', $request->studentId)
                 ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
@@ -185,7 +187,7 @@ class ReportController extends Controller
         } else {
             $allBatches->where('student_batches.is_drop', 0);
         }
-
+        
         $perPage = 20;
 
         $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
@@ -197,85 +199,78 @@ class ReportController extends Controller
             'type' => $request->type,
             'date_range' => $request->date_range,
         ]);
-        return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo, 'courses' => $courses]);
+        return view('report.batch.batch_wise_student_enroll', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo,'courses' => $courses]);
     }
 
     public function batchwiseEnrollStudentPrint(Request $request)
     {
-
-
         $batches = Batch::where('status', 1)->get();
         $courses = Course::where('status', 1)->get();
         $batchInfo = Batch::find($request->batch_id);
         $references = Reference::all();
         $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
-        $batch_seat_count = DB::table('student_batches')
-            ->where('batch_id', $request->batch_id)
-            ->where('status', 2)
-            ->where('is_drop', 0)
-            ->count('student_id');
+        $batch_seat_count = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->where('is_drop', 0)->count('student_id');
 
-        $allBatchesQuery = DB::table('paymentdetails')
-            ->join('students', 'paymentdetails.studentId', '=', 'students.id')
-            ->leftJoin('student_batches', function ($join) {
-                $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
-                    ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
-            })
-            ->leftJoin('users', 'students.executiveId', '=', 'users.id')
-            ->select(
-                'student_batches.op_type',
-                'student_batches.id as sb_id',
-                'student_batches.systemId',
-                'students.id as sId',
-                'students.name as sName',
-                'students.contact',
-                'students.refId',
-                'students.executiveId',
-                'users.username as exName',
-                'student_batches.entryDate',
-                'student_batches.status',
-                'student_batches.batch_id',
-                'student_batches.course_id',
-                'student_batches.type',
-                'student_batches.course_price',
-                'student_batches.pstatus',
-                'student_batches.isBundel',
-                'student_batches.is_drop'
-            );
-
-        // Filter based on request type
         if ($request->type) {
+            $allBatches = DB::table('paymentdetails')
+                ->join('students', 'paymentdetails.studentId', '=', 'students.id')
+                ->leftJoin('student_batches', function ($join) {
+                    $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
+                        ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
+                })
+                ->leftJoin('users', 'students.executiveId', '=', 'users.id')
+                ->join('payments', 'payments.id', '=', 'paymentdetails.paymentId') // Join the payments table
+                ->select(
+                    'student_batches.op_type', 
+                    'student_batches.id as sb_id', 
+                    'student_batches.systemId', 
+                    'students.id as sId', 
+                    'students.name as sName', 
+                    'students.contact', 
+                    'students.refId', 
+                    'students.executiveId', 
+                    'users.username as exName', 
+                    'student_batches.entryDate', 
+                    'student_batches.status', 
+                    'student_batches.batch_id', 
+                    'student_batches.course_id', 
+                    'student_batches.type', 
+                    'student_batches.course_price', 
+                    'student_batches.pstatus', 
+                    'student_batches.isBundel', 
+                    'student_batches.is_drop',
+                    // Select the paymentDate field
+                    'payments.paymentDate'
+                );
+        
             if ($request->type == 1) {
-                $allBatchesQuery->where('paymentdetails.feeType', 2)
-                    ->whereRaw("(paymentdetails.cPayable - COALESCE(paymentdetails.discount, 0) - paymentdetails.cpaidAmount) > 0")
-                    ->whereIn('paymentdetails.id', function ($subquery) {
-                        $subquery->select(DB::raw('MAX(id)'))
-                            ->from('paymentdetails as pd')
-                            ->whereRaw('pd.studentId = paymentdetails.studentId')
-                            ->whereRaw('pd.batchId = paymentdetails.batchId');
-                    });
-
-                if (isset($request->date_range)) {
-                    $dateRange = explode('-', $request->date_range);
-                    $from = Carbon::createFromFormat('Y-m-d', trim($dateRange[0]))->startOfDay();
-                    $to = Carbon::createFromFormat('Y-m-d', trim($dateRange[1]))->endOfDay();
-                    $allBatchesQuery->whereExists(function ($query) use ($from, $to) {
-                        $query->select(DB::raw(1))
-                            ->from('payments')
-                            ->whereRaw('payments.id = paymentdetails.paymentId')
-                            ->whereBetween('payments.paymentDate', [$from, $to]);
-                    });
-                }
+                $allBatches = $allBatches->where(function ($query) use ($request, $from, $to) {
+                    $query->where('paymentdetails.feeType', '=', 2)
+                        ->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) > 0")
+                        ->whereIn('paymentdetails.id', function ($subquery) {
+                            $subquery->select(DB::raw('MAX(id)'))
+                                ->from('paymentdetails as pd')
+                                ->whereRaw('pd.studentId = paymentdetails.studentId')
+                                ->whereRaw('pd.batchId = paymentdetails.batchId');
+                        })
+                        ->whereNull('paymentdetails.deleted_at');
+        
+                    // Apply the payment date filter within the correct scope
+                    if ($from && $to) {
+                        $query->whereBetween('payments.paymentDate', [$from, $to]);
+                    }
+                });
             }
-
+        
             if ($request->type == 2) {
-                $allBatchesQuery = DB::table('paymentdetails as pd')
+                $allBatches = DB::table('paymentdetails as pd')
                     ->join('students', 'pd.studentId', '=', 'students.id')
                     ->leftJoin('users', 'students.executiveId', '=', 'users.id')
                     ->join('student_batches', function ($join) {
                         $join->on('student_batches.student_id', '=', 'pd.studentId')
                             ->on('student_batches.batch_id', '=', 'pd.batchId');
                     })
+                    ->join('payments', 'payments.id', '=', 'pd.paymentId') // Join the payments table
                     ->select(
                         DB::raw('student_batches.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price'),
                         'student_batches.id as sb_id',
@@ -295,91 +290,87 @@ class ReportController extends Controller
                         'student_batches.course_price',
                         'student_batches.pstatus',
                         'student_batches.isBundel',
-                        'student_batches.is_drop'
+                        'student_batches.is_drop',
+                        // Select the paymentDate field
+                        'payments.paymentDate'
                     )
                     ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
-            }
-
-            if ($request->type == 3) {
-                $allBatchesQuery->whereRaw("(paymentdetails.cPayable - COALESCE(paymentdetails.discount, 0) - paymentdetails.cpaidAmount) = 0")
-                    ->whereIn('paymentdetails.id', function ($subquery) {
-                        $subquery->select(DB::raw('MAX(id)'))
-                            ->from('paymentdetails as pd')
-                            ->whereRaw('pd.studentId = paymentdetails.studentId')
-                            ->whereRaw('pd.batchId = paymentdetails.batchId');
-                    });
-
-                if (isset($request->date_range)) {
-                    $dateRange = explode('-', $request->date_range);
-                    $from = Carbon::createFromFormat('Y-m-d', trim($dateRange[0]))->startOfDay();
-                    $to = Carbon::createFromFormat('Y-m-d', trim($dateRange[1]))->endOfDay();
-                    $allBatchesQuery->whereExists(function ($query) use ($from, $to) {
-                        $query->select(DB::raw(1))
-                            ->from('payments')
-                            ->whereRaw('payments.id = paymentdetails.paymentId')
-                            ->whereBetween('payments.paymentDate', [$from, $to]);
-                    });
+        
+                // Apply the payment date filter
+                if ($from && $to) {
+                    $allBatches->whereBetween('payments.paymentDate', [$from, $to]);
                 }
             }
+        
+            if ($request->type == 3) {
+                $allBatches = $allBatches->where(function ($query) use ($request, $from, $to) {
+                    $query->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) = 0")
+                        ->whereIn('paymentdetails.id', function ($subquery) {
+                            $subquery->select(DB::raw('MAX(id)'))
+                                ->from('paymentdetails as pd')
+                                ->whereRaw('pd.studentId = paymentdetails.studentId')
+                                ->whereRaw('pd.batchId = paymentdetails.batchId');
+                        })
+                        ->whereNull('paymentdetails.deleted_at');
+        
+                    // Apply the payment date filter within the correct scope
+                    if ($from && $to) {
+                        $query->whereBetween('payments.paymentDate', [$from, $to]);
+                    }
+                });
+            }
+        
+            // Ensure the pagination is added after all conditions
+            $perPage = 20;
+            $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')
+                ->paginate($perPage)->appends([
+                    'executiveId' => $request->executiveId,
+                    'studentId' => $request->studentId,
+                    'batch_id' => $request->batch_id,
+                    'refId' => $request->refId,
+                    'status' => $request->status,
+                    'type' => $request->type,
+                    'from' => $request->from,
+                    'to' => $request->to,
+                ]);
+        } else {
+            $allBatches = DB::table('student_batches')
+                ->select('student_batches.op_type', 'student_batches.id as sb_id', 'student_batches.systemId', 'students.id as sId', 'students.name as sName', 'students.contact', 'students.refId', 'students.executiveId', 'users.username as exName', 'student_batches.entryDate', 'student_batches.status', 'student_batches.batch_id', 'student_batches.course_id', 'student_batches.type', 'student_batches.course_price', 'student_batches.pstatus', 'student_batches.isBundel', 'student_batches.is_drop')
+                ->join('students', 'students.id', '=', 'student_batches.student_id')
+                ->join('users', 'users.id', '=', 'students.executiveId');
         }
-
-        // Additional Filters
         if ($request->studentId) {
-            $allBatchesQuery->where(function ($query) use ($request) {
-                $query->where('students.id', $request->studentId)
-                    ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
-                    ->orWhere('students.contact', 'like', '%' . $request->studentId . '%');
-            });
+            $allBatches->where('students.id', $request->studentId)
+                ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
+                ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
+                ->orWhere('students.contact', 'like', '%' . $request->studentId . '%');
         }
 
         if ($request->batch_id) {
-            $allBatchesQuery->where('student_batches.batch_id', $request->batch_id);
+            $allBatches->where('student_batches.batch_id', $request->batch_id);
         }
-
         if ($request->refId) {
-            $allBatchesQuery->where('students.refId', $request->refId);
+            $allBatches->where('students.refId', $request->refId);
         }
-
         if ($request->executiveId) {
-            $allBatchesQuery->where('students.executiveId', $request->executiveId);
+            $allBatches->where('students.executiveId', $request->executiveId);
         }
-
-        // Role-based filters
-        $currentUserRole = strtolower(currentUser());
-        if ($currentUserRole == 'accountmanager' || $currentUserRole == 'frontdesk') {
-            $allBatchesQuery->where('student_batches.status', 2);
+        if (strtolower(currentUser()) == 'accountmanager' || strtolower(currentUser()) == 'frontdesk') {
+            $allBatches->where('student_batches.status', 2);
         }
-
-        if ($currentUserRole == 'accountmanager') {
-            $allBatchesQuery->where('student_batches.isBundel', 0);
+        if (strtolower(currentUser()) == 'accountmanager') {
+            $allBatches->where('student_batches.isBundel', 0);
         }
-
-        // Status and drop filters
         if ($request->status) {
-            $allBatchesQuery->where('student_batches.status', $request->status);
+            $allBatches->where('student_batches.status', $request->status);
         }
-
         if ($request->drop) {
-            $allBatchesQuery->where('student_batches.is_drop', 1);
+            $allBatches->where('student_batches.is_drop', 1);
         } else {
-            $allBatchesQuery->where('student_batches.is_drop', 0);
+            $allBatches->where('student_batches.is_drop', 0);
         }
-
-        // Fetch results
-        $allBatches = $allBatchesQuery->get();
-
-        // Return view with data
-        return view('report.batch.batch_wise_student_enroll_print', [
-            'executives' => $executives,
-            'batch_seat_count' => $batch_seat_count,
-            'references' => $references,
-            'allBatches' => $allBatches,
-            'batches' => $batches,
-            'batchInfo' => $batchInfo,
-            'courses' => $courses
-        ]);
-
+        $allBatches = $allBatches->get();
 
         return View::make('report.batch.batch_wise_student_enroll_print', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo, 'courses' => $courses]);
     }
