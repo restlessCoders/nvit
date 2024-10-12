@@ -45,14 +45,15 @@
 							@endif
 							@endif
 						</td>
-						<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
+						<td>	
 							@php $inv = \DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists(); @endphp
 							@if($inv)
-							{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
+							{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->paymentDate))->format('j M, Y')}}
+							{{--\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
-							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')}}
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')--}}
 							@else
 							-
 							@endif

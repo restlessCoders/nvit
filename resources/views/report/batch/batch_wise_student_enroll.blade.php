@@ -200,14 +200,15 @@
 							@endif
 							@endif
 						</td>
-						<td>{{--\Carbon\Carbon::createFromTimestamp(strtotime($batch->entryDate))->format('j M, Y')--}}
+						<td>	
 							@php $inv = \DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists(); @endphp
 							@if($inv)
-							{{\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
+							{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->paymentDate))->format('j M, Y')}}
+							{{--\Carbon\Carbon::createFromTimestamp(strtotime(\DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
-							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')}}
+							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->first()->paymentDate))->format('j M, Y')--}}
 							@else
 							-
 							@endif
@@ -649,7 +650,7 @@ $('#from, #to').on('apply.daterangepicker', function(ev, picker) {
 	}
 </script>
 @endif
-@if(currentUser() == 'superadmin')
+@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager')
 <script>
     function exportReportToExcel(idname,filename) {
         let table = document.getElementsByTagName(idname); // you can use document.getElementById('tableId') as well by providing id to the table tag
