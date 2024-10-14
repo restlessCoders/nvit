@@ -246,11 +246,17 @@
 						<td>
 						@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
 							@if($batch->batch_id != 0)
-							{{$batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount'))}}
-							@php $total_cpyable += $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount')); @endphp
+							@php 
+							$a = $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount'));
+							@endphp
+							{{$a}}
+							@php $total_cpyable += $a; @endphp
 							@else
-							{{$batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount'))}}
-							@php $total_cpyable += $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount')); @endphp
+							@php 
+							$b = $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount'));
+							@endphp
+							{{$b}}
+							@php $total_cpyable += $b; @endphp
 							@endif
 						@endif
 						</td>
@@ -441,7 +447,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="@if(currentUser() == 'Superadmin') 9 @else 10 @endif"></td>
+						<td colspan="@if(currentUser() == 'Superadmin') 9 @else 9 @endif"></td>
 						<td>{{$total_cpyable}}</td>
 					</tr>
 				</tfoot>

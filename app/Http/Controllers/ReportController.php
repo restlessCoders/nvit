@@ -159,13 +159,14 @@ class ReportController extends Controller
                         'student_batches.is_drop',
                         'payments.paymentDate'
                     )
-                    ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
+                    //->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
+                    ->groupBy('student_batches.student_id','student_batches.batch_id')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
 
                 // Add date range filter for paymentDate
-                if ($from && $to) {
+                /*if ($from && $to) {
                     $allBatches->whereBetween('payments.paymentDate', [$from, $to]);
-                }
+                }*/
             }
 
             // Filter for type 3
@@ -186,6 +187,8 @@ class ReportController extends Controller
                     }
                 });
             }
+        }else{
+             $allBatches = $allBatches->groupBy('student_batches.student_id','student_batches.batch_id');
         }
 
         // Additional filters
@@ -308,7 +311,7 @@ class ReportController extends Controller
                 });
             }
 
-            // Filter for type 2
+           // Filter for type 2
             if ($request->type == 2) {
                 $allBatches = DB::table('paymentdetails as pd')
                     ->join('students', 'pd.studentId', '=', 'students.id')
@@ -340,13 +343,14 @@ class ReportController extends Controller
                         'student_batches.is_drop',
                         'payments.paymentDate'
                     )
-                    ->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
+                    //->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
+                    ->groupBy('student_batches.student_id','student_batches.batch_id')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
 
                 // Add date range filter for paymentDate
-                if ($from && $to) {
+                /*if ($from && $to) {
                     $allBatches->whereBetween('payments.paymentDate', [$from, $to]);
-                }
+                }*/
             }
 
             // Filter for type 3
@@ -426,18 +430,8 @@ class ReportController extends Controller
             $allBatches->where('student_batches.is_drop', 0);
         }
 
-        // Pagination
-        $perPage = 20;
 
-        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
-            'executiveId' => $request->executiveId,
-            'batch_id' => $request->batch_id,
-            'status' => $request->status,
-            'studentId' => $request->studentId,
-            'drop' => $request->drop,
-            'type' => $request->type,
-        ]);
-        $allBatches = $allBatches->get();
+        $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->get();
 
         return View::make('report.batch.batch_wise_student_enroll_print', ['executives' => $executives, 'batch_seat_count' => $batch_seat_count, 'references' => $references, 'allBatches' => $allBatches, 'batches' => $batches, 'batchInfo' => $batchInfo, 'courses' => $courses]);
     }
