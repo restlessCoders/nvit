@@ -74,14 +74,14 @@ class ReportController extends Controller
             ->count('student_id');
 
         // Initialize the query builder
-        $allBatches = DB::table('paymentdetails')
-            ->join('students', 'paymentdetails.studentId', '=', 'students.id')
-            ->leftJoin('student_batches', function ($join) {
+        $allBatches = DB::table('student_batches')
+            ->leftJoin('paymentdetails', function ($join) {
                 $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
                     ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
             })
-            ->leftJoin('users', 'students.executiveId', '=', 'users.id')
-            ->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+            ->join('students', 'student_batches.student_id', '=', 'students.id') // Join with students
+            ->leftJoin('users', 'students.executiveId', '=', 'users.id') // Left join with users (executive data)
+            ->leftJoin('payments', 'payments.id', '=', 'paymentdetails.paymentId') // Left join with payments
             ->select(
                 'student_batches.op_type',
                 'student_batches.id as sb_id',
@@ -91,7 +91,7 @@ class ReportController extends Controller
                 'students.contact',
                 'students.refId',
                 'students.executiveId',
-                'users.username as exName',
+                'users.username as exName', // Executive name
                 'student_batches.entryDate',
                 'student_batches.status',
                 'student_batches.batch_id',
@@ -101,9 +101,9 @@ class ReportController extends Controller
                 'student_batches.pstatus',
                 'student_batches.isBundel',
                 'student_batches.is_drop',
-                'payments.paymentDate',
-                'payments.invoiceId'
-            );
+                'payments.paymentDate', // From payments (can be null if no payment is recorded)
+                'payments.invoiceId' // From payments (can be null if no payment is recorded)
+            ); // Retrieve the results
 
         // Apply filters based on type
         if ($request->type) {
@@ -160,7 +160,7 @@ class ReportController extends Controller
                         'payments.paymentDate'
                     )
                     //->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
-                    ->groupBy('student_batches.student_id','student_batches.batch_id')
+                    ->groupBy('student_batches.student_id', 'student_batches.batch_id')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
 
                 // Add date range filter for paymentDate
@@ -187,8 +187,8 @@ class ReportController extends Controller
                     }
                 });
             }
-        }else{
-             $allBatches = $allBatches->groupBy('student_batches.student_id','student_batches.batch_id');
+        } else {
+            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id');
         }
 
         // Additional filters
@@ -311,7 +311,7 @@ class ReportController extends Controller
                 });
             }
 
-           // Filter for type 2
+            // Filter for type 2
             if ($request->type == 2) {
                 $allBatches = DB::table('paymentdetails as pd')
                     ->join('students', 'pd.studentId', '=', 'students.id')
@@ -344,7 +344,7 @@ class ReportController extends Controller
                         'payments.paymentDate'
                     )
                     //->groupBy('pd.studentId', 'pd.batchId', 'pd.course_id', 'student_batches.course_price')
-                    ->groupBy('student_batches.student_id','student_batches.batch_id')
+                    ->groupBy('student_batches.student_id', 'student_batches.batch_id')
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
 
                 // Add date range filter for paymentDate
