@@ -235,6 +235,7 @@ Route::group(['middleware' => 'isFrontdesk'], function () {
             Route::post('/add', [StudentController::class, 'store'])->name('frontdesk.addNewStudent');
             Route::get('/all',  [StudentController::class, 'index'])->name('frontdesk.allStudent');
             Route::get('/student-detail',  [StudentController::class, 'studentDetail'])->name('frontdesk.studentDetail');
+            Route::put('/active/{id}', [StudentController::class, 'active'])->name('frontdesk.activeStudent');
         });
         Route::resource('/batch', BatchController::class, ["as" => "frontdesk"])->only(['index']);
         Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('frontdesk.batchSearch');
