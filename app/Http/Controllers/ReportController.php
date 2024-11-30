@@ -258,14 +258,31 @@ class ReportController extends Controller
             ->count('student_id');
 
         // Initialize the query builder
-        $allBatches = DB::table('paymentdetails')
-            ->join('students', 'paymentdetails.studentId', '=', 'students.id')
-            ->leftJoin('student_batches', function ($join) {
+        // Initializing variables from the request
+        $from = !empty($request->from) ? \Carbon\Carbon::parse($request->from)->format('Y-m-d') : null;
+        $to = !empty($request->to) ? \Carbon\Carbon::parse($request->to)->format('Y-m-d') : null;
+
+        // Retrieving batches, courses, references, and executives
+        $batches = Batch::where('status', 1)->get();
+        $courses = Course::where('status', 1)->get();
+        $batchInfo = Batch::find($request->batch_id);
+        $references = Reference::all();
+        $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
+        $batch_seat_count = DB::table('student_batches')
+            ->where('batch_id', $request->batch_id)
+            ->where('status', 2)
+            ->where('is_drop', 0)
+            ->count('student_id');
+
+        // Initialize the query builder
+        $allBatches = DB::table('student_batches')
+            ->leftJoin('paymentdetails', function ($join) {
                 $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
                     ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
             })
-            ->leftJoin('users', 'students.executiveId', '=', 'users.id')
-            ->join('payments', 'payments.id', '=', 'paymentdetails.paymentId')
+            ->join('students', 'student_batches.student_id', '=', 'students.id') // Join with students
+            ->leftJoin('users', 'students.executiveId', '=', 'users.id') // Left join with users (executive data)
+            ->leftJoin('payments', 'payments.id', '=', 'paymentdetails.paymentId') // Left join with payments
             ->select(
                 'student_batches.op_type',
                 'student_batches.id as sb_id',
@@ -275,7 +292,7 @@ class ReportController extends Controller
                 'students.contact',
                 'students.refId',
                 'students.executiveId',
-                'users.username as exName',
+                'users.username as exName', // Executive name
                 'student_batches.entryDate',
                 'student_batches.status',
                 'student_batches.batch_id',
@@ -285,9 +302,9 @@ class ReportController extends Controller
                 'student_batches.pstatus',
                 'student_batches.isBundel',
                 'student_batches.is_drop',
-                'payments.paymentDate',
-                'payments.invoiceId'
-            );
+                'payments.paymentDate', // From payments (can be null if no payment is recorded)
+                'payments.invoiceId' // From payments (can be null if no payment is recorded)
+            ); // Retrieve the results
 
         // Apply filters based on type
         if ($request->type) {
@@ -372,31 +389,7 @@ class ReportController extends Controller
                 });
             }
         } else {
-            // No type specified, use a default query
-            $allBatches = DB::table('student_batches')
-                ->select(
-                    'student_batches.op_type',
-                    'student_batches.id as sb_id',
-                    'student_batches.systemId',
-                    'students.id as sId',
-                    'students.name as sName',
-                    'students.contact',
-                    'students.refId',
-                    'students.executiveId',
-                    'users.username as exName',
-                    'student_batches.entryDate',
-                    'student_batches.status',
-                    'student_batches.batch_id',
-                    'student_batches.course_id',
-                    'student_batches.type',
-                    'student_batches.course_price',
-                    'student_batches.pstatus',
-                    'student_batches.isBundel',
-                    'student_batches.is_drop',
-                    'payments.paymentDate'
-                )
-                ->join('students', 'students.id', '=', 'student_batches.student_id')
-                ->join('users', 'users.id', '=', 'students.executiveId');
+            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id');
         }
 
         // Additional filters
