@@ -334,7 +334,11 @@ class OtherPaymentController extends Controller
     //dd($request);
     // Validate the input
     $request->validate([
+        'other_payment_category_id' => 'required',
+        'mrNo'                 => 'required|integer|unique:other_payments,mrNo',
         'paymentDate' => 'required|date_format:m/d/Y', // Ensure the date format is correct
+        'amount' =>  'required',
+
     ]);
 
     try {
