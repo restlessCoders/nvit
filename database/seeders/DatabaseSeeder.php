@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        UserDetail::factory(11)->create();
+        //UserDetail::factory(11)->create();
        
         //Time Slot
         foreach(time_slots() as $tslot) {

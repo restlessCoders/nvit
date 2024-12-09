@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OtherPayment;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-
+use App\Http\Traits\ResponseTrait;
 class OtherPaymentController extends Controller
 {
+    use ResponseTrait;
     /**
      * Display a listing of the resource.
      *
@@ -317,7 +319,8 @@ class OtherPaymentController extends Controller
      */
     public function create()
     {
-        //
+        $payment_categories = DB::table('other_payment_categories')->get();
+        return view('other.add_new',compact('payment_categories'));
     }
 
     /**
@@ -328,7 +331,32 @@ class OtherPaymentController extends Controller
      */
     public function store(Request $request)
     {
-        DB::beginTransaction();
+    //dd($request);
+    // Validate the input
+    $request->validate([
+        'paymentDate' => 'required|date_format:m/d/Y', // Ensure the date format is correct
+    ]);
+
+    try {
+         // Payment Detail
+         $other_payment = New OtherPayment();
+         $other_payment->other_payment_category_id = $request->other_payment_category_id;
+         $other_payment->pay_by = $request->pay_by;
+         $other_payment->paymentDate = Carbon::createFromFormat('m/d/Y', $request->paymentDate)->format('Y-m-d');
+         $other_payment->payment_mode = $request->payment_mode;
+         $other_payment->amount = $request->amount;
+         $other_payment->mrNo = $request->mrNo;
+         $other_payment->accountNote = $request->accountNote;
+         $other_payment->save();
+        return redirect(route(currentUser().'.otherPaymentReport'))->with($this->responseMessage(true, null, 'Payment Received'));
+
+    } catch (\Exception $e) {
+        // something went wrong
+        dd($e);
+        return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+        return false;
+    }
+        /*DB::beginTransaction();
         try {
             $paymentId = DB::table('payments')->insert(
                 [
@@ -370,7 +398,7 @@ class OtherPaymentController extends Controller
             dd($e);
             return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
             return false;
-        }
+        }*/
     }
     public function coursestore(Request $request)
     {
@@ -572,5 +600,40 @@ class OtherPaymentController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function otherPaymentReport(Request $request){
+        /*== Other Payment== */
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        $payments = DB::table('other_payments')
+        ->select('other_payments.amount','other_payments.other_payment_category_id','other_payments.paymentDate')
+        ->join('other_payment_categories','other_payment_categories.id','=','other_payments.other_payment_category_id')
+        ->groupBy('other_payments.paymentDate');
+        if ($request->year) {
+            $currentYear = $request->year;
+            $payments = $payments->whereYear('paymentDate', $request->year);
+        }
+        if ($request->month) {
+            $currentMonth = $request->month;
+            $payments = $payments->whereMonth('paymentDate', $request->month);
+        }
+        if(empty($request->year) && empty($request->month)){
+            $payments->whereMonth('other_payments.paymentDate', '=', $currentMonth);
+            $payments->whereYear('other_payments.paymentDate', '=', $currentYear);
+        }  
+        $payments = $payments->get();
+
+        $other_payments =  DB::table('other_payments')
+        ->select('other_payment_categories.category_name','other_payments.id')
+        ->join('other_payment_categories','other_payment_categories.id','=','other_payments.other_payment_category_id')
+        ->whereMonth('paymentDate', $currentMonth)
+        ->whereYear('paymentDate', $currentYear)
+        ->groupBy('other_payments.other_payment_category_id')
+        ->get();
+
+        return view('report.accounts.daily_other_collection_report',compact('payments','other_payments','currentMonth','currentYear'));
     }
 }

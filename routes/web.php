@@ -214,6 +214,11 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*Batch Wise Student Attendance Report */
         Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('superadmin.batchwiseStudentAttnReport');
+
+        /*== Other Payment Report */
+        Route::resource('payments', OtherPaymentController::class, ["as" => "superadmin"]);
+        Route::get('/other/payment/add', [OtherPaymentController::class, 'create'])->name('superadmin.otherCreate');
+        Route::get('/other/payment/report', [OtherPaymentController::class, 'otherPaymentReport'])->name('superadmin.otherPaymentReport');
     });
 });
 
@@ -660,6 +665,10 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
             Route::get('/payment/invoice/other', [OtherPaymentController::class, 'otherPaymentByStudentId'])->name('otherPaymentByStudentId');
             Route::get('/payment/invoice/course', [OtherPaymentController::class, 'coursePaymentByStudentId'])->name('coursePaymentByStudentId');
             Route::post('/payment/course/', [OtherPaymentController::class, 'coursestore'])->name('payments.coursestore');
+
+            /*== Other Payment Report */
+            Route::get('/other/payment/add', [OtherPaymentController::class, 'create'])->name('otherCreate');
+            Route::get('/other/payment/report', [OtherPaymentController::class, 'otherPaymentReport'])->name('otherPaymentReport');
         });
 
         Route::resource('/payment-transfer', PaymentTransferController::class, ["as" => "accountmanager"]);

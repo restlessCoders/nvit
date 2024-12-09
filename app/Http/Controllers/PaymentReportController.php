@@ -255,6 +255,7 @@ class PaymentReportController extends Controller
               });
             })
             ->groupBy('payments.executiveId', 'users.username', 'transactions.exe_id');
+            
             if(strtolower(currentUser()) == 'salesexecutive'){
                 $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId());
             }

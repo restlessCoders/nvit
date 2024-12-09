@@ -103,6 +103,7 @@
 						@foreach ($salespersons as $salesperson)
 						<td>{{$salesperson->username}}</td>
 						@endforeach
+						
 					</tr>
 				</thead>
 				<tbody>
