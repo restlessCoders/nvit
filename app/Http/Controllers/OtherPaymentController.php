@@ -631,7 +631,7 @@ class OtherPaymentController extends Controller
         $payments = $payments->get();
 
         $other_payments =  DB::table('other_payments')
-        ->select('other_payment_categories.category_name','other_payments.id')
+        ->select('other_payment_categories.category_name','other_payment_categories.id')
         ->join('other_payment_categories','other_payment_categories.id','=','other_payments.other_payment_category_id')
         ->whereMonth('paymentDate', $currentMonth)
         ->whereYear('paymentDate', $currentYear)
