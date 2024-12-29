@@ -334,6 +334,7 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         /*===Report Data===*/
         Route::get('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
         Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('salesmanager.batchwiseEnrollStudentPrint');
+        Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('salesmanager.editEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('salesmanager.batchwiseEnrollStudent');
 
         /*===Payment report==*/
