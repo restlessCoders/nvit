@@ -42,18 +42,30 @@
             border-top: 16px solid #3498db;
             width: 120px;
             height: 120px;
-            -webkit-animation: spin 2s linear infinite; /* Safari */
+            -webkit-animation: spin 2s linear infinite;
+            /* Safari */
             animation: spin 2s linear infinite;
         }
+
         /* Safari */
         @-webkit-keyframes spin {
-        0% { -webkit-transform: rotate(0deg); }
-        100% { -webkit-transform: rotate(360deg); }
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
         }
 
         @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .navbar-right .topnav-menu .nav-link {
@@ -353,7 +365,7 @@
                                 </ul>
                             </li>
 
-                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'trainer') @else d-none @endif">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'trainer' || currentUser() == 'frontdesk') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-hand"></i>Batch<div class="arrow-down"></div></a>
                                 <ul class="submenu">
@@ -363,11 +375,11 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'trainingmanager' || currentUser() == 'trainer' || currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive')  @else d-none @endif">
+                                    <li class="has-submenu @if(currentUser() == 'trainingmanager' || currentUser() == 'trainer' || currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'frontdesk')  @else d-none @endif">
                                         <a href="#">Attendance<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li class="@if(currentUser() == 'trainingmanager' || currentUser() == 'trainer')  @else d-none @endif"><a href="@if(currentUser() == 'trainingmanager' || currentUser() == 'trainer') {{route(currentUser().'.attendance.create')}} @endif">Add Attendance</a></li>
-                                            <li><a href="@if(currentUser() == 'trainingmanager' || currentUser() == 'trainer'  || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'superadmin') {{route(currentUser().'.attendance.index')}} @endif">Attendance Report</a></li>
+                                            <li><a href="@if(currentUser() == 'trainingmanager' || currentUser() == 'trainer'  || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'superadmin' || currentUser() == 'frontdesk') {{route(currentUser().'.attendance.index')}} @endif">Attendance Report</a></li>
                                         </ul>
                                     </li>
                                     <li class="has-submenu">

@@ -12,33 +12,36 @@ use DB;
 use Carbon\Carbon;
 
 use View;
+
 class PaymentReportController extends Controller
 {
     public function daily_collection_report_by_mr(Request $request)
     {
         //dd($request->paymentDate);
-        
+
         $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
-        $batches = Batch::where('status',1)->get();
-        
-        $payments = 
-       
-        
-        //Payment::with('paymentDetail')->orderby('mrNo','desc');
-        Payment::join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
-        ->leftjoin('students', 'paymentdetails.studentId', '=', 'students.id')
-        ->leftjoin('users', 'payments.executiveId', '=', 'users.id')
-        ->leftjoin('batches', 'paymentdetails.batchId', '=', 'batches.id')
-        ->leftjoin('courses', 'paymentdetails.course_id', '=', 'courses.id')
-        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','courses.courseName','students.name','students.contact','students.executiveId','users.username')
-        ->orderby('payments.mrNo','desc')
-        ->where('paymentdetails.deduction','>=',0);
-       
-        if($request->studentId){
-            $payments->where('students.name', 'like', '%'.$request->sdata.'%')
-            ->where('students.id', $request->studentId)
-            ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
-            ->orWhere('students.contact', 'like', '%'.$request->studentId.'%');
+        $batches = Batch::where('status', 1)->get();
+
+        $payments =
+
+
+            //Payment::with('paymentDetail')->orderby('mrNo','desc');
+            Payment::join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
+            ->leftjoin('students', 'paymentdetails.studentId', '=', 'students.id')
+            ->leftjoin('users', 'payments.executiveId', '=', 'users.id')
+            ->leftjoin('batches', 'paymentdetails.batchId', '=', 'batches.id')
+            ->leftjoin('courses', 'paymentdetails.course_id', '=', 'courses.id')
+            ->select('payments.paymentDate', 'payments.mrNo', 'payments.invoiceId', 'paymentdetails.*', 'batches.id as bid', 'batches.batchId', 'courses.courseName', 'students.name', 'students.contact', 'students.executiveId', 'users.username')
+            ->orderby('payments.mrNo', 'desc')
+            ->where('paymentdetails.deduction', '>=', 0);
+        // Ensure that soft-deleted records in paymentdetails are excluded
+        $payments = $payments->whereNull('paymentdetails.deleted_at'); // Second check to be extra cautious
+
+        if ($request->studentId) {
+            $payments->where('students.name', 'like', '%' . $request->sdata . '%')
+                ->where('students.id', $request->studentId)
+                ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
+                ->orWhere('students.contact', 'like', '%' . $request->studentId . '%');
         }
         /*if($request->paymentDate){
             $payments->where('payments.paymentDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($request->paymentDate))->format('Y-m-d'));
@@ -51,27 +54,27 @@ class PaymentReportController extends Controller
             //$postingDate = Attendance::whereBetween('postingDate', [$from, $to]);
             $payments->whereBetween('payments.paymentDate', [$from, $to]);
         }
-            
-        if($request->executiveId){
-            $payments->where('payments.executiveId',$request->executiveId);
+
+        if ($request->executiveId) {
+            $payments->where('payments.executiveId', $request->executiveId);
         }
-        if($request->batch_id){
+        if ($request->batch_id) {
             $payments->whereHas('paymentDetail', function ($query) use ($request) {
                 $query->where('paymentdetails.batchId', $request->batch_id);
             });
         }
-        if($request->invoiceId){
+        if ($request->invoiceId) {
             $payments->where('payments.invoiceId', $request->invoiceId);
         }
-        if($request->mrNo){
+        if ($request->mrNo) {
             $payments->where('payments.mrNo', $request->mrNo);
         }
-        if($request->feeType){
+        if ($request->feeType) {
             if ($request->feeType == 3) {
-                $payments = $payments->where(function($query) {
+                $payments = $payments->where(function ($query) {
                     $query->where('paymentdetails.feeType', '!=', 1)
                         ->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) > 0")
-                        ->whereIn('paymentdetails.id', function($subquery) {
+                        ->whereIn('paymentdetails.id', function ($subquery) {
                             $subquery->select(DB::raw('MAX(id)'))
                                 ->from('paymentdetails as pd')
                                 ->whereRaw('pd.studentId = paymentdetails.studentId')
@@ -82,9 +85,9 @@ class PaymentReportController extends Controller
                 $payments->whereHas('paymentDetail', function ($query) use ($request) {
                     $query->where('paymentdetails.feeType', $request->feeType);
                 });
-            }                       
+            }
         }
-        if(strtolower(currentUser()) == 'salesexecutive'){
+        if (strtolower(currentUser()) == 'salesexecutive') {
             $payments->where('payments.executiveId', '=', currentUserId());
         }
         if ($request->year) {
@@ -92,12 +95,15 @@ class PaymentReportController extends Controller
         }
         if ($request->month) {
             $payments = $payments->whereMonth('payments.paymentDate', $request->month);
-        }     
+        }
         if ($request->payment_type) {
             $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
-        }  
-        $payments = $payments->whereNull('paymentdetails.deleted_at');
-        $perPage = $request->perPage?$request->perPage:25;
+        }
+        // Ensure that soft-deleted records in paymentdetails are excluded
+        $payments = $payments->whereNull('paymentdetails.deleted_at'); // Second check to be extra cautious
+
+        $perPage = $request->perPage ? $request->perPage : 25;
+
         $payments = $payments->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'studentId' => $request->studentId,
@@ -112,52 +118,53 @@ class PaymentReportController extends Controller
         print_r($payments->toArray());die;*/
         return view('report.accounts.daily_collection_by_mr', compact('payments', 'users', 'batches'));
     }
-    public function daily_collection_report_by_mr_report_print(Request $request){
+    public function daily_collection_report_by_mr_report_print(Request $request)
+    {
         $users = User::whereIn('roleId', [1, 3, 5, 9])->get();
-        $batches = Batch::where('status',1)->get();
-        
-        $payments = 
-       
-        
-        //Payment::with('paymentDetail')->orderby('mrNo','desc');
-        Payment::join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
-        ->leftjoin('students', 'paymentdetails.studentId', '=', 'students.id')
-        ->leftjoin('users', 'payments.executiveId', '=', 'users.id')
-        ->leftjoin('batches', 'paymentdetails.batchId', '=', 'batches.id')
-        ->leftjoin('courses', 'paymentdetails.course_id', '=', 'courses.id')
-        ->select('payments.paymentDate','payments.mrNo','payments.invoiceId','paymentdetails.*','batches.id as bid','batches.batchId','courses.courseName','students.name','students.contact','students.executiveId','users.username')
-        ->orderby('payments.mrNo','desc')
-        ->where('paymentdetails.deduction','>=',0);
-       
-        if($request->studentId){
-            $payments->where('students.name', 'like', '%'.$request->sdata.'%')
-            ->where('students.id', $request->studentId)
-            ->orWhere('students.name', 'like', '%'.$request->studentId.'%')
-            ->orWhere('students.contact', 'like', '%'.$request->studentId.'%');
+        $batches = Batch::where('status', 1)->get();
+
+        $payments =
+
+
+            //Payment::with('paymentDetail')->orderby('mrNo','desc');
+            Payment::join('paymentdetails', 'payments.id', '=', 'paymentdetails.paymentId')
+            ->leftjoin('students', 'paymentdetails.studentId', '=', 'students.id')
+            ->leftjoin('users', 'payments.executiveId', '=', 'users.id')
+            ->leftjoin('batches', 'paymentdetails.batchId', '=', 'batches.id')
+            ->leftjoin('courses', 'paymentdetails.course_id', '=', 'courses.id')
+            ->select('payments.paymentDate', 'payments.mrNo', 'payments.invoiceId', 'paymentdetails.*', 'batches.id as bid', 'batches.batchId', 'courses.courseName', 'students.name', 'students.contact', 'students.executiveId', 'users.username')
+            ->orderby('payments.mrNo', 'desc')
+            ->where('paymentdetails.deduction', '>=', 0);
+
+        if ($request->studentId) {
+            $payments->where('students.name', 'like', '%' . $request->sdata . '%')
+                ->where('students.id', $request->studentId)
+                ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
+                ->orWhere('students.contact', 'like', '%' . $request->studentId . '%');
         }
-        if($request->paymentDate){
+        if ($request->paymentDate) {
             $payments->where('payments.paymentDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($request->paymentDate))->format('Y-m-d'));
         }
-        if($request->executiveId){
-            $payments->where('payments.executiveId',$request->executiveId);
+        if ($request->executiveId) {
+            $payments->where('payments.executiveId', $request->executiveId);
         }
-        if($request->batch_id){
+        if ($request->batch_id) {
             $payments->whereHas('paymentDetail', function ($query) use ($request) {
                 $query->where('paymentdetails.batchId', $request->batch_id);
             });
         }
-        if($request->invoiceId){
+        if ($request->invoiceId) {
             $payments->where('payments.invoiceId', $request->invoiceId);
         }
-        if($request->mrNo){
+        if ($request->mrNo) {
             $payments->where('payments.mrNo', $request->mrNo);
         }
-        if($request->feeType){
+        if ($request->feeType) {
             if ($request->feeType == 3) {
-                $payments = $payments->where(function($query) {
+                $payments = $payments->where(function ($query) {
                     $query->where('paymentdetails.feeType', '!=', 1)
                         ->whereRaw("(paymentdetails.cPayable) - (COALESCE(paymentdetails.discount, 0) + paymentdetails.cpaidAmount) > 0")
-                        ->whereIn('paymentdetails.id', function($subquery) {
+                        ->whereIn('paymentdetails.id', function ($subquery) {
                             $subquery->select(DB::raw('MAX(id)'))
                                 ->from('paymentdetails as pd')
                                 ->whereRaw('pd.studentId = paymentdetails.studentId')
@@ -168,9 +175,9 @@ class PaymentReportController extends Controller
                 $payments->whereHas('paymentDetail', function ($query) use ($request) {
                     $query->where('paymentdetails.feeType', $request->feeType);
                 });
-            }                       
+            }
         }
-        if(strtolower(currentUser()) == 'salesexecutive'){
+        if (strtolower(currentUser()) == 'salesexecutive') {
             $payments->where('payments.executiveId', '=', currentUserId());
         }
         if ($request->year) {
@@ -178,14 +185,14 @@ class PaymentReportController extends Controller
         }
         if ($request->month) {
             $payments = $payments->whereMonth('payments.paymentDate', $request->month);
-        }     
+        }
         if ($request->payment_type) {
             $payments = $payments->whereMonth('paymentdetails.payment_type', $request->payment_type);
-        }  
+        }
         $payments = $payments->get();
 
         return View::make("report.accounts.daily_collection_by_mr_report_print", compact('payments'))
-        ->render();
+            ->render();
     }
     public function daily_collection_report(Request $request)
     {
@@ -220,59 +227,60 @@ class PaymentReportController extends Controller
         $payments = DB::table('payments')
             ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
             ->select('paymentDate', DB::raw('SUM(paidAmount) as paidAmount,SUM(tPayable) as tPayable'))
-            ->select('payments.id','payments.paymentDate', 'payments.executiveId', DB::raw('SUM(payments.paidAmount) as paidAmount,SUM(payments.tPayable) as tPayable'), DB::raw('SUM(discount) as discount'))
+            ->select('payments.id', 'payments.paymentDate', 'payments.executiveId', DB::raw('SUM(payments.paidAmount) as paidAmount,SUM(payments.tPayable) as tPayable'), DB::raw('SUM(discount) as discount'))
             ->groupBy('payments.paymentDate');
-            
-            if ($request->year) {
-                $currentYear = $request->year;
-                $payments = $payments->whereYear('paymentDate', $request->year);
-            }
-            if ($request->month) {
-                $currentMonth = $request->month;
-                $payments = $payments->whereMonth('paymentDate', $request->month);
-            }
-            if($request->executiveId){
-                $payments->where('payments.executiveId',$request->executiveId);
-            }
-            if(strtolower(currentUser()) == 'salesexecutive'){
-                $payments->where('executiveId', '=', currentUserId());
-            }
-            if(empty($request->year) && empty($request->month)){
-                $payments->whereMonth('payments.paymentDate', '=', $currentMonth);
-                $payments->whereYear('payments.paymentDate', '=', $currentYear);
-            }  
-            $payments = $payments->get();
-            $salespersons = DB::table('payments')
-                ->select('payments.executiveId', 'users.username', 'transactions.exe_id')
-                ->join('users', 'payments.executiveId', '=', 'users.id')
-                ->leftjoin('transactions', 'users.id', '=', 'transactions.exe_id')
-                ->where(function ($query) use ($currentMonth, $currentYear) {
+
+        if ($request->year) {
+            $currentYear = $request->year;
+            $payments = $payments->whereYear('paymentDate', $request->year);
+        }
+        if ($request->month) {
+            $currentMonth = $request->month;
+            $payments = $payments->whereMonth('paymentDate', $request->month);
+        }
+        if ($request->executiveId) {
+            $payments->where('payments.executiveId', $request->executiveId);
+        }
+        if (strtolower(currentUser()) == 'salesexecutive') {
+            $payments->where('executiveId', '=', currentUserId());
+        }
+        if (empty($request->year) && empty($request->month)) {
+            $payments->whereMonth('payments.paymentDate', '=', $currentMonth);
+            $payments->whereYear('payments.paymentDate', '=', $currentYear);
+        }
+        $payments = $payments->get();
+        $salespersons = DB::table('payments')
+            ->select('payments.executiveId', 'users.username', 'transactions.exe_id')
+            ->join('users', 'payments.executiveId', '=', 'users.id')
+            ->leftjoin('transactions', 'users.id', '=', 'transactions.exe_id')
+            ->where(function ($query) use ($currentMonth, $currentYear) {
                 $query->whereMonth('payments.paymentDate', '=', $currentMonth)
-                ->whereYear('payments.paymentDate', '=', $currentYear)
-                ->orWhere(function ($query) use ($currentMonth, $currentYear) {
-                  $query->whereMonth('transactions.postingDate', '=', $currentMonth)
-                        ->whereYear('transactions.postingDate', '=', $currentYear);
-              });
+                    ->whereYear('payments.paymentDate', '=', $currentYear)
+                    ->orWhere(function ($query) use ($currentMonth, $currentYear) {
+                        $query->whereMonth('transactions.postingDate', '=', $currentMonth)
+                            ->whereYear('transactions.postingDate', '=', $currentYear);
+                    });
             })
             ->groupBy('payments.executiveId', 'users.username', 'transactions.exe_id');
-            
-            if(strtolower(currentUser()) == 'salesexecutive'){
-                $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId());
-            }
-            $salespersons = $salespersons->get();
-            //print_r($salespersons);die;
-        return view('report.accounts.daily_collection_report', compact('payments', 'salespersons', 'users','currentMonth','currentYear'));
+
+        if (strtolower(currentUser()) == 'salesexecutive') {
+            $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId());
+        }
+        $salespersons = $salespersons->get();
+        //print_r($salespersons);die;
+        return view('report.accounts.daily_collection_report', compact('payments', 'salespersons', 'users', 'currentMonth', 'currentYear'));
     }
     public function allPaymentReportBySid(Request $request)
     {
+
         DB::connection()->enableQueryLog();
         $payments = DB::table('paymentdetails')
-            ->select('student_batches.course_price','batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
+            ->select('student_batches.course_price', 'batches.batchId as batchName', 'paymentdetails.*', 'payments.invoiceId', 'payments.mrNo', 'payments.paymentDate', 'payments.accountNote')
             ->join('student_batches', 'paymentdetails.batchId', '=', 'student_batches.batch_id')
             ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
             ->where('paymentdetails.studentId', $request->sId)
-            ->where('paymentdetails.deduction','>=',0)
+            ->where('paymentdetails.deduction', '>=', 0)
             ->whereNull('paymentdetails.deleted_at');
 
         if ($request->systmVal) {
@@ -283,13 +291,13 @@ class PaymentReportController extends Controller
             $payments->where('paymentdetails.batchId', $request->batchId);
         }
         //if ($request->feeType) {
-            /*Registration Fee Or Course Fee*/
-            //$payments->where('paymentdetails.feeType', $request->feeType);
+        /*Registration Fee Or Course Fee*/
+        //$payments->where('paymentdetails.feeType', $request->feeType);
         //}
 
         $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         $queries = \DB::getQueryLog();
-    //dd($queries);
+        //dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
@@ -316,16 +324,16 @@ class PaymentReportController extends Controller
             $data .= '<td>' . $sl . '</td>';
             /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
                         <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
-            if(!empty($p->invoiceId)){
+            if (!empty($p->invoiceId)) {
                 $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
-            }else{
+            } else {
                 $data .= '<td>-</td>';
             }
-                        
+
             $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
             $data .= '<td>' . $p->accountNote . '</td>';
             $data .= '<td>' . $p->batchName . '</td>';
-            $data .= '<td>' . /*$p->cPayable*/$p->course_price . '</td>';
+            $data .= '<td>' . /*$p->cPayable*/ $p->course_price . '</td>';
             $data .= '<td>' . $p->cpaidAmount . '</td>';
             $data .= '<td>' . $p->discount . '</td>';
             $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
@@ -334,15 +342,15 @@ class PaymentReportController extends Controller
             else
                 $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
-            if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
-                if(!empty($p->dueDate))
-                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+            if ($p->feeType == 2 && $p->cPayable > ($p->cpaidAmount + $p->discount)) {
+                if (!empty($p->dueDate))
+                    $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
                 else
-                $data .= '<td><strong class="">-</strong></td>';
-            }else{
-                $data .= '<td>-</td>';  
+                    $data .= '<td><strong class="">-</strong></td>';
+            } else {
+                $data .= '<td>-</td>';
             }
-            
+
             /*$data .= '<td width="150px">
                                     <p class="text-left m-0 p-0">Paid By:-</p>
                                     <p class="text-left m-0 p-0">Paid:' . \Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')  . '</p>
@@ -367,12 +375,12 @@ class PaymentReportController extends Controller
     {
         DB::connection()->enableQueryLog();
         $payments = DB::table('paymentdetails')
-            ->select('student_courses.price','courses.courseName', 'paymentdetails.*', 'payments.invoiceId','payments.mrNo','payments.paymentDate','payments.accountNote')
+            ->select('student_courses.price', 'courses.courseName', 'paymentdetails.*', 'payments.invoiceId', 'payments.mrNo', 'payments.paymentDate', 'payments.accountNote')
             ->join('student_courses', 'paymentdetails.course_id', '=', 'student_courses.course_id')
             ->join('courses', 'paymentdetails.course_id', '=', 'courses.id')
             ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
             ->where('paymentdetails.studentId', $request->sId)
-            ->where('paymentdetails.deduction','>=',0)
+            ->where('paymentdetails.deduction', '>=', 0)
             ->whereNull('paymentdetails.deleted_at');
 
         if ($request->systmVal) {
@@ -383,14 +391,14 @@ class PaymentReportController extends Controller
             $payments->where('paymentdetails.course_id', $request->course_id);
         }
         //if ($request->feeType) {
-            /*Registration Fee Or Course Fee*/
-            //$payments->where('paymentdetails.feeType', $request->feeType);
+        /*Registration Fee Or Course Fee*/
+        //$payments->where('paymentdetails.feeType', $request->feeType);
         //}
 
         $payments = $payments->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         $queries = \DB::getQueryLog();
 
-    //dd($queries);
+        //dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
@@ -417,16 +425,16 @@ class PaymentReportController extends Controller
             $data .= '<td>' . $sl . '</td>';
             /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
                         <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
-            if(!empty($p->invoiceId)){
+            if (!empty($p->invoiceId)) {
                 $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
-            }else{
+            } else {
                 $data .= '<td>-</td>';
             }
-                        
+
             $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
             $data .= '<td>' . $p->accountNote . '</td>';
             $data .= '<td>' . $p->courseName . '</td>';
-            $data .= '<td>' . /*$p->cPayable*/$p->price . '</td>';
+            $data .= '<td>' . /*$p->cPayable*/ $p->price . '</td>';
             $data .= '<td>' . $p->cpaidAmount . '</td>';
             $data .= '<td>' . $p->discount . '</td>';
             $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
@@ -435,15 +443,15 @@ class PaymentReportController extends Controller
             else
                 $text = "Invoice";
             $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
-            if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
-                if(!empty($p->dueDate))
-                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+            if ($p->feeType == 2 && $p->cPayable > ($p->cpaidAmount + $p->discount)) {
+                if (!empty($p->dueDate))
+                    $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
                 else
-                $data .= '<td><strong class="">-</strong></td>';
-            }else{
-                $data .= '<td>-</td>';  
+                    $data .= '<td><strong class="">-</strong></td>';
+            } else {
+                $data .= '<td>-</td>';
             }
-            
+
 
             $data .= '</tr>';
             $sl++;
@@ -456,20 +464,20 @@ class PaymentReportController extends Controller
     {
         DB::connection()->enableQueryLog();
         $stData = DB::table('student_batches')
-            ->select('student_batches.course_id','student_batches.course_price','batches.batchId as batchName', 'student_batches.student_id','student_batches.batch_id')
-           
+            ->select('student_batches.course_id', 'student_batches.course_price', 'batches.batchId as batchName', 'student_batches.student_id', 'student_batches.batch_id')
+
             ->leftjoin('batches', 'student_batches.batch_id', '=', 'batches.id')
             ->where('student_batches.student_id', '=', $request->sId)
             ->where('student_batches.systemId', '=', $request->systmVal)
-            ->where('student_batches.acc_approve', '!=',3);
-            //->distinct('student_batches.batch_id');
+            ->where('student_batches.acc_approve', '!=', 3);
+        //->distinct('student_batches.batch_id');
 
 
         $stData = $stData->get();/*->groupBy('student_batches.batch_id','student_batches.systemId')*/
         $queries = \DB::getQueryLog();
         /*echo '<pre>';
 print_r($stData);die;*/
-    //dd($queries);
+        //dd($queries);
         //return response()->json(array('data' =>$payments));
         $data = '<h5 style="font-size:18px;line-height:20px;">Payment History</h5>';
         $data .= '<table class="table table-bordered mb-3 text-center">
@@ -494,59 +502,57 @@ print_r($stData);die;*/
         foreach ($stData as $key => $s) {
             DB::connection()->enableQueryLog();
             $payments = DB::table('paymentdetails')
-            ->selectRaw('paymentdetails.cPayable, paymentdetails.cpaidAmount,paymentdetails.discount,paymentdetails.feeType,paymentdetails.dueDate,paymentdetails.batchId,paymentdetails.studentId, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote,paymentdetails.deleted_at')
-            ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
-            
-            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.batchId' => $s->batch_id])
-            ->where(['paymentdetails.studentId' => $s->student_id/*,'paymentdetails.course_id' => $s->course_id*/])
-            ->where('paymentdetails.cpaidAmount', '!=',0)
-            ->whereNull('paymentdetails.deleted_at')
-            ->get();
+                ->selectRaw('paymentdetails.cPayable, paymentdetails.cpaidAmount,paymentdetails.discount,paymentdetails.feeType,paymentdetails.dueDate,paymentdetails.batchId,paymentdetails.studentId, payments.invoiceId,payments.mrNo,payments.paymentDate,payments.accountNote,paymentdetails.deleted_at')
+                ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
+
+                ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.batchId' => $s->batch_id])
+                ->where(['paymentdetails.studentId' => $s->student_id/*,'paymentdetails.course_id' => $s->course_id*/])
+                ->where('paymentdetails.cpaidAmount', '!=', 0)
+                ->whereNull('paymentdetails.deleted_at')
+                ->get();
             $queries = \DB::getQueryLog();
             //dd($queries);
-            foreach($payments as $p){
-               
-            $data .= '<tr>';
-            $data .= '<td>' . $sl . '</td>';
-            /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
-                        <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
-            if(!empty($p->invoiceId)){
-                $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
-            }else{
-                $data .= '<td>-</td>';
-            }
-                        
-            $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
-            $data .= '<td>' . $p->accountNote . '</td>';
-            if($p->batchId !=0){
-                $data .= '<td>'.DB::table('batches')->where('id',$p->batchId)->first()->batchId.'</td>';
-                $data .= '<td>'.DB::table('student_batches')->where('student_id',$p->studentId)->where('batch_id',$p->batchId)->first()->course_price.'</td>';
-            }
-           
-            else{
-                $data .= '<td>'.DB::table('courses')->where('id',$p->course_id)->first()->courseName.'</td>';
-                $data .= '<td>'.DB::table('student_batches')->where('student_id',$p->studentId)->where('course_id',$p->course_id)->first()->course_price.'</td>';
-            }
+            foreach ($payments as $p) {
 
-           
-            $data .= '<td>' . $p->cpaidAmount . '</td>';
-            $data .= '<td>' . $p->discount . '</td>';
-            $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
-            if ($p->feeType == 1)
-                $text = "Registration";
-            else
-                $text = "Invoice";
-            $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
-            if($p->feeType ==2 && $p->cPayable > ($p->cpaidAmount + $p->discount)){
-                if(!empty($p->dueDate))
-                $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+                $data .= '<tr>';
+                $data .= '<td>' . $sl . '</td>';
+                /*$data .= '<td>No# ' . $p->paymentId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p>
+                        <strong class="text-danger" style="font-size:11px;">Next Payment Date: ' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';*/
+                if (!empty($p->invoiceId)) {
+                    $data .= '<td>' . $p->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+                } else {
+                    $data .= '<td>-</td>';
+                }
+
+                $data .= '<td>' . $p->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->paymentDate)) . '</p></td>';
+                $data .= '<td>' . $p->accountNote . '</td>';
+                if ($p->batchId != 0) {
+                    $data .= '<td>' . DB::table('batches')->where('id', $p->batchId)->first()->batchId . '</td>';
+                    $data .= '<td>' . DB::table('student_batches')->where('student_id', $p->studentId)->where('batch_id', $p->batchId)->first()->course_price . '</td>';
+                } else {
+                    $data .= '<td>' . DB::table('courses')->where('id', $p->course_id)->first()->courseName . '</td>';
+                    $data .= '<td>' . DB::table('student_batches')->where('student_id', $p->studentId)->where('course_id', $p->course_id)->first()->course_price . '</td>';
+                }
+
+
+                $data .= '<td>' . $p->cpaidAmount . '</td>';
+                $data .= '<td>' . $p->discount . '</td>';
+                $data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
+                if ($p->feeType == 1)
+                    $text = "Registration";
                 else
-                $data .= '<td><strong class="">-</strong></td>';
-            }else{
-                $data .= '<td>-</td>';  
-            }
-            
-            /*$data .= '<td width="150px">
+                    $text = "Invoice";
+                $data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
+                if ($p->feeType == 2 && $p->cPayable > ($p->cpaidAmount + $p->discount)) {
+                    if (!empty($p->dueDate))
+                        $data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+                    else
+                        $data .= '<td><strong class="">-</strong></td>';
+                } else {
+                    $data .= '<td>-</td>';
+                }
+
+                /*$data .= '<td width="150px">
                                     <p class="text-left m-0 p-0">Paid By:-</p>
                                     <p class="text-left m-0 p-0">Paid:' . \Carbon\Carbon::createFromTimestamp(strtotime($p->created_at))->format('j M, Y')  . '</p>
                                     <p class="text-left m-0 p-0">Updated By:-</p>
@@ -559,9 +565,9 @@ print_r($stData);die;*/
                                     <a href="" class="text-warning" title="reverse"><i class="fas fa-redo-alt mr-1"></i></a>
                                     <a href="" class="text-info" title="refund"><i class="fas fa-exchange-alt"></i></a>
                                 </td>';*/
-            $data .= '</tr>';
-            $sl++;
-        }
+                $data .= '</tr>';
+                $sl++;
+            }
         }
         $data .= '</table>';
         return response()->json(array('data' => $data));

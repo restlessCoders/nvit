@@ -176,31 +176,31 @@
 								@endif
 							</td>
 							<td>
-								@php 
-								$today = \Carbon\Carbon::today(); 
+								@php
+								$today = \Carbon\Carbon::today();
 								$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->where('status',2)->count();
 								$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
 								$enroll = ($b_enroll+$c_enroll)
 								@endphp
 								@if($student->notes->count() > 0)
-									@php $note = $student->notes->last(); @endphp
-									@if(!empty($note->re_call_date))
-										@php 
-										$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
-										@endphp
-										@if($enroll == 0)
-										@if($today->lessThanOrEqualTo($re_call_date) )
-										<p class="text-center m-0">
-										@else
-										<p class="text-center m-0 text-danger">
-										@endif	
-											<strong>Recall :</strong>
-											{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}
-										</p>
-										@else
-										<p class="text-primary"><strong>Closed</strong></p>
-										@endif
+								@php $note = $student->notes->last(); @endphp
+								@if(!empty($note->re_call_date))
+								@php
+								$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
+								@endphp
+								@if($enroll == 0)
+								@if($today->lessThanOrEqualTo($re_call_date) )
+								<p class="text-center m-0">
+									@else
+								<p class="text-center m-0 text-danger">
 									@endif
+									<strong>Recall :</strong>
+									{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}
+								</p>
+								@else
+								<p class="text-primary"><strong>Closed</strong></p>
+								@endif
+								@endif
 								@if($note->note)
 								<p class="text-center m-0"><strong>Note :</strong>{{$note->note}}</p>
 								@else
@@ -210,28 +210,28 @@
 								{{--<p class="text-center m-0"><strong>Posted On :</strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($note->created_at))->format('j M, Y')}}</p>--}}
 								@endif
 								@else
-									@php 
-									$executiveReminder = \Carbon\Carbon::parse($student->executiveReminder); 
-									@endphp
-									<p class="text-center m-0"><strong>Note :</strong>{{$student->executiveNote}}</p>
-									@if($enroll == 0)
-									@if($today->lessThanOrEqualTo($executiveReminder))
-									<p class="text-center my-0">
-									@else	
-									<p class="text-center my-0 text-danger">
+								@php
+								$executiveReminder = \Carbon\Carbon::parse($student->executiveReminder);
+								@endphp
+								<p class="text-center m-0"><strong>Note :</strong>{{$student->executiveNote}}</p>
+								@if($enroll == 0)
+								@if($today->lessThanOrEqualTo($executiveReminder))
+								<p class="text-center my-0">
+									@else
+								<p class="text-center my-0 text-danger">
 									@endif
-										<strong>Recall :</strong>
-										<strong class="mr-1">
+									<strong>Recall :</strong>
+									<strong class="mr-1">
 										@if($student->executiveReminder)
 										{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}
 										@else
 										No Recall Date
 										@endif
-										</strong>
-									</p>
-									@else
-									<p class="text-primary"><strong>Closed</strong></p>
-									@endif
+									</strong>
+								</p>
+								@else
+								<p class="text-primary"><strong>Closed</strong></p>
+								@endif
 								@endif
 							</td>
 							<td>
@@ -249,14 +249,14 @@
 								@if(strtolower(currentUser()) != 'frontdesk')
 								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#addNoteModal" class="text-info" title="note"><i class="far fa-sticky-note mr-1"></i></a>
 								<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
-								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#stuDetl" class="text-success" title="details"><i class="far fa-trash-alt mr-1"></i></a>
-								
+								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#stuDetl" class="text-success" title="details"><i class="fas fa-info-circle mr-1"></i></a>
+
 								<!-- <a href="" class="text-warning" title="note"><i class="fas fa-redo-alt"></i></a> -->
 								<form method="POST" action="{{route(currentUser().'.dumpStudent',[encryptor('encrypt', $student->id)])}}" style="display: inline;">
-								@csrf
-								@method('PUT')
-								<input name="_method" type="hidden" value="PUT">
-								<a href="javascript:void(0)" data-status="{{$student->status}}" data-name="{{$student->name}}" type="submit" class="dump mr-2 text-purple" data-toggle="tooltip" title="Dump"><i class="fas fa-dumpster"></i></a>
+									@csrf
+									@method('PUT')
+									<input name="_method" type="hidden" value="PUT">
+									<a href="javascript:void(0)" data-status="{{$student->status}}" data-name="{{$student->name}}" type="submit" class="dump mr-2 text-purple" data-toggle="tooltip" title="Dump"><i class="fas fa-dumpster"></i></a>
 								</form>
 								@endif
 							</td>
@@ -389,9 +389,9 @@
 							</td>
 							<td>
 								<form id="active-form" method="POST" action="{{route(currentUser().'.activeStudent',$student->id)}}">
-								@csrf
-								<input name="_method" type="hidden" value="PUT">
-								<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
+									@csrf
+									<input name="_method" type="hidden" value="PUT">
+									<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
 								</form>
 								@if(strtolower(currentUser()) == 'superadmin')
 								<a target="_blank" href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-edit text-info font-16"></i>Edit</a><br>
@@ -479,10 +479,9 @@
 				}
 			});
 	});
-
-	</script>
-	@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
-	<script>
+</script>
+@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
+<script>
 	$('#addNoteModal').on('show.bs.modal', function(event) {
 		$('#note-history').empty();
 		var button = $(event.relatedTarget);
@@ -508,9 +507,9 @@
 			}
 		});
 	});
-	</script>
-	@endif
-	<script>
+</script>
+@endif
+<script>
 	function disableButton(btn) {
 		btn.disabled = true;
 		btn.form.submit();
@@ -529,7 +528,7 @@
 	});
 </script>
 @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
-	<script>
+<script>
 	function disableButton(btn) {
 		btn.disabled = true;
 		btn.form.submit();
@@ -546,7 +545,7 @@
 		var date = moment(e.date).format('YYYY/MM/DD');
 		$(this).val(date);
 	});
-	</script>
+</script>
 @endif
 @if(old('tab'))
 <script>

@@ -200,8 +200,8 @@ print_r($stData);die;*/
                 //->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.course_id' => $s->course_id])
                 ->whereNull('paymentdetails.deleted_at')
                 ->get();
-                $queries = \DB::getQueryLog();
-                //dd($queries);
+            $queries = \DB::getQueryLog();
+            //dd($queries);
             $tPayable += ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
             if ($s->course_price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
@@ -301,9 +301,7 @@ print_r($stData);die;*/
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(NewPaymentRequest $request)
-    {
-    }
+    public function create(NewPaymentRequest $request) {}
 
     /**
      * Store a newly created resource in storage.
@@ -701,99 +699,98 @@ print_r($stData);die;*/
             // Delete records from Paymentdetail table
             DB::table('paymentdetails')->whereIn('id', $paymentDetailIds)->update(['deleted_at' => now()]);
             //DB::commit();
-                $rules = [
-                    //'mrNo'                 => 'required|unique:payments,mrNo',
-                    'paymentDate'       => 'required',
-                ];
-                $messages = [
-                    //'mrNo.required' => 'The Money Receipt No field is required.',
-                    //'mrNo.unique' => 'Mr No Alreay Used!',
-                    'paymentDate.required' => 'The Payment Date field is required.'
-                ];
-// If there are mrNo values provided, dynamically add validation rules for each mrNo
-if (!empty($mrNos)) {
-    foreach ($mrNos as $index => $mrNo) {
-        $rules['mrNo.' . $index] = [
-            'required',
-            Rule::unique('payments', 'mrNo')->ignore($request->input('pid.' . $index), 'id')
-        ];
-    }
-}
-                $validator = Validator::make($request->all(), $rules, $messages);
-                if ($validator->fails()) {
-                    return response()->json(['errors' => $validator->errors()], 422);
+            $rules = [
+                //'mrNo'                 => 'required|unique:payments,mrNo',
+                'paymentDate'       => 'required',
+            ];
+            $messages = [
+                //'mrNo.required' => 'The Money Receipt No field is required.',
+                //'mrNo.unique' => 'Mr No Alreay Used!',
+                'paymentDate.required' => 'The Payment Date field is required.'
+            ];
+            // If there are mrNo values provided, dynamically add validation rules for each mrNo
+            if (!empty($mrNos)) {
+                foreach ($mrNos as $index => $mrNo) {
+                    $rules['mrNo.' . $index] = [
+                        'required',
+                        Rule::unique('payments', 'mrNo')->ignore($request->input('pid.' . $index), 'id')
+                    ];
                 }
-                //DB::beginTransaction();
-                foreach ($request->pid as $key => $payment) {
-                    DB::table('payments')
-    ->where('id', $paymentIds[$key]) // assuming 'id' is the primary key or unique identifier for the record
-    ->update([
-        'paymentDate'       => Carbon::createFromFormat('d/m/Y', $request->paymentDate[$key])->format('Y-m-d'),
-        'mrNo'              => $request->mrNo[$key],
-        'invoiceId'         => $request->invoiceId[$key],
-        'tPayable'          => $request->tPayable,
-        'paidAmount'        => $request->cpaidAmount[$key],
-        'accountNote'       => $request->accountNote,
-        'updated_at'        => date("Y-m-d h:i:s"),
-        'updated_by'        => currentUserId(),
-    ]);
+            }
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            //DB::beginTransaction();
+            foreach ($request->pid as $key => $payment) {
+                DB::table('payments')
+                    ->where('id', $paymentIds[$key]) // assuming 'id' is the primary key or unique identifier for the record
+                    ->update([
+                        'paymentDate'       => Carbon::createFromFormat('d/m/Y', $request->paymentDate[$key])->format('Y-m-d'),
+                        'mrNo'              => $request->mrNo[$key],
+                        'invoiceId'         => $request->invoiceId[$key],
+                        'tPayable'          => $request->tPayable,
+                        'paidAmount'        => $request->cpaidAmount[$key],
+                        'accountNote'       => $request->accountNote[$key],
+                        'updated_at'        => date("Y-m-d h:i:s"),
+                        'updated_by'        => currentUserId(),
+                    ]);
 
 
-                    // Payment Detail
-                    $batch_id       = $request->post('batch_id');
-                    $course_id       = $request->post('course_id');
-                    $dueDate        = $request->post('dueDate');
-                    $cPayable       = $request->post('cPayable');
-                    $cpaidAmount    = $request->post('cpaidAmount');
-                    $payment_type    = $request->post('payment_type');
-                    $discount        = $request->post('discount');
-                    $payment_mode    = $request->post('payment_mode');
-                    $feeType        = $request->post('feeType');
-                    $invoiceId      = $request->post('invoiceId');
-                    $paymentId      = $request->post('pid');
-                    //foreach ($request->cpaidAmount as $key => $cdata) {
-                        if ($cpaidAmount[$key] <> 0) {
-                            $payment_detail['paymentId']        = $paymentId[$key];
-                            $payment_detail['studentId']        = $request->studentId;
-                            $payment_detail['batchId']          = $batch_id[$key];
-                            $payment_detail['course_id']        = $course_id[$key];
-                            $payment_detail['cPayable']         = $cPayable[$key];
-                            $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
-                            $payment_detail['payment_type']     = $payment_type[$key];
+                // Payment Detail
+                $batch_id       = $request->post('batch_id');
+                $course_id       = $request->post('course_id');
+                $dueDate        = $request->post('dueDate');
+                $cPayable       = $request->post('cPayable');
+                $cpaidAmount    = $request->post('cpaidAmount');
+                $payment_type    = $request->post('payment_type');
+                $discount        = $request->post('discount');
+                $payment_mode    = $request->post('payment_mode');
+                $feeType        = $request->post('feeType');
+                $invoiceId      = $request->post('invoiceId');
+                $paymentId      = $request->post('pid');
+                //foreach ($request->cpaidAmount as $key => $cdata) {
+                if ($cpaidAmount[$key] <> 0) {
+                    $payment_detail['paymentId']        = $paymentId[$key];
+                    $payment_detail['studentId']        = $request->studentId;
+                    $payment_detail['batchId']          = $batch_id[$key];
+                    $payment_detail['course_id']        = $course_id[$key];
+                    $payment_detail['cPayable']         = $cPayable[$key];
+                    $payment_detail['cpaidAmount']      = $cpaidAmount[$key];
+                    $payment_detail['payment_type']     = $payment_type[$key];
 
-                            if ($cpaidAmount[$key] < $cPayable[$key] + $discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] == 2) {
-                                if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
-                                    $payment_detail['dueDate']      = Carbon::createFromFormat('d/m/Y', $request->dueDate[$key])->format('Y-m-d');
-                                }
-                            }
-                            $payment_detail['created_at']       = date("Y-m-d h:i:s");
-                            $payment_detail['discount']     = $discount[$key];
-                            $payment_detail['payment_mode']     = $payment_mode[$key];
-                            $payment_detail['feeType']          = $feeType[$key];
-                            $payment_detail['created_by']        = encryptor('decrypt', $request->userId);
-
-                            DB::table('paymentdetails')->insert($payment_detail);
-
-                            /*To Update Account Approve */
-                            $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
-                            /* print_r($batch_id);die;*/
-
-                        if ($request->invoiceId) {
-                            $data = array(
-                                'acc_approve' => 2,
-                                'updated_at' => Carbon::now(),
-                            );
-                            DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
+                    if ($cpaidAmount[$key] < $cPayable[$key] + $discount[$key] && $cpaidAmount[$key] <> 0 && $feeType[$key] == 2) {
+                        if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
+                            $payment_detail['dueDate']      = Carbon::createFromFormat('d/m/Y', $request->dueDate[$key])->format('Y-m-d');
                         }
-                        }
-                    //}
-                    
-                   
+                    }
+                    $payment_detail['created_at']       = date("Y-m-d h:i:s");
+                    $payment_detail['discount']     = $discount[$key];
+                    $payment_detail['payment_mode']     = $payment_mode[$key];
+                    $payment_detail['feeType']          = $feeType[$key];
+                    $payment_detail['created_by']        = encryptor('decrypt', $request->userId);
+
+                    DB::table('paymentdetails')->insert($payment_detail);
+
+                    /*To Update Account Approve */
+                    $s_batch_data = DB::table('student_batches')->where(['student_id' => $request->studentId, 'batch_id' => $batch_id[$key]])->first();
+                    /* print_r($batch_id);die;*/
+
+                    if ($request->invoiceId) {
+                        $data = array(
+                            'acc_approve' => 2,
+                            'updated_at' => Carbon::now(),
+                        );
+                        DB::table('student_batches')->where('id', $s_batch_data->id)->update($data);
+                    }
                 }
-                DB::commit();
-                //return response()->json(['success' => 'Payment Complete successfully.']);
-                return redirect(route(currentUser().'.daily_collection_report_by_mr'))->with($this->responseMessage(true, null, 'Payment Updated'));
-          
+                //}
+
+
+            }
+            DB::commit();
+            //return response()->json(['success' => 'Payment Complete successfully.']);
+            return redirect(route(currentUser() . '.daily_collection_report_by_mr'))->with($this->responseMessage(true, null, 'Payment Updated'));
         } catch (\Exception $e) {
             DB::rollback();
             // something went wrong
