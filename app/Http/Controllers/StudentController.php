@@ -20,6 +20,8 @@ use App\Http\Traits\ResponseTrait;
 use App\Models\Batchslot;
 use App\Models\Batchtime;
 use App\Models\Attendance;
+use App\Models\Paymentdetail;
+use App\Models\StudentBatch;
 use Image;
 use Exception;
 use DB;
@@ -761,19 +763,19 @@ class StudentController extends Controller
     {
         \DB::connection()->enableQueryLog();
         $curbatchId = DB::table('batch_transfers')->where(['student_id' => $request->id])->pluck('curbatchId')->toArray();
-       
+
 
         $e_data = DB::table('student_batches')
             ->selectRaw("student_batches.batch_id,batches.batchId")
             ->join('batches', 'batches.id', '=', 'student_batches.batch_id', 'left')
             ->where(['student_id' => $request->id, 'student_batches.status' => 2, 'is_drop' => 1])
             //->whereNotIn('student_batches.batch_id', $curbatchId)
-            ->where('student_batches.new_batch_id','=',0)
+            ->where('student_batches.new_batch_id', '=', 0)
             ->groupBy('student_batches.batch_id', 'batches.batchId')
             ->get();
-            $queries = \DB::getQueryLog();
+        $queries = \DB::getQueryLog();
 
-            //dd($queries);
+        //dd($queries);
         $data = '<label for="curbatchId" class="col-sm-3 col-form-label">From Batch</label>
             <div class="col-sm-9">
             <select class="js-example-basic-single form-control" id="curbatchId" name="curbatchId" required>
@@ -821,6 +823,16 @@ class StudentController extends Controller
     {
         DB::table('course_preferences')->where('id', $id)->update(['course_id' => $request->course_id, 'batch_time_id' => $request->batch_time_id, 'batch_slot_id' => $request->batch_slot_id, 'updated_at' => Carbon::now()]);
         return redirect()->back()->with($this->responseMessage(true, null, 'Course Preference Updated Successfully'));
+    }
+    public function coursePreferenceDelete(Request $request)
+    {
+
+        // Find the preference and delete
+        $preference = DB::table('course_preferences')->where('id', $request->preference_id)->first();
+        if ($preference) {
+            DB::table('course_preferences')->where('id', $request->preference_id)->delete();
+            return redirect()->back()->with($this->responseMessage(true, null, 'Course Preference Deleted Successfully'));
+        }
     }
     /*=========Course Wise Enrollment==== */
 
@@ -1003,36 +1015,175 @@ class StudentController extends Controller
             return redirect()->back()->with($this->responseMessage(true, null, 'Withdraw Undo Successful'));
         }
     }
-    public function studentDetail(Request $request){
+    public function studentDetail(Request $request)
+    {
+        //dd($request->sId);
         /*=== Student All Enroll Course ===*/
-        $student_data = Student::with('student_batches')->where('id',$request->sId)->first();
-        $data = '<table class="mt-3 responsive-datatable table table-bordered table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+        $student_data = StudentBatch::where('student_id', $request->sId)->get();
+        $attendance = '<table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sl.</th>
+                <th>Batch</th>
+                <th>Total Class</th>
+                <th>Present</th>
+            </tr>
+        </thead>';
+        $sl = 1;
+        $attendance .= '<tbody>';
+
+        foreach ($student_data as $b) {
+            $total_class = Attendance::select('postingDate', DB::raw('COUNT(postingDate) AS count'))
+                ->where('batch_id', $b->batch_id)
+                ->groupBy('postingDate')
+                ->get();
+
+            if ($total_class->count() > 0) {
+                $attendance .= '<tr>';
+                $attendance .= '<td>' . $sl++ . '</td>';
+                $attendance .= '<td>' . ($b->batch ? $b->batch->batchId : 'N/A') . '</td>';
+                $attendance .= '<td>' . $total_class->count() . '</td>';
+                $attendance .= '<td>' . Attendance::where('student_id', $b->student_id)
+                    ->where('batch_id', $b->batch_id)
+                    ->where('isPresent', '=', 1)
+                    ->count() . '</td>';
+                $attendance .= '</tr>';
+            }
+        }
+
+        $attendance .= '</tbody>';
+        $attendance .= '</table>';
+
+        $others = '<table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sl.</th>
+                <th>Batch</th>
+                <th>Withdraw</th>
+                <th>Status</th>
+            </tr>
+        </thead>';
+        $sl = 1;
+        $others .= '<tbody>';
+        foreach ($student_data as $b) {
+            $others .= '<tr>';
+            $others .= '<td>' . $sl++ . '</td>';
+            $others .= '<td>' . ($b->batch ? $b->batch->batchId : 'N/A') . '</td>';
+            if ($b->is_drop == 1)
+                $text = 'Yes';
+            else
+                $text = 'No';
+            $others .= '<td>' . $text  . '</td>';
+            if ($b->op_type == 1)
+                $text = 'Refund';
+            else if ($b->op_type == 2)
+                $text = 'Adjustment';
+            else if ($b->op_type == 3)
+                $text = 'Batch Transfer';
+            else if ($b->op_type == 4)
+                $text = 'Repeat';
+            else
+                $text = 'Enrolled';
+            $others .= '<td>' . $text . '</td>';
+            $others .= '</tr>';
+        }
+        $others .= '</tbody>';
+        $others .= '</table>';
+
+        $course_preferences = DB::table('course_preferences')->where('student_id', $request->sId)
+            ->join('courses', 'courses.id', '=', 'course_preferences.course_id')
+            ->join('batchslots', 'batchslots.id', '=', 'course_preferences.batch_slot_id')
+            ->join('batchtimes', 'batchtimes.id', '=', 'course_preferences.batch_time_id')
+            ->select('courses.courseName', 'batchslots.slotName', 'batchtimes.time')
+            ->get();
+        $preference = '<table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Sl.</th>
-                        <th>Batch No</th>
-                        <th>Total Class</th>
-                        <th>Total Attendence</th>
+                        <th>Course</th>
+                        <th>Slot</th>
+                        <th>Time</th>
                     </tr>
                 </thead>';
-                $sl = 1;
-                $data .='<tbody>';
-                        foreach($student_data->student_batches as $b){
-                            $data .='<tr>';
-                            $data .='<td>'.$sl++.'</td>'; 
-                            $data .='<td>'.$b?->batch->batchId.'</td>';
-                            $total_class = Attendance::select('postingDate', DB::raw('COUNT(postingDate) AS count'))
-                            ->where('batch_id', $b->batch_id)
-                            ->groupBy('postingDate')
-                            ->get();
+        $sl = 1;
+        $attendance .= '<tbody>';
+        foreach ($course_preferences as $c) {
+            $preference .= '<tr>';
+            $preference .= '<td>' . $sl++ . '</td>';
+            $preference .= '<td>' . $c->courseName . '</td>';
 
-                            $data .='<td>'.$total_class->count().'</td>'; 
-                            $data .='<td>'.Attendance::where('student_id', $b->student_id)->where('batch_id', $b->batch_id)->where('isPresent', '=', 1)->count().'</td>'; 
-                            $data .='</tr>';
-                        }
-                $data .='</tbody>';
-        $data .='</table>';
-        return response()->json(array('data' => $data));
+            $preference .= '<td>' . $c->slotName . '</td>';
+            $preference .= '<td>' . $c->time . '</td>';
+
+            $preference .= '</tr>';
+        }
+        $preference .= '</tbody>';
+        $preference .= '</table>';
+
+        DB::connection()->enableQueryLog();
+        $payments = Paymentdetail::where('studentId', $request->sId)
+            ->where('deduction', '>=', 0)
+            ->whereNull('deleted_at')
+            ->get();
+
+
+        $queries = \DB::getQueryLog();
+        //dd($queries);
+        $payment_data = '<table class="table table-bordered mb-3 text-center">
+                <thead>
+                    <tr>
+                        <th>SL.</th>
+                        <th width="120px">Invoice & Date</th>
+                        <th width="120px">MR & Date</th>
+                        <th>Note</th>
+                        <th>Batch</th>
+                        <th>Invoice Amt.</th>
+                        <th>Paid</th>
+                        <th>Dis</th>
+                        <th>Due</th>
+                        <th>Fee Type</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>';
+        $sl = 1;
+        foreach ($payments as $key => $p) {
+            $payment_data .= '<tr>';
+            $payment_data .= '<td>' . $sl . '</td>';
+
+            if (!empty($p->payment?->invoiceId)) {
+                $payment_data .= '<td>' . $p->payment?->invoiceId . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->payment?->paymentDate)) . '</p></td>';
+            } else {
+                $payment_data .= '<td>-</td>';
+            }
+
+            $payment_data .= '<td>' . $p->payment?->mrNo . '<p class="p-0 m-1">' . date('d M Y', strtotime($p->payment?->paymentDate)) . '</p></td>';
+            $payment_data .= '<td>' . $p->payment?->accountNote . '</td>';
+            $payment_data .= '<td>' . $p->batch?->batchId . '</td>';
+            $payment_data .= '<td>' . /*$p->cPayable*/ /*$p->course_price*/ DB::table('student_batches')->where('student_id', $request->sId)->where('batch_Id', $p->batchId)->first()->course_price . '</td>';
+            $payment_data .= '<td>' . $p->cpaidAmount . '</td>';
+            $payment_data .= '<td>' . $p->discount . '</td>';
+            $payment_data .= '<td>' . ($p->cPayable - ($p->cpaidAmount + $p->discount)) . '</td>';
+            if ($p->feeType == 1)
+                $text = "Registration";
+            else
+                $text = "Invoice";
+            $payment_data .= '<td>' . $text . '</td>';/*->format('F j, Y \a\t h:i A') */
+            if ($p->feeType == 2 && $p->cPayable > ($p->cpaidAmount + $p->discount)) {
+                if (!empty($p->dueDate))
+                    $payment_data .= '<td><strong class="text-danger">' . date('d M Y', strtotime($p->dueDate)) . '</strong></td>';
+                else
+                    $payment_data .= '<td><strong class="">-</strong></td>';
+            } else {
+                $payment_data .= '<td>-</td>';
+            }
+
+            $payment_data .= '</tr>';
+            $sl++;
+        }
+        $payment_data .= '</table>';
+
+
+        return response()->json(['data' => ['attendance' => $attendance, 'payment_data' => $payment_data, 'preference' => $preference, 'others' => $others]]);
         /*echo $data;
         echo '<pre>';
         print_r($student_data);

@@ -329,14 +329,70 @@
 					<div class="modal-dialog modal-xl" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h5 class="modal-title" id="addNoteModalLabel">Student Name:-<span id="student_name"></span>|ID:-<span id="student_id"></span></h5>
+								<!-- <h5 class="modal-title" id="addNoteModalLabel">Student Name:-<span id="student_name"></span>|ID:-<span id="student_id"></span></h5> -->
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
 							</div>
 							<div class="col-md-12">
-								<div class="table-responsive" id="paymenthisTblData">
+								<div class="container mt-4">
+									<!-- Student Profile -->
+									<div class="card mb-4">
+										<div class="card-body text-center">
+											<img src="https://dummyimage.com/100x100/ccc/000" class="profile-pic mb-3" alt="Profile Picture">
+											<h4>Student Name:-<span id="student_name"></span></h4>
+											<p>ID:-<span id="student_id"></span></p>
+										</div>
+									</div>
+
+									<!-- Course Interest & Enrollment -->
+									<div class="row">
+										<div class="col-md-6">
+											<div class="card mb-4">
+												<div class="card-header bg-primary text-white">Course Interest</div>
+												<div class="card-body">
+													<div class="table-responsive" id="preferenceTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<!-- Attendance Information -->
+											<div class="card mb-4">
+												<div class="card-header bg-info text-white">Attendance History</div>
+												<div class="card-body">
+													<div class="table-responsive" id="attendacehisTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- Enrolled Batches & Payment Status -->
+										<div class="col-md-12">
+											<div class="card mb-4">
+												<div class="card-header bg-success text-white">Enrolled Batches & Payment</div>
+												<div class="card-body">
+													<div class="table-responsive" id="paymenthisTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<!-- Withdraw|Repeat|Refund|Adjustment -->
+										<div class="col-md-12">
+											<div class="card mb-4">
+												<div class="card-header bg-danger text-white">Withdraw|Repeat|Refund|Adjustment</div>
+												<div class="card-body">
+													<div class="table-responsive" id="othershisTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+
+									</div>
+
+
 								</div>
+
 							</div>
 						</div>
 					</div>
@@ -563,7 +619,11 @@
 @endif
 <script>
 	$('#stuDetl').on('show.bs.modal', function(event) {
+		$('#attendacehisTblData').empty();
 		$('#paymenthisTblData').empty();
+		$('#preferenceTblData').empty();
+		$('#othershisTblData').empty();
+
 		var button = $(event.relatedTarget);
 		var sId = button.data('student-id');
 		var studentName = button.data('student-name');
@@ -579,7 +639,10 @@
 			},
 			success: function(res) {
 				console.log(res.data);
-				$('#paymenthisTblData').append(res.data);
+				$('#attendacehisTblData').append(res.data.attendance);
+				$('#paymenthisTblData').append(res.data.payment_data);
+				$('#preferenceTblData').append(res.data.preference);
+				$('#othershisTblData').append(res.data.others);
 			},
 			error: function(e) {
 				console.log(e);

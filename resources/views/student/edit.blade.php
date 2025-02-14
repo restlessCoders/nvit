@@ -418,15 +418,15 @@
 							</td>
 							<td>{{$allassignBatch->course_price}}</td>
 							<td>
-							{{--&& currentUser() == 'superadmin'--}}
+								{{--&& currentUser() == 'superadmin'--}}
 								@if($allassignBatch->acc_approve != 2 && $allassignBatch->isBundel == 0)
 								<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
 								@endif
-								
+
 							</td>
 						</form>
 						<td>
-							
+
 							@if($allassignBatch->acc_approve == 0 && $allassignBatch->isBundel == 0)
 							<form id="active-form" method="POST" action="{{route(currentUser().'.enrollment.destroy',[encryptor('encrypt', $allassignBatch->id)])}}" style="display: inline;">
 								@csrf
@@ -694,11 +694,19 @@
 								</select>
 							</td>
 
-							<td>
+							<td class="d-flex">
 								<button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Update</button>
-							</td>
-						</tr>
 					</form>
+					<form action="{{ route(currentUser().'.coursePreferenceDelete') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this preference?');">
+						@csrf
+						<input type="hidden" name="preference_id" value="{{ $p->id }}">
+						<button type="submit" class="btn btn-danger mx-2">
+							<i class="fas fa-trash-alt mr-2"></i>Delete
+						</button>
+					</form>
+					</td>
+					</tr>
+
 					@endforeach
 					@endif
 				</tbody>
@@ -826,10 +834,10 @@
 		},
 		response: function(e, ui) {
 			if (ui.content.length == 1) {
-				if(ui.content[0].seat >0){
+				if (ui.content[0].seat > 0) {
 					$(this).data('ui-autocomplete')._trigger('select', 'autocompleteselect', ui);
 					$(this).autocomplete("close");
-				}else{
+				} else {
 					toastr['error']("No Seat Available!!");
 					return false;
 				}

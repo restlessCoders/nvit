@@ -136,6 +136,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('superadmin.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('superadmin.coursePreferencEdit');
+        Route::post('/course/preference/delete', [StudentController::class, 'coursePreferenceDelete'])
+            ->name('superadmin.coursePreferenceDelete');
+
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('superadmin.courseSearch');
@@ -429,6 +432,7 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesexecutive.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesexecutive.coursePreferencEdit');
+
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('salesexecutive.courseSearch');
