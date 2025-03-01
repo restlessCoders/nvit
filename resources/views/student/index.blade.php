@@ -176,31 +176,31 @@
 								@endif
 							</td>
 							<td>
-								@php 
-								$today = \Carbon\Carbon::today(); 
+								@php
+								$today = \Carbon\Carbon::today();
 								$b_enroll = \DB::table('student_batches')->where('student_id',$student->id)->where('status',2)->count();
 								$c_enroll = \DB::table('student_courses')->where('student_id',$student->id)->count();
 								$enroll = ($b_enroll+$c_enroll)
 								@endphp
 								@if($student->notes->count() > 0)
-									@php $note = $student->notes->last(); @endphp
-									@if(!empty($note->re_call_date))
-										@php 
-										$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
-										@endphp
-										@if($enroll == 0)
-										@if($today->lessThanOrEqualTo($re_call_date) )
-										<p class="text-center m-0">
-										@else
-										<p class="text-center m-0 text-danger">
-										@endif	
-											<strong>Recall :</strong>
-											{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}
-										</p>
-										@else
-										<p class="text-primary"><strong>Closed</strong></p>
-										@endif
+								@php $note = $student->notes->last(); @endphp
+								@if(!empty($note->re_call_date))
+								@php
+								$re_call_date = \Carbon\Carbon::parse($note->re_call_date);
+								@endphp
+								@if($enroll == 0)
+								@if($today->lessThanOrEqualTo($re_call_date) )
+								<p class="text-center m-0">
+									@else
+								<p class="text-center m-0 text-danger">
 									@endif
+									<strong>Recall :</strong>
+									{{\Carbon\Carbon::createFromTimestamp(strtotime($note->re_call_date))->format('j M, Y')}}
+								</p>
+								@else
+								<p class="text-primary"><strong>Closed</strong></p>
+								@endif
+								@endif
 								@if($note->note)
 								<p class="text-center m-0"><strong>Note :</strong>{{$note->note}}</p>
 								@else
@@ -210,28 +210,28 @@
 								{{--<p class="text-center m-0"><strong>Posted On :</strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($note->created_at))->format('j M, Y')}}</p>--}}
 								@endif
 								@else
-									@php 
-									$executiveReminder = \Carbon\Carbon::parse($student->executiveReminder); 
-									@endphp
-									<p class="text-center m-0"><strong>Note :</strong>{{$student->executiveNote}}</p>
-									@if($enroll == 0)
-									@if($today->lessThanOrEqualTo($executiveReminder))
-									<p class="text-center my-0">
-									@else	
-									<p class="text-center my-0 text-danger">
+								@php
+								$executiveReminder = \Carbon\Carbon::parse($student->executiveReminder);
+								@endphp
+								<p class="text-center m-0"><strong>Note :</strong>{{$student->executiveNote}}</p>
+								@if($enroll == 0)
+								@if($today->lessThanOrEqualTo($executiveReminder))
+								<p class="text-center my-0">
+									@else
+								<p class="text-center my-0 text-danger">
 									@endif
-										<strong>Recall :</strong>
-										<strong class="mr-1">
+									<strong>Recall :</strong>
+									<strong class="mr-1">
 										@if($student->executiveReminder)
 										{{\Carbon\Carbon::createFromTimestamp(strtotime($student->executiveReminder))->format('j M, Y')}}
 										@else
 										No Recall Date
 										@endif
-										</strong>
-									</p>
-									@else
-									<p class="text-primary"><strong>Closed</strong></p>
-									@endif
+									</strong>
+								</p>
+								@else
+								<p class="text-primary"><strong>Closed</strong></p>
+								@endif
 								@endif
 							</td>
 							<td>
@@ -249,14 +249,14 @@
 								@if(strtolower(currentUser()) != 'frontdesk')
 								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#addNoteModal" class="text-info" title="note"><i class="far fa-sticky-note mr-1"></i></a>
 								<a href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="text-success" title="edit"><i class="far fa-edit mr-1"></i></a>
-								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#stuDetl" class="text-success" title="details"><i class="far fa-trash-alt mr-1"></i></a>
-								
+								<a data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" href="#" data-toggle="modal" data-target="#stuDetl" class="text-success" title="details"><i class="fas fa-info-circle mr-1"></i></a>
+
 								<!-- <a href="" class="text-warning" title="note"><i class="fas fa-redo-alt"></i></a> -->
 								<form method="POST" action="{{route(currentUser().'.dumpStudent',[encryptor('encrypt', $student->id)])}}" style="display: inline;">
-								@csrf
-								@method('PUT')
-								<input name="_method" type="hidden" value="PUT">
-								<a href="javascript:void(0)" data-status="{{$student->status}}" data-name="{{$student->name}}" type="submit" class="dump mr-2 text-purple" data-toggle="tooltip" title="Dump"><i class="fas fa-dumpster"></i></a>
+									@csrf
+									@method('PUT')
+									<input name="_method" type="hidden" value="PUT">
+									<a href="javascript:void(0)" data-status="{{$student->status}}" data-name="{{$student->name}}" type="submit" class="dump mr-2 text-purple" data-toggle="tooltip" title="Dump"><i class="fas fa-dumpster"></i></a>
 								</form>
 								@endif
 							</td>
@@ -329,14 +329,70 @@
 					<div class="modal-dialog modal-xl" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h5 class="modal-title" id="addNoteModalLabel">Student Name:-<span id="student_name"></span>|ID:-<span id="student_id"></span></h5>
+								<!-- <h5 class="modal-title" id="addNoteModalLabel">Student Name:-<span id="student_name"></span>|ID:-<span id="student_id"></span></h5> -->
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
 							</div>
 							<div class="col-md-12">
-								<div class="table-responsive" id="paymenthisTblData">
+								<div class="container mt-4">
+									<!-- Student Profile -->
+									<div class="card mb-4">
+										<div class="card-body text-center">
+											<img src="https://dummyimage.com/100x100/ccc/000" class="profile-pic mb-3" alt="Profile Picture">
+											<h4>Student Name:-<span id="student_name"></span></h4>
+											<p>ID:-<span id="student_id"></span></p>
+										</div>
+									</div>
+
+									<!-- Course Interest & Enrollment -->
+									<div class="row">
+										<div class="col-md-6">
+											<div class="card mb-4">
+												<div class="card-header bg-primary text-white">Course Interest</div>
+												<div class="card-body">
+													<div class="table-responsive" id="preferenceTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<!-- Attendance Information -->
+											<div class="card mb-4">
+												<div class="card-header bg-info text-white">Attendance History</div>
+												<div class="card-body">
+													<div class="table-responsive" id="attendacehisTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- Enrolled Batches & Payment Status -->
+										<div class="col-md-12">
+											<div class="card mb-4">
+												<div class="card-header bg-success text-white">Enrolled Batches & Payment</div>
+												<div class="card-body">
+													<div class="table-responsive" id="paymenthisTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<!-- Withdraw|Repeat|Refund|Adjustment -->
+										<div class="col-md-12">
+											<div class="card mb-4">
+												<div class="card-header bg-danger text-white">Withdraw|Repeat|Refund|Adjustment</div>
+												<div class="card-body">
+													<div class="table-responsive" id="othershisTblData">
+													</div>
+												</div>
+											</div>
+										</div>
+
+									</div>
+
+
 								</div>
+
 							</div>
 						</div>
 					</div>
@@ -389,9 +445,9 @@
 							</td>
 							<td>
 								<form id="active-form" method="POST" action="{{route(currentUser().'.activeStudent',$student->id)}}">
-								@csrf
-								<input name="_method" type="hidden" value="PUT">
-								<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
+									@csrf
+									<input name="_method" type="hidden" value="PUT">
+									<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
 								</form>
 								@if(strtolower(currentUser()) == 'superadmin')
 								<a target="_blank" href="{{route(currentUser().'.editStudent',[encryptor('encrypt', $student->id)])}}" class="mr-2"><i class="fas fa-edit text-info font-16"></i>Edit</a><br>
@@ -479,10 +535,9 @@
 				}
 			});
 	});
-
-	</script>
-	@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
-	<script>
+</script>
+@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
+<script>
 	$('#addNoteModal').on('show.bs.modal', function(event) {
 		$('#note-history').empty();
 		var button = $(event.relatedTarget);
@@ -508,9 +563,9 @@
 			}
 		});
 	});
-	</script>
-	@endif
-	<script>
+</script>
+@endif
+<script>
 	function disableButton(btn) {
 		btn.disabled = true;
 		btn.form.submit();
@@ -529,7 +584,7 @@
 	});
 </script>
 @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive')
-	<script>
+<script>
 	function disableButton(btn) {
 		btn.disabled = true;
 		btn.form.submit();
@@ -546,7 +601,7 @@
 		var date = moment(e.date).format('YYYY/MM/DD');
 		$(this).val(date);
 	});
-	</script>
+</script>
 @endif
 @if(old('tab'))
 <script>
@@ -564,7 +619,11 @@
 @endif
 <script>
 	$('#stuDetl').on('show.bs.modal', function(event) {
+		$('#attendacehisTblData').empty();
 		$('#paymenthisTblData').empty();
+		$('#preferenceTblData').empty();
+		$('#othershisTblData').empty();
+
 		var button = $(event.relatedTarget);
 		var sId = button.data('student-id');
 		var studentName = button.data('student-name');
@@ -580,7 +639,10 @@
 			},
 			success: function(res) {
 				console.log(res.data);
-				$('#paymenthisTblData').append(res.data);
+				$('#attendacehisTblData').append(res.data.attendance);
+				$('#paymenthisTblData').append(res.data.payment_data);
+				$('#preferenceTblData').append(res.data.preference);
+				$('#othershisTblData').append(res.data.others);
 			},
 			error: function(e) {
 				console.log(e);

@@ -14,10 +14,10 @@
 	tr {
 		font-size: 13px;
 
-	.btn {
-		font-size: 11px;
-		margin: 1px;
-	}
+		.btn {
+			font-size: 11px;
+			margin: 1px;
+		}
 </style>
 @endpush
 @section('content')
@@ -200,7 +200,7 @@
 							@endif
 							@endif
 						</td>
-						<td>	
+						<td>
 							@php $inv = \DB::table('payments')
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$batch->sId,'paymentdetails.batchId' => $batch->batch_id])->whereNotNull('payments.invoiceId')->exists(); @endphp
@@ -224,43 +224,43 @@
 							-
 							@endif
 						</td>
-						
+
 						<td>
-						@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
 							@if($batch->batch_id != 0)
 							{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('discount')}}
 							@else
 							{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('discount')}}
 							@endif
-						@endif
+							@endif
 						</td>
 						<td>
-						@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
 							@if($batch->batch_id != 0)
 							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount')}}
 							@else
 							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount')}}
 							@endif
-						@endif
+							@endif
 						</td>
 						<td>
-						@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
 							@if($batch->batch_id != 0)
-							@php 
+							@php
 							$a = $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount'));
 							@endphp
 							{{$a}}
 							@php $total_cpyable += $a; @endphp
 							@else
-							@php 
+							@php
 							$b = $batch->course_price-(\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->sum('discount')+\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount'));
 							@endphp
 							{{$b}}
 							@php $total_cpyable += $b; @endphp
 							@endif
-						@endif
+							@endif
 						</td>
-						
+
 
 						<td>
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk')
@@ -437,13 +437,13 @@
 							@endif
 						</td>
 					</tr>
-				<!--</form>-->
-				@endforeach
-				@else
-				<tr>
-					<td colspan="6">No Data Found</td>
-				</tr>
-				@endif
+					<!--</form>-->
+					@endforeach
+					@else
+					<tr>
+						<td colspan="6">No Data Found</td>
+					</tr>
+					@endif
 				</tbody>
 				<tfoot>
 					<tr>
@@ -608,31 +608,31 @@
 
 	$(document).ready(function() {
 
-	var start = moment().subtract(29, 'days');
-    var end = moment();
+		var start = moment().subtract(29, 'days');
+		var end = moment();
 
-    $('#from, #to').daterangepicker({
-        singleDatePicker: true,
-        //startDate: start,
-        //endDate: end,
-		autoUpdateInput: false,  // Prevents the default date from being shown
-        ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-        }
-    }, function(start, end, label) {
-        // Callback function logic here if needed
-        console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-    });
-	// Update the input fields only when a date is selected
-$('#from, #to').on('apply.daterangepicker', function(ev, picker) {
-    $(this).val(picker.startDate.format('YYYY-MM-DD'));
-});
-});
+		$('#from, #to').daterangepicker({
+			singleDatePicker: true,
+			//startDate: start,
+			//endDate: end,
+			autoUpdateInput: false, // Prevents the default date from being shown
+			ranges: {
+				'Today': [moment(), moment()],
+				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+				'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+			}
+		}, function(start, end, label) {
+			// Callback function logic here if needed
+			console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+		});
+		// Update the input fields only when a date is selected
+		$('#from, #to').on('apply.daterangepicker', function(ev, picker) {
+			$(this).val(picker.startDate.format('YYYY-MM-DD'));
+		});
+	});
 </script>
 @if(Session::has('response'))
 <script>
@@ -656,28 +656,31 @@ $('#from, #to').on('apply.daterangepicker', function(ev, picker) {
 	}
 </script>
 @endif
-@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager')
+@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager' || currentUser() == 'operationmanager')
 <script>
-    function exportReportToExcel(idname,filename) {
-        let table = document.getElementsByTagName(idname); // you can use document.getElementById('tableId') as well by providing id to the table tag
-        TableToExcel.convert(table[1], { // html code may contain multiple tables so here we are refering to 1st table tag
-        name: `${filename}.xlsx`, // fileName you could use any name
-        sheet: {
-            name: 'Batch Wise Enrll Report' // sheetName
-        }
-        });
-        $("#my-content-div").html("");
-        $('.full_page').html("");
-    }
-    function get_print(){
-        $('.full_page').html('<div style="background:rgba(0,0,0,0.5);width:100vw; height:100vh;position:fixed; top:0; left;0"><div class="loader my-5"></div></div>');
-        $.get(
-            "{{route(currentUser().'.batchwiseEnrollStudentPrint')}}{!! ltrim(Request()->fullUrl(),Request()->url()) !!}",
-            function (data) {
-                $("#my-content-div").html(data);
-            }
-        ).then(function(){exportReportToExcel('table','Batch Wise Enroll Report')})
-    }
+	function exportReportToExcel(idname, filename) {
+		let table = document.getElementsByTagName(idname); // you can use document.getElementById('tableId') as well by providing id to the table tag
+		TableToExcel.convert(table[1], { // html code may contain multiple tables so here we are refering to 1st table tag
+			name: `${filename}.xlsx`, // fileName you could use any name
+			sheet: {
+				name: 'Batch Wise Enrll Report' // sheetName
+			}
+		});
+		$("#my-content-div").html("");
+		$('.full_page').html("");
+	}
+
+	function get_print() {
+		$('.full_page').html('<div style="background:rgba(0,0,0,0.5);width:100vw; height:100vh;position:fixed; top:0; left;0"><div class="loader my-5"></div></div>');
+		$.get(
+			"{{route(currentUser().'.batchwiseEnrollStudentPrint')}}{!! ltrim(Request()->fullUrl(),Request()->url()) !!}",
+			function(data) {
+				$("#my-content-div").html(data);
+			}
+		).then(function() {
+			exportReportToExcel('table', 'Batch Wise Enroll Report')
+		})
+	}
 </script>
 @endif
 @endpush

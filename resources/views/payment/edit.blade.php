@@ -74,7 +74,7 @@
                         <input type="hidden" name="course_id[]" value="{{ \DB::table('batches')->where('id',$p->batchId)->first()->courseId}}">
                         <td><input type="text" class="form-control" name="mrNo[]" value="{{$payment->mrNo}}"></td>
                         <td><input type="text" class="form-control" name="invoiceId[]" value="{{$payment->invoiceId}}"></td>
-                        <td><input type="text" class="form-control payablebyRow" onchange="calculate()" @if($key == 0) readonly @endif value="{{$p->cPayable}}" name="cPayable[]"></td>
+                        <td><input type="text" class="form-control payablebyRow" onchange="calculate()" @if($key==0) readonly @endif value="{{$p->cPayable}}" name="cPayable[]"></td>
                         <td>
                             <div class="input-group">
                                 <input type="text" name="paymentDate[]" value="{{ $payment->paymentDate }}" onfocus="paymentDate(this)" class="paymentDate_{{$key}} form-control" data-index="{{ $key }}" data-date="{{ $payment->paymentDate }}" placeholder="dd/mm/yyyy">
@@ -110,15 +110,19 @@
                         <td><input type="text" name="discount[]" class="paidDisbyRow form-control" onchange="calculate()" value="{{$p->discount}}" id="discountbyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
                         <td><input type="text" name="cpaidAmount[]" class="paidAmtbyRow form-control" onchange="calculate()" value="{{$p->cpaidAmount}}" required id="paidpricebyRow_{{$key}}" onkeyup="checkPrice({{$key}})"></td>
                         <input type="hidden" class="form-control" readonly value="{{($studentsBatches->course_price)}}" id="coursepricebyRow_{{$key}}">
-                        <!-- <tr>
+
+                    </tr>
+                    @php
+                    $payment = DB::table('payments')->where('id', $p->paymentId)->first();
+                    @endphp
+                    <tr>
                         <td colspan="1">
                             <label for="accountNote" class="col-sm-2 col-form-label">Note</label>
                         </td>
                         <td colspan="11">
-                            <textarea class="form-control" id="executiveNote" name="accountNote" rows="2" placeholder="Account Note" style="
+                            <textarea class="form-control" id="executiveNote" name="accountNote[]" rows="2" placeholder="Account Note" style="
 										resize:none;">{{$payment->accountNote}}</textarea>
                         </td>
-                    </tr> -->
                     </tr>
                     @endforeach
                     <tfoot>
@@ -144,8 +148,6 @@
 @endsection
 @push('scripts')
 <script>
-
-
     /*function dueDate(index, due_date) {
         if (due_date)
             date = due_date;
@@ -201,6 +203,7 @@
             $(this).val(picker.startDate.format('DD/MM/YYYY'));
         });
     }
+
     function calculate() {
         var totalPayable = parseFloat(document.querySelector('.tPayable').value);
         var rows = document.querySelectorAll('tr');
@@ -253,7 +256,7 @@
         paidpricebyRow += parseFloat($('#discountbyRow_' + index).val()) ? parseFloat($('#discountbyRow_' + index).val()) : 0;
         /*console.log(paidpricebyRow);
         console.log(coursepricebyRow);*/
-        
+
         if (paidpricebyRow > coursepricebyRow) {
             toastr["warning"]("Paid Amount Cannot be Greater Than Course Price!!");
             $('#paidpricebyRow_' + index).val();
@@ -264,6 +267,7 @@
         }
     }
     due();
+
     function due() {
         var tPayable = parseFloat($('.tPayable').val());
         var total = 0;
@@ -274,12 +278,11 @@
         });
         $('.paidDisbyRow').each(function(index, element) {
             if ($(element).val() != "")
-            total_dis += parseFloat($(element).val());
+                total_dis += parseFloat($(element).val());
         });
         total += total_dis;
         $('.tPaid').val(total);
         $('.tDue').val(tPayable - total);
     }
-    
 </script>
 @endpush
