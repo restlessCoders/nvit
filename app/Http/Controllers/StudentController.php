@@ -450,7 +450,7 @@ class StudentController extends Controller
 
         $notes = Note::where('student_id', encryptor('decrypt', $id))->orderBy('id', 'desc')->paginate(15);;
 
-        $allassignBatches = DB::table('student_batches')->where('student_id', $sdata->id)->where('batch_id', '!=', 0)->orderBy('batch_id')->get();
+        $allassignBatches = DB::table('student_batches')->where('student_id', $sdata->id)->where('batch_id', '!=', 0)->where('op_type', '=', 0)->orderBy('batch_id')->get();
 
         /*Course Preference */
         $allPreference = DB::table('course_preferences')->where('student_id', $sdata->id)->get();
