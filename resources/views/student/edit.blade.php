@@ -379,7 +379,7 @@
 							$admissionCount++;
 							$prevSystemId = $allassignBatch->systemId;
 							@endphp
-							<td rowspan="{{DB::table('student_batches')->where('systemId',$allassignBatch->systemId)->count()}}">
+							<td rowspan="{{DB::table('student_batches')->where('op_type',0)->where('systemId',$allassignBatch->systemId)->count()}}">
 								<p class="m-0">Admission {{ $admissionCount }}</p>
 								<small>{{$allassignBatch->entryDate}} </small>
 							</td>
