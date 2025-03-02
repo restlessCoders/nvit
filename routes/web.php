@@ -526,8 +526,8 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('operationmanager.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('operationmanager.coursePreferencEdit');
         Route::post('/course/preference/delete', [StudentController::class, 'coursePreferenceDelete'])
-        ->name('superadmin.coursePreferenceDelete');
-        
+        ->name('operationmanager.coursePreferenceDelete');
+
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('operationmanager.courseSearch');
         Route::post('/batch/search', [BatchController::class, 'batchSearch'])->name('operationmanager.batchSearch');
