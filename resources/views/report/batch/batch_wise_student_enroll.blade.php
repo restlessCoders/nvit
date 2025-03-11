@@ -159,6 +159,7 @@
 						<th>SL.</th>
 						<th>S.Id</th>
 						<th>Student Name</th>
+						<th>Contact</th>
 						<th>Executive</th>
 						@if(currentUser() == 'superadmin')
 						<th>Reference</th>
@@ -169,14 +170,13 @@
 						<th>Inv Price</th>
 						<th>Paid</th>
 						<th>Due</th>
-						<th>Contact</th>
 						<th>Type</th>
 						<th>Status</th>
 						<th width="280px">Action</th>
 					</tr>
 				</thead>
 				<tbody>
-					@php $total_cpyable = 0; @endphp
+					@php $total_cpyable = 0; $total_paid = 0; @endphp
 					@if(count($allBatches))
 					@foreach($allBatches as $batch)
 					{{--<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">--}}
@@ -186,6 +186,13 @@
 						<td>{{$batch->sId}}</td>
 						<td>{{$batch->sName}}
 							@if($batch->is_drop == 1) <strong class="text-danger">(Withdrawn)</strong>@endif
+						</td>
+						<td>
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk')
+							{{$batch->contact}}
+							@else
+							-
+							@endif
 						</td>
 						<td>{{$batch->exName}}</td>
 						@if(currentUser() == 'superadmin')
@@ -237,8 +244,10 @@
 						<td>
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
 							@if($batch->batch_id != 0)
+							@php $total_paid += \DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount'); @endphp
 							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount')}}
 							@else
+							@php $total_paid += \DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount'); @endphp
 							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount')}}
 							@endif
 							@endif
@@ -262,13 +271,7 @@
 						</td>
 
 
-						<td>
-							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk')
-							{{$batch->contact}}
-							@else
-							-
-							@endif
-						</td>
+
 						<td>
 							@if($batch->status == 2) Enroll @endif
 							@if($batch->status == 3) Knocking @endif
@@ -447,8 +450,9 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="@if(currentUser() == 'Superadmin') 9 @else 9 @endif"></td>
-						<td>{{$total_cpyable}}</td>
+						<th class="text-right" colspan="@if(currentUser() == 'superadmin') 10 @else 9 @endif">Total</th>
+						<th>{{$total_paid}}</th>
+						<th>{{$total_cpyable}}</th>
 					</tr>
 				</tfoot>
 			</table>
