@@ -201,6 +201,9 @@ class ReportController extends Controller
         if ($request->batch_id) {
             $allBatches->where('student_batches.batch_id', $request->batch_id);
         }
+        if ($request->course_id) {
+            $allBatches->where('student_batches.course_id', $request->course_id);
+        }
         if ($request->refId) {
             $allBatches->where('students.refId', $request->refId);
         }
@@ -228,6 +231,7 @@ class ReportController extends Controller
         $allBatches = $allBatches->orderBy('student_batches.created_at', 'desc')->paginate($perPage)->appends([
             'executiveId' => $request->executiveId,
             'batch_id' => $request->batch_id,
+            'course_id' => $request->course_id,
             'status' => $request->status,
             'studentId' => $request->studentId,
             'drop' => $request->drop,
