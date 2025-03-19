@@ -69,21 +69,27 @@
 								@endphp
 						</select>
 					</div>
-					<div class="col-md-3">
+					{{--<div class="col-md-3">
 						<label for="name" class="col-form-label">Select Date Range</label>
 						<div class="input-group">
 							<input type="text" id="date_range" name="date_range" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
-					</div>
+					</div>--}}
 					<div class="col-md-3">
-						<label for="startDate" class="col-form-label">Start Date</label>
-						<div class="input-group">
-							<input type="date" id="startDate" name="startDate" class="form-control">
-						</div>
-						<label for="endDate" class="col-form-label">End Date</label>
-						<div class="input-group">
-							<input type="date" id="endDate" name="endDate" class="form-control">
+						<div class="d-flex">
+							<div>
+								<label for="startDate" class="col-form-label">Start Date</label>
+								<div class="input-group">
+									<input type="date" id="startDate" name="startDate" class="form-control">
+								</div>
+							</div>
+							<div>
+								<label for="endDate" class="col-form-label">End Date</label>
+								<div class="input-group">
+									<input type="date" id="endDate" name="endDate" class="form-control">
+								</div>
+							</div>
 						</div>
 					</div>
 					@if(currentUser() != 'salesexecutive')
