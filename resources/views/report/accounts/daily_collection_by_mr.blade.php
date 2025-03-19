@@ -76,6 +76,16 @@
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
 					</div>
+					<div class="col-md-3">
+						<label for="startDate" class="col-form-label">Start Date</label>
+						<div class="input-group">
+							<input type="date" id="startDate" name="startDate" class="form-control">
+						</div>
+						<label for="endDate" class="col-form-label">End Date</label>
+						<div class="input-group">
+							<input type="date" id="endDate" name="endDate" class="form-control">
+						</div>
+					</div>
 					@if(currentUser() != 'salesexecutive')
 					<div class="col-sm-2">
 						<label for="executiveId" class="col-form-label">Executive</label>
