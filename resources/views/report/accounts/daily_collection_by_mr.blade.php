@@ -209,7 +209,17 @@
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
 							@else
-							-
+								@if(\DB::table('payments')
+								->join('paymentdetails','paymentdetails.paymentId','payments.id')
+								->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.course_id' => $p->course_id])->whereNotNull('payments.invoiceId')->exists() && $p->feeType==2)
+								{{
+								\DB::table('payments')
+								->join('paymentdetails','paymentdetails.paymentId','payments.id')
+								->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.course_id' => $p->course_id])->whereNotNull('payments.invoiceId')->first()->invoiceId
+								}}
+								@else
+								-
+								@endif
 							@endif
 						</td>
 						@php
