@@ -48,8 +48,8 @@ class PaymentReportController extends Controller
         }*/
         if (isset($request->startDate) && isset($request->endDate)) {
             //$date_range = explode('-', $request->date_range);
-            $from = \Carbon\Carbon::createFromFormat('d/m/Y', $request->startDate)->format('Y-m-d');
-            $to = \Carbon\Carbon::createFromFormat('d/m/Y', $request->endDate)->format('Y-m-d');;
+            $from = $request->startDate;
+            $to = $request->endDate;
             //print_r($date_range);die;
             //$postingDate = Attendance::whereBetween('postingDate', [$from, $to]);
             $payments->whereBetween('payments.paymentDate', [$from, $to]);
