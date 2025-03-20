@@ -41,7 +41,7 @@
 					</div>
 					<div class="col-md-3">
 						<div class="d-flex">
-							<div>
+							<div class="mr-2">
 								<label for="startDate" class="col-form-label">Start Date</label>
 								<div class="input-group">
 									<input type="date" id="startDate" name="startDate" class="form-control">
