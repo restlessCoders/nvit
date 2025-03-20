@@ -144,8 +144,16 @@ class PaymentReportController extends Controller
                 ->orWhere('students.name', 'like', '%' . $request->studentId . '%')
                 ->orWhere('students.contact', 'like', '%' . $request->studentId . '%');
         }
-        if ($request->paymentDate) {
+        /*if ($request->paymentDate) {
             $payments->where('payments.paymentDate', '=', \Carbon\Carbon::createFromTimestamp(strtotime($request->paymentDate))->format('Y-m-d'));
+        }*/
+        if (isset($request->startDate) && isset($request->endDate)) {
+            //$date_range = explode('-', $request->date_range);
+            $from = $request->startDate;
+            $to = $request->endDate;
+            //print_r($date_range);die;
+            //$postingDate = Attendance::whereBetween('postingDate', [$from, $to]);
+            $payments->whereBetween('payments.paymentDate', [$from, $to]);
         }
         if ($request->executiveId) {
             $payments->where('payments.executiveId', $request->executiveId);

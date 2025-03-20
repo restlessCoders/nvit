@@ -27,17 +27,33 @@
 			<form action="{{route(currentUser().'.daily_collection_report_by_mr')}}" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-6">
+					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Student Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Invoice</label>
 						<input type="text" class="form-control" name="invoiceId">
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Mr No</label>
 						<input type="text" class="form-control" name="mrNo">
+					</div>
+					<div class="col-md-3">
+						<div class="d-flex">
+							<div>
+								<label for="startDate" class="col-form-label">Start Date</label>
+								<div class="input-group">
+									<input type="date" id="startDate" name="startDate" class="form-control">
+								</div>
+							</div>
+							<div>
+								<label for="endDate" class="col-form-label">End Date</label>
+								<div class="input-group">
+									<input type="date" id="endDate" name="endDate" class="form-control">
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -76,22 +92,6 @@
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
 					</div>--}}
-					<div class="col-md-3">
-						<div class="d-flex">
-							<div>
-								<label for="startDate" class="col-form-label">Start Date</label>
-								<div class="input-group">
-									<input type="date" id="startDate" name="startDate" class="form-control">
-								</div>
-							</div>
-							<div>
-								<label for="endDate" class="col-form-label">End Date</label>
-								<div class="input-group">
-									<input type="date" id="endDate" name="endDate" class="form-control">
-								</div>
-							</div>
-						</div>
-					</div>
 					@if(currentUser() != 'salesexecutive')
 					<div class="col-sm-2">
 						<label for="executiveId" class="col-form-label">Executive</label>
