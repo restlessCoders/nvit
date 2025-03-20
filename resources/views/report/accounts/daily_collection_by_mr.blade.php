@@ -44,13 +44,13 @@
 							<div class="mr-2">
 								<label for="startDate" class="col-form-label">Start Date</label>
 								<div class="input-group">
-									<input type="date" id="startDate" name="startDate" class="form-control" value="{{request()->get('startDate)}}">
+									<input type="date" id="startDate" name="startDate" class="form-control" value="{{request()->get('startDate')}}">
 								</div>
 							</div>
 							<div>
 								<label for="endDate" class="col-form-label">End Date</label>
 								<div class="input-group">
-									<input type="date" id="endDate" name="endDate" class="form-control" value="{{request()->get('endDate)}}">
+									<input type="date" id="endDate" name="endDate" class="form-control" value="{{request()->get('endDate')}}">
 								</div>
 							</div>
 						</div>
