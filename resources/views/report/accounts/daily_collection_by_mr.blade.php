@@ -157,6 +157,7 @@
 			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;">
 				<thead>
 					<tr>
+						<th>SL.</th>
 						<th width="100px">Date</th>
 						<th>AE</th>
 						<th colspan="2">Stu ID|Name</th>
@@ -192,9 +193,10 @@
 					@php
 					$total_paid_amount += $p->cpaidAmount;
 					$total_dis += $p->discount;
-
+					$serial = 1;
 					@endphp
 					<tr>
+						<td>{{ $serial++ }}</td>
 						<td rowspan="" class="align-middle">
 							<p class="p-0 m-1">{{date('d M Y',strtotime($p->paymentDate))}}</p>
 						</td>
