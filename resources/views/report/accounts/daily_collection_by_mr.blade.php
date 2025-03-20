@@ -193,10 +193,9 @@
 					@php
 					$total_paid_amount += $p->cpaidAmount;
 					$total_dis += $p->discount;
-					$serial = 1;
 					@endphp
 					<tr>
-						<td>{{ $serial++ }}</td>
+					<td>{{ (($$payments->currentPage() - 1) * $$payments->perPage()) + $loop->iteration }}</td>
 						<td rowspan="" class="align-middle">
 							<p class="p-0 m-1">{{date('d M Y',strtotime($p->paymentDate))}}</p>
 						</td>
