@@ -188,7 +188,7 @@ class ReportController extends Controller
                 });
             }
         } else {
-            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id');
+            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id','student_batches.course_id');
         }
 
         // Additional filters
