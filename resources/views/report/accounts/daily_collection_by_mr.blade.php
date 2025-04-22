@@ -27,17 +27,33 @@
 			<form action="{{route(currentUser().'.daily_collection_report_by_mr')}}" role="search">
 				@csrf
 				<div class="row">
-					<div class="col-sm-6">
+					<div class="col-sm-4">
 						<label for="name" class="col-form-label">Student Name|Contact</label>
 						<input type="text" class="form-control" name="studentId">
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Invoice</label>
 						<input type="text" class="form-control" name="invoiceId">
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<label for="name" class="col-form-label">Mr No</label>
 						<input type="text" class="form-control" name="mrNo">
+					</div>
+					<div class="col-md-3">
+						<div class="d-flex">
+							<div class="mr-2">
+								<label for="startDate" class="col-form-label">Start Date</label>
+								<div class="input-group">
+									<input type="date" id="startDate" name="startDate" class="form-control" value="{{request()->get('startDate')}}">
+								</div>
+							</div>
+							<div>
+								<label for="endDate" class="col-form-label">End Date</label>
+								<div class="input-group">
+									<input type="date" id="endDate" name="endDate" class="form-control" value="{{request()->get('endDate')}}">
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -69,13 +85,13 @@
 								@endphp
 						</select>
 					</div>
-					<div class="col-md-3">
+					{{--<div class="col-md-3">
 						<label for="name" class="col-form-label">Select Date Range</label>
 						<div class="input-group">
 							<input type="text" id="date_range" name="date_range" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
-					</div>
+					</div>--}}
 					@if(currentUser() != 'salesexecutive')
 					<div class="col-sm-2">
 						<label for="executiveId" class="col-form-label">Executive</label>
@@ -141,6 +157,7 @@
 			<table class="payment table table-sm table-bordered mb-5 text-center" style="font-size: small;">
 				<thead>
 					<tr>
+						<th>SL.</th>
 						<th width="100px">Date</th>
 						<th>AE</th>
 						<th colspan="2">Stu ID|Name</th>
@@ -176,9 +193,9 @@
 					@php
 					$total_paid_amount += $p->cpaidAmount;
 					$total_dis += $p->discount;
-
 					@endphp
 					<tr>
+					<td>{{ (($payments->currentPage() - 1) * $payments->perPage()) + $loop->iteration }}</td>
 						<td rowspan="" class="align-middle">
 							<p class="p-0 m-1">{{date('d M Y',strtotime($p->paymentDate))}}</p>
 						</td>
@@ -209,7 +226,17 @@
 							->join('paymentdetails','paymentdetails.paymentId','payments.id')
 							->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.batchId' => $p->bid])->whereNotNull('payments.invoiceId')->first()->invoiceId}}
 							@else
-							-
+								@if(\DB::table('payments')
+								->join('paymentdetails','paymentdetails.paymentId','payments.id')
+								->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.course_id' => $p->course_id])->whereNotNull('payments.invoiceId')->exists() && $p->feeType==2)
+								{{
+								\DB::table('payments')
+								->join('paymentdetails','paymentdetails.paymentId','payments.id')
+								->where(['paymentdetails.studentId'=>$p->studentId,'paymentdetails.course_id' => $p->course_id])->whereNotNull('payments.invoiceId')->first()->invoiceId
+								}}
+								@else
+								-
+								@endif
 							@endif
 						</td>
 						@php
