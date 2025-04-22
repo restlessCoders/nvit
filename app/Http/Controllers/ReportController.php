@@ -77,7 +77,8 @@ class ReportController extends Controller
         $allBatches = DB::table('student_batches')
             ->leftJoin('paymentdetails', function ($join) {
                 $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
-                    ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
+                    ->on('student_batches.batch_id', '=', 'paymentdetails.batchId')
+                    ->on('student_batches.course_id', '=', 'paymentdetails.course_id');
             })
             ->join('students', 'student_batches.student_id', '=', 'students.id') // Join with students
             ->leftJoin('users', 'students.executiveId', '=', 'users.id') // Left join with users (executive data)
@@ -188,7 +189,7 @@ class ReportController extends Controller
                 });
             }
         } else {
-            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id');
+            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id', 'student_batches.course_id');
         }
 
         // Additional filters

@@ -329,6 +329,8 @@ Route::group(['middleware' => 'isSalesManager'], function () {
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesmanager.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesmanager.coursePreferencEdit');
+        Route::post('/course/preference/delete', [StudentController::class, 'coursePreferenceDelete'])
+            ->name('salesmanager.coursePreferenceDelete');
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('salesmanager.courseSearch');
@@ -432,7 +434,8 @@ Route::group(['middleware' => 'isSalesExecutive'], function () {
         /*Course Preference */
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('salesexecutive.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('salesexecutive.coursePreferencEdit');
-
+        Route::post('/course/preference/delete', [StudentController::class, 'coursePreferenceDelete'])
+            ->name('salesexecutive.coursePreferenceDelete');
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('salesexecutive.courseSearch');
@@ -526,7 +529,7 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         Route::post('/course/preference/', [StudentController::class, 'coursePreference'])->name('operationmanager.coursePreference');
         Route::post('/course/preference/edit/{id}', [StudentController::class, 'coursePreferencEdit'])->name('operationmanager.coursePreferencEdit');
         Route::post('/course/preference/delete', [StudentController::class, 'coursePreferenceDelete'])
-        ->name('operationmanager.coursePreferenceDelete');
+            ->name('operationmanager.coursePreferenceDelete');
 
         /*==Course Search==*/
         Route::post('/course/search', [CourseController::class, 'courseSearch'])->name('operationmanager.courseSearch');

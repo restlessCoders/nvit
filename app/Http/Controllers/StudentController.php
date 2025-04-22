@@ -486,9 +486,10 @@ class StudentController extends Controller
                 $image_url = $upload_path . $name;
                 $img->save($image_url);
 
-                $student->name             = $request->name;
+
                 if (currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager') {
                     $student->contact          = $request->contact;
+                    $student->name             = $request->name;
                 }
                 $student->photo            = $image_url;
                 $student->altContact       = $request->altContact;
@@ -503,11 +504,11 @@ class StudentController extends Controller
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
             } else {
-                $student->name             = $request->name;
                 if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' ||  strtolower(currentUser()) === 'operationmanager') {
                     $student->contact          = $request->contact;
                     //$student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                     $student->refId            = $request->refId;
+                    $student->name             = $request->name;
                 }
                 //$student->course_id        = (!empty($request->course_id)) ? implode(",", $request->course_id) : null;
                 $student->altContact       = $request->altContact;
