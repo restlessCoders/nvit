@@ -660,7 +660,7 @@
 	}
 </script>
 @endif
-@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager' || currentUser() == 'operationmanager')
+@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesmanager')
 <script>
 	function exportReportToExcel(idname, filename) {
 		let table = document.getElementsByTagName(idname); // you can use document.getElementById('tableId') as well by providing id to the table tag
