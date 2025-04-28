@@ -452,8 +452,23 @@ class StudentController extends Controller
 
         $notes = Note::where('student_id', encryptor('decrypt', $id))->orderBy('id', 'desc')->paginate(15);;
 
-        $allassignBatches = DB::table('student_batches')->where('student_id', $sdata->id)->where('batch_id', '!=', 0)->where('op_type', '=', 0)->orderBy('batch_id')->get();
+        $allassignBatches = DB::table('student_batches')
 
+            ->join('paymentdetails', function ($join) {
+                $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
+                    ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
+            })
+            ->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')
+            ->select(
+                'student_batches.*',
+                'payments.invoiceId',
+                DB::raw('SUM(paymentdetails.cpaidAmount) as total_paid')
+            )
+            ->where('student_batches.student_id', $sdata->id)->where('student_batches.batch_id', '!=', 0)->where('student_batches.op_type', '=', 0)
+            ->orderBy('batch_id')
+            ->groupBy('student_batches.id')
+            ->get();
+        //dd($allassignBatches);
         /*Course Preference */
         $allPreference = DB::table('course_preferences')->where('student_id', $sdata->id)->get();
 

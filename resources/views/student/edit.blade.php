@@ -397,7 +397,7 @@
 							<td>{{$allassignBatch->note}}</td>
 							{{--<td>@if($allassignBatch->acc_approve) Yes @else No @endif</td>--}}
 							<td>
-								<select class="js-example-basic-single form-control" id="status" name="status" @if($allassignBatch->acc_approve) disabled @endif>
+								<select class="js-example-basic-single form-control" id="status" name="status" @if($allassignBatch->acc_approve || $allassignBatch->invoiceId !=null || $allassignBatch->total_paid > 0) disabled @endif>
 									<option value="">Select</option>
 									<option value="2" @if($allassignBatch->status == 2) selected @endif>Enrolled</option>
 									<option value="3" @if($allassignBatch->status == 3) selected @endif>Knocking</option>
@@ -410,7 +410,7 @@
 								@endif
 							</td>
 							<td>
-								<select class="js-example-basic-single form-control" id="type" name="type" @if($allassignBatch->acc_approve == 2) disabled @endif >
+								<select class="js-example-basic-single form-control" id="type" name="type" @if($allassignBatch->acc_approve == 2 || $allassignBatch->invoiceId !=null) disabled @endif >
 									<option value="">Select</option>
 									<option value="1" @if($allassignBatch->type == 1) selected @endif>Full</option>
 									<option value="2" @if($allassignBatch->type == 2) selected @endif>Intallment(Partial)</option>
@@ -419,7 +419,7 @@
 							<td>{{$allassignBatch->course_price}}</td>
 							<td>
 								{{--&& currentUser() == 'superadmin'--}}
-								@if($allassignBatch->acc_approve != 2 && $allassignBatch->isBundel == 0)
+								@if($allassignBatch->acc_approve != 2 && $allassignBatch->isBundel == 0 && $allassignBatch->total_paid == 0)
 								<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
 								@endif
 
@@ -427,7 +427,7 @@
 						</form>
 						<td>
 
-							@if($allassignBatch->acc_approve == 0 && $allassignBatch->isBundel == 0)
+							@if($allassignBatch->acc_approve == 0 && $allassignBatch->isBundel == 0 && $allassignBatch->total_paid == 0)
 							<form id="active-form" method="POST" action="{{route(currentUser().'.enrollment.destroy',[encryptor('encrypt', $allassignBatch->id)])}}" style="display: inline;">
 								@csrf
 								@method('DELETE')
