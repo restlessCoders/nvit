@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Student extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'contact'];
+    protected $fillable = ['name', 'contact','status'];
     public function division()
     {
         return $this->belongsTo(Division::class);

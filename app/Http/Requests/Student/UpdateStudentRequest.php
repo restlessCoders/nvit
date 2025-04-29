@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Requests\Student;
+
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,21 +24,30 @@ class UpdateStudentRequest extends FormRequest
      */
     public function rules()
     {
-        $id = encryptor('decrypt',Request::instance()->id);
-        // Check condition to apply proper rules
-        if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' ||  strtolower(currentUser()) === 'operationmanager') {
-            $rules['executiveId'] = 'required';
-            $rules['refId'] 	  = 'required';
-        }
+        $id = encryptor('decrypt', Request::instance()->id);
+        
+        // Initialize the rules array
         $rules = [
-            'name' 		    => 'required|string',
-            'contact'       => "required|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students,contact,$id",
-            'altContact'    => "nullable|regex:/^(?:\+?88)?01[34-9]\d{8}$/|unique:students,altContact,$id",
-            'email'         => "nullable|string|unique:students,email,$id",
+            'name' => 'required|string',
+            'contact' => "required|regex:/^01[34-9]\d{8}$/|unique:students,contact,$id",
+            'altContact' => "nullable|regex:/^01[34-9]\d{8}$/|unique:students,altContact,$id",
+            'email' => "nullable|string|unique:students,email,$id",
         ];
+
+        // Check condition to apply proper rules
+        if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' || strtolower(currentUser()) === 'operationmanager') {
+            $rules['executiveId'] = 'required';
+            $rules['refId'] = 'required';
+        }
+
         return $rules;
     }
 
+    /**
+     * Get the custom validation messages for the request.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [

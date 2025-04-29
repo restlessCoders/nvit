@@ -487,7 +487,6 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, $id)
     {
-
         try {
             $student = Student::find(encryptor('decrypt', $id));
             if ($request->photo) {
@@ -560,14 +559,15 @@ class StudentController extends Controller
         //$dumpStudent->executiveId = 0;
         $dumpStudent->status = 3;
         $dumpStudent->save();
-        return back();
+        return redirect()->back()->with($this->responseMessage(false, 'error', 'Dump Successfully'));
     }
     public function active($id)
     {
         $dumpStudent = Student::findOrFail($id);
+       // dd($dumpStudent);
         $dumpStudent->status = 1;
         $dumpStudent->save();
-        return back();
+        return redirect()->back()->with($this->responseMessage(true, 'success', 'Active Successfully'));
     }
     public function batchTransfer()
     {
