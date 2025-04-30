@@ -444,7 +444,7 @@
 								@endif
 							</td>
 							<td>
-								<form id="active-form" method="POST" action="{{route(currentUser().'.activeStudent',$student->id)}}">
+								<form class="active-form" method="POST" action="{{route(currentUser().'.activeStudent',$student->id)}}">
 									@csrf
 									<input name="_method" type="hidden" value="PUT">
 									<a href="javascript:void(0)" data-name="{{$student->name}}" type="submit" class="active_student mr-2 text-info" data-toggle="tooltip" title='Active'><i class="far fa-edit"></i>Active</a>
@@ -522,6 +522,7 @@
 	$('.dump_students tbody').on('click', '.active_student', function(event) {
 		var name = $(this).data("name");
 		event.preventDefault();
+		const form = $(this).closest("form"); // Grabs the correct form for this button
 		swal({
 				title: `Are you sure you want to Active this ${name}?`,
 				text: "If you Active this, it will be in Active list.",
@@ -531,7 +532,8 @@
 			})
 			.then((willDelete) => {
 				if (willDelete) {
-					$('#active-form').submit();
+					//$('#active-form').submit();
+					form.submit(); // Submits the correct form
 				}
 			});
 	});
