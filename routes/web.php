@@ -164,7 +164,8 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         Route::get('/batch/wise/enroll/print', [ReportController::class, 'batchwiseEnrollStudentPrint'])->name('superadmin.batchwiseEnrollStudentPrint');
         Route::get('/batch/edit/enroll/{id}', [ReportController::class, 'editEnrollStudent'])->name('superadmin.editEnrollStudent');
         Route::post('/batch/wise/enroll', [ReportController::class, 'batchwiseEnrollStudent'])->name('superadmin.batchwiseEnrollStudent');
-
+        Route::post('/batch/assign/{id}', [ReportController::class, 'assign_batch_toEnrollStudent'])->name('superadmin.assign_batch_toEnrollStudent');
+        Route::post('/batch/single/assign/{id}', [ReportController::class, 'assign_single_batch_toEnrollStudent'])->name('superadmin.assign_single_batch_toEnrollStudent');
         /*===Payment report==*/
         Route::get('/daily/collection/report', [PaymentReportController::class, 'daily_collection_report'])->name('superadmin.daily_collection_report');
         Route::get('/daily/collection/report/mr', [PaymentReportController::class, 'daily_collection_report_by_mr'])->name('superadmin.daily_collection_report_by_mr');
