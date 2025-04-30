@@ -45,6 +45,7 @@ class RefundController extends Controller
             $batch_single_info = DB::table('student_batches')->where(['student_id'=>$request->sb_id,'batch_id' => $request->batch_id])->first();
             if($batch_single_info){
                 /*==== Refund ===*/
+                
                
                     /* Payment and Payment Details */
                     $payment_detl = DB::table('paymentdetails')->where(['studentId' => $batch_single_info->student_id,'batchId' => $request->batch_id]);
