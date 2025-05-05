@@ -551,7 +551,7 @@ class ReportController extends Controller
         if ($count > 17) $count = 17;
 
         if ($request->batch_id) {
-            $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->get();
+            $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->where('is_drop', 0)->get();
         }
         foreach ($batch_students as $batch_student) {
             $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
@@ -646,7 +646,7 @@ class ReportController extends Controller
                             <th style="border:1px solid #000;;color:#000;"><strong>Drop</strong></th>
                         </tr>';
         if ($request->batch_id) {
-            $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->get();
+            $batch_students = DB::table('student_batches')->where('batch_id', $request->batch_id)->where('status', 2)->where('is_drop',0)->get();
         }
         foreach ($batch_students as $batch_student) {
             $s_data = \DB::table('students')->where('id', $batch_student->student_id)->first();
