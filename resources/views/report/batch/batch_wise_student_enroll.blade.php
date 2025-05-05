@@ -188,7 +188,7 @@
 							@if($batch->is_drop == 1) <strong class="text-danger">(Withdrawn)</strong>@endif
 						</td>
 						<td>
-							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk')
+							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'frontdesk' || currentUser() == 'accountmanager' )
 							{{$batch->contact}}
 							@else
 							-
