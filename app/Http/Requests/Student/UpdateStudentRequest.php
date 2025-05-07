@@ -25,7 +25,7 @@ class UpdateStudentRequest extends FormRequest
     public function rules()
     {
         $id = encryptor('decrypt', Request::instance()->id);
-        
+
         // Initialize the rules array
         $rules = [
             'name' => 'required|string',
@@ -36,7 +36,6 @@ class UpdateStudentRequest extends FormRequest
 
         // Check condition to apply proper rules
         if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' || strtolower(currentUser()) === 'operationmanager') {
-            $rules['executiveId'] = 'required';
             $rules['refId'] = 'required';
         }
 
