@@ -94,14 +94,14 @@
 					<div class="col-md-3">
 						<label for="name" class="col-form-label">From</label>
 						<div class="input-group">
-							<input type="text" id="from" name="from" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
+							<input type="date" id="from" name="from" class="form-control" value="{{request()->get('from')}}">
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<label for="name" class="col-form-label">To</label>
 						<div class="input-group">
-							<input type="text" id="to" name="to" class="form-control" placeholder="dd/mm/yyyy" autocomplete="off">
+							<input type="date" id="to" name="to" class="form-control" value="{{request()->get('to')}}">
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
 					</div>
@@ -610,7 +610,7 @@
 			});
 	});
 
-	$(document).ready(function() {
+	/*$(document).ready(function() {
 
 		var start = moment().subtract(29, 'days');
 		var end = moment();
@@ -636,7 +636,7 @@
 		$('#from, #to').on('apply.daterangepicker', function(ev, picker) {
 			$(this).val(picker.startDate.format('YYYY-MM-DD'));
 		});
-	});
+	});*/
 </script>
 @if(Session::has('response'))
 <script>
