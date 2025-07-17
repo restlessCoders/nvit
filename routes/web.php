@@ -687,6 +687,9 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
             Route::post('/payment/course/', [OtherPaymentController::class, 'coursestore'])->name('payments.coursestore');
 
             /*== Other Payment Report */
+            Route::get('/other/payment/', [OtherPaymentController::class, 'index'])->name('otherPaymentList');
+            Route::get('/other/payment/edit/{id}', [OtherPaymentController::class, 'edit'])->name('otherPaymentEdit');
+            Route::delete('/other/payment/delete/{id}', [OtherPaymentController::class, 'destroy'])->name('otherPaymentDelete');
             Route::get('/other/payment/add', [OtherPaymentController::class, 'create'])->name('otherCreate');
             Route::get('/other/payment/report', [OtherPaymentController::class, 'otherPaymentReport'])->name('otherPaymentReport');
         });

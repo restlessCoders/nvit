@@ -55,7 +55,7 @@
 								<td>{{ $op->paymentDate }}</td>
 								<td>{{ $op->accountNote }}</td>
 								<td>
-									@if(currentUser() == 'superadmin' ||  currentUser() == 'accountsmanager')
+									@if(currentUser() == 'superadmin' ||  currentUser() == 'accountmanager')
 									<a href="{{route(currentUser().'.otherPaymentEdit',[encryptor('encrypt', $op->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
 									<form action="{{ route(currentUser().'.otherPaymentDelete', encryptor('encrypt', $op->id)) }}" method="POST" style="display:inline;">
 										@csrf
