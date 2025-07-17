@@ -453,23 +453,23 @@ class StudentController extends Controller
         $notes = Note::where('student_id', encryptor('decrypt', $id))->orderBy('id', 'desc')->paginate(15);;
 
         $allassignBatches = DB::table('student_batches')
-        ->leftJoin('paymentdetails', function ($join) {
-            $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
-                 ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
-        })
-        ->leftJoin('payments', 'paymentdetails.paymentId', '=', 'payments.id')
-        ->select(
-            'student_batches.*',
-            'payments.invoiceId',
-            DB::raw('SUM(paymentdetails.cpaidAmount) as total_paid')
-        )
-        ->where('student_batches.student_id', $sdata->id)
-        ->where('student_batches.batch_id', '!=', 0)
-        ->where('student_batches.op_type', '=', 0)
-        ->groupBy('student_batches.id', 'payments.invoiceId') // include non-aggregated selected fields in groupBy
-        ->orderBy('student_batches.batch_id')
-        ->get();
-    
+            ->leftJoin('paymentdetails', function ($join) {
+                $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
+                    ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
+            })
+            ->leftJoin('payments', 'paymentdetails.paymentId', '=', 'payments.id')
+            ->select(
+                'student_batches.*',
+                'payments.invoiceId',
+                DB::raw('SUM(paymentdetails.cpaidAmount) as total_paid')
+            )
+            ->where('student_batches.student_id', $sdata->id)
+            ->where('student_batches.batch_id', '!=', 0)
+            ->where('student_batches.op_type', '=', 0)
+            ->groupBy('student_batches.id', 'payments.invoiceId') // include non-aggregated selected fields in groupBy
+            ->orderBy('student_batches.batch_id')
+            ->get();
+
         //dd($allassignBatches);
         /*Course Preference */
         $allPreference = DB::table('course_preferences')->where('student_id', $sdata->id)->get();
@@ -520,7 +520,7 @@ class StudentController extends Controller
                 $student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                 $student->refId            = $request->refId;
             } else {
-                if (strtolower(currentUser()) === 'superadmin' || strtolower(currentUser()) === 'salesmanager' ||  strtolower(currentUser()) === 'operationmanager') {
+                if (strtolower(currentUser()) == 'superadmin' || strtolower(currentUser()) == 'salesmanager' ||  strtolower(currentUser()) == 'operationmanager') {
                     $student->contact          = $request->contact;
                     //$student->executiveId      = $request->executiveId ? $request->executiveId : currentUserId();
                     $student->refId            = $request->refId;
@@ -566,7 +566,7 @@ class StudentController extends Controller
     public function active($id)
     {
         $dumpStudent = Student::findOrFail($id);
-       // dd($dumpStudent);
+        // dd($dumpStudent);
         $dumpStudent->status = 1;
         $dumpStudent->save();
         return redirect()->back()->with($this->responseMessage(true, 'success', 'Active Successfully'));
