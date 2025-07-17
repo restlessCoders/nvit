@@ -370,9 +370,9 @@ class ReportController extends Controller
                     ->havingRaw('SUM(pd.cpaidAmount) < (inv_price * 0.5)');
 
                 // Add date range filter for paymentDate
-                /*if ($from && $to) {
-                    $allBatches->whereBetween('payments.paymentDate', [$from, $to]);
-                }*/
+                if ($from && $to) {
+                    $allBatches->whereBetween('student_batches.entryDate', [$from, $to]);
+                }
             }
 
             // Filter for type 3
