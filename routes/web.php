@@ -221,6 +221,9 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
 
         /*== Other Payment Report */
         Route::resource('payments', OtherPaymentController::class, ["as" => "superadmin"]);
+        Route::get('/other/payment/', [OtherPaymentController::class, 'index'])->name('superadmin.otherPaymentList');
+        Route::get('/other/payment/edit/{id}', [OtherPaymentController::class, 'edit'])->name('superadmin.otherPaymentEdit');
+        Route::delete('/other/payment/delete/{id}', [OtherPaymentController::class, 'destroy'])->name('superadmin.otherPaymentDelete');
         Route::get('/other/payment/add', [OtherPaymentController::class, 'create'])->name('superadmin.otherCreate');
         Route::get('/other/payment/report', [OtherPaymentController::class, 'otherPaymentReport'])->name('superadmin.otherPaymentReport');
     });

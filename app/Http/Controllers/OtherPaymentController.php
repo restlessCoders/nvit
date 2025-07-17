@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use App\Http\Traits\ResponseTrait;
+
 class OtherPaymentController extends Controller
 {
     use ResponseTrait;
@@ -19,7 +20,8 @@ class OtherPaymentController extends Controller
      */
     public function index()
     {
-        return view('other.payment');
+        $other_payments = OtherPayment::orderBy('id', 'desc')->paginate(50);
+        return view('other.index', compact('other_payments'));
     }
 
     public function searchStudent(Request $request)
@@ -45,7 +47,7 @@ class OtherPaymentController extends Controller
         $data = '<div class="col-sm-3" id="type"><select class="form-control" id="optType" onchange="optType(this.value)">';
         $data .= '<option value="">Select</option>';
         $data .= '<option value="1" selected>Course (No Batch)</option>';
-        $data .= '</select><input type="hidden" id="systmVal" value="'.$request->systemId.'"></div>';
+        $data .= '</select><input type="hidden" id="systmVal" value="' . $request->systemId . '"></div>';
         /*==Student Data==*/
         $studentbyId =  DB::table('students')
             ->select('students.id', 'students.name', 'students.executiveId', 'users.name as exName')
@@ -232,10 +234,10 @@ class OtherPaymentController extends Controller
         $tPayable = 0;
         foreach ($stData as $key => $s) {
             $pay_detl = DB::table('paymentdetails')
-            ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
-            ->where(['paymentdetails.studentId' => $s->student_id,'paymentdetails.course_id' => $s->course_id])
-            ->get();
-           
+                ->selectRaw('coalesce(sum(paymentdetails.cpaidAmount), 0) as cpaid, coalesce(sum(paymentdetails.discount), 0) as discount')
+                ->where(['paymentdetails.studentId' => $s->student_id, 'paymentdetails.course_id' => $s->course_id])
+                ->get();
+
             $tPayable += ($s->price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount));
             if ($s->price - ($pay_detl[0]->cpaid + $pay_detl[0]->discount) > 0) {
                 $data .= '<tr>';
@@ -256,12 +258,12 @@ class OtherPaymentController extends Controller
                                 </div>
                             </td>';
                 $inv = \DB::table('payments')
-                ->join('paymentdetails','paymentdetails.paymentId','payments.id')
-                ->where(['paymentdetails.studentId'=>$request->sId,'paymentdetails.course_id' => $s->course_id])->whereNotNull('payments.invoiceId')->first();
-                if($inv)
-                $data .= '<script>$("input[name=\'invoiceId\']").val('.$inv->invoiceId.');$("#feeType").val("2");</script>';
+                    ->join('paymentdetails', 'paymentdetails.paymentId', 'payments.id')
+                    ->where(['paymentdetails.studentId' => $request->sId, 'paymentdetails.course_id' => $s->course_id])->whereNotNull('payments.invoiceId')->first();
+                if ($inv)
+                    $data .= '<script>$("input[name=\'invoiceId\']").val(' . $inv->invoiceId . ');$("#feeType").val("2");</script>';
                 else
-                $data .= '<script>$("#feeType").val("1");</script>';
+                    $data .= '<script>$("#feeType").val("1");</script>';
                 $data .= '<td><select class="form-control" name="payment_mode[]" required><option value=""></option><option value="1" selected>Cash</option><option value="2">Bkash</option><option value="3">Card</option></select></td>';
                 $data .= '<td><select class="form-control" id="feeType" name="feeType[]" required><option value="">Select</option>';
                 $data .= '<option value="1" selected>Registration</option><option value="2" required>Course</option></select></td>';
@@ -320,7 +322,7 @@ class OtherPaymentController extends Controller
     public function create()
     {
         $payment_categories = DB::table('other_payment_categories')->get();
-        return view('other.add_new',compact('payment_categories'));
+        return view('other.add_new', compact('payment_categories'));
     }
 
     /**
@@ -331,35 +333,34 @@ class OtherPaymentController extends Controller
      */
     public function store(Request $request)
     {
-    //dd($request);
-    // Validate the input
-    $request->validate([
-        'other_payment_category_id' => 'required',
-        'mrNo'                 => 'required|integer|unique:other_payments,mrNo',
-        'paymentDate' => 'required|date_format:m/d/Y', // Ensure the date format is correct
-        'amount' =>  'required',
+        //dd($request);
+        // Validate the input
+        $request->validate([
+            'other_payment_category_id' => 'required',
+            'mrNo'                 => 'required|integer|unique:other_payments,mrNo',
+            'paymentDate' => 'required|date_format:m/d/Y', // Ensure the date format is correct
+            'amount' =>  'required',
 
-    ]);
+        ]);
 
-    try {
-         // Payment Detail
-         $other_payment = New OtherPayment();
-         $other_payment->other_payment_category_id = $request->other_payment_category_id;
-         $other_payment->pay_by = $request->pay_by;
-         $other_payment->paymentDate = Carbon::createFromFormat('m/d/Y', $request->paymentDate)->format('Y-m-d');
-         $other_payment->payment_mode = $request->payment_mode;
-         $other_payment->amount = $request->amount;
-         $other_payment->mrNo = $request->mrNo;
-         $other_payment->accountNote = $request->accountNote;
-         $other_payment->save();
-        return redirect(route(currentUser().'.otherPaymentReport'))->with($this->responseMessage(true, null, 'Payment Received'));
-
-    } catch (\Exception $e) {
-        // something went wrong
-        dd($e);
-        return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
-        return false;
-    }
+        try {
+            // Payment Detail
+            $other_payment = new OtherPayment();
+            $other_payment->other_payment_category_id = $request->other_payment_category_id;
+            $other_payment->pay_by = $request->pay_by;
+            $other_payment->paymentDate = Carbon::createFromFormat('m/d/Y', $request->paymentDate)->format('Y-m-d');
+            $other_payment->payment_mode = $request->payment_mode;
+            $other_payment->amount = $request->amount;
+            $other_payment->mrNo = $request->mrNo;
+            $other_payment->accountNote = $request->accountNote;
+            $other_payment->save();
+            return redirect(route(currentUser() . '.otherPaymentReport'))->with($this->responseMessage(true, null, 'Payment Received'));
+        } catch (\Exception $e) {
+            // something went wrong
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
+            return false;
+        }
         /*DB::beginTransaction();
         try {
             $paymentId = DB::table('payments')->insert(
@@ -464,7 +465,7 @@ class OtherPaymentController extends Controller
                 $payment_detail['studentId']        = $request->studentId;
                 $payment_detail['course_id']          = $course_id[$key];
                 if (isset($dueDate[$key]) && !empty($dueDate[$key])) {
-                $payment_detail['dueDate']      = date('Y-m-d',strtotime($dueDate[$key]));
+                    $payment_detail['dueDate']      = date('Y-m-d', strtotime($dueDate[$key]));
                 }
                 $payment_detail['batchId']          = 0;
                 $payment_detail['cPayable']         = $cPayable[$key];
@@ -529,8 +530,8 @@ class OtherPaymentController extends Controller
                     $course = DB::table('student_courses')
                         ->where('student_id', $request->studentId)->where('student_courses.course_id', $course_id[$key])->first();
                     $batch_data_exists =  DB::table('student_batches')
-                    ->where('student_id', $request->studentId)->where('student_batches.course_id', $course_id[$key])->first();
-                    if(empty($batch_data_exists)){
+                        ->where('student_id', $request->studentId)->where('student_batches.course_id', $course_id[$key])->first();
+                    if (empty($batch_data_exists)) {
                         $data = array(
                             'course_id' => $course_id[$key],
                             'batch_id' => 0,
@@ -580,7 +581,14 @@ class OtherPaymentController extends Controller
      */
     public function edit($id)
     {
-        //
+        try {
+            $id = encryptor('decrypt', $id);
+            $data = OtherPayment::findOrFail($id);
+            $payment_categories = DB::table('other_payment_categories')->get();
+            return view('other.edit', compact('data', 'payment_categories'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Invalid Payment ID'));
+        }
     }
 
     /**
@@ -592,8 +600,33 @@ class OtherPaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'other_payment_category_id' => 'required',
+            'mrNo' => 'required|integer|unique:other_payments,mrNo,' . encryptor('decrypt', $id),
+            'paymentDate' => 'required|date_format:Y-m-d',
+            'amount' => 'required',
+        ]);
+
+        try {
+            $id = encryptor('decrypt', $id);
+            $other_payment = OtherPayment::findOrFail($id);
+
+            $other_payment->other_payment_category_id = $request->other_payment_category_id;
+            $other_payment->pay_by = $request->pay_by;
+            $other_payment->paymentDate =  $request->paymentDate;
+            $other_payment->payment_mode = $request->payment_mode;
+            $other_payment->amount = $request->amount;
+            $other_payment->mrNo = $request->mrNo;
+            $other_payment->accountNote = $request->accountNote;
+            $other_payment->save();
+
+            return redirect(route(currentUser() . '.otherPaymentReport'))->with($this->responseMessage(true, null, 'Payment Updated'));
+        } catch (\Exception $e) {
+            dd($e);
+            return redirect()->back()->with($this->responseMessage(false, 'error', 'Something went wrong. Please try again!'));
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -603,19 +636,29 @@ class OtherPaymentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $id = encryptor('decrypt', $id);
+
+            $payment = OtherPayment::findOrFail($id);
+            $payment->delete();
+
+            return redirect()->back()->with('success', 'Payment deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete payment.');
+        }
     }
 
 
-    public function otherPaymentReport(Request $request){
+    public function otherPaymentReport(Request $request)
+    {
         /*== Other Payment== */
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
         $payments = DB::table('other_payments')
-        ->select('other_payments.amount','other_payments.other_payment_category_id','other_payments.paymentDate')
-        ->join('other_payment_categories','other_payment_categories.id','=','other_payments.other_payment_category_id')
-        ->groupBy('other_payments.paymentDate');
+            ->select('other_payments.amount', 'other_payments.other_payment_category_id', 'other_payments.paymentDate')
+            ->join('other_payment_categories', 'other_payment_categories.id', '=', 'other_payments.other_payment_category_id')
+            ->groupBy('other_payments.paymentDate');
         if ($request->year) {
             $currentYear = $request->year;
             $payments = $payments->whereYear('paymentDate', $request->year);
@@ -624,20 +667,20 @@ class OtherPaymentController extends Controller
             $currentMonth = $request->month;
             $payments = $payments->whereMonth('paymentDate', $request->month);
         }
-        if(empty($request->year) && empty($request->month)){
+        if (empty($request->year) && empty($request->month)) {
             $payments->whereMonth('other_payments.paymentDate', '=', $currentMonth);
             $payments->whereYear('other_payments.paymentDate', '=', $currentYear);
-        }  
+        }
         $payments = $payments->get();
 
         $other_payments =  DB::table('other_payments')
-        ->select('other_payment_categories.category_name','other_payment_categories.id')
-        ->join('other_payment_categories','other_payment_categories.id','=','other_payments.other_payment_category_id')
-        ->whereMonth('paymentDate', $currentMonth)
-        ->whereYear('paymentDate', $currentYear)
-        ->groupBy('other_payments.other_payment_category_id')
-        ->get();
+            ->select('other_payment_categories.category_name', 'other_payment_categories.id')
+            ->join('other_payment_categories', 'other_payment_categories.id', '=', 'other_payments.other_payment_category_id')
+            ->whereMonth('paymentDate', $currentMonth)
+            ->whereYear('paymentDate', $currentYear)
+            ->groupBy('other_payments.other_payment_category_id')
+            ->get();
 
-        return view('report.accounts.daily_other_collection_report',compact('payments','other_payments','currentMonth','currentYear'));
+        return view('report.accounts.daily_other_collection_report', compact('payments', 'other_payments', 'currentMonth', 'currentYear'));
     }
 }

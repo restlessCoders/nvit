@@ -28,88 +28,43 @@
 						<thead>
 							<tr>
 								<th>SL.</th>
-								<th>Batch</th>
-								<th>Course</th>
-								<th>Regular</th>
-								<th>Offer</th>
-								<th width="90px">Op. Date</th>
-								<th width="90px">E.Date</th>
-								<th width="100px">W.Slot</th>
-								<th width="140px">T.Slot</th>
-								<!-- <th>Exam Date</th>
-								<th>Exam Time</th> -->
-								<th>Room</th>
-								<th>T.Seat</th>
-								<th>Trainer</th>
-								<th>T.Class</th>
-								<th>Status</th>
-								<th>Created</th>
+								<th>Mr No.</th>
+								<th>Pay By</th>
+								<th>Other Payment Category</th>
+								<th>Amount</th>
+								<th>Payment Mode</th>
+								<th>Payment Date</th>
+								<th>Note</th>
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
-							@if(count($allBatch))
-							@foreach($allBatch as $batch)
+							@if(count($other_payments))
+							@php
+								$category = [1 => 'IDB',2=> 'Exam', 3=> 'Other'];
+								$mode = [1 => 'Cash',2=> 'Bank', 3=> 'Card'];
+							@endphp
+							@foreach($other_payments as $op)
 							<tr>
 								<td>{{ $loop->iteration }}</td>
+								<td>{{ $op->mrNo }}</td>
+								<td>{{ $op->pay_by }}</td>
+								<td>{{ $category[$op->other_payment_category_id] ?? 'N/A' }}</td>
+								<td>{{ $op->amount }}</td>
+								<td>{{ $mode[$op->payment_mode] ?? 'N/A' }}</td>
+								<td>{{ $op->paymentDate }}</td>
+								<td>{{ $op->accountNote }}</td>
 								<td>
-									{{$batch->batchId}}<br>
-								</td>	
-								<td>{{$batch->course->courseName}}</td>
-								<td>
-									<table>
-										<tr>
-											<th>Full</th>
-											<th>Installment</th>
-										</tr>
-										<tr>
-											<td>{{$batch->course->rPrice}}</td>
-											<td>{{$batch->course->iPrice}}</td>
-										</tr>
-									</table>
-								</td>
-								<td width="260px">
-									@php $package = DB::table('packages')->where('batchId',$batch->id)->first(); @endphp
-									@if($package)
-									<table>
-										<tr>
-											<th>Full</th>
-											<th>Installment</th>
-										</tr>
-										<tr>
-											<td>{{$package->price}}</td>
-											<td>{{$package->iPrice}}</td>
-										</tr>
-										<tr>
-											<td colspan="2" class="text-danger"><strong>{{\Carbon\Carbon::createFromTimestamp(strtotime($package->startDate))->format('j M, Y')}} - {{\Carbon\Carbon::createFromTimestamp(strtotime($package->endDate))->format('j M, Y')}}</strong> </td>
-										</tr>
-									</table>
-									@else
-									No Offer
-									@endif
-								</td>
-								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->startDate))->format('j M, Y')}}</td>
-								<td>{{\Carbon\Carbon::createFromTimestamp(strtotime($batch->endDate))->format('j M, Y')}}</td>
-								<td>{{$batch->batchslot?->slotName}}</td>
-								<td>{{$batch->batchtime?->time}}</td> 
-								<!-- <td>{{$batch->examDate}}</td>
-								<td>{{$batch->examTime}}</td>  -->
-								<td>{{$batch->examRoom}}</td>
-								<td>{{$batch->seat-$batch->tst}}</td>
-								<td>{{optional($batch->trainer)->username}}</td>
-								<td>{{$batch->totalClass}}</td>
-								<td>
-									@if($batch->status == 1)
-									<span>Active</span>
-									@else
-									<span>Inactive</span>
-									@endif
-								</td>
-								<td>{{optional($batch->createdby)->username}}</td>
-								<td width="80px">
-									@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager')
-									<a href="{{route(currentUser().'.batch.edit',[encryptor('encrypt', $batch->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
-									{{--<a href="{{route(currentUser().'.batch.destroy',[encryptor('encrypt', $batch->id)])}}" title="delete" class="text-danger"><i class="fas fa-trash-alt"></i></a>--}}
+									@if(currentUser() == 'superadmin' ||  currentUser() == 'accountsmanager')
+									<a href="{{route(currentUser().'.otherPaymentEdit',[encryptor('encrypt', $op->id)])}}" title="edit" class="text-success"><i class="fas fa-edit mr-1"></i></a>
+									<form action="{{ route(currentUser().'.otherPaymentDelete', encryptor('encrypt', $op->id)) }}" method="POST" style="display:inline;">
+										@csrf
+										@method('DELETE')
+										<button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Are you sure you want to delete this item?');" title="Delete">
+											<i class="fas fa-trash-alt"></i>
+										</button>
+									</form>
+
 									@endif
 								</td>
 							</tr>
@@ -121,7 +76,7 @@
 							@endif
 						</tbody>
 					</table>
-					{{$allBatch->links()}}
+					{{$other_payments->links()}}
 				
 
 			
