@@ -259,6 +259,7 @@ class PaymentReportController extends Controller
             $payments->whereYear('payments.paymentDate', '=', $currentYear);
         }
         $payments = $payments->get();
+        
         $salespersons = DB::table('payments')
             ->select('payments.executiveId', 'users.username', 'transactions.exe_id')
             ->join('users', 'payments.executiveId', '=', 'users.id')
@@ -275,6 +276,9 @@ class PaymentReportController extends Controller
 
         if (strtolower(currentUser()) == 'salesexecutive') {
             $salespersons = $salespersons->where('payments.executiveId', '=', currentUserId());
+        }
+        if (strtolower(currentUser()) == 'salesmanager') {
+            $salespersons = $salespersons->whereNotIn('users.id', [16, 1]); // 👈 Add your exclusion list here
         }
         $salespersons = $salespersons->get();
         //print_r($salespersons);die;

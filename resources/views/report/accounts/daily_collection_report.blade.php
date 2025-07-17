@@ -156,13 +156,26 @@ $queries = DB::getQueryLog();
 						@endforeach
 						@if(strtolower(currentUser()) != 'salesexecutive')
 						<td>
-						@php $total_course_fee += DB::table('paymentdetails')	
+						@php 
+								if(strtolower(currentUser()) == 'salesmanager'){
+								$total_course_fee += DB::table('paymentdetails')	
+								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
+								->where('payments.paymentDate', $payment->paymentDate)
+								->whereNotIn('payments.executiveId', [16, 1])
+								->whereNull('paymentdetails.deleted_at')
+								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
+								->where('postingDate', $payment->paymentDate)
+								->sum('amount');
+								}else{
+								$total_course_fee += DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
 								->whereNull('paymentdetails.deleted_at')
 								->sum(DB::raw('paymentdetails.cpaidAmount + paymentdetails.deduction'))+DB::table('transactions')		
 								->where('postingDate', $payment->paymentDate)
-								->sum('amount')/*- 
+								->sum('amount');
+								}
+								/*- 
 								DB::table('paymentdetails')	
 								->join('payments', 'paymentdetails.paymentId', '=', 'payments.id')				
 								->where('payments.paymentDate', $payment->paymentDate)
