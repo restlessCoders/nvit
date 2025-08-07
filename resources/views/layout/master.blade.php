@@ -363,7 +363,7 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">List</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif">
+                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager') @else d-none @endif">
                                         <a href="#">Management<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager') {{route(currentUser().'.dueReport')}} @endif">Due Report</a></li>
