@@ -91,7 +91,7 @@
 							@endforelse
 						</select>
 					</div>
-					<div class="col-md-3">
+					<!--<div class="col-md-3">
 						<label for="name" class="col-form-label">From</label>
 						<div class="input-group">
 							<input type="date" id="from" name="from" class="form-control" value="{{request()->get('from')}}">
@@ -104,7 +104,7 @@
 							<input type="date" id="to" name="to" class="form-control" value="{{request()->get('to')}}">
 							<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 						</div>
-					</div>
+					</div>-->
 					<div class="col-sm-2">
 						<label for="status" class="col-form-label">Select Status</label>
 						<select class="js-example-basic-single form-control" id="status" name="status">

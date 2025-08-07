@@ -357,10 +357,17 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'accountmanager') {{route(currentUser().'.transaction.create')}} @endif">Adjustment</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif"">
-                                        <a href=" #">Course Interest<div class="arrow-down"></div></a>
+                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') @else d-none @endif">
+                                        <a href="#">Course Interest<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive') {{route(currentUser().'.coursewiseStudent')}} @endif">List</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') @else d-none @endif">
+                                        <a href="#">Management<div class="arrow-down"></div></a>
+                                        <ul class="submenu">
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.dueReport')}} @endif">Due Report</a></li>
+                                            <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.regReport')}} @endif">Reg Report (Date Range)</a></li>
                                         </ul>
                                     </li>
                                 </ul>

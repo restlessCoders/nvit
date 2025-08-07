@@ -78,7 +78,7 @@ class ReportController extends Controller
             ->leftJoin('paymentdetails', function ($join) {
                 $join->on('student_batches.student_id', '=', 'paymentdetails.studentId')
                     ->on('student_batches.batch_id', '=', 'paymentdetails.batchId');
-                    //->on('student_batches.course_id', '=', 'paymentdetails.course_id');//This line used for course_id now comment if open not working
+                //->on('student_batches.course_id', '=', 'paymentdetails.course_id');//This line used for course_id now comment if open not working
             })
             ->join('students', 'student_batches.student_id', '=', 'students.id') // Join with students
             ->leftJoin('users', 'students.executiveId', '=', 'users.id') // Left join with users (executive data)
@@ -190,7 +190,7 @@ class ReportController extends Controller
                 });
             }
         } else {
-            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id','student_batches.course_id');
+            $allBatches = $allBatches->groupBy('student_batches.student_id', 'student_batches.batch_id', 'student_batches.course_id');
         }
 
         // Additional filters
@@ -247,7 +247,7 @@ class ReportController extends Controller
 
 
 
- public function batchwiseEnrollStudentPrint(Request $request)
+    public function batchwiseEnrollStudentPrint(Request $request)
     {
         $from = !empty($request->from) ? \Carbon\Carbon::parse($request->from)->format('Y-m-d') : null;
         $to = !empty($request->to) ? \Carbon\Carbon::parse($request->to)->format('Y-m-d') : null;
@@ -1032,5 +1032,80 @@ class ReportController extends Controller
     {
         DB::table('student_courses')->where('id', $request->id)->update(['status' => 3]);
         return redirect()->back()->with($this->responseMessage(true, 'error', 'Data Deleted'));
+    }
+
+
+    public function dueReport(Request $request)
+    {
+        $executives = User::whereIn('roleId', [1, 3, 5, 9])->get();
+
+        $executiveId = $request->executiveId;
+
+        $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : '2000-01-01';
+        $to = $request->to ? Carbon::parse($request->to)->format('Y-m-d') : now()->format('Y-m-d');
+
+        $sql = "
+    SELECT 
+        sb.student_id,
+        students.name as sName,
+        sb.batch_id,
+        b.batchId,
+        c.courseName,
+        sb.course_price AS total_payable,
+        users.name,
+        IFNULL(SUM(pd.cpaidAmount + IFNULL(pd.discount, 0)), 0) AS total_paid,
+        (sb.course_price - IFNULL(SUM(pd.cpaidAmount + IFNULL(pd.discount, 0)), 0)) AS total_due,
+        GROUP_CONCAT(pd.id) AS payment_detail_ids,
+        GROUP_CONCAT(pd.feeType) AS feetype,
+        GROUP_CONCAT(p.invoiceId) AS invoiceId
+    FROM 
+        student_batches sb
+    LEFT JOIN 
+        payments p ON p.studentId = sb.student_id
+    LEFT JOIN 
+        paymentdetails pd ON pd.paymentId = p.id AND pd.batchId = sb.batch_id
+    LEFT JOIN 
+        batches b ON b.id = pd.batchId
+    LEFT JOIN 
+	    courses c on c.id=pd.course_id
+    LEFT JOIN 
+        students ON sb.student_id = students.id
+    LEFT JOIN 
+        users ON users.id = students.executiveId
+    WHERE 
+        pd.deleted_at IS NULL 
+        AND sb.op_type = 0  
+        AND sb.is_drop = 0
+        AND sb.entryDate BETWEEN ? AND ?
+";
+
+        $params = [$from, $to];
+
+        if (!empty($executiveId)) {
+            $sql .= " AND students.executiveId = ? ";
+            $params[] = $executiveId;
+        }
+
+        $sql .= "
+    GROUP BY 
+        sb.student_id, sb.batch_id, sb.course_price
+    HAVING 
+        total_due > 0 
+        AND total_paid > 0  
+        AND COUNT(DISTINCT invoiceId) > 0
+    ORDER BY 
+        sb.student_id
+";
+
+        $results = DB::select($sql, $params);
+
+
+        //dd($results);
+        return view('report.due', compact('executives', 'results', 'from', 'to', 'executiveId'));
+    }
+
+    public function regReport(Request $request)
+    {
+        return view('report.reg');
     }
 }

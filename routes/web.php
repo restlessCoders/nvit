@@ -226,6 +226,10 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         Route::delete('/other/payment/delete/{id}', [OtherPaymentController::class, 'destroy'])->name('superadmin.otherPaymentDelete');
         Route::get('/other/payment/add', [OtherPaymentController::class, 'create'])->name('superadmin.otherCreate');
         Route::get('/other/payment/report', [OtherPaymentController::class, 'otherPaymentReport'])->name('superadmin.otherPaymentReport');
+
+        /*== Due Report ==*/
+        Route::get('/due/report', [ReportController::class, 'dueReport'])->name('superadmin.dueReport');
+        Route::get('/reg/report', [ReportController::class, 'regReport'])->name('superadmin.regReport');
     });
 });
 
@@ -616,6 +620,10 @@ Route::group(['middleware' => 'isOperationmanager'], function () {
         /*Attendance Controller */
         Route::resource('/attendance', AttendanceController::class, ["as" => "operationmanager"])->only(['index', 'update']);
         Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('operationmanager.batchwiseStudentAttnReport');
+
+        /*== Due Report ==*/
+        Route::get('/due/report', [ReportController::class, 'dueReport'])->name('operationmanager.dueReport');
+        Route::get('/reg/report', [ReportController::class, 'regReport'])->name('operationmanager.regReport');
     });
 });
 
@@ -719,6 +727,11 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         Route::get('/payment/report/batchwise/enroll/course', [PaymentReportController::class, 'allPaymentCourseReportBySid_for_batch_enroll_report'])->name('accountmanager.allPaymentCourseReportBySid_for_batch_enroll_report');
 
         Route::resource('/certificate', CertificateController::class, ["as" => "accountmanager"]);
+
+
+        /*== Due Report ==*/
+        Route::get('/due/report', [ReportController::class, 'dueReport'])->name('accountmanager.dueReport');
+        Route::get('/reg/report', [ReportController::class, 'regReport'])->name('accountmanager.regReport');
     });
 });
 
