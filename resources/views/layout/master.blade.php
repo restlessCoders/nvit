@@ -401,7 +401,7 @@
 
 
                             <li class="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer') @else d-none @endif"">
-                                <a href="https://edu.nvit.com.bd/Admin/all_certificate">
+                                <a target="_blank" href="https://edu.nvit.com.bd/Admin/all_certificate">
                                     <!-- <div class="arrow-down"></div> -->
                                 <i class="mdi mdi-certificate"></i>Certification Issued</a>
                                 <!-- <ul class="submenu">
