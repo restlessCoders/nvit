@@ -400,9 +400,10 @@
                             </li>
 
 
-                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer') @else d-none @endif"">
+                            <li class="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer') @else d-none @endif"">
                                 <a href="https://edu.nvit.com.bd/Admin/all_certificate">
-                                <i class="mdi mdi-certificate"></i>Certification Issued<div class="arrow-down"></div></a>
+                                    <!-- <div class="arrow-down"></div> -->
+                                <i class="mdi mdi-certificate"></i>Certification Issued</a>
                                 <!-- <ul class="submenu">
 
                                     <li class="has-submenu">
