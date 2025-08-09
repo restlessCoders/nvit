@@ -401,9 +401,9 @@
 
 
                             <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' || currentUser() == 'trainer') @else d-none @endif"">
-                                <a href=" #">
-                                <i class="mdi mdi-certificate"></i>Certification<div class="arrow-down"></div></a>
-                                <ul class="submenu">
+                                <a href="https://edu.nvit.com.bd/Admin/all_certificate">
+                                <i class="mdi mdi-certificate"></i>Certification Issued<div class="arrow-down"></div></a>
+                                <!-- <ul class="submenu">
 
                                     <li class="has-submenu">
                                         <a href="#">Certificate<div class="arrow-down"></div></a>
@@ -411,7 +411,7 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'trainer' || currentUser() == 'accountmanager') {{route(currentUser().'.certificate.index')}} @endif">List</a></li>
                                         </ul>
                                     </li>
-                                </ul>
+                                </ul> -->
                             </li>
 
                         </ul>
