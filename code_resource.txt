@@ -1,4 +1,6 @@
-        $stData = DB::table('paymentdetails')->select('batches.batchId', 'paymentdetails.*')
+https://preview.themeforest.net/item/uplon-responsive-bootstrap-4-web-app-kit/full_screen_preview/16607656        
+
+$stData = DB::table('paymentdetails')->select('batches.batchId', 'paymentdetails.*')
         ->join('student_batches', 'paymentdetails.studentId', '=', 'student_batches.student_id')
         ->join('batches', 'paymentdetails.batchId', '=', 'batches.id')
         ->where('paymentdetails.studentId', $request->sId);

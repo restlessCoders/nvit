@@ -373,7 +373,7 @@
                                 </ul>
                             </li>
 
-                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'trainer' || currentUser() == 'frontdesk') @else d-none @endif">
+                            <li class="has-submenu @if(currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'trainingmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'trainer' || currentUser() == 'frontdesk' || currentUser() == 'accountmanager') @else d-none @endif">
                                 <a href="#">
                                     <i class="mdi mdi-hand"></i>Batch<div class="arrow-down"></div></a>
                                 <ul class="submenu">
@@ -383,7 +383,7 @@
                                             <li><a href="@if(currentUser() == 'superadmin' || currentUser() == 'operationmanager') {{route(currentUser().'.batchwiseAttendance')}} @endif">Report</a></li>
                                         </ul>
                                     </li>
-                                    <li class="has-submenu @if(currentUser() == 'trainingmanager' || currentUser() == 'trainer' || currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'frontdesk' || currentUser() == 'accountmanager')  @else d-none @endif">
+                                    <li class="has-submenu @if(currentUser() == 'trainingmanager' || currentUser() == 'trainer' || currentUser() == 'superadmin' || currentUser() == 'salesmanager' || currentUser() == 'salesexecutive' || currentUser() == 'operationmanager' || currentUser() == 'salesexecutive' || currentUser() == 'frontdesk')  @else d-none @endif">
                                         <a href="#">Attendance<div class="arrow-down"></div></a>
                                         <ul class="submenu">
                                             <li class="@if(currentUser() == 'trainingmanager' || currentUser() == 'trainer')  @else d-none @endif"><a href="@if(currentUser() == 'trainingmanager' || currentUser() == 'trainer') {{route(currentUser().'.attendance.create')}} @endif">Add Attendance</a></li>

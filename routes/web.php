@@ -728,7 +728,9 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
 
         Route::resource('/certificate', CertificateController::class, ["as" => "accountmanager"]);
 
-
+        /*Attendance Controller */
+        Route::resource('/attendance', AttendanceController::class, ["as" => "accountmanager"])->only(['index']);
+        Route::get('/batch/wise/student/attendance/report', [ReportController::class, 'batchwiseStudentAttnReport'])->name('accountmanager.batchwiseStudentAttnReport');
         /*== Due Report ==*/
         Route::get('/due/report', [ReportController::class, 'dueReport'])->name('accountmanager.dueReport');
         Route::get('/reg/report', [ReportController::class, 'regReport'])->name('accountmanager.regReport');
