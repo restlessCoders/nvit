@@ -357,9 +357,9 @@
 							@elseif($batch->op_type ==5)
 							<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
 							@else
-								@if($batchInfo && $batchInfo->seat - $batch_seat_count > 0)
+								{{-- @if($batchInfo->seat - $batch_seat_count > 0) --}}
 								<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
-								@endif
+								{{-- @endif --}}
 							@endif
 							{{--@else--}}
 
