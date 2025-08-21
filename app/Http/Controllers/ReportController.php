@@ -1143,7 +1143,8 @@ SELECT
     student_batches.pstatus,
     student_batches.isBundel,
     student_batches.is_drop,
-    payments.paymentDate
+    payments.paymentDate,
+    payments.mrNo
 FROM paymentdetails as pd
 INNER JOIN students ON pd.studentId = students.id
 LEFT JOIN users ON students.executiveId = users.id

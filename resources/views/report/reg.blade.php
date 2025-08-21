@@ -75,10 +75,12 @@
 					<tr>
 						<th>#</th>
 						<th>Student ID</th>
+						<th>Executive</th>
 						<th>Student Name</th>
 						<th>Batch|Course</th>
-						<th>Executive</th>
-						<th>Enrollment Date</th>
+						<th>Mr No</th>
+						<th>Type</th>
+						<th>Paid</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -88,6 +90,7 @@
 					<tr>
 						<td>{{ $key + 1 }}</td>
 						<td>{{ $report->sId }}</td>
+						<td>{{$report->exName}}</td>
 						<td>{{ $report->sName }}</td>
 						<td>
 							@if($report->batch_id)
@@ -96,8 +99,9 @@
 							{{\DB::table('courses')->where('id',$report->course_id)->first()->courseName}}
 							@endif
 						</td>
-						<td>{{$report->exName}}</td>
-						<td>{{ \Carbon\Carbon::parse($report->entryDate)->format('d M, Y') }}</td>
+						<td>{{$report->mrNo}}</td>
+						<td>Registration</td>
+						<td>{{-- \Carbon\Carbon::parse($report->entryDate)->format('d M, Y') --}}</td>
 					</tr>
 					@empty
 						<tr>
