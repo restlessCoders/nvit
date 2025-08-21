@@ -20,6 +20,9 @@ class OtherPaymentController extends Controller
      */
     public function index()
     {
+        if (request()->get('sId') && request()->get('systemId')) {
+            return view('other.payment');
+        }
         $other_payments = OtherPayment::orderBy('id', 'desc')->paginate(50);
         return view('other.index', compact('other_payments'));
     }
