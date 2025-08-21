@@ -109,9 +109,9 @@
 						<label for="status" class="col-form-label">Select Status</label>
 						<select class="js-example-basic-single form-control" id="status" name="status">
 							<option value=""></option>
-							<option value="2" @if(request()->get('status') ==2) selected @endif>Enroll</option>
-							<option value="3" @if(request()->get('status') ==3) selected @endif>Knocking</option>
-							<option value="4" @if(request()->get('status') ==4) selected @endif>Evaluation</option>
+							<option value="2" @if(request()->get('status') ==2) selected @endif>Enrolled</option>
+							<option value="3" @if(request()->get('status') ==3) selected @endif>Prospect</option>
+							{{-- <option value="4" @if(request()->get('status') ==4) selected @endif>Evaluation</option> --}}
 						</select>
 					</div>
 					<div class="col-sm-2">
@@ -176,7 +176,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					@php $total_cpyable = 0; $total_paid = 0; @endphp
+					@php $total_cpyable = 0; $total_paid = 0; $type='';@endphp
 					@if(count($allBatches))
 					@foreach($allBatches as $batch)
 					{{--<form action="{{ route(currentUser().'.addstudentCourseAssign',encryptor('encrypt',$batch->sId)) }}" method="POST" enctype="multipart/form-data">--}}
@@ -245,9 +245,19 @@
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
 							@if($batch->batch_id != 0)
 							@php $total_paid += \DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount'); @endphp
+								@if($total_paid > 0)
+								@php $type ='Enrolled'; @endphp
+								@else
+								@php $type ='Registered'; @endphp
+								@endif
 							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('cpaidAmount')}}
 							@else
 							@php $total_paid += \DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount'); @endphp
+								@if($total_paid > 0)
+								@php $type ='Enrolled'; @endphp
+								@else
+								@php $type ='Registered'; @endphp
+								@endif
 							{{\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('cpaidAmount')}}
 							@endif
 							@endif
@@ -273,9 +283,10 @@
 
 
 						<td>
-							@if($batch->status == 2) Enroll @endif
-							@if($batch->status == 3) Knocking @endif
-							@if($batch->status == 4)Evaluation @endif
+							{{-- @if($batch->status == 2) Enrolled @endif --}}
+							
+							@if($batch->status == 3) Prospect @else {{$type}} @endif
+							{{-- @if($batch->status == 4)Evaluation @endif --}}
 						</td>
 						<td>
 							@if($batch->type == 1)
@@ -346,7 +357,9 @@
 							@elseif($batch->op_type ==5)
 							<button type="button" class="btn btn-danger btn-sm">Course Transfer</button>
 							@else
-							<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
+								@if($batchInfo->seat - $batch_seat_count > 0)
+								<a href="{{route(currentUser().'.payment.index')}}?sId={{$batch->sId}}&systemId={{$batch->systemId}}" class="btn btn-secondary btn-sm"><i class="fas fa-edit mr-2"></i>@if($inv) Due @else Reg. @endif</a>
+								@endif
 							@endif
 							{{--@else--}}
 

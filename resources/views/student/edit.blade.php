@@ -400,9 +400,9 @@
 							<td>
 								<select class="js-example-basic-single form-control" id="status" name="status" @if($allassignBatch->acc_approve || $allassignBatch->invoiceId !=null || $allassignBatch->total_paid > 0) disabled @endif>
 									<option value="">Select</option>
-									<option value="2" @if($allassignBatch->status == 2) selected @endif>Enrolled</option>
-									<option value="3" @if($allassignBatch->status == 3) selected @endif>Knocking</option>
-									<option value="4" @if($allassignBatch->status == 4) selected @endif>Evaluation</option>
+									<option value="2" @if($allassignBatch->status == 2) selected @endif>Registered</option>
+									<option value="3" @if($allassignBatch->status == 3) selected @endif>Prospect</option>
+									{{-- <option value="4" @if($allassignBatch->status == 4) selected @endif>Evaluation</option> --}}
 								</select>
 								@if($errors->has('status'))
 								<small class="d-block text-danger mb-3">
