@@ -1152,7 +1152,9 @@ INNER JOIN student_batches
     ON student_batches.student_id = pd.studentId 
     AND student_batches.batch_id = pd.batchId
 INNER JOIN payments ON payments.id = pd.paymentId
-WHERE student_batches.is_drop = 0
+WHERE student_batches.status = 2 
+AND student_batches.isBundel = 0 
+AND student_batches.is_drop = 0
   AND student_batches.entryDate BETWEEN :from AND :to
 GROUP BY student_batches.student_id, student_batches.batch_id
 HAVING SUM(pd.cpaidAmount) < (inv_price * 0.5)

@@ -34,4 +34,14 @@ class Paymentdetail extends Model
     {
         return $this->belongsTo(FeeType::class);
     }
+    public function course()
+    {
+        // Adjust this based on your actual relationship
+        return $this->belongsTo(Course::class, 'courseId'); // or whatever your foreign key is
+    }
+    public function executive()
+    {
+        // This might need to be through the payment relationship
+        return $this->belongsTo(Student::class, 'executiveId');
+    }
 }
