@@ -9,35 +9,29 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Paymentdetail extends Model
 {
     use HasFactory, SoftDeletes;
+    protected $fillable = [
+        'payment_id',
+        'student_id',
+        'course_id',
+        'fee_type_id',
+        'month',
+        'year',
+        'amount'
+    ];
     public function payment()
     {
         return $this->hasOne(Payment::class, 'id', 'paymentId');
     }
-    public function batch()
+    public function enrollment()
     {
-        return $this->hasOne(Batch::class, 'id', 'batchId');
-    }
-    public function course()
-    {
-        return $this->hasOne(Course::class, 'id', 'course_id');
+        return $this->belongsTo(StudentCourse::class, 'course_id'); // course_id references student_courses
     }
     public function student()
     {
         return $this->hasOne(Student::class, 'id', 'studentId');
     }
-    public function executive()
+    public function feeType()
     {
-        return $this->belongsTo(User::class, 'executiveId');
-    }
-    // add an accessor for cPayableAmount
-    public function getCPayableAmountAttribute()
-    {
-        return $this->attributes['cPayableAmount'];
-    }
-
-    // add a mutator for PaidAmount
-    public function setPaidAmountAttribute($value)
-    {
-        $this->attributes['PaidAmount'] = $value;
+        return $this->belongsTo(FeeType::class);
     }
 }
