@@ -1119,10 +1119,10 @@ class ReportController extends Controller
 
     public function regReport(Request $request)
     {
-       $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : '2000-01-01';
-$to = $request->to ? Carbon::parse($request->to)->format('Y-m-d') : now()->format('Y-m-d');
+        $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : '2000-01-01';
+        $to = $request->to ? Carbon::parse($request->to)->format('Y-m-d') : now()->format('Y-m-d');
 
-$sql = "
+        $sql = "
 SELECT 
     student_batches.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price,
     student_batches.id as sb_id,
@@ -1144,7 +1144,8 @@ SELECT
     student_batches.isBundel,
     student_batches.is_drop,
     payments.paymentDate,
-    payments.mrNo
+    payments.mrNo,
+    IFNULL(SUM(pd.cpaidAmount + IFNULL(pd.discount, 0)), 0) AS total_paid
 FROM paymentdetails as pd
 INNER JOIN students ON pd.studentId = students.id
 LEFT JOIN users ON students.executiveId = users.id
@@ -1161,15 +1162,66 @@ HAVING SUM(pd.cpaidAmount) < (inv_price * 0.5)
 ORDER BY student_batches.created_at DESC
 ";
 
-$params = [
-    'from' => $from,
-    'to' => $to,
-];
+        $params = [
+            'from' => $from,
+            'to' => $to,
+        ];
 
-$results = DB::select($sql, $params);
+        $results = DB::select($sql, $params);
 
-return view('report.reg', compact('results'));
+        return view('report.reg', compact('results'));
+    }
+    public function regReportPrint(Request $request)
+    {
+        $from = $request->from ? Carbon::parse($request->from)->format('Y-m-d') : '2000-01-01';
+        $to = $request->to ? Carbon::parse($request->to)->format('Y-m-d') : now()->format('Y-m-d');
 
+        $sql = "
+SELECT 
+    student_batches.course_price - COALESCE(SUM(pd.discount), 0) AS inv_price,
+    student_batches.id as sb_id,
+    student_batches.op_type,
+    student_batches.systemId,
+    students.id as sId,
+    students.name as sName,
+    students.contact,
+    students.refId,
+    students.executiveId,
+    users.username as exName,
+    student_batches.entryDate,
+    student_batches.status,
+    student_batches.batch_id,
+    student_batches.course_id,
+    student_batches.type,
+    student_batches.course_price,
+    student_batches.pstatus,
+    student_batches.isBundel,
+    student_batches.is_drop,
+    payments.paymentDate,
+    payments.mrNo,
+    IFNULL(SUM(pd.cpaidAmount + IFNULL(pd.discount, 0)), 0) AS total_paid
+FROM paymentdetails as pd
+INNER JOIN students ON pd.studentId = students.id
+LEFT JOIN users ON students.executiveId = users.id
+INNER JOIN student_batches 
+    ON student_batches.student_id = pd.studentId 
+    AND student_batches.batch_id = pd.batchId
+INNER JOIN payments ON payments.id = pd.paymentId
+WHERE student_batches.status = 2 
+AND student_batches.isBundel = 0 
+AND student_batches.is_drop = 0
+  AND student_batches.entryDate BETWEEN :from AND :to
+GROUP BY student_batches.student_id, student_batches.batch_id
+HAVING SUM(pd.cpaidAmount) < (inv_price * 0.5)
+ORDER BY student_batches.created_at DESC
+";
 
+        $params = [
+            'from' => $from,
+            'to' => $to,
+        ];
+
+        $results = DB::select($sql, $params);
+        return View::make('report.reg-report', ['results' => $results]);
     }
 }

@@ -68,17 +68,17 @@
                         </div>
                     </div>
                 </form>
-                {{-- <div class="row pb-1">
+                <div class="row pb-1">
 				<div class="col-12">
 					<button type="button" class="btn btn-sm btn-primary float-end" onclick="get_print()"><i class="bi bi-file-excel"></i> Export Excel</button>
 				</div>
-			</div> --}}
+			</div>
                 <table class="table table-sm table-bordered table-bordered dt-responsive nowrap"
                     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Enrollment DATE</th>
+                            <th>Mr Date</th>
                             <th>Executive</th>
                             <th>Name</th>
                             <th>Student ID</th>
@@ -93,7 +93,7 @@
                         @forelse ($results as $key => $report)
                             <tr>
                                 <td>{{ $key + 1 }}</td>
-                                <td>{{ \Carbon\Carbon::parse($report->entryDate)->format('d M, Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($report->paymentDate)->format('d M, Y') }}</td>
                                 <td>{{ $report->exName }}</td>
 								<td>{{ $report->sName }}</td>
                                 <td>{{ $report->sId }}</td>
@@ -106,7 +106,7 @@
                                 </td>
 								<td>{{ $report->mrNo }}</td>
                                 <td>Registration</td>
-                                <td>{{-- \Carbon\Carbon::parse($report->entryDate)->format('d M, Y') --}}</td>
+                                <td>{{-- \Carbon\Carbon::parse($report->entryDate)->format('d M, Y') --}}{{$report->total_paid}}</td>
                             </tr>
                         @empty
                             <tr>
@@ -173,7 +173,7 @@
                     1], { // html code may contain multiple tables so here we are refering to 1st table tag
                     name: `${filename}.xlsx`, // fileName you could use any name
                     sheet: {
-                        name: 'Batch Wise Enrll Report' // sheetName
+                        name: 'Reg Report' // sheetName
                     }
                 });
                 $("#my-content-div").html("");
@@ -185,12 +185,12 @@
                     '<div style="background:rgba(0,0,0,0.5);width:100vw; height:100vh;position:fixed; top:0; left;0"><div class="loader my-5"></div></div>'
                 );
                 $.get(
-                    "{{ route(currentUser() . '.batchwiseEnrollStudentPrint') }}{!! ltrim(Request()->fullUrl(), Request()->url()) !!}",
+                    "{{ route(currentUser() . '.regReportPrint') }}{!! ltrim(Request()->fullUrl(), Request()->url()) !!}",
                     function(data) {
                         $("#my-content-div").html(data);
                     }
                 ).then(function() {
-                    exportReportToExcel('table', 'Batch Wise Enroll Report')
+                    exportReportToExcel('table', 'Reg Report')
                 })
             }
         </script>

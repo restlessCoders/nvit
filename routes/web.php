@@ -734,6 +734,7 @@ Route::group(['middleware' => 'isAccountmanager'], function () {
         /*== Due Report ==*/
         Route::get('/due/report', [ReportController::class, 'dueReport'])->name('accountmanager.dueReport');
         Route::get('/reg/report', [ReportController::class, 'regReport'])->name('accountmanager.regReport');
+        Route::get('/reg/report/print', [ReportController::class, 'regReportPrint'])->name('accountmanager.regReportPrint');
     });
 });
 
