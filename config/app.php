@@ -54,10 +54,10 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://quickpicker.xyz/nvit/'),
+    'url' => env('APP_URL', 'https://nvitdesk.com'),
 
     //'asset_url' => env('ASSET_URL'),
-    'asset_url' => env('ASSET_URL', "https://quickpicker.xyz/nvit/public"),
+    'asset_url' => env('ASSET_URL', "https://nvitdesk.com/public"),
 
     /*
     |--------------------------------------------------------------------------
