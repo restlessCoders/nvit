@@ -230,6 +230,8 @@ Route::group(['middleware' => 'isSuperAdmin'], function () {
         /*== Due Report ==*/
         Route::get('/due/report', [ReportController::class, 'dueReport'])->name('superadmin.dueReport');
         Route::get('/reg/report', [ReportController::class, 'regReport'])->name('superadmin.regReport');
+
+         Route::get('/payment/enroll', [PaymentController::class, 'enrollData'])->name('superadmin.enrollData');
     });
 });
 
