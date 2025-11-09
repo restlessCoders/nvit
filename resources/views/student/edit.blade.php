@@ -420,7 +420,7 @@
 							<td>{{$allassignBatch->course_price}}</td>
 							<td>
 								{{--&& currentUser() == 'superadmin'--}}
-								@if($allassignBatch->acc_approve != 2 && $allassignBatch->isBundel == 0 && $allassignBatch->total_paid == 0)
+								@if($allassignBatch->acc_approve == 0 && $allassignBatch->isBundel == 0 && $allassignBatch->total_paid == 0)
 								<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-edit mr-2"></i>Update</button>
 								@endif
 
