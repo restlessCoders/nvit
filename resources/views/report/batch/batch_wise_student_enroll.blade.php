@@ -235,7 +235,11 @@
 						<td>
 							@if(currentUserId() == $batch->executiveId || currentUser() == 'salesmanager' || currentUser() == 'superadmin' || currentUser() == 'operationmanager' || currentUser() == 'accountmanager' )
 							@if($batch->batch_id != 0)
-							{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('discount')}}
+								@if($batch->executiveId == 1 && currentUser() == 'superadmin' || currentUser() == 'accountmanager' )
+								{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('discount')}}
+								@elseif($batch->executiveId != 1)
+								{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'batchId' => $batch->batch_id])->whereNull('deleted_at')->sum('discount')}}
+								@endif
 							@else
 							{{$batch->course_price-\DB::table('paymentdetails')->where(['studentId'=>$batch->sId,'course_id' => $batch->course_id])->whereNull('deleted_at')->sum('discount')}}
 							@endif
