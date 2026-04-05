@@ -66,8 +66,46 @@
 
 	}
 
+	function resetOtherPaymentFieldErrors() {
+		$('#mrNo').removeClass('is-invalid');
+		$('#mrNo-error').text('');
+		$('#paymentDate').removeClass('is-invalid');
+		$('#paymentDate-error').text('');
+	}
+
+	function showOtherPaymentAjaxErrors(xhr) {
+		$('#submit-btn').prop('disabled', false);
+		resetOtherPaymentFieldErrors();
+		var json = xhr.responseJSON;
+		if (json && json.errors) {
+			var errors = json.errors;
+			if (errors.mrNo) {
+				$('#mrNo').addClass('is-invalid');
+				$('#mrNo-error').text(errors.mrNo[0]);
+				toastr.error(errors.mrNo[0]);
+			}
+			if (errors.paymentDate) {
+				$('#paymentDate').addClass('is-invalid');
+				$('#paymentDate-error').text(errors.paymentDate[0]);
+				toastr.error(errors.paymentDate[0]);
+			}
+			$.each(errors, function(key, msgs) {
+				if (key !== 'mrNo' && key !== 'paymentDate' && msgs && msgs[0]) {
+					toastr.error(msgs[0]);
+				}
+			});
+			return;
+		}
+		if (json && json.message) {
+			toastr.error(json.message);
+			return;
+		}
+		toastr.error('Something went wrong. Please try again.');
+	}
+
 	$(document).on('submit', '#my-form', function(event) {
 		event.preventDefault();
+		resetOtherPaymentFieldErrors();
 		$('#submit-btn').prop('disabled', true); // disable the button
 		var formData = $('#my-form').serialize();
 		var optType = $('#optType option:selected').val();
@@ -84,9 +122,7 @@
 					toastr.success(response.success);
 					window.location.href = "{{route(currentUser().'.batchwiseEnrollStudent') }}";
 				},
-				error: function(response) {
-					// handle errors
-				},
+				error: showOtherPaymentAjaxErrors,
 			});
 
 		} else {
@@ -102,9 +138,7 @@
 					toastr.success(response.success);
 					window.location.href = "{{route(currentUser().'.payments.index') }}";
 				},
-				error: function(response) {
-					// handle errors
-				},
+				error: showOtherPaymentAjaxErrors,
 			});
 		}
 	});

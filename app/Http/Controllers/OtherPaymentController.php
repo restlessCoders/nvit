@@ -209,12 +209,12 @@ class OtherPaymentController extends Controller
                             </td>
                             <td>
                                 <div class="input-group">
-                                <input type="text" name="paymentDate" class="form-control" placeholder="dd/mm/yyyy">
+                                <input type="text" id="paymentDate" name="paymentDate" class="form-control" placeholder="dd/mm/yyyy">
                                 <div class="input-group-append">
                                     <span class="input-group-text"><i class="icon-calender"></i></span>
                                 </div>
-                                <div class="invalid-feedback" id="paymentDate-error"></div>
                             </div>
+                                <div class="invalid-feedback" id="paymentDate-error"></div>
                         </td>
                         </tr>
                     </tbody>   
@@ -412,12 +412,13 @@ class OtherPaymentController extends Controller
     {
 
         $rules = [
-            'mrNo'                 => 'required|string',
-            'paymentDate'       => 'required',
+            'mrNo'           => 'required|integer|unique:payments,mrNo',
+            'paymentDate'    => 'required',
         ];
         $messages = [
             'mrNo.required' => 'The Money Receipt No field is required.',
-            'paymentDate.required' => 'The Payment Date field is required.'
+            'mrNo.unique'   => 'Mr No Alreay Used!',
+            'paymentDate.required' => 'The Payment Date field is required.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -558,10 +559,9 @@ class OtherPaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            // something went wrong
-            dd($e);
-            return redirect()->back()->with($this->responseMessage(false, 'error', 'Please try again!'));
-            return false;
+            report($e);
+
+            return response()->json(['message' => 'Payment could not be saved. Please try again.'], 500);
         }
     }
 
